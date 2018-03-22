@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volvox.Helios.Web", "src\Volvox.Helios.Web\Volvox.Helios.Web.csproj", "{5D82EFE5-E30E-4EA8-8314-D4ABD8D2DBBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Volvox.Helios.Service", "Volvox.Helios.Service\Volvox.Helios.Service.csproj", "{B3712028-2D66-479D-ACF8-6B9442E15F65}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Volvox.Helios.Service", "src\Volvox.Helios.Service\Volvox.Helios.Service.csproj", "{B3712028-2D66-479D-ACF8-6B9442E15F65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
