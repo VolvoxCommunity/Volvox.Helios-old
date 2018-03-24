@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Modules.Common
@@ -24,7 +23,6 @@ namespace Volvox.Helios.Core.Modules.Common
                 Execute();
             }
 
-
             return Task.CompletedTask;
         }
 
@@ -39,7 +37,7 @@ namespace Volvox.Helios.Core.Modules.Common
         public IDiscordSettings DiscordSettings { get; }
 
         /// <summary>
-        /// To execute or not to execute the module.
+        /// To execute or not to execute the module. (Default: true)
         /// </summary>
         public bool IsEnabled { get; set; } = true;
     }
