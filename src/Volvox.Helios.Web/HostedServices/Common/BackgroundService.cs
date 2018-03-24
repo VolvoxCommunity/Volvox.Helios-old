@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace Volvox.Helios.Service.Common
+namespace Volvox.Helios.Web.HostedServices.Common
 {
     public abstract class BackgroundService : IHostedService, IDisposable
     {
