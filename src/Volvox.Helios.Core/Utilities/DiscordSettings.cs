@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 
-namespace Volvox.Helios.Web.Utilities
+namespace Volvox.Helios.Core.Utilities
 {
     public class DiscordSettings : IDiscordSettings
     {
