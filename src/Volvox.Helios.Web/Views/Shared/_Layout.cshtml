@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Volvox.Helios.Web</title>
+    <title>@ViewData["Title"] - Volvox.Helios</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -30,11 +30,8 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    @await Html.PartialAsync("_NavigationPartial")
                 </ul>
-                @await Html.PartialAsync("_LoginPartial")
             </div>
         </div>
     </nav>
@@ -42,7 +39,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 - Volvox.Helios.Web</p>
+            <p>&copy; 2018 - Volvox.Helios</p>
         </footer>
     </div>
 

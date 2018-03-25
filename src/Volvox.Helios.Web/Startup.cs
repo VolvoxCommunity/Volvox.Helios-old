@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Volvox.Helios.Core.Utilities;
-using Volvox.Helios.Web.Data;
-using Volvox.Helios.Web.Models;
-using Volvox.Helios.Web.Services;
 
 namespace Volvox.Helios.Web
 {
@@ -27,19 +19,30 @@ namespace Volvox.Helios.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            // Authentication
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                // Cookie Authentication
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/login";
+                    options.LogoutPath = "/signout";
+                })
 
-            // Add application services.
-            services.AddTransient<IEmailSender, EmailSender>();
+                // Discord Authentication
+                .AddDiscord(options =>
+                {
+                    options.ClientId = Configuration["Discord:ClientID"];
+                    options.ClientSecret = Configuration["Discord:ClientSecret"];
+                    options.Scope.Add("identify");
+                });
 
             // Settings
             services.AddSingleton<IDiscordSettings, DiscordSettings>();
-            
+
             services.AddMvc();
         }
 
@@ -50,7 +53,6 @@ namespace Volvox.Helios.Web
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -64,8 +66,8 @@ namespace Volvox.Helios.Web
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
