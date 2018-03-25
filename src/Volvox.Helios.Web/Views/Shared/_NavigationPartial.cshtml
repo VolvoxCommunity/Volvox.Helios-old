@@ -1,0 +1,11 @@
+﻿<li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+
+@if (User?.Identity?.IsAuthenticated ?? false)
+{
+    <li><a asp-area="" asp-controller="Authentication" asp-action="SignOut">Log Out</a></li>
+}
+
+else
+{
+    <li><a asp-area="" asp-controller="Authentication" asp-action="SignIn">Login</a></li>
+}
