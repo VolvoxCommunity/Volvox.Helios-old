@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Web.Data;
 using Volvox.Helios.Web.Models;
 using Volvox.Helios.Web.Services;
-using Volvox.Helios.Web.Utilities;
 
 namespace Volvox.Helios.Web
 {
