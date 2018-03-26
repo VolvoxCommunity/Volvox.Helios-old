@@ -13,6 +13,11 @@ namespace Volvox.Helios.Core.Bot.Connector
         private readonly IDiscordSettings _discordSettings;
         private readonly DiscordSocketClient _client;
 
+        /// <summary>
+        /// Discord bot connector.
+        /// </summary>
+        /// <param name="discordSettings">Settings used to connect to Discord.</param>
+        /// <param name="client">Client used to connect to Discord.</param>
         public BotConnector(IDiscordSettings discordSettings, DiscordSocketClient client)
         {
             _discordSettings = discordSettings;
@@ -30,7 +35,7 @@ namespace Volvox.Helios.Core.Bot.Connector
         }
 
         /// <summary>
-        /// Connect the bot from Discord.
+        /// Discconect the bot from Discord.
         /// </summary>
         public async Task Disconnect()
         {

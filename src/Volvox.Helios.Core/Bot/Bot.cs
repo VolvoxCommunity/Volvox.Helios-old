@@ -13,6 +13,10 @@ namespace Volvox.Helios.Core.Bot
     /// </summary>
     public class Bot : IBot
     {
+        /// <summary>
+        /// Discord bot.
+        /// </summary>
+        /// <param name="settings">Settings used to connect to Discord.</param>
         public Bot(IDiscordSettings settings)
         {
             // TODO: Convert logging to module
@@ -47,7 +51,7 @@ namespace Volvox.Helios.Core.Bot
         }
 
         /// <summary>
-        /// Log the bots event.
+        /// Log an event.
         /// </summary>
         /// <param name="message">Message to log.</param>
         public Task Log(LogMessage message)
@@ -80,8 +84,14 @@ namespace Volvox.Helios.Core.Bot
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Client for the bot.
+        /// </summary>
         private DiscordSocketClient Client { get; }
 
+        /// <summary>
+        /// Connector that the bot uses to connect to Discord.
+        /// </summary>
         private IBotConnector Connector { get; }
     }
 }

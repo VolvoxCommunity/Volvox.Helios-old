@@ -19,7 +19,7 @@ namespace Volvox.Helios.Core.Bot
         Task Start();
 
         /// <summary>
-        /// Log the bots event.
+        /// Log an event.
         /// </summary>
         /// <param name="message">Message to log.</param>
         Task Log(LogMessage message);
