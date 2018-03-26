@@ -3,7 +3,7 @@ using Discord;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Utilities;
 
-namespace Volvox.Helios.Core.Connector
+namespace Volvox.Helios.Core.Bot.Connector
 {
     /// <summary>
     /// Discord bot connector.
@@ -25,6 +25,8 @@ namespace Volvox.Helios.Core.Connector
         public async Task Connect()
         {
             await _client.LoginAsync(TokenType.Bot, _discordSettings.Token);
+            
+            await _client.StartAsync();
         }
 
         /// <summary>
@@ -33,6 +35,8 @@ namespace Volvox.Helios.Core.Connector
         public async Task Disconnect()
         {
             await _client.LogoutAsync();
+
+            await _client.StopAsync();
         }
     }
 }

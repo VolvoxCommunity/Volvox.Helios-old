@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Volvox.Helios.Core.Connector
+namespace Volvox.Helios.Core.Bot.Connector
 {
     /// <summary>
     /// Discord bot connector.

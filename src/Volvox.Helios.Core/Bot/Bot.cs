@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using Volvox.Helios.Core.Connector;
+using Volvox.Helios.Core.Bot.Connector;
 using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Bot
@@ -42,8 +42,6 @@ namespace Volvox.Helios.Core.Bot
             await InitModules();
 
             await Connector.Connect();
-
-            await Client.StartAsync();
 
             await Task.Delay(Timeout.Infinite);
         }
