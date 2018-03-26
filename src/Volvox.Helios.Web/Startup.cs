@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Utilities;
+using Volvox.Helios.Web.HostedServices.Bot;
 
 namespace Volvox.Helios.Web
 {
@@ -39,9 +42,15 @@ namespace Volvox.Helios.Web
                     options.ClientSecret = Configuration["Discord:ClientSecret"];
                     options.Scope.Add("identify");
                 });
+            
+            // Hosted Services
+            services.AddSingleton<IHostedService, BotHostedService>();
 
             // Settings
             services.AddSingleton<IDiscordSettings, DiscordSettings>();
+            
+            // Bot
+            services.AddSingleton<IBot, Bot>();
 
             services.AddMvc();
         }
