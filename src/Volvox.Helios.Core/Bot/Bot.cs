@@ -87,11 +87,11 @@ namespace Volvox.Helios.Core.Bot
         /// <summary>
         /// Client for the bot.
         /// </summary>
-        private DiscordSocketClient Client { get; }
+        public DiscordSocketClient Client { get; }
 
         /// <summary>
         /// Connector that the bot uses to connect to Discord.
         /// </summary>
-        private IBotConnector Connector { get; }
+        public IBotConnector Connector { get; }
     }
 }

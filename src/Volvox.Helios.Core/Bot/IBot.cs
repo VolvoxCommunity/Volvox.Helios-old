@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Discord;
+using Discord.WebSocket;
+using Volvox.Helios.Core.Bot.Connector;
 
 namespace Volvox.Helios.Core.Bot
 {
@@ -23,5 +25,15 @@ namespace Volvox.Helios.Core.Bot
         /// </summary>
         /// <param name="message">Message to log.</param>
         Task Log(LogMessage message);
+
+        /// <summary>
+        /// Client for the bot.
+        /// </summary>
+        DiscordSocketClient Client { get; }
+
+        /// <summary>
+        /// Connector that the bot uses to connect to Discord.
+        /// </summary>
+        IBotConnector Connector { get; }
     }
 }
