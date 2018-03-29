@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Volvox.Helios.Core.Bot;
+using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Web.HostedServices.Bot;
 
@@ -51,6 +54,11 @@ namespace Volvox.Helios.Web
             
             // Bot
             services.AddSingleton<IBot, Bot>();
+
+            // Modules
+
+            // All Modules
+            services.AddTransient<IList<IModule>>(module => module.GetServices<IModule>().ToList());
 
             services.AddMvc();
         }

@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Bot.Connector;
+using Volvox.Helios.Core.Modules.Common;
 
 namespace Volvox.Helios.Core.Bot
 {
@@ -35,5 +37,10 @@ namespace Volvox.Helios.Core.Bot
         /// Connector that the bot uses to connect to Discord.
         /// </summary>
         IBotConnector Connector { get; }
+
+        /// <summary>
+        /// List of modules for the bot.
+        /// </summary>
+        IList<IModule> Modules { get; }
     }
 }
