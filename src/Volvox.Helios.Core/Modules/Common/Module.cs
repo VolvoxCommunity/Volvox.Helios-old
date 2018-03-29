@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Discord.WebSocket;
 using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Modules.Common
@@ -8,28 +9,38 @@ namespace Volvox.Helios.Core.Modules.Common
     /// </summary>
     public abstract class Module : IModule
     {
+        /// <summary>
+        /// Unit of the bot.
+        /// </summary>
+        /// <param name="discordSettings">Settings used to connect to Discord.</param>
         protected Module(IDiscordSettings discordSettings)
         {
             DiscordSettings = discordSettings;
         }
 
         /// <summary>
+        /// Initialize the module.
+        /// </summary>
+        /// <param name="client">Client for the module to be registed to.</param>
+        public abstract Task Init(DiscordSocketClient client);
+
+        /// <summary>
         /// Start the module.
         /// </summary>
-        public virtual Task Start()
+        /// <param name="client">Client for the module to be registed to.</param>
+        public virtual async Task Start(DiscordSocketClient client)
         {
             if (IsEnabled)
             {
-                Execute();
+                await Execute(client);
             }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Execute the module.
         /// </summary>
-        public abstract Task Execute();
+        /// <param name="client">Client for the module to be registed to.</param>
+        public abstract Task Execute(DiscordSocketClient client);
 
         /// <summary>
         /// Settings for Discord bot.

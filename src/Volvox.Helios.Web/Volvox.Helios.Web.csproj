@@ -1,22 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <UserSecretsId>45e5b330-6506-4c0b-8aa6-6402838521f9</UserSecretsId>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Discord" Version="2.0.0-rc2-final" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
   </ItemGroup>
-
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Volvox.Helios.Core\Volvox.Helios.Core.csproj" />
   </ItemGroup>
-
 </Project>
