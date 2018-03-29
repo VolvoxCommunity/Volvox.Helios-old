@@ -40,7 +40,10 @@ namespace Volvox.Helios.Core.Bot
         /// </summary>
         public async Task InitModules()
         {
-            // TODO: Initialize modules
+            foreach (var module in Modules)
+            {
+                await module.Init(Client);
+            }
         }
 
         /// <summary>

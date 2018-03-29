@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Discord.WebSocket;
+using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Modules.Common
 {
@@ -9,13 +11,31 @@ namespace Volvox.Helios.Core.Modules.Common
     public interface IModule
     {
         /// <summary>
+        /// Initialize the module.
+        /// </summary>
+        /// <param name="client">Client for the module to be registed to.</param>
+        Task Init(DiscordSocketClient client);
+
+        /// <summary>
         /// Start the module.
         /// </summary>
-        Task Start();
+        /// <param name="client">Client for the module to be registed to.</param>
+        Task Start(DiscordSocketClient client);
 
         /// <summary>
         /// Execute the module.
         /// </summary>
-        Task Execute();
+        /// <param name="client">Client for the module to be registed to.</param>
+        Task Execute(DiscordSocketClient client);
+
+        /// <summary>
+        /// Settings for Discord bot.
+        /// </summary>
+        IDiscordSettings DiscordSettings { get; }
+
+        /// <summary>
+        /// To execute or not to execute the module. (Default: true)
+        /// </summary>
+        bool IsEnabled { get; set; }
     }
 }
