@@ -58,7 +58,7 @@ namespace Volvox.Helios.Web
             // Modules
 
             // All Modules
-            services.AddScoped<IList<IModule>>(s => s.GetServices<IModule>().ToList());
+            services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
 
             services.AddMvc();
         }
