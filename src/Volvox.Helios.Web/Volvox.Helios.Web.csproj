@@ -2,9 +2,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <UserSecretsId>45e5b330-6506-4c0b-8aa6-6402838521f9</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/bd7d1cf3-1ec9-43b1-b7c9-35f9700cfaa8/resourcegroups/Volvox.Helios/providers/microsoft.insights/components/Volvox.Helios</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/bd7d1cf3-1ec9-43b1-b7c9-35f9700cfaa8/resourcegroups/Volvox.Helios/providers/microsoft.insights/components/Volvox.Helios</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Discord" Version="2.0.0-rc2-final" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
   </ItemGroup>
@@ -13,5 +16,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Volvox.Helios.Core\Volvox.Helios.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 </Project>
