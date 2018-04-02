@@ -34,7 +34,7 @@ namespace Volvox.Helios.Web
                 // Cookie Authentication
                 .AddCookie(options =>
                 {
-                    options.LoginPath = "/login";
+                    options.LoginPath = "/signin";
                     options.LogoutPath = "/signout";
                 })
 
@@ -44,6 +44,9 @@ namespace Volvox.Helios.Web
                     options.ClientId = Configuration["Discord:ClientID"];
                     options.ClientSecret = Configuration["Discord:ClientSecret"];
                     options.Scope.Add("identify");
+                    options.Scope.Add("email");
+                    options.Scope.Add("guilds");
+                    options.SaveTokens = true;
                 });
             
             // Hosted Services
