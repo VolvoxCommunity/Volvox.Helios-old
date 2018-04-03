@@ -42,6 +42,7 @@ namespace Volvox.Helios.Core.Bot
         {
             foreach (var module in Modules)
             {
+                await Log(new LogMessage(LogSeverity.Info, "Bot Modules", $"Initializing {module.GetType().Name}"));
                 await module.Init(Client);
             }
         }
