@@ -17,6 +17,8 @@ namespace Volvox.Helios.Web.HostedServices.Bot
         
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            stoppingToken.Register(async () => await _bot.Stop());
+            
             await _bot.Start();
         }
     }

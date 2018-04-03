@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot.Connector;
 using Volvox.Helios.Core.Modules.Common;
 
@@ -21,6 +22,11 @@ namespace Volvox.Helios.Core.Bot
         /// Start the bot.
         /// </summary>
         Task Start();
+        
+        /// <summary>
+        /// Stop the bot.
+        /// </summary>
+        Task Stop();
 
         /// <summary>
         /// Log an event.
@@ -42,5 +48,10 @@ namespace Volvox.Helios.Core.Bot
         /// List of modules for the bot.
         /// </summary>
         IList<IModule> Modules { get; }
+        
+        /// <summary>
+        /// Application logger.
+        /// </summary>
+        ILogger<Bot> Logger { get; }
     }
 }
