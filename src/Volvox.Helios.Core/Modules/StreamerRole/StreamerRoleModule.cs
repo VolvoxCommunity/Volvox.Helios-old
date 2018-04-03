@@ -55,10 +55,5 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
             
             return Task.CompletedTask;
         }
-
-        public override async Task Execute(DiscordSocketClient client)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
