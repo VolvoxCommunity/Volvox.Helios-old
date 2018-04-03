@@ -25,7 +25,7 @@ namespace Volvox.Helios.Web
                 {
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddDebug();
-                    logging.AddAzureWebAppDiagnostics();
+                    //logging.AddAzureWebAppDiagnostics();
                 })
                 .Build();
     }
