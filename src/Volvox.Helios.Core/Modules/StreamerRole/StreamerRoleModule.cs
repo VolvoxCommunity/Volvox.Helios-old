@@ -33,27 +33,47 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
                 if (IsEnabled)
                 {
                     // Get the streaming role.
-                    var role = guildUser.Guild.Roles.FirstOrDefault(r => r.Name == "Streaming");
+                    var streamingRole = guildUser.Guild.Roles.FirstOrDefault(r => r.Name == "Streaming");
                     
                     // Add user to role.
                     if (guildUser.Game != null && guildUser.Game.Value.StreamType == StreamType.Twitch)
                     {
-                        await guildUser.AddRoleAsync(role);
-                        
-                        Console.WriteLine($"Adding {guildUser.Username}");
+                        await AddUserToStreamingRole(guildUser, streamingRole);
                     }
 
                     // Remove user from role.
-                    else if (guildUser.Roles.Any(r => r == role))
+                    else if (guildUser.Roles.Any(r => r == streamingRole))
                     {
-                        await guildUser.RemoveRoleAsync(role);
-                        
-                        Console.WriteLine($"Removing {guildUser.Username}");
+                        await RemoveUserFromStreamingRole(guildUser, streamingRole);
                     }
                 }
             };
             
             return Task.CompletedTask;
+        }
+        
+        /// <summary>
+        /// Add the specified used to the specified streaming role.
+        /// </summary>
+        /// <param name="guildUser">User to add to role.</param>
+        /// <param name="streamingRole">Role to add the user to.</param>
+        private static async Task AddUserToStreamingRole(IGuildUser guildUser, IRole streamingRole)
+        {
+            await guildUser.AddRoleAsync(streamingRole);
+
+            Console.WriteLine($"Adding {guildUser.Username}");
+        }
+        
+        /// <summary>
+        /// Remove the specified used to the specified streaming role.
+        /// </summary>
+        /// <param name="guildUser">User to add to role.</param>
+        /// <param name="streamingRole">Role to add the user to.</param>
+        private static async Task RemoveUserFromStreamingRole(IGuildUser guildUser, IRole streamingRole)
+        {
+            await guildUser.RemoveRoleAsync(streamingRole);
+
+            Console.WriteLine($"Removing {guildUser.Username}");
         }
     }
 }
