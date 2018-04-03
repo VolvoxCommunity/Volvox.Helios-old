@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot.Connector;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
@@ -20,9 +21,11 @@ namespace Volvox.Helios.Core.Bot
         /// </summary>
         /// <param name="modules">List of modules for the bot.</param>
         /// <param name="settings">Settings used to connect to Discord.</param>
-        public Bot(IList<IModule> modules, IDiscordSettings settings)
+        /// <param name="logger">Application logger.</param>
+        public Bot(IList<IModule> modules, IDiscordSettings settings, ILogger<Bot> logger)
         {
             Modules = modules;
+            Logger = logger;
 
             // TODO: Convert logging to module
             Client = new DiscordSocketClient(new DiscordSocketConfig()
@@ -42,6 +45,7 @@ namespace Volvox.Helios.Core.Bot
         {
             foreach (var module in Modules)
             {
+                Logger.LogInformation($"Initializing {module.GetType().Name}");
                 await module.Init(Client);
             }
         }
@@ -59,6 +63,14 @@ namespace Volvox.Helios.Core.Bot
         }
 
         /// <summary>
+        /// Stop the bot.
+        /// </summary>
+        public async Task Stop()
+        {
+            await Connector.Disconnect();
+        }
+
+        /// <summary>
         /// Log an event.
         /// </summary>
         /// <param name="message">Message to log.</param>
@@ -67,27 +79,25 @@ namespace Volvox.Helios.Core.Bot
             switch (message.Severity)
             {
                 case LogSeverity.Critical:
+                    Logger.LogCritical(message.Message);
+                    break;
                 case LogSeverity.Error:
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    Logger.LogError(message.Message);
                     break;
                 case LogSeverity.Warning:
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Logger.LogWarning(message.Message);
                     break;
                 case LogSeverity.Info:
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Logger.LogInformation(message.Message);
                     break;
                 case LogSeverity.Verbose:
                 case LogSeverity.Debug:
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Logger.LogTrace(message.Message);
                     break;
                 default:
-                    Console.ResetColor();
+                    Logger.LogInformation(message.Message);
                     break;
             }
-
-            Console.WriteLine(
-                $"{DateTime.Now,-19} [{message.Severity,8}] {message.Source}: {message.Message} {message.Exception}");
-            Console.ResetColor();
 
             return Task.CompletedTask;
         }
@@ -106,5 +116,10 @@ namespace Volvox.Helios.Core.Bot
         /// List of modules for the bot.
         /// </summary>
         public IList<IModule> Modules { get; }
+
+        /// <summary>
+        /// Application logger.
+        /// </summary>
+        public ILogger<Bot> Logger { get; }
     }
 }

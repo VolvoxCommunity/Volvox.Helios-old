@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Utilities;
 
@@ -40,7 +41,10 @@ namespace Volvox.Helios.Core.Modules.Common
         /// Execute the module.
         /// </summary>
         /// <param name="client">Client for the module to be registed to.</param>
-        public abstract Task Execute(DiscordSocketClient client);
+        public virtual Task Execute(DiscordSocketClient client)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Settings for Discord bot.
