@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
 
@@ -17,7 +18,8 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
         /// Assign a user the streaming role.
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
-        public StreamerRoleModule(IDiscordSettings discordSettings) : base(discordSettings)
+        /// <param name="logger">Logger.</param>
+        public StreamerRoleModule(IDiscordSettings discordSettings, ILogger<StreamerRoleModule> logger) : base(discordSettings, logger)
         {
         }
 
@@ -57,11 +59,11 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
         /// </summary>
         /// <param name="guildUser">User to add to role.</param>
         /// <param name="streamingRole">Role to add the user to.</param>
-        private static async Task AddUserToStreamingRole(IGuildUser guildUser, IRole streamingRole)
+        private async Task AddUserToStreamingRole(IGuildUser guildUser, IRole streamingRole)
         {
             await guildUser.AddRoleAsync(streamingRole);
 
-            Console.WriteLine($"Adding {guildUser.Username}");
+            Logger.LogDebug($"StreamingRole Module: Adding {guildUser.Username}");
         }
         
         /// <summary>
@@ -69,11 +71,11 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
         /// </summary>
         /// <param name="guildUser">User to add to role.</param>
         /// <param name="streamingRole">Role to add the user to.</param>
-        private static async Task RemoveUserFromStreamingRole(IGuildUser guildUser, IRole streamingRole)
+        private async Task RemoveUserFromStreamingRole(IGuildUser guildUser, IRole streamingRole)
         {
             await guildUser.RemoveRoleAsync(streamingRole);
 
-            Console.WriteLine($"Removing {guildUser.Username}");
+            Logger.LogDebug($"StreamingRole Module: Removing {guildUser.Username}");
         }
     }
 }

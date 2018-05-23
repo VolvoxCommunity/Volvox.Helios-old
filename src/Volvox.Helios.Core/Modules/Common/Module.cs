@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Modules.Common
@@ -14,9 +15,10 @@ namespace Volvox.Helios.Core.Modules.Common
         /// Unit of the bot.
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
-        protected Module(IDiscordSettings discordSettings)
+        protected Module(IDiscordSettings discordSettings, ILogger<IModule> logger)
         {
             DiscordSettings = discordSettings;
+            Logger = logger;
         }
 
         /// <summary>
@@ -50,6 +52,11 @@ namespace Volvox.Helios.Core.Modules.Common
         /// Settings for Discord bot.
         /// </summary>
         public IDiscordSettings DiscordSettings { get; }
+
+        /// <summary>
+        /// Logger.
+        /// </summary>
+        public ILogger<IModule> Logger { get; }
 
         /// <summary>
         /// To execute or not to execute the module. (Default: true)

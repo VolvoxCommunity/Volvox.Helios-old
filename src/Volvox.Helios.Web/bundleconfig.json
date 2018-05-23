@@ -1,5 +1,4 @@
 ﻿// Configure bundling and minification for the project.
-// More info at https://go.microsoft.com/fwlink/?LinkId=808241
 [
   {
     "outputFileName": "wwwroot/css/site.min.css",
@@ -20,5 +19,21 @@
     },
     // Optionally generate .map file
     "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/vendor.min.css",
+    "inputFiles": [
+      "node_modules/bootstrap/dist/css/bootstrap.min.css"
+    ],
+    "minify": { "enabled": false }
+  },
+  {
+    "outputFileName": "wwwroot/vendor.min.js",
+    "inputFiles": [
+      "node_modules/jquery/dist/jquery.min.js",
+      "node_modules/popper.js/dist/umd/popper.min.js",
+      "node_modules/bootstrap/dist/js/bootstrap.min.js"
+    ],
+    "minify": { "enabled": false }
   }
 ]

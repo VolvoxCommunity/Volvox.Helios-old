@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.StreamerRole;
@@ -69,7 +71,7 @@ namespace Volvox.Helios.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -78,6 +80,7 @@ namespace Volvox.Helios.Web
             }
             else
             {
+                loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
                 app.UseExceptionHandler("/Home/Error");
             }
 

@@ -286,3 +286,4 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+/src/Volvox.Helios.Web/aws-beanstalk-tools-defaults.json

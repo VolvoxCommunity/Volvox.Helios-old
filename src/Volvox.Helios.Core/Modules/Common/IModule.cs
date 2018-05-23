@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Modules.Common
@@ -32,6 +33,11 @@ namespace Volvox.Helios.Core.Modules.Common
         /// Settings for Discord bot.
         /// </summary>
         IDiscordSettings DiscordSettings { get; }
+
+        /// <summary>
+        /// Logger.
+        /// </summary>
+        ILogger<IModule> Logger { get; }
 
         /// <summary>
         /// To execute or not to execute the module. (Default: true)
