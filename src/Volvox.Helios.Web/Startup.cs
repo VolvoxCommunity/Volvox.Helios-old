@@ -80,7 +80,7 @@ namespace Volvox.Helios.Web
             }
             else
             {
-                loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
+                //loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
                 app.UseExceptionHandler("/Home/Error");
             }
 
