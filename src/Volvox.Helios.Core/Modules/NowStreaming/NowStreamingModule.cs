@@ -6,14 +6,23 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
+using System.Collections.Generic;
 
-namespace Volvox.Helios.Core.Modules.NowStreamingModule
+namespace Volvox.Helios.Core.Modules.NowStreaming
 {
     /// <summary>
     /// Assign a user the streaming role.
     /// </summary>
     public class NowStreamingModule : Module
     {
+
+        // Likely want this batched out to be read from a settings file?
+        private const ulong AnnounceChannelId = 392962633495740418;
+
+        private const string Token = "";
+
+        private List<SocketGuildUser> StreamingList { get; } = new List<SocketGuildUser>();
+
         /// <summary>
         /// Assign a user the streaming role.
         /// </summary>
@@ -44,9 +53,65 @@ namespace Volvox.Helios.Core.Modules.NowStreamingModule
             return Task.CompletedTask;
         }
 
-        private async Task AnnounceUser(IGuildUser guildUser)
+        // [RequireUserPermission(GuildPermission.Administrator)]
+        private async Task UpdateUser(SocketGuildUser user)
         {
-            
+            var role = user.Guild.Roles.FirstOrDefault(r => r.Name == "Non-Affiliate Streaming");
+
+            // Check to make sure the user is streaming.
+            if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch)
+            {
+                // User is not an affiliate to add to streaming role.
+                if (user.Roles.Any(r => r.Name == "Bearded Beauties") &&
+                    user.Roles.All(r => r.Name != "Bearded Affiliates"))
+                {
+                    await user.AddRoleAsync(role);
+
+                    Console.WriteLine($"Adding {user.Username}");
+                }
+
+                // Only if the user is not already in the streaming list.
+                if (StreamingList.All(u => u.Id != user.Id))
+                {
+                    // Add user to the streaming list.
+                    StreamingList.Add(user);
+
+                    // Announce that the user is streaming.
+                    if (user.Roles.All(r => r.Name != "Unranked"))
+                        await AnnounceUser(user);
+                }
+            }
+
+            // User is not streaming.
+            else
+            {
+                // Remove user from the streaming role.
+                if (user.Roles.Any(r => r == role))
+                {
+                    await user.RemoveRoleAsync(role);
+
+                    Console.WriteLine($"Removing {user.Username}");
+                }
+
+                // Remove user from the streaming list.
+                if (StreamingList.Any(u => u.Id == user.Id))
+                    StreamingList.Remove(StreamingList.Single(u => u.Id == user.Id));
+            }
+        }
+
+        private async Task AnnounceUser(SocketGuildUser user)
+        {
+            // Build the embedded message.
+            var embed = new EmbedBuilder()
+                .WithTitle($"{user.Username} is now live!")
+                .WithDescription($"{user.Game?.StreamUrl} - {user.Mention}")
+                .WithColor(new Color(0x4A90E2))
+                .WithThumbnailUrl(user.GetAvatarUrl())
+                .AddInlineField("Title", user.Game?.Name).Build();
+
+            // Send the message to the streaming now channel.
+            await user.Guild.GetTextChannel(AnnounceChannelId)
+                .SendMessageAsync("", embed: embed);
         }
     }
 }
