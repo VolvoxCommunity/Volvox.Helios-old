@@ -70,7 +70,7 @@ namespace Volvox.Helios.Core.Modules.NowStreaming
                 {
                     await user.AddRoleAsync(role);
 
-                    Console.WriteLine($"Adding {user.Username}");
+                    Logger.LogDebug($"Adding {user.Username}");
                 }
 
                 // Only if the user is not already in the streaming list.
@@ -95,7 +95,7 @@ namespace Volvox.Helios.Core.Modules.NowStreaming
                 {
                     await user.RemoveRoleAsync(role);
 
-                    Console.WriteLine($"Removing {user.Username}");
+                    Logger.LogDebug($"Removing {user.Username}");
                 }
 
                 // Remove user from the streaming list.
