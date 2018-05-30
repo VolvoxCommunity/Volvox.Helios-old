@@ -107,8 +107,7 @@ namespace Volvox.Helios.Core.Modules.NowStreaming
         }
 
         /// <summary>
-        /// Updates the user's roles if necessary, then announces their stream if they meet the role requirement
-        /// necessary to do so.
+        /// Announces the user's stream to the appropriate channel.
         /// </summary>
         /// <param name="user">User to be announced.</param>
         private async Task AnnounceUser(SocketGuildUser user)
