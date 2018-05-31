@@ -16,7 +16,7 @@ namespace Volvox.Helios.Core.Modules.NowStreaming
     public class NowStreamingModule : Module
     {
 
-        // DRE: Likely want this batched out to be read from a settings file or be adjustable
+        // Dan: Likely want this batched out to be read from a settings file or be adjustable
         // from Web level.
         private const ulong AnnounceChannelId = 392962633495740418;
 
@@ -49,55 +49,33 @@ namespace Volvox.Helios.Core.Modules.NowStreaming
             return Task.CompletedTask;
         }
 
-        // DRE: Pre-porting, this had "[RequireUserPermission(GuildPermission.Administrator)]"
+        // Dan: Pre-porting, this had "[RequireUserPermission(GuildPermission.Administrator)]"
         // as an attribute tag- is that required/desired here? Not sure of OG context.
 
         /// <summary>
-        /// Updates the user's roles if necessary, then announces their stream if they meet the role requirement
-        /// necessary to do so.
+        /// Announces the user if it's appropriate to do so.
         /// </summary>
         /// <param name="user">User to be evaluated/adjusted for streaming announcement.</param>
         private async Task UpdateUser(SocketGuildUser user)
         {
             var role = user.Guild.Roles.FirstOrDefault(r => r.Name == "Non-Affiliate Streaming");
 
-            // Check to make sure the user is streaming.
-            if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch)
+            // Check to make sure the user is streaming and not in the streaming list.
+            if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch && StreamingList.All(u => u.Id != user.Id))
             {
-                // User is not an affiliate to add to streaming role.
-                if (user.Roles.Any(r => r.Name == "Bearded Beauties") &&
-                    user.Roles.All(r => r.Name != "Bearded Affiliates"))
+                // Add user to the streaming list.
+                StreamingList.Add(user);
+
+                // Announce that the user is streaming.
+                if (user.Roles.All(r => r.Name != "Unranked"))
                 {
-                    await user.AddRoleAsync(role);
-
-                    Logger.LogDebug($"Adding {user.Username}");
-                }
-
-                // Only if the user is not already in the streaming list.
-                if (StreamingList.All(u => u.Id != user.Id))
-                {
-                    // Add user to the streaming list.
-                    StreamingList.Add(user);
-
-                    // Announce that the user is streaming.
-                    if (user.Roles.All(r => r.Name != "Unranked"))
-                    {
-                        await AnnounceUser(user);
-                    }
+                    await AnnounceUser(user);
                 }
             }
 
             // User is not streaming.
             else
             {
-                // Remove user from the streaming role.
-                if (user.Roles.Any(r => r == role))
-                {
-                    await user.RemoveRoleAsync(role);
-
-                    Logger.LogDebug($"Removing {user.Username}");
-                }
-
                 // Remove user from the streaming list.
                 if (StreamingList.Any(u => u.Id == user.Id))
                 {
