@@ -27,8 +27,8 @@
   "dependencies": {
     "jquery": ">= 1.7.2"
   },
-  "version": "1.14.0",
-  "_release": "1.14.0",
+  "version": "1.17.0",
+  "_release": "1.17.0",
   "_resolution": {
     "type": "version",
     "tag": "1.14.0",
