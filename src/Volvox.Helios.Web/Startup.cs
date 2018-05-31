@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.StreamerRole;
+using Volvox.Helios.Core.Modules.NowStreaming;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Web.HostedServices.Bot;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
@@ -65,6 +66,7 @@ namespace Volvox.Helios.Web
 
             // Modules
             services.AddSingleton<IModule, StreamerRoleModule>();
+            services.AddSingleton<IModule, NowStreamingModule>();
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());

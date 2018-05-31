@@ -287,3 +287,5 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 /src/Volvox.Helios.Web/aws-beanstalk-tools-defaults.json
+.vscode/launch.json
+.vscode/tasks.json
