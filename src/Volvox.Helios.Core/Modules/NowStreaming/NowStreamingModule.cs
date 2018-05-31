@@ -67,10 +67,7 @@ namespace Volvox.Helios.Core.Modules.NowStreaming
                 StreamingList.Add(user);
 
                 // Announce that the user is streaming.
-                if (user.Roles.All(r => r.Name != "Unranked"))
-                {
-                    await AnnounceUser(user);
-                }
+                await AnnounceUser(user);
             }
 
             // User is not streaming.
