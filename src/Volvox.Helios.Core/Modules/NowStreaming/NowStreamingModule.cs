@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Volvox.Helios.Core.Modules.NowStreaming
 {
     /// <summary>
-    /// Assign a user the streaming role.
+    /// Announce the user to a specified channel when streaming.
     /// </summary>
     public class NowStreamingModule : Module
     {
@@ -58,8 +58,6 @@ namespace Volvox.Helios.Core.Modules.NowStreaming
         /// <param name="user">User to be evaluated/adjusted for streaming announcement.</param>
         private async Task UpdateUser(SocketGuildUser user)
         {
-            var role = user.Guild.Roles.FirstOrDefault(r => r.Name == "Non-Affiliate Streaming");
-
             // Check to make sure the user is streaming and not in the streaming list.
             if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch && StreamingList.All(u => u.Id != user.Id))
             {
