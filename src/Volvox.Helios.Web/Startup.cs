@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +15,7 @@ using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.StreamerRole;
 using Volvox.Helios.Core.Modules.NowStreaming;
 using Volvox.Helios.Core.Utilities;
+using Volvox.Helios.Service;
 using Volvox.Helios.Web.HostedServices.Bot;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
@@ -71,7 +73,12 @@ namespace Volvox.Helios.Web
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);;
+            // MVC
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            
+            // Entity Framework
+            services.AddDbContext<VolvoxHeliosContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("VolvoxHeliosDatabase")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Volvox.Helios.Core\Volvox.Helios.Core.csproj" />
+    <ProjectReference Include="..\Volvox.Helios.Service\Volvox.Helios.Service.csproj" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services" />
