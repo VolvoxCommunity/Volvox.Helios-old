@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
-using Volvox.Helios.Core.Modules.StreamerRole;
 using Volvox.Helios.Core.Modules.NowStreaming;
+using Volvox.Helios.Core.Modules.StreamerRole;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
 using Volvox.Helios.Web.HostedServices.Bot;
@@ -55,14 +57,27 @@ namespace Volvox.Helios.Web
                     options.Scope.Add("email");
                     options.Scope.Add("guilds");
                     options.SaveTokens = true;
+                    options.Events = new OAuthEvents
+                    {
+                        OnTicketReceived = context =>
+                        {
+                            // Add access token claim
+                            var claimsIdentity = (ClaimsIdentity) context.Principal.Identity;
+
+                            claimsIdentity.AddClaim(new Claim("access_token",
+                                context.Properties.Items.FirstOrDefault(p => p.Key == ".Token.access_token").Value));
+
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
-            
+
             // Hosted Services
             services.AddSingleton<IHostedService, BotHostedService>();
 
             // Settings
             services.AddSingleton<IDiscordSettings, DiscordSettings>();
-            
+
             // Bot
             services.AddSingleton<IBot, Bot>();
 
@@ -75,7 +90,7 @@ namespace Volvox.Helios.Web
 
             // MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            
+
             // Entity Framework
             services.AddDbContext<VolvoxHeliosContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("VolvoxHeliosDatabase")));
