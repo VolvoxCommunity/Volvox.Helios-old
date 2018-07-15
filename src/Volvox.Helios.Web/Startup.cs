@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -18,6 +19,8 @@ using Volvox.Helios.Core.Modules.NowStreaming;
 using Volvox.Helios.Core.Modules.StreamerRole;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
+using Volvox.Helios.Service.Clients;
+using Volvox.Helios.Service.Discord;
 using Volvox.Helios.Web.HostedServices.Bot;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
@@ -87,6 +90,17 @@ namespace Volvox.Helios.Web
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
+            
+            // Http Clients
+            services.AddHttpClient<DiscordAPIClient>(options =>
+            {
+                options.BaseAddress = new Uri("https://discordapp.com/api/");
+                options.DefaultRequestHeaders.Add("Accept", "application/json");
+                options.DefaultRequestHeaders.Add("User-Agent", "Volvox.Helios");
+            });
+            
+            // Services
+            services.AddScoped<IDiscordUserService, DiscordUserService>();
 
             // MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

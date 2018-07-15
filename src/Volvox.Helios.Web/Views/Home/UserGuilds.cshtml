@@ -1,0 +1,39 @@
+﻿@model List<Volvox.Helios.Domain.Discord.Guild>
+
+@{
+    ViewData["Title"] = "User Guilds";
+}
+
+<h2>User Guilds</h2>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model[0].Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].Permissions)
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var guild in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => guild.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => guild.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => guild.Permissions)
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
