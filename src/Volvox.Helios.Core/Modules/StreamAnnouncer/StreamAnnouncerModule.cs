@@ -8,12 +8,12 @@ using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
 using System.Collections.Generic;
 
-namespace Volvox.Helios.Core.Modules.NowStreaming
+namespace Volvox.Helios.Core.Modules.StreamAnnouncer
 {
     /// <summary>
     /// Announce the user to a specified channel when streaming.
     /// </summary>
-    public class NowStreamingModule : Module
+    public class StreamAnnouncerModule : Module
     {
 
         // Dan: Likely want this batched out to be read from a settings file or be adjustable
@@ -27,7 +27,7 @@ namespace Volvox.Helios.Core.Modules.NowStreaming
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
-        public NowStreamingModule(IDiscordSettings discordSettings, ILogger<NowStreamingModule> logger) : base(discordSettings, logger)
+        public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger) : base(discordSettings, logger)
         {
         }
 
