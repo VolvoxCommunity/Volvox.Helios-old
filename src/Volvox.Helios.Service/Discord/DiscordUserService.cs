@@ -22,10 +22,8 @@ namespace Volvox.Helios.Service.Discord
         public async Task<List<Guild>> GetUserGuilds()
         {
             var guilds = await _client.GetUserGuilds();
-            
-            var b = JsonConvert.DeserializeObject<List<Guild>>(guilds);
 
-            return b;
+            return JsonConvert.DeserializeObject<List<Guild>>(guilds);
         }
     }
 }

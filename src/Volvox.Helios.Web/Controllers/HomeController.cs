@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Volvox.Helios.Service.Clients;
 using Volvox.Helios.Service.Discord;
+using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Web.Models;
 
 namespace Volvox.Helios.Web.Controllers
 {
     public class HomeController : Controller
     {
-        public async Task<IActionResult> Index([FromServices] IDiscordUserService userService)
+        public IActionResult Index([FromServices] IDiscordUserService userService)
         {
             return View();
         }
@@ -23,7 +24,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             var guilds = await userService.GetUserGuilds();
             
-            return View(guilds);
+            return View(guilds.FilterAdministrator());
         }
     }
 }
