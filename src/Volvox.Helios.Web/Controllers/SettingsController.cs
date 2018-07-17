@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Service.Discord;
+using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Web.ViewModels.Settings;
 

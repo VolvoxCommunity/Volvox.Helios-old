@@ -21,6 +21,7 @@ using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
 using Volvox.Helios.Service.Clients;
 using Volvox.Helios.Service.Discord;
+using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Web.HostedServices.Bot;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
