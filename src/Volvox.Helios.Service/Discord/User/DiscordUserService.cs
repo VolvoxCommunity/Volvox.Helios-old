@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Volvox.Helios.Domain.Discord;
 using Volvox.Helios.Service.Clients;
 
-namespace Volvox.Helios.Service.Discord
+namespace Volvox.Helios.Service.Discord.User
 {
     public class DiscordUserService : IDiscordUserService
     {
