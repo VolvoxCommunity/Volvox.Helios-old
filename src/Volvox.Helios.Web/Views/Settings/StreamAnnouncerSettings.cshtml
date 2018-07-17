@@ -1,0 +1,34 @@
+﻿@model Volvox.Helios.Web.ViewModels.Settings.StreamAnnouncerSettingsViewModel
+@{
+    ViewData["Title"] = "Stream Announcer Settings";
+}
+
+<h2>Stream Announcer Settings</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="GuildId"></label>
+                <select asp-for="GuildId" class="form-control" asp-items="Model.Guilds">
+                    <option>Please select one</option>
+                </select>
+                <span asp-validation-for="GuildId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ChannelId"></label>
+                <input asp-for="ChannelId" class="form-control" />
+                <span asp-validation-for="ChannelId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
