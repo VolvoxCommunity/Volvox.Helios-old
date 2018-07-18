@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,9 +13,11 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         public SelectList Guilds { get; set; }
         
         [Required]
+        [DisplayName("Guild")]
         public ulong GuildId { get; set; }
         
         [Required]
+        [DisplayName("Channel")]
         public ulong ChannelId { get; set; }
     }
 }

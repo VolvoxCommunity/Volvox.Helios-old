@@ -21,6 +21,7 @@ using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
 using Volvox.Helios.Service.Clients;
 using Volvox.Helios.Service.Discord;
+using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Web.HostedServices.Bot;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
@@ -100,8 +101,9 @@ namespace Volvox.Helios.Web
                 options.DefaultRequestHeaders.Add("User-Agent", "Volvox.Helios");
             });
             
-            // Services
+            // Discord Services
             services.AddScoped<IDiscordUserService, DiscordUserService>();
+            services.AddScoped<IDiscordGuildService, DiscordGuildService>();
 
             // MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

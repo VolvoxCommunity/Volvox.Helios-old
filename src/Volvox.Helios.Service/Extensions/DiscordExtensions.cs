@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using Volvox.Helios.Domain.Discord;
 
@@ -27,6 +29,16 @@ namespace Volvox.Helios.Service.Extensions
             }
 
             return filteredGuilds;
+        }
+
+        /// <summary>
+        /// Filter a list of Guilds to only the ones that a user is an adminstrator of.
+        /// </summary>
+        /// <param name="channels">List of Guilds.</param>
+        /// <returns>List of Guilds that the user is an adminstrator of.</returns>
+        public static List<Channel> FilterChannelType(this List<Channel> channels, int type)
+        {
+            return channels.Where(c => c.Type == type).ToList();
         }
     }
 }
