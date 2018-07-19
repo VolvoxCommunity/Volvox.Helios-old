@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volvox.Helios.Core", "src\V
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volvox.Helios.Domain", "src\Volvox.Helios.Domain\Volvox.Helios.Domain.csproj", "{9F6F5479-1E1F-4F72-B484-EED51B5B5114}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Volvox.Helios.Web", "src\Volvox.Helios.Web\Volvox.Helios.Web.csproj", "{C792E950-8407-4879-AAA4-1A736E122B9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volvox.Helios.Web", "src\Volvox.Helios.Web\Volvox.Helios.Web.csproj", "{C792E950-8407-4879-AAA4-1A736E122B9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
