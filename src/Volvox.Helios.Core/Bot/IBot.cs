@@ -29,6 +29,12 @@ namespace Volvox.Helios.Core.Bot
         Task Stop();
 
         /// <summary>
+        /// Get a list of the guilds the bot is in.
+        /// </summary>
+        /// <returns>List of the guilds the bot is in.</returns>
+        List<SocketGuild> GetGuilds();
+
+        /// <summary>
         /// Log an event.
         /// </summary>
         /// <param name="message">Message to log.</param>

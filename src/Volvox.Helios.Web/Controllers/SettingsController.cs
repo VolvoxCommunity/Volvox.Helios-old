@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Volvox.Helios.Core.Bot;
+using Volvox.Helios.Domain.Discord;
 using Volvox.Helios.Service.Discord;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
@@ -21,13 +24,16 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         // GET
-        public async Task<IActionResult> StreamAnnouncerSettings([FromServices] IDiscordUserService userService)
+        public async Task<IActionResult> StreamAnnouncerSettings([FromServices] IDiscordUserService userService, [FromServices] IBot bot)
         {
             var guilds = await userService.GetUserGuilds();
             
+            var botGuilds = bot.GetGuilds();
+
             var viewModel = new StreamAnnouncerSettingsViewModel()
             {
-                Guilds = new SelectList(guilds.FilterAdministrator(), "Id", "Name")
+                Guilds = new SelectList(
+                    guilds.FilterAdministrator().FilterGuildsByIds(botGuilds.Select(b => b.Id).ToList()), "Id", "Name")
             };
             
             return View(viewModel);
@@ -40,6 +46,7 @@ namespace Volvox.Helios.Web.Controllers
             return Index();
         }
 
+        // GET
         [HttpGet]
         public async Task<JsonResult> GetGuildChannels([FromServices] IDiscordGuildService guildService, ulong guildId)
         {
