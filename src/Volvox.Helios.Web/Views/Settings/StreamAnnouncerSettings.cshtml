@@ -34,21 +34,7 @@
     
     <script>
         function getGuildChannels(guildId) {
-            const channelsElement = $('#channels');
-
-            channelsElement.empty();
-
-            channelsElement.append('<option selected="true" disabled hidden>Select a channel</option>');
-            channelsElement.prop('selectedIndex', 0);
-            channelsElement.prop('disabled', false);
-
-            const url = `/Settings/GetGuildChannels?guildId=${guildId}`;
-
-            $.getJSON(url, function (data) {
-                $.each(data, function (key, entry) {
-                    channelsElement.append($('<option></option>').attr('value', entry.id).text(entry.name));
-                })
-            });
+            $('#channels').populateGuildChannels(guildId);
         }
     </script>
 }
