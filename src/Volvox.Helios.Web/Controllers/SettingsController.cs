@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Domain.Discord;
+using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Service.Extensions;
+using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.ViewModels.Settings;
 
 namespace Volvox.Helios.Web.Controllers
@@ -17,6 +19,13 @@ namespace Volvox.Helios.Web.Controllers
     [Authorize]
     public class SettingsController : Controller
     {
+        private readonly IModuleSettingsService<StreamAnnouncerSettings> _streamAnnouncerSettingsService;
+
+        public SettingsController(IModuleSettingsService<StreamAnnouncerSettings> streamAnnouncerSettingsService)
+        {
+            _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
+        }
+        
         // TODO: Return all of the modules
         public IActionResult Index()
         {
@@ -43,7 +52,13 @@ namespace Volvox.Helios.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> StreamAnnouncerSettings(StreamAnnouncerSettingsViewModel viewModel)
         {
-            return Index();
+            await _streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings()
+            {
+                GuildId = viewModel.GuildId,
+                AnnouncementChannelId = viewModel.ChannelId
+            });
+
+            return RedirectToAction("Index");
         }
 
         // GET

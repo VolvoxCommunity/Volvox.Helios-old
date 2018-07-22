@@ -1,6 +1,6 @@
 ﻿namespace Volvox.Helios.Domain.ModuleSettings
 {
-    public class NowStreamingSettings : ModuleSettings
+    public class StreamAnnouncerSettings : ModuleSettings
     {
         public ulong AnnouncementChannelId { get; set; }
     }

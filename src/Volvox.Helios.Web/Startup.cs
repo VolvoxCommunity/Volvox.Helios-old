@@ -23,6 +23,7 @@ using Volvox.Helios.Service.Clients;
 using Volvox.Helios.Service.Discord;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.HostedServices.Bot;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
@@ -104,6 +105,9 @@ namespace Volvox.Helios.Web
             // Discord Services
             services.AddScoped<IDiscordUserService, DiscordUserService>();
             services.AddScoped<IDiscordGuildService, DiscordGuildService>();
+            
+            // Services
+            services.AddScoped(typeof(IModuleSettingsService<>), typeof(ModduleSettingsService<>));
 
             // MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -123,7 +127,6 @@ namespace Volvox.Helios.Web
             }
             else
             {
-                //loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
