@@ -27,8 +27,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
         }
-        
-        // TODO: Return all of the modules
+
         public IActionResult Index()
         {
             return View();

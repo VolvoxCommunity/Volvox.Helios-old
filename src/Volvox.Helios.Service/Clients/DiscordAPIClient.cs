@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace Volvox.Helios.Service.Clients
 {
@@ -11,12 +12,15 @@ namespace Volvox.Helios.Service.Clients
     {
         private readonly HttpClient _client;
         private readonly IHttpContextAccessor _context;
+        private readonly IConfiguration _configuration;
 
-        public DiscordAPIClient(HttpClient client, IHttpContextAccessor context)
+        public DiscordAPIClient(HttpClient client, IHttpContextAccessor context, IConfiguration configuration)
         {
             _client = client;
             _context = context;
+            _configuration = configuration;
 
+            // Set access token.
             var accessToken = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "access_token")?.Value;
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
@@ -37,11 +41,10 @@ namespace Volvox.Helios.Service.Clients
         /// <returns>List opf channels in the guild.</returns>
         public async Task<string> GetGuildChannels(ulong guildId)
         {
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bot", "NDI2MTg1Njc0OTUwMTgwODY1.DjFLxA.F3n7-lowlbGjpb-fxIkSVJ7XkBs");
+            // Set bot token.
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bot", _configuration["Discord:Token"]);
 
-            var b = await _client.GetStringAsync($"guilds/{guildId}/channels");
-
-            return b;
+            return await _client.GetStringAsync($"guilds/{guildId}/channels"); ;
         }
     }
 }
