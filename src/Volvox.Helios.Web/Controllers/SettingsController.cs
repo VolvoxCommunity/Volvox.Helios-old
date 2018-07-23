@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Domain.Discord;
@@ -52,6 +54,7 @@ namespace Volvox.Helios.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> StreamAnnouncerSettings(StreamAnnouncerSettingsViewModel viewModel)
         {
+            // Save the settings to the database
             await _streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings()
             {
                 GuildId = viewModel.GuildId,

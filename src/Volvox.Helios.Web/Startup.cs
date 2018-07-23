@@ -20,10 +20,10 @@ using Volvox.Helios.Core.Modules.StreamerRole;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
 using Volvox.Helios.Service.Clients;
-using Volvox.Helios.Service.Discord;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Service.ModuleSettings;
+using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.HostedServices.Bot;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
@@ -93,7 +93,7 @@ namespace Volvox.Helios.Web
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
-            
+
             // Http Clients
             services.AddHttpClient<DiscordAPIClient>(options =>
             {
@@ -101,16 +101,17 @@ namespace Volvox.Helios.Web
                 options.DefaultRequestHeaders.Add("Accept", "application/json");
                 options.DefaultRequestHeaders.Add("User-Agent", "Volvox.Helios");
             });
-            
+
             // Discord Services
             services.AddScoped<IDiscordUserService, DiscordUserService>();
             services.AddScoped<IDiscordGuildService, DiscordGuildService>();
-            
+
             // Services
             services.AddScoped(typeof(IModuleSettingsService<>), typeof(ModduleSettingsService<>));
 
             // MVC
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options => options.Filters.Add(new ModelStateValidationFilter()))
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Entity Framework
             services.AddDbContext<VolvoxHeliosContext>(options =>
