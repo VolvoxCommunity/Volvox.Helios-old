@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
@@ -34,7 +35,7 @@ namespace Volvox.Helios.Core.Bot
             });
 
             Client.Log += Log;
-
+            
             Connector = new BotConnector(settings, Client);
         }
 
@@ -68,6 +69,11 @@ namespace Volvox.Helios.Core.Bot
         public async Task Stop()
         {
             await Connector.Disconnect();
+        }
+
+        public List<SocketGuild> GetGuilds()
+        {
+            return Client.Guilds.ToList();
         }
 
         /// <summary>

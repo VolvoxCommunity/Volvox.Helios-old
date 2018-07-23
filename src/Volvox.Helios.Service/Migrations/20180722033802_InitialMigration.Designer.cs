@@ -9,7 +9,7 @@ using Volvox.Helios.Service;
 namespace Volvox.Helios.Service.Migrations
 {
     [DbContext(typeof(VolvoxHeliosContext))]
-    [Migration("20180601033615_InitialMigration")]
+    [Migration("20180722033802_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,7 +20,7 @@ namespace Volvox.Helios.Service.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.NowStreamingSettings", b =>
+            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.StreamAnnouncerSettings", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,7 +34,7 @@ namespace Volvox.Helios.Service.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("NowStreamingSettings");
+                    b.ToTable("StreamAnnouncerSettings");
                 });
 #pragma warning restore 612, 618
         }

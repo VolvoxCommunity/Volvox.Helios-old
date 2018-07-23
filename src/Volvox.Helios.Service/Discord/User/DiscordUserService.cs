@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Volvox.Helios.Domain.Discord;
 using Volvox.Helios.Service.Clients;
 
-namespace Volvox.Helios.Service.Discord
+namespace Volvox.Helios.Service.Discord.User
 {
     public class DiscordUserService : IDiscordUserService
     {
@@ -19,11 +19,11 @@ namespace Volvox.Helios.Service.Discord
         /// Get all of the logged in users guilds.
         /// </summary>
         /// <returns>List of all of the logged in users guilds.</returns>
-        public async Task<List<Guild>> GetUserGuilds()
+        public async Task<List<Domain.Discord.Guild>> GetUserGuilds()
         {
             var guilds = await _client.GetUserGuilds();
 
-            return JsonConvert.DeserializeObject<List<Guild>>(guilds);
+            return JsonConvert.DeserializeObject<List<Domain.Discord.Guild>>(guilds);
         }
     }
 }

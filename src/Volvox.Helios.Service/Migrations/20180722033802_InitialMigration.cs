@@ -8,7 +8,7 @@ namespace Volvox.Helios.Service.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "NowStreamingSettings",
+                name: "StreamAnnouncerSettings",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -18,14 +18,14 @@ namespace Volvox.Helios.Service.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NowStreamingSettings", x => x.Id);
+                    table.PrimaryKey("PK_StreamAnnouncerSettings", x => x.Id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "NowStreamingSettings");
+                name: "StreamAnnouncerSettings");
         }
     }
 }

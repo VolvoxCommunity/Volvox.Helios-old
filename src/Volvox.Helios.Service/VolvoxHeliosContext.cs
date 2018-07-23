@@ -9,6 +9,6 @@ namespace Volvox.Helios.Service
             : base(options)
         { }
         
-        public DbSet<NowStreamingSettings> NowStreamingSettings { get; set; }
+        public DbSet<StreamAnnouncerSettings> StreamAnnouncerSettings { get; set; }
     }
 }
