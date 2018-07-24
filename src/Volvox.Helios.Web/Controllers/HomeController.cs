@@ -28,9 +28,6 @@ namespace Volvox.Helios.Web.Controllers
             return View(guilds.FilterAdministrator());
         }
 
-         public IActionResult Privacy()
-        {
-            return View();
-        }
+        public IActionResult Privacy() => View();
     }
 }
