@@ -20,7 +20,9 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         // from Web level.
         private const ulong AnnounceChannelId = 392962633495740418;
 
-        private List<SocketGuildUser> StreamingList { get; } = new List<SocketGuildUser>();
+        // HashSet is optimal for situations where order isn't important and search performance is.
+        // https://stackoverflow.com/questions/150750/hashset-vs-list-performance
+        private HashSet<ulong> CurrentStreamers { get; } = new HashSet<ulong>();
 
         /// <summary>
         /// Assign a user the streaming role.
@@ -59,10 +61,10 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         private async Task UpdateUser(SocketGuildUser user)
         {
             // Check to make sure the user is streaming and not in the streaming list.
-            if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch && StreamingList.All(u => u.Id != user.Id))
+            if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch && !CurrentStreamers.Contains(user.Id))
             {
                 // Add user to the streaming list.
-                StreamingList.Add(user);
+                CurrentStreamers.Add(user.Id);
 
                 // Announce that the user is streaming.
                 await AnnounceUser(user);
@@ -72,10 +74,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             else
             {
                 // Remove user from the streaming list.
-                if (StreamingList.Any(u => u.Id == user.Id))
-                {
-                    StreamingList.Remove(StreamingList.Single(u => u.Id == user.Id));
-                }
+                CurrentStreamers.Remove(user.Id);
             }
         }
 
