@@ -15,7 +15,7 @@ namespace Volvox.Helios.Web.Controllers
         public async Task<IActionResult> SignIn() => View("SignIn", await HttpContext.GetExternalProviders());
 
         [HttpPost("~/signin")]
-        public async Task<IActionResult> SignIn([FromForm] string provider)
+        public async Task<IActionResult> SignIn([FromForm] string provider, string returnUrl)
         {
             // Note: the "provider" parameter corresponds to the external
             // authentication provider choosen by the user agent.
@@ -32,7 +32,7 @@ namespace Volvox.Helios.Web.Controllers
             // Instruct the middleware corresponding to the requested external identity
             // provider to redirect the user agent to its own authorization endpoint.
             // Note: the authenticationScheme parameter must match the value configured in Startup.cs
-            return Challenge(new AuthenticationProperties { RedirectUri = "/" }, provider);
+            return Challenge(new AuthenticationProperties { RedirectUri = string.IsNullOrEmpty(returnUrl) ? "/" : returnUrl }, provider);
         }
 
         [HttpGet("~/signout"), HttpPost("~/signout")]

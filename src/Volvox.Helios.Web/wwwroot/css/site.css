@@ -60,3 +60,7 @@ a:hover {
 .home-page-cards {
     margin-top: 30px;
 }
+
+.hidden{
+    display: none;
+}
