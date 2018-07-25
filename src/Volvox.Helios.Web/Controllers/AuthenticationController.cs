@@ -11,7 +11,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             var returnUrl = HttpContext.Request.Query["ReturnUrl"];
         
-            return Challenge(new AuthenticationProperties { RedirectUri = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl }, provider);
+            return Challenge(new AuthenticationProperties { RedirectUri = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl }, "Discord");
         }
 
         [HttpGet("~/signout")]
