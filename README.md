@@ -3,9 +3,6 @@
 # Volvox.Helios [![Build Status](https://travis-ci.org/BillChirico/Volvox.Helios.svg?branch=master)](https://travis-ci.org/BillChirico/Volvox.Helios) [![CodeFactor](https://www.codefactor.io/repository/github/billchirico/volvox.helios/badge)](https://www.codefactor.io/repository/github/billchirico/volvox.helios)
 #### An easy to use, customizable, modular discord bot, managed from your favorite browser.
 
-[![Build Status](https://travis-ci.org/BillChirico/Volvox.Helios.svg?branch=master)](https://travis-ci.org/BillChirico/Volvox.Helios)
-
-
 ## Getting Started
 Visit the Volvox.Helios [website](http://volvoxhelios.azurewebsites.net/) to get started.
 
