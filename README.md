@@ -41,14 +41,14 @@ $ dotnet restore
 $ dotnet build
 ```
 
-Then, to run the bot:
+Then, to run the bot:  
 `$ dotnet run`
 
 
 ## Contributing
 
 ## Credits
-Helios was produced by the Volvox, a community created for learning. 
+Helios was produced by the Volvox, a community created for learning.  
 Join our [Discord](https://discord.gg/W45xA4t)
 
 
