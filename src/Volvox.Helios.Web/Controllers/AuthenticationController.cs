@@ -15,7 +15,7 @@ namespace Volvox.Helios.Web.Controllers
         public async Task<IActionResult> SignIn() => View("SignIn", await HttpContext.GetExternalProviders());
 
         [HttpPost("~/signin")]
-        public async Task<IActionResult> SignIn([FromForm] string provider, string returnUrl)
+        public async Task<IActionResult> SignIn([FromForm] string provider, [FromForm] string returnUrl)
         {
             // Note: the "provider" parameter corresponds to the external
             // authentication provider choosen by the user agent.
