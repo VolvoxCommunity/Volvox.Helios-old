@@ -9,7 +9,7 @@ namespace Volvox.Helios.Web.Controllers
         [HttpGet("~/signin")]
         public IActionResult SignIn()
         {
-            var returnUrl = HttpContext.Request.Query["ReturnUrl"];
+            var returnUrl = HttpContext.Request.Query["ReturnUrl"].ToString();
         
             return Challenge(new AuthenticationProperties { RedirectUri = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl }, "Discord");
         }
