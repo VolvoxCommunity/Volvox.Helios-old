@@ -11,7 +11,7 @@
 Visit the Volvox.Helios [website](http://volvoxhelios.azurewebsites.net/) to get started.
 
 ## Prerequisits
-.NET Core ->  2.1 or above.
+.NET Core ->  2.1 or above.  
 NPM -> Latest
 
 ## Installation
