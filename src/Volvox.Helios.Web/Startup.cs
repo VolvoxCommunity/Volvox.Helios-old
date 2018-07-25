@@ -106,7 +106,7 @@ namespace Volvox.Helios.Web
             services.AddScoped<IDiscordGuildService, DiscordGuildService>();
 
             // Services
-            services.AddSingleton(typeof(IModuleSettingsService<>), typeof(ModduleSettingsService<>));
+            services.AddSingleton(typeof(IModuleSettingsService<>), typeof(ModuleSettingsService<>));
 
             // MVC
             services.AddMvc(options => options.Filters.Add(new ModelStateValidationFilter()))

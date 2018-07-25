@@ -18,7 +18,7 @@ namespace Volvox.Helios.Service.ModuleSettings
         /// Get the module settings from the database for the specified guild.
         /// </summary>
         /// <param name="guildId">Guild settings to get.</param>
-        /// <returns>Settings from the specififed guild.</returns>
+        /// <returns>Settings from the specified guild.</returns>
         Task<T> GetSettingsByGuild(ulong guildId);
     }
 }

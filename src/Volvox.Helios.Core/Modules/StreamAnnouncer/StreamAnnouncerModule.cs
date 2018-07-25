@@ -79,7 +79,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         }
 
         /// <summary>
-        /// Announces the users stream to the appropriate channel.
+        /// Announces the user's stream to the appropriate channel.
         /// </summary>
         /// <param name="user">User to be announced.</param>
         private async Task AnnounceUser(SocketGuildUser user)

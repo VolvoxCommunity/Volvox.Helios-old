@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Volvox.Helios.Service.ModuleSettings
 {
     /// <inheritdoc />
-    public class ModduleSettingsService<T> : IModuleSettingsService<T> where T : Domain.ModuleSettings.ModuleSettings
+    public class ModuleSettingsService<T> : IModuleSettingsService<T> where T : Domain.ModuleSettings.ModuleSettings
     {
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public ModduleSettingsService(IServiceScopeFactory scopeFactory)
+        public ModuleSettingsService(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
         }
