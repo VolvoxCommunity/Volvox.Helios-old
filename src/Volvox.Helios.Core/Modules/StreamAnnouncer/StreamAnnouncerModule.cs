@@ -18,7 +18,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
     public class StreamAnnouncerModule : Module
     {
         private readonly IModuleSettingsService<StreamAnnouncerSettings> _settingsService;
-
+        
         private IDictionary<SocketGuild, SocketGuildUser> StreamingList { get; } = new Dictionary<SocketGuild, SocketGuildUser>();
 
         /// <summary>
