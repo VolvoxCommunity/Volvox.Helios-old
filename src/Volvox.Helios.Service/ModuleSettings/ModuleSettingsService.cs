@@ -1,28 +1,43 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Volvox.Helios.Service.ModuleSettings
 {
-    /// <summary>
-    /// Service to handle module settings.
-    /// </summary>
-    /// <typeparam name="T">Type of module setting.</typeparam>
+    /// <inheritdoc />
     public class ModduleSettingsService<T> : IModuleSettingsService<T> where T : Domain.ModuleSettings.ModuleSettings
     {
-        private readonly VolvoxHeliosContext _context;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public ModduleSettingsService(VolvoxHeliosContext context)
+        public ModduleSettingsService(IServiceScopeFactory scopeFactory)
         {
-            _context = context;
+            _scopeFactory = scopeFactory;
         }
         
-        /// <summary>
-        /// Save the module settings to the database.
-        /// </summary>
-        /// <param name="settings">Module settings to save.</param>
+        /// <inheritdoc />
         public async Task SaveSettings(T settings)
         {
-            await _context.AddAsync(settings);
-            await _context.SaveChangesAsync();
+            // Create a new scope to get the db context.
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<VolvoxHeliosContext>();
+
+                await context.AddAsync(settings);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<T> GetSettingsByGuild(ulong guildId)
+        {
+            // Create a new scope to get the db context.
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<VolvoxHeliosContext>();
+
+                return await context.Set<T>().FirstOrDefaultAsync(s => s.GuildId == guildId);
+            }
         }
     }
 }
