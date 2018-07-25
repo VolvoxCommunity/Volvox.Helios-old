@@ -46,6 +46,7 @@ Then, to run the bot:
 
 
 ## Contributing
+Read [CONTRIBUTING.md](https://github.com/BillChirico/Volvox.Helios/blob/master/CONTRIBUTING.md) for details on how to contribute.  
 
 ## Credits
 Helios was produced by Volvox, a community dedicated to learning.  
