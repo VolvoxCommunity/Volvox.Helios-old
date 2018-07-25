@@ -27,7 +27,6 @@ Add these setting _after_ the redirect URL
     "ClientID": "BOTCLIENTIDHERE",
     "ClientSecret": "BOTCLIENTSECRETHERE"
   }
-
 ```
 
 Next, run the following commands to build the project and install the dependencies:
@@ -38,7 +37,9 @@ $ dotnet build
 ```
 
 Then, to run the bot:  
-`$ dotnet run`
+```
+$ dotnet run
+```
 
 
 ## Contributing
