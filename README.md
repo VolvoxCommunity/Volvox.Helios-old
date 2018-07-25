@@ -34,7 +34,7 @@ Add these setting _after_ the redirect URL
 
 ```
 
-Next, run the following commands to build the project and install the dependencides:
+Next, run the following commands to build the project and install the dependencies:
 ```
 $ npm install
 $ dotnet restore
@@ -48,7 +48,7 @@ Then, to run the bot:
 ## Contributing
 
 ## Credits
-Helios was produced by the Volvox, a community created for learning.  
+Helios was produced by Volvox, a community dedicated to learning.  
 Join our [Discord](https://discord.gg/W45xA4t)
 
 
