@@ -19,7 +19,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
     {
         private readonly IModuleSettingsService<StreamAnnouncerSettings> _settingsService;
         
-        private IDictionary<SocketGuild, SocketGuildUser> StreamingList { get; } = new Dictionary<SocketGuild, SocketGuildUser>();
+        private IDictionary<ulong, HashSet<ulong>> StreamingList { get; } = new Dictionary<ulong, HashSet<ulong>>();
 
         /// <summary>
         /// Announce the user to a specified channel when streaming.
@@ -56,12 +56,19 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="user">User to be evaluated/adjusted for streaming announcement.</param>
         private async Task CheckUser(SocketGuildUser user)
         {
+            // Add initial hashset set for the guild.
+            if (!StreamingList.TryGetValue(user.Guild.Id, out var set))
+            {
+                set = new HashSet<ulong>();
+                StreamingList[user.Guild.Id] = set;
+            }
+            
             // Check to make sure the user is streaming and not in the streaming list.
             if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch &&
-                !StreamingList.Any(u => u.Key.Id == user.Guild.Id && u.Value.Id == user.Id))
+                !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Contains(user.Id)))
             {
                 // Add user to the streaming list.
-                StreamingList.Add(user.Guild, user);
+                StreamingList[user.Guild.Id].Add(user.Id);
 
                 // Announce that the user is streaming.
                 await AnnounceUser(user);
@@ -70,10 +77,10 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             // User is not streaming.
             else
             {
-                // Remove user from the streaming list.
-                if (StreamingList.Any(u => u.Key.Id == user.Guild.Id && u.Value.Id == user.Id))
+                // Remove the user from the list if they were streaming.
+                if (StreamingList[user.Guild.Id].Contains(user.Id))
                 {
-                    StreamingList.Remove(StreamingList.Single(u => u.Key.Id == user.Guild.Id && u.Value.Id == user.Id).Key);
+                    StreamingList[user.Guild.Id].Remove(user.Id);
                 }
             }
         }

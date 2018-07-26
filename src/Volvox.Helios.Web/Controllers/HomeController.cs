@@ -29,6 +29,5 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         public IActionResult Privacy() => View();
-
     }
 }
