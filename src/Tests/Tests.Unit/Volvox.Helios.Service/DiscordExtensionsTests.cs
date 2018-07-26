@@ -30,14 +30,12 @@ namespace Tests.Unit.Volvox.Helios.Service
                     Permissions = notAdminPermission
                 },
 
-
                 new Guild
                 {
                     Id = 1,
                     Name = "NotAdmin2",
                     Permissions = notAdminPermission
                 },
-
 
                 new Guild
                 {
