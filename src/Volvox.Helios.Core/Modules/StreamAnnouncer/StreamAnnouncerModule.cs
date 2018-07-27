@@ -77,11 +77,8 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             // User is not streaming.
             else
             {
-                // Remove the user from the list if they were streaming.
-                if (StreamingList[user.Guild.Id].Contains(user.Id))
-                {
-                    StreamingList[user.Guild.Id].Remove(user.Id);
-                }
+                // Remove the user from the list.
+                StreamingList[user.Guild.Id].Remove(user.Id);
             }
         }
 
