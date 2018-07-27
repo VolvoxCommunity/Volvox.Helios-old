@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volvox.Helios.Web", "src\Vo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{663B0812-383E-4172-B210-92B3DB384257}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Unit", "src\Tests\Tests.Unit\Tests.Unit.csproj", "{1E85C0AC-A6EF-43C7-A1DB-4FB70A447DFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Unit", "Tests\Tests.Unit\Tests.Unit.csproj", "{1E85C0AC-A6EF-43C7-A1DB-4FB70A447DFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Integration", "src\Tests\Tests.Integration\Tests.Integration.csproj", "{8A4D87A5-40A5-4B28-A3D3-CB69D439D66B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Integration", "Tests\Tests.Integration\Tests.Integration.csproj", "{8A4D87A5-40A5-4B28-A3D3-CB69D439D66B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
