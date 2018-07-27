@@ -18,7 +18,6 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
-using Volvox.Helios.Core.Modules.StreamerRole;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
 using Volvox.Helios.Service.Clients;
@@ -97,7 +96,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IBot, Bot>();
 
             // Modules
-            services.AddSingleton<IModule, StreamerRoleModule>();
+            //services.AddSingleton<IModule, StreamerRoleModule>();
             services.AddSingleton<IModule, StreamAnnouncerModule>();
 
             // All Modules
@@ -116,7 +115,7 @@ namespace Volvox.Helios.Web
             services.AddScoped<IDiscordGuildService, DiscordGuildService>();
 
             // Services
-            services.AddScoped(typeof(IModuleSettingsService<>), typeof(ModduleSettingsService<>));
+            services.AddSingleton(typeof(IModuleSettingsService<>), typeof(ModuleSettingsService<>));
 
             // MVC
             services.AddMvc(options => options.Filters.Add(new ModelStateValidationFilter()))

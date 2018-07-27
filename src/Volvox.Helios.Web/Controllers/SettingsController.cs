@@ -69,7 +69,8 @@ namespace Volvox.Helios.Web.Controllers
         {
             var channels = await guildService.GetChannels(guildId);
 
-            return Json(channels.FilterChannelType(0));
+            // Format the ulong to string.
+            return Json(channels.FilterChannelType(0).Select(c => new { id = c.Id.ToString(), name = c.Name }));
         }
     }
 }
