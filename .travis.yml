@@ -6,4 +6,5 @@ install:
 - dotnet restore
 script:
 - dotnet build
-- dotnet test
+- dotnet test ./Tests/Tests.Unit/Tests.Unit.csproj
+- dotnet test ./Tests/Tests.Integration/Tests.Integration.csproj
