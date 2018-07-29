@@ -44,7 +44,7 @@ namespace Volvox.Helios.Service.Clients
             // Set bot token.
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bot", _configuration["Discord:Token"]);
 
-            return await _client.GetStringAsync($"guilds/{guildId}/channels"); ;
+            return await _client.GetStringAsync($"guilds/{guildId}/channels");
         }
     }
 }

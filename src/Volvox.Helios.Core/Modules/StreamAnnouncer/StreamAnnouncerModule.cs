@@ -7,30 +7,29 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
 using System.Collections.Generic;
+using Volvox.Helios.Domain.ModuleSettings;
+using Volvox.Helios.Service.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.StreamAnnouncer
 {
     /// <summary>
-    /// Announce the user to a specified channel when streaming.
+    /// Announce the user to a specified channel when the user starts streaming.
     /// </summary>
     public class StreamAnnouncerModule : Module
     {
-
-        // Dan: Likely want this batched out to be read from a settings file or be adjustable
-        // from Web level.
-        private const ulong AnnounceChannelId = 392962633495740418;
-
-        // HashSet is optimal for situations where order isn't important and search performance is.
-        // https://stackoverflow.com/questions/150750/hashset-vs-list-performance
-        private HashSet<ulong> CurrentStreamers { get; } = new HashSet<ulong>();
+        private readonly IModuleSettingsService<StreamAnnouncerSettings> _settingsService;
+        
+        private IDictionary<ulong, HashSet<ulong>> StreamingList { get; } = new Dictionary<ulong, HashSet<ulong>>();
 
         /// <summary>
-        /// Assign a user the streaming role.
+        /// Announce the user to a specified channel when streaming.
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
-        public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger) : base(discordSettings, logger)
+        /// <param name="settingsService">Settings serivce.</param>
+        public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService) : base(discordSettings, logger)
         {
+            _settingsService = settingsService;
         }
 
         /// <summary>
@@ -44,27 +43,32 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             {
                 if (IsEnabled)
                 {
-                    await this.UpdateUser(guildUser);
+                    await CheckUser(guildUser);
                 }
             };
-            
+
             return Task.CompletedTask;
         }
-
-        // Dan: Pre-porting, this had "[RequireUserPermission(GuildPermission.Administrator)]"
-        // as an attribute tag- is that required/desired here? Not sure of OG context.
 
         /// <summary>
         /// Announces the user if it's appropriate to do so.
         /// </summary>
         /// <param name="user">User to be evaluated/adjusted for streaming announcement.</param>
-        private async Task UpdateUser(SocketGuildUser user)
+        private async Task CheckUser(SocketGuildUser user)
         {
+            // Add initial hashset set for the guild.
+            if (!StreamingList.TryGetValue(user.Guild.Id, out var set))
+            {
+                set = new HashSet<ulong>();
+                StreamingList[user.Guild.Id] = set;
+            }
+            
             // Check to make sure the user is streaming and not in the streaming list.
-            if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch && !CurrentStreamers.Contains(user.Id))
+            if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch &&
+                !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Contains(user.Id)))
             {
                 // Add user to the streaming list.
-                CurrentStreamers.Add(user.Id);
+                StreamingList[user.Guild.Id].Add(user.Id);
 
                 // Announce that the user is streaming.
                 await AnnounceUser(user);
@@ -73,8 +77,8 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             // User is not streaming.
             else
             {
-                // Remove user from the streaming list.
-                CurrentStreamers.Remove(user.Id);
+                // Remove the user from the list.
+                StreamingList[user.Guild.Id].Remove(user.Id);
             }
         }
 
@@ -92,9 +96,22 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
                 .WithThumbnailUrl(user.GetAvatarUrl())
                 .AddInlineField("Title", user.Game?.Name).Build();
 
-            // Send the message to the streaming now channel.
-            await user.Guild.GetTextChannel(AnnounceChannelId)
-                .SendMessageAsync("", embed: embed);
+            // Get the settings from the database.
+            var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id);
+
+            if (settings != null)
+            {
+                var announceChannelId = settings.AnnouncementChannelId;
+
+                if (announceChannelId != 0)
+                {
+                    Logger.LogDebug($"StreamAnnouncer Module: Announcing {user.Username}");
+
+                    // Announce the user to the channel specified in settings.
+                    await user.Guild.GetTextChannel(announceChannelId)
+                        .SendMessageAsync("", embed: embed);
+                }
+            }
         }
     }
 }
