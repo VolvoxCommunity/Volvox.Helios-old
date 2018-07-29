@@ -10,8 +10,8 @@ namespace Tests.Unit.Volvox.Helios.Service
     /// </summary>
     public class DiscordExtensionsTests
     {
-        private const int adminPermission = 0x00000008;
-        private const int notAdminPermission = 0x00000000;
+        private const int AdminPermission = 0x00000008;
+        private const int NotAdminPermission = 0x00000000;
 
         /// <summary>
         /// Sample Test
@@ -21,33 +21,33 @@ namespace Tests.Unit.Volvox.Helios.Service
         {
             //Arrange 
             #region arrange
-            var TestGuilds = new List<Guild>
+            var testGuilds = new List<Guild>
             {
                 new Guild
                 {
                     Id = 1,
                     Name = "NotAdmin",
-                    Permissions = notAdminPermission
+                    Permissions = NotAdminPermission
                 },
 
                 new Guild
                 {
                     Id = 1,
                     Name = "NotAdmin2",
-                    Permissions = notAdminPermission
+                    Permissions = NotAdminPermission
                 },
 
                 new Guild
                 {
                     Id = 1,
                     Name = "Admin",
-                    Permissions = adminPermission
+                    Permissions = AdminPermission
                 }
             };
             #endregion
 
             //Act
-            var result = DiscordExtensions.FilterAdministrator(TestGuilds);
+            var result = testGuilds.FilterAdministrator();
 
             //Assert
             Assert.True(result.Count == 1);
