@@ -87,7 +87,7 @@ namespace Volvox.Helios.Web
                         {
                             context.Response.Redirect("/");
                             context.HandleResponse();
-                            return Task.FromResult(0);
+                            return Task.CompletedTask;
                         }
                     };
                 });
