@@ -18,6 +18,9 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
             Modules = modules;
         }
         
+        /// <summary>
+        /// Binds DiscordFacingManager to the provided client and initializes DModule properties.
+        /// </summary>
         public override Task Init(DiscordSocketClient client)
         {
             Client = client;
@@ -30,6 +33,10 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Called every time the bound client emits a SocketMessage. Used to match to a DModule and execute with a
+        /// context created with the message.
+        /// </summary>
         public async Task HandleCommandAsync(SocketMessage m)
         {
             // h- is the placeholder prefix while Bapes finishes the settings framework
@@ -42,6 +49,9 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
             }
         }
         
+        /// <summary>
+        /// Base implementation throws an exception.
+        /// </summary>
         public override Task Execute(DiscordSocketClient client) => Task.CompletedTask;
     }
 }
