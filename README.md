@@ -1,25 +1,25 @@
 
 
 # Volvox.Helios [![Build Status](https://travis-ci.org/BillChirico/Volvox.Helios.svg?branch=master)](https://travis-ci.org/BillChirico/Volvox.Helios) [![CodeFactor](https://www.codefactor.io/repository/github/billchirico/volvox.helios/badge)](https://www.codefactor.io/repository/github/billchirico/volvox.helios)
-#### An easy to use, customizable, modular discord bot, managed from your favorite browser.
+#### An easy to use, customizable, modular discord bot, all managed from your favorite browser.
 
 ## Getting Started
-Visit the Volvox.Helios [website](http://volvoxhelios.azurewebsites.net/) to get started.
+Visit the Volvox.Helios [website](http://volvoxhelios.azurewebsites.net/) to get started adding the bot to your Discord server.
 
 ## Prerequisits
-.NET Core ->  2.1 or above.  
+.NET Core ->  Latest  
 NPM -> Latest
 
 ## Installation
 Clone the repo
 
 Head to the [discord developer site](https://discordapp.com/developers/applications/), and create an application.  
- _note_: Make sure to make a bot user, and require OAuth 2 grant.
+ _note_: Make sure to create a bot user, and require OAuth 2 grant.
 
- Add a redirect URL to the Oauth 2 column.  
+ Add a redirect URL to the OAuth 2 column.
 _example_: http://localhost:5000/signin-discord
 
-Add these setting _after_ the redirect URL
+Add the following application settings
 
 ```
 "Discord": { 
