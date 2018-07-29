@@ -6,7 +6,6 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing.Commands
 {
     public class DExampleModule : IDiscordFacingModule
     {
-        /// <inheritdoc cref="IDiscordFacingModule"/>
         public string Trigger { get; private set; }
 
         public Task Initialize()

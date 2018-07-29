@@ -11,7 +11,6 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
         /// </summary>
         string Trigger { get; }
 
-        
         /// <summary>
         /// 
         /// </summary>
