@@ -39,12 +39,9 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
             {
                 if (message.Content.StartsWith($"h-{module.Trigger}"))
                     await module.ExecuteAsync(context);
-
-
             }
         }
-
-
+        
         public override Task Execute(DiscordSocketClient client) => Task.CompletedTask;
     }
 }
