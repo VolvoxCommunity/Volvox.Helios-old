@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Volvox.Helios.Core.Modules.Common;
 
 namespace Volvox.Helios.Core.Modules.DiscordFacing.Commands
 {
-    public class DExampleModule : IDiscordFacingModule
+    public class DExampleModule : IDiscordFacingModule, ITriggerable
     {
-        public string Trigger { get; private set; }
-
-        public Task Initialize()
-        {
-            Trigger = "help";
-            return Task.CompletedTask;
-        }
-        
         public async Task ExecuteAsync(DiscordFacingContext context)
         {
             await context.Channel.SendMessageAsync("no");
+        }
+
+        public async Task<bool> TryTrigger(DiscordFacingContext context)
+        {
+            if (context.Message.Content.StartsWith($"{context.GivenPrefix}help"))
+            {
+                await ExecuteAsync(context);
+                return true;
+            }
+
+            return false;
         }
     }
 }

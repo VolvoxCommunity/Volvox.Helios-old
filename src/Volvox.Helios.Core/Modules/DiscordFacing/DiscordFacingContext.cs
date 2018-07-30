@@ -9,13 +9,15 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
         public ISocketMessageChannel Channel { get; }
         public SocketUser User { get; }
         public DiscordSocketClient Client { get; }
+        public string GivenPrefix { get; }
 
-        public DiscordFacingContext(SocketUserMessage m, DiscordSocketClient c)
+        public DiscordFacingContext(SocketUserMessage m, DiscordSocketClient c, string p)
         {
             Message = m;
             Channel = m.Channel;
             User = m.Author;
             Client = c;
+            GivenPrefix = p;
         }
     }
 }

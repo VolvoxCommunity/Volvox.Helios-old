@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -8,12 +9,12 @@ using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Modules.DiscordFacing
 {
-    public class DiscordFacingManager : Module, IModule
+    public class DiscordFacingManager : Module
     {
-        public IList<IDiscordFacingModule> Modules { get; private set; }
+        public IList<ITriggerable> Modules { get; private set; }
         private DiscordSocketClient Client { get; set; }
              
-        public DiscordFacingManager(IDiscordSettings discordSettings, ILogger<IModule> logger, IList<IDiscordFacingModule> modules) : base(discordSettings, logger)
+        public DiscordFacingManager(IDiscordSettings discordSettings, ILogger<IModule> logger, IList<ITriggerable> modules) : base(discordSettings, logger)
         {
             Modules = modules;
         }
@@ -25,11 +26,6 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
         {
             Client = client;
             Client.MessageReceived += HandleCommandAsync;
-            foreach (var mod in Modules)
-            {
-                Logger.LogInformation($"DiscordFacing: Initializing {mod.GetType().Name}");
-                mod.Initialize();
-            }
             return Task.CompletedTask;
         }
 
@@ -39,13 +35,12 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
         /// </summary>
         public async Task HandleCommandAsync(SocketMessage m)
         {
-            // h- is the placeholder prefix while Bapes finishes the settings framework
             if (!(m is SocketUserMessage message) || message.Channel is IDMChannel || message.Author.IsBot) return;
-            var context = new DiscordFacingContext(message, Client);
-            foreach (var module in Modules)
+            var context = new DiscordFacingContext(message, Client, "h-"); // h- is the placeholder prefix while Bapes finishes the settings framework
+
+            foreach (var mod in Modules)
             {
-                if (message.Content.StartsWith($"h-{module.Trigger}"))
-                    await module.ExecuteAsync(context);
+                if (await mod.TryTrigger(context)) break;
             }
         }
         
