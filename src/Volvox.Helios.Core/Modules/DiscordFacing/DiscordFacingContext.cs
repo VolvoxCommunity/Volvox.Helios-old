@@ -25,11 +25,6 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
         /// </summary>
         public DiscordSocketClient Client { get; }
         
-        /// <summary>
-        /// The prefix the invoking guiild has set for the bot. Useful once Bapes finishes the settings framework.
-        /// </summary>
-        public string GivenPrefix { get; }
-        
         /// <param name="m">Pass the message emitted by your DiscordSocketClient.</param>
         /// <param name="c">Pass the client the emitted the given message.</param>
         /// <param name="p">If the guild the message originated from has configured a custom prefix, pass it here.</param>
@@ -39,7 +34,6 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
             Channel = m.Channel;
             User = m.Author;
             Client = c;
-            GivenPrefix = p;
         }
     }
 }
