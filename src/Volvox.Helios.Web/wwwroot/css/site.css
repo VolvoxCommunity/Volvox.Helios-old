@@ -35,11 +35,42 @@
     }
 }
 
+/***** Varying vertical margin sizes *****/
+.vertical-margin-large {
+    margin: 40px 0;
+}
+.vertical-margin-medium {
+    margin: 20px 0;
+}
+/*****************************************/
+
+/********** Varying font sizes ***********/
+
+.font-size-massive {
+    font-size:150px;
+}
+
+.font-size-large {
+    font-size: 60px;
+}
+
+.font-size-medium {
+    font-size: 30px;
+}
+
+.font-size-small {
+    font-size: 20px;
+}
+
+.font-size-tiny {
+    font-size: 12px;
+}
+
+/*****************************************/
 
 /*
  * Globals
  */
-
 /* Links */
 a,
 a:focus,
