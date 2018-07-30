@@ -79,11 +79,17 @@ namespace Volvox.Helios.Web
                         OnTicketReceived = context =>
                         {
                             // Add access token claim
-                            var claimsIdentity = (ClaimsIdentity) context.Principal.Identity;
+                            var claimsIdentity = (ClaimsIdentity)context.Principal.Identity;
 
                             claimsIdentity.AddClaim(new Claim("access_token",
                                 context.Properties.Items.FirstOrDefault(p => p.Key == ".Token.access_token").Value));
 
+                            return Task.CompletedTask;
+                        },
+                        OnRemoteFailure = context =>
+                        {
+                            context.Response.Redirect("/");
+                            context.HandleResponse();
                             return Task.CompletedTask;
                         }
                     };
