@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentCache;
 using Microsoft.EntityFrameworkCore;
@@ -10,15 +9,15 @@ namespace Volvox.Helios.Service.ModuleSettings
     /// <inheritdoc />
     public class ModuleSettingsService<T> : IModuleSettingsService<T> where T : Domain.ModuleSettings.ModuleSettings
     {
-        private readonly IServiceScopeFactory _scopeFactory;
         private readonly ICache _cache;
+        private readonly IServiceScopeFactory _scopeFactory;
 
         public ModuleSettingsService(IServiceScopeFactory scopeFactory, ICache cache)
         {
             _scopeFactory = scopeFactory;
             _cache = cache;
         }
-        
+
         /// <inheritdoc />
         public async Task SaveSettings(T settings)
         {
@@ -30,15 +29,11 @@ namespace Volvox.Helios.Service.ModuleSettings
 
                 // Replace the setting if it already exists.
                 if (guildSetting != null)
-                {
                     context.Entry(guildSetting).CurrentValues.SetValues(settings);
-                }
 
                 // Add the setting.
                 else
-                {
                     await context.AddAsync(settings);
-                }
 
                 await context.SaveChangesAsync();
 
@@ -54,26 +49,26 @@ namespace Volvox.Helios.Service.ModuleSettings
             using (var scope = _scopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<VolvoxHeliosContext>();
-                var expireTime = TimeSpan.FromDays(1);
 
                 // Cache the settings.
                 var cachedSetting = await _cache.WithKey(GetCacheKey(guildId))
                     .RetrieveUsingAsync(async () => await context.Set<T>().FirstOrDefaultAsync(s => s.GuildId == guildId))
                     .InvalidateIf(cachedValue => cachedValue.Value != null)
-                    .ExpireAfter(expireTime)
+                    .ExpireAfter(TimeSpan.FromDays(1))
                     .GetValueAsync();
-
-                var c = GetCacheKey(guildId);
 
                 return cachedSetting;
             }
         }
 
         /// <summary>
-        /// Create a unique caching key based on the specified guild.
+        ///     Create a unique caching key based on the specified guild.
         /// </summary>
         /// <param name="guildId">Id of the guild.</param>
         /// <returns>Cache key based on the specified guild.</returns>
-        private static string GetCacheKey(ulong guildId) => $"Setting:{typeof(T).Name}Guild:{guildId}";
+        private static string GetCacheKey(ulong guildId)
+        {
+            return $"Setting:{typeof(T).Name}Guild:{guildId}";
+        }
     }
 }
