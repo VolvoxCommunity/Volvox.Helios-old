@@ -8,12 +8,10 @@ namespace Volvox.Helios.Web.Controllers
 {
     public class ErrorController : Controller
     {
-
         public static string GetStatusDescription(string code)
         {
             switch (code)
             {
-                case "307": return "Temporary Redirect";
                 case "400": return "Bad Request";
                 case "401": return "Unauthorized";
                 case "402": return "Payment Required";
@@ -45,7 +43,6 @@ namespace Volvox.Helios.Web.Controllers
             }
         }
 
-
         /// <summary>
         ///  Put custom error pages here.
         ///  Add new case in switch block for new non-generic error page.
@@ -60,9 +57,9 @@ namespace Volvox.Helios.Web.Controllers
                 default:
                     return Error(Id);
             }
-
         }
 
+        [HttpGet]
         public IActionResult Error(String Id)
         {
             ViewData["StatusCode"] = !String.IsNullOrEmpty(Id) ? Id : "500";
