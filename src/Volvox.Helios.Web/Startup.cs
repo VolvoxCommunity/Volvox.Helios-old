@@ -110,11 +110,11 @@ namespace Volvox.Helios.Web
             
             // DiscordFacing
             services.AddSingleton<IModule, DiscordFacingManager>();
-            services.AddSingleton<ITriggerable, DExampleModule>();
+            services.AddSingleton<ITrigger, DExampleModule>();
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
-            services.AddSingleton<IList<ITriggerable>>(s => s.GetServices<ITriggerable>().ToList());
+            services.AddSingleton<IList<ITrigger>>(s => s.GetServices<ITrigger>().ToList());
 
             // Http Clients
             services.AddHttpClient<DiscordAPIClient>(options =>

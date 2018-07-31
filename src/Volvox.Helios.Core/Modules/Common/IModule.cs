@@ -39,6 +39,8 @@ namespace Volvox.Helios.Core.Modules.Common
         /// </summary>
         ILogger<IModule> Logger { get; }
 
+        ITrigger Trigger { get; }
+
         /// <summary>
         /// To execute or not to execute the module. (Default: true)
         /// </summary>

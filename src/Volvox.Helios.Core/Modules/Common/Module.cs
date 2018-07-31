@@ -6,31 +6,30 @@ using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Modules.Common
 {
+    /// <inheritdoc />
     /// <summary>
-    /// Unit of the bot.
+    ///     Unit of the bot.
     /// </summary>
+    /// <seealso cref="T:Volvox.Helios.Core.Modules.Common.IModule" />
     public abstract class Module : IModule
     {
-        /// <summary>
-        /// Unit of the bot.
-        /// </summary>
-        /// <param name="discordSettings">Settings used to connect to Discord.</param>
-        protected Module(IDiscordSettings discordSettings, ILogger<IModule> logger)
+        protected Module(IDiscordSettings discordSettings, ITrigger trigger, ILogger<IModule> logger)
         {
             DiscordSettings = discordSettings;
             Logger = logger;
+            Trigger = trigger;
         }
 
         /// <summary>
-        /// Initialize the module.
+        ///     Initialize the module.
         /// </summary>
-        /// <param name="client">Client for the module to be registed to.</param>
+        /// <param name="client">Client for the module to be registered to.</param>
         public abstract Task Init(DiscordSocketClient client);
 
         /// <summary>
-        /// Start the module.
+        ///     Start the module.
         /// </summary>
-        /// <param name="client">Client for the module to be registed to.</param>
+        /// <param name="client">Client for the module to be registered to.</param>
         public virtual async Task Start(DiscordSocketClient client)
         {
             if (IsEnabled)
@@ -40,27 +39,20 @@ namespace Volvox.Helios.Core.Modules.Common
         }
 
         /// <summary>
-        /// Execute the module.
+        ///     Execute the module.
         /// </summary>
-        /// <param name="client">Client for the module to be registed to.</param>
+        /// <param name="client">Client for the module to be registered to.</param>
         public virtual Task Execute(DiscordSocketClient client)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Settings for Discord bot.
-        /// </summary>
         public IDiscordSettings DiscordSettings { get; }
 
-        /// <summary>
-        /// Logger.
-        /// </summary>
         public ILogger<IModule> Logger { get; }
 
-        /// <summary>
-        /// To execute or not to execute the module. (Default: true)
-        /// </summary>
+        public ITrigger Trigger { get; }
+
         public bool IsEnabled { get; set; } = true;
     }
 }

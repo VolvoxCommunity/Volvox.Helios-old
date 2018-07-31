@@ -11,11 +11,11 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
 {
     public class DiscordFacingManager : Module
     {
-        public IList<ITriggerable> Modules { get; }
+        public IList<IModule> Modules { get; }
 
         private DiscordSocketClient Client { get; set; }
              
-        public DiscordFacingManager(IDiscordSettings discordSettings, ILogger<IModule> logger, IList<ITriggerable> modules) : base(discordSettings, logger)
+        public DiscordFacingManager(IDiscordSettings discordSettings, ILogger<IModule> logger, IList<IModule> modules) : base(discordSettings, logger)
         {
             Modules = modules;
         }
@@ -44,7 +44,7 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
 
             foreach (var module in Modules)
             {
-                if (await module.TryTrigger(context)) break;
+                if (await module.(context).ConfigureAwait(false)) break;
             }
         }
 

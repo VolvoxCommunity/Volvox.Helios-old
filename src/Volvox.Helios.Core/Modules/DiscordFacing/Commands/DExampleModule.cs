@@ -5,14 +5,14 @@ using Volvox.Helios.Core.Modules.Common;
 
 namespace Volvox.Helios.Core.Modules.DiscordFacing.Commands
 {
-    public class DExampleModule : IDiscordFacingModule, ITriggerable
+    public class DExampleModule : IDiscordFacingModule, ITrigger
     {
         public async Task ExecuteAsync(DiscordFacingContext context)
         {
             await context.Channel.SendMessageAsync("no");
         }
 
-        public async Task<bool> TryTrigger(DiscordFacingContext context)
+        public async Task<bool> Trigger(DiscordFacingContext context)
         {
             if (context.Message.Content.StartsWith($"{context.GivenPrefix}help"))
             {
