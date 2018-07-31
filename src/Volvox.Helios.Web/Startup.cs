@@ -148,7 +148,8 @@ namespace Volvox.Helios.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error/Error");
+                app.UseStatusCodePagesWithReExecute("/Error/Errors/{0}");
                 app.UseHsts();
             }
 
