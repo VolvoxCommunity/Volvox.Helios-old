@@ -11,17 +11,21 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
 {
     public class DiscordFacingManager : Module
     {
-        public IList<ITriggerable> Modules { get; private set; }
+        public IList<ITriggerable> Modules { get; }
+
         private DiscordSocketClient Client { get; set; }
              
         public DiscordFacingManager(IDiscordSettings discordSettings, ILogger<IModule> logger, IList<ITriggerable> modules) : base(discordSettings, logger)
         {
             Modules = modules;
         }
-        
+
+        /// <inheritdoc />
         /// <summary>
         /// Binds DiscordFacingManager to the provided client and initializes DModule properties.
         /// </summary>
+        /// <param name="client">Client for the module to be registed to.</param>
+        /// <returns></returns>
         public override Task Init(DiscordSocketClient client)
         {
             Client = client;
@@ -33,20 +37,23 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
         /// Called every time the bound client emits a SocketMessage. Used to match to a DModule and execute with a
         /// context created with the message.
         /// </summary>
-        public async Task HandleCommandAsync(SocketMessage m)
+        public async Task HandleCommandAsync(SocketMessage socketMessage)
         {
-            if (!(m is SocketUserMessage message) || message.Channel is IDMChannel || message.Author.IsBot) return;
-            var context = new DiscordFacingContext(message, Client, "h-"); // h- is the placeholder prefix while Bapes finishes the settings framework
+            if (!(socketMessage is SocketUserMessage socketUserMessage) || socketUserMessage.Channel is IDMChannel || socketUserMessage.Author.IsBot) return;
+            var context = new DiscordFacingContext(socketUserMessage, Client);
 
-            foreach (var mod in Modules)
+            foreach (var module in Modules)
             {
-                if (await mod.TryTrigger(context)) break;
+                if (await module.TryTrigger(context)) break;
             }
         }
-        
+
+        /// <inheritdoc />
         /// <summary>
         /// Base implementation throws an exception.
         /// </summary>
+        /// <param name="client">Client for the module to be registed to.</param>
+        /// <returns></returns>
         public override Task Execute(DiscordSocketClient client) => Task.CompletedTask;
     }
 }
