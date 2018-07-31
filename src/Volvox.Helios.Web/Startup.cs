@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using FluentCache;
+using FluentCache.Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -76,11 +79,17 @@ namespace Volvox.Helios.Web
                         OnTicketReceived = context =>
                         {
                             // Add access token claim
-                            var claimsIdentity = (ClaimsIdentity) context.Principal.Identity;
+                            var claimsIdentity = (ClaimsIdentity)context.Principal.Identity;
 
                             claimsIdentity.AddClaim(new Claim("access_token",
                                 context.Properties.Items.FirstOrDefault(p => p.Key == ".Token.access_token").Value));
 
+                            return Task.CompletedTask;
+                        },
+                        OnRemoteFailure = context =>
+                        {
+                            context.Response.Redirect("/");
+                            context.HandleResponse();
                             return Task.CompletedTask;
                         }
                     };
@@ -117,6 +126,9 @@ namespace Volvox.Helios.Web
             // Services
             services.AddSingleton(typeof(IModuleSettingsService<>), typeof(ModuleSettingsService<>));
 
+            // Cache
+            services.AddSingleton<ICache>(new FluentIMemoryCache(new MemoryCache(new MemoryCacheOptions())));
+
             // MVC
             services.AddMvc(options => options.Filters.Add(new ModelStateValidationFilter()))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -136,7 +148,8 @@ namespace Volvox.Helios.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error/Error");
+                app.UseStatusCodePagesWithReExecute("/Error/Errors/{0}");
                 app.UseHsts();
             }
 

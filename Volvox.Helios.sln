@@ -11,6 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volvox.Helios.Domain", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volvox.Helios.Web", "src\Volvox.Helios.Web\Volvox.Helios.Web.csproj", "{C792E950-8407-4879-AAA4-1A736E122B9A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{663B0812-383E-4172-B210-92B3DB384257}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Unit", "test\Tests.Unit\Tests.Unit.csproj", "{1E85C0AC-A6EF-43C7-A1DB-4FB70A447DFF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Integration", "test\Tests.Integration\Tests.Integration.csproj", "{8A4D87A5-40A5-4B28-A3D3-CB69D439D66B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +39,21 @@ Global
 		{C792E950-8407-4879-AAA4-1A736E122B9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C792E950-8407-4879-AAA4-1A736E122B9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C792E950-8407-4879-AAA4-1A736E122B9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E85C0AC-A6EF-43C7-A1DB-4FB70A447DFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E85C0AC-A6EF-43C7-A1DB-4FB70A447DFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E85C0AC-A6EF-43C7-A1DB-4FB70A447DFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E85C0AC-A6EF-43C7-A1DB-4FB70A447DFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A4D87A5-40A5-4B28-A3D3-CB69D439D66B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A4D87A5-40A5-4B28-A3D3-CB69D439D66B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A4D87A5-40A5-4B28-A3D3-CB69D439D66B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A4D87A5-40A5-4B28-A3D3-CB69D439D66B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1E85C0AC-A6EF-43C7-A1DB-4FB70A447DFF} = {663B0812-383E-4172-B210-92B3DB384257}
+		{8A4D87A5-40A5-4B28-A3D3-CB69D439D66B} = {663B0812-383E-4172-B210-92B3DB384257}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {385C6906-A43B-45D2-B3B3-0EB49E654CE3}

@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewData["Title"] = ViewData["StatusCode"] + " - " + ViewData["StatusDescription"];
+}
+
+<div id="ErrorContainer" class="vertical-margin-large text-center">
+    <i class="vertical-margin-medium font-size-massive far fa-frown-open"></i>
+    <br />
+    <b>
+        <label class="vertical-margin-medium font-size-small">
+            Oh no! There was an error processing your request
+        </label>
+    </b>
+    <br />
+    <label 
+           class="font-size-tiny">@ViewData["StatusCode"] - @ViewData["StatusDescription"]
+    </label>
+</div>
