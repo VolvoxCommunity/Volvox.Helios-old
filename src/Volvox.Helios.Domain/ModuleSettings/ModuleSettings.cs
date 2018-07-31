@@ -1,9 +1,10 @@
-﻿namespace Volvox.Helios.Domain.ModuleSettings
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Volvox.Helios.Domain.ModuleSettings
 {
     public class ModuleSettings
     {
-        public int Id { get; set; }
-
+        [Key]
         public ulong GuildId { get; set; }
     }
 }
