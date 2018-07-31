@@ -36,7 +36,8 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
         public async Task HandleCommandAsync(SocketMessage m)
         {
             if (!(m is SocketUserMessage message) || message.Channel is IDMChannel || message.Author.IsBot) return;
-            var context = new DiscordFacingContext(message, Client, "h-"); // h- is the placeholder prefix while Bapes finishes the settings framework
+            var context = new DiscordFacingContext(message, Client, "h-"); 
+            // h- is the placeholder prefix while Bapes finishes the settings framework.
 
             foreach (var mod in Modules)
             {

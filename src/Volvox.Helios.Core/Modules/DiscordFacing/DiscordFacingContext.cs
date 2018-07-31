@@ -30,16 +30,16 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
         /// </summary>
         public string GivenPrefix { get; }
         
-        /// <param name="m">Pass the message emitted by your DiscordSocketClient.</param>
-        /// <param name="c">Pass the client the emitted the given message.</param>
-        /// <param name="p">If the guild the message originated from has configured a custom prefix, pass it here.</param>
-        public DiscordFacingContext(SocketUserMessage m, DiscordSocketClient c, string p)
+        /// <param name="message">Pass the message emitted by your DiscordSocketClient.</param>
+        /// <param name="client">Pass the client the emitted the given message.</param>
+        /// <param name="prefix">If the guild the message originated from has configured a custom prefix, pass it here.</param>
+        public DiscordFacingContext(SocketUserMessage message, DiscordSocketClient client, string prefix)
         {
-            Message = m;
-            Channel = m.Channel;
-            User = m.Author;
-            Client = c;
-            GivenPrefix = p;
+            Message = message;
+            Channel = message.Channel;
+            User = message.Author;
+            Client = client;
+            GivenPrefix = prefix;
         }
     }
 }
