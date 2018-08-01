@@ -65,6 +65,7 @@ namespace Volvox.Helios.Web.Controllers
             await _streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings
             {
                 GuildId = viewModel.GuildId,
+                Enabled = viewModel.Enabled,
                 AnnouncementChannelId = viewModel.ChannelId
             });
 

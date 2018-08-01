@@ -19,5 +19,10 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         [Required]
         [DisplayName("Channel")]
         public ulong ChannelId { get; set; }
+
+        [Required]
+        [DisplayName("Enabled")]
+        [DefaultValue(true)]
+        public bool Enabled { get; set; }
     }
 }
