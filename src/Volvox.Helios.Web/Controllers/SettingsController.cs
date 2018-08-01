@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Core.Bot;
-using Volvox.Helios.Domain.Discord;
 using Volvox.Helios.Domain.ModuleSettings;
-using Volvox.Helios.Service.Discord;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Service.Extensions;
@@ -34,27 +29,40 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         // GET
-        public async Task<IActionResult> StreamAnnouncerSettings([FromServices] IDiscordUserService userService, [FromServices] IBot bot)
+        [HttpGet]
+        public async Task<JsonResult> GetGuildChannels([FromServices] IDiscordGuildService guildService, ulong guildId)
+        {
+            var channels = await guildService.GetChannels(guildId);
+
+            // Format the ulong to string.
+            return Json(channels.FilterChannelType(0).Select(c => new {id = c.Id.ToString(), name = c.Name}));
+        }
+
+        #region StreamAnnouncer
+
+        // GET
+        public async Task<IActionResult> StreamAnnouncerSettings([FromServices] IDiscordUserService userService,
+            [FromServices] IBot bot)
         {
             var guilds = await userService.GetUserGuilds();
-            
+
             var botGuilds = bot.GetGuilds();
 
-            var viewModel = new StreamAnnouncerSettingsViewModel()
+            var viewModel = new StreamAnnouncerSettingsViewModel
             {
                 Guilds = new SelectList(
                     guilds.FilterAdministrator().FilterGuildsByIds(botGuilds.Select(b => b.Id).ToList()), "Id", "Name")
             };
-            
+
             return View(viewModel);
         }
-        
+
         // POST
         [HttpPost]
         public async Task<IActionResult> StreamAnnouncerSettings(StreamAnnouncerSettingsViewModel viewModel)
         {
             // Save the settings to the database
-            await _streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings()
+            await _streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings
             {
                 GuildId = viewModel.GuildId,
                 AnnouncementChannelId = viewModel.ChannelId
@@ -63,14 +71,6 @@ namespace Volvox.Helios.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET
-        [HttpGet]
-        public async Task<JsonResult> GetGuildChannels([FromServices] IDiscordGuildService guildService, ulong guildId)
-        {
-            var channels = await guildService.GetChannels(guildId);
-
-            // Format the ulong to string.
-            return Json(channels.FilterChannelType(0).Select(c => new { id = c.Id.ToString(), name = c.Name }));
-        }
+        #endregion
     }
 }
