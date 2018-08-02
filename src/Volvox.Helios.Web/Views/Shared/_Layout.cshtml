@@ -67,7 +67,7 @@
 
     @RenderSection("Scripts", required: false)
     <script>
-        $(document).ready(() => {
+        $('#settingsNavDropdown').click(() => {
             $('#settingsDropDown').populateSettings();
         });
     </script>

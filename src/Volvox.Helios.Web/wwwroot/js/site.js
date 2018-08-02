@@ -24,6 +24,8 @@
         return this.each(function() {
             let element = $(this);
             
+            element.empty();
+            
             const url = '/Settings/GetUserAdminGuilds';
 
             $.getJSON(url, function (data) {
