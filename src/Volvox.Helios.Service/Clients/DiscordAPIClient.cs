@@ -31,6 +31,7 @@ namespace Volvox.Helios.Service.Clients
         /// <returns>List of the logged in users guilds.</returns>
         public async Task<string> GetUserGuilds()
         {
+            // TOOD: Add caching
             return await _client.GetStringAsync("users/@me/guilds");
         }
 

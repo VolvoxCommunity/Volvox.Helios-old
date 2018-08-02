@@ -24,11 +24,10 @@
         return this.each(function() {
             let element = $(this);
             
-            element.empty();
-            
             const url = '/Settings/GetUserAdminGuilds';
-
             $.getJSON(url, function (data) {
+                element.empty();
+                
                 $.each(data, function (key, entry) {
                     element.append($('<a class="dropdown-item"></a>').attr('href', `/Settings/${entry.id}`).text(entry.name));
                 })
