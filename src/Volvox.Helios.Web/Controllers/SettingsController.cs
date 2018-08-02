@@ -37,6 +37,15 @@ namespace Volvox.Helios.Web.Controllers
             // Format the ulong to string.
             return Json(channels.FilterChannelType(0).Select(c => new {id = c.Id.ToString(), name = c.Name}));
         }
+        
+        [HttpGet]
+        public async Task<JsonResult> GetUserAdminGuilds([FromServices] IDiscordUserService userService)
+        {
+            var guilds = await userService.GetUserGuilds();
+
+            // Format the ulong to string.
+            return Json(guilds.FilterAdministrator());
+        }
 
         #region StreamAnnouncer
 

@@ -20,4 +20,18 @@
         });
     };
 
+    $.fn.populateSettings = function(guildId) {
+        return this.each(function() {
+            let element = $(this);
+            
+            const url = '/Settings/GetUserAdminGuilds';
+
+            $.getJSON(url, function (data) {
+                $.each(data, function (key, entry) {
+                    element.append($('<a class="dropdown-item"></a>').attr('href', `/Settings/${entry.id}`).text(entry.name));
+                })
+            });
+        });
+    };
+
 }(jQuery));
