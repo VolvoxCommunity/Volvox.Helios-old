@@ -13,11 +13,10 @@ namespace Volvox.Helios.Core.Modules.Common
     /// <seealso cref="T:Volvox.Helios.Core.Modules.Common.IModule" />
     public abstract class Module : IModule
     {
-        protected Module(IDiscordSettings discordSettings, ITrigger trigger, ILogger<IModule> logger)
+        protected Module(IDiscordSettings discordSettings, ILogger<IModule> logger)
         {
             DiscordSettings = discordSettings;
             Logger = logger;
-            Trigger = trigger;
         }
 
         /// <summary>
@@ -51,8 +50,17 @@ namespace Volvox.Helios.Core.Modules.Common
 
         public ILogger<IModule> Logger { get; }
 
+        public bool IsEnabled { get; set; } = true;
+    }
+
+    public abstract class TriggerableModule : Module
+    {
+        protected TriggerableModule(IDiscordSettings discordSettings, ITrigger trigger, ILogger<IModule> logger) : base(discordSettings, logger)
+        {
+            this.Trigger = trigger;
+        }
+
         public ITrigger Trigger { get; }
 
-        public bool IsEnabled { get; set; } = true;
     }
 }
