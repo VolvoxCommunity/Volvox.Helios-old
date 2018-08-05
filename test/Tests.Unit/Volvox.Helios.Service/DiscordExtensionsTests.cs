@@ -57,7 +57,7 @@ namespace Tests.Unit.Volvox.Helios.Service
                 new UserGuild {
                     Guild = guilds[2],
                     User = user,
-                    Permissions = AdminPermission
+                    Permissions = NotAdminPermission
                 }
             };
 
@@ -68,7 +68,7 @@ namespace Tests.Unit.Volvox.Helios.Service
 
             //Assert
             Assert.True(result.Count == 1);
-            Assert.Equal("Admin", result[0].Name);
+            Assert.Equal("Server1", result[0].Name);
         }
 
         [Fact]
