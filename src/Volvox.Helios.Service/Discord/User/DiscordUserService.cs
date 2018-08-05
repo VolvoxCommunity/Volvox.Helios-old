@@ -19,11 +19,11 @@ namespace Volvox.Helios.Service.Discord.User
         /// Get all of the logged in users guilds.
         /// </summary>
         /// <returns>List of all of the logged in users guilds.</returns>
-        public async Task<List<Domain.Discord.Guild>> GetUserGuilds()
+        public async Task<List<Domain.Discord.UserGuild>> GetUserGuilds()
         {
             var guilds = await _client.GetUserGuilds();
 
-            return JsonConvert.DeserializeObject<List<Domain.Discord.Guild>>(guilds);
+            return JsonConvert.DeserializeObject<List<Domain.Discord.UserGuild>>(guilds);
         }
     }
 }

@@ -22,34 +22,50 @@ namespace Tests.Unit.Volvox.Helios.Service
             //Arrange 
             #region arrange
             
-            var testGuilds = new List<Guild>
+            var guilds = new List<Guild>
             {
                 new Guild
                 {
                     Id = 1,
-                    Name = "NotAdmin",
-                    Permissions = NotAdminPermission
+                    Name = "Server1"
                 },
 
                 new Guild
                 {
                     Id = 1,
-                    Name = "NotAdmin2",
-                    Permissions = NotAdminPermission
+                    Name = "Server2"
                 },
 
                 new Guild
                 {
                     Id = 1,
-                    Name = "Admin",
-                    Permissions = AdminPermission
+                    Name = "Server3"
                 }
             };
-            
+            var user = new User {Id = 200, Name = "AA"};
+            var testUserGuilds = new List<UserGuild> {
+                new UserGuild {
+                    Guild = guilds[0],
+                    User = user,
+                    Permissions = AdminPermission
+                },
+                new UserGuild {
+                    Guild = guilds[1],
+                    User = user,
+                    Permissions = NotAdminPermission
+                },
+                new UserGuild {
+                    Guild = guilds[2],
+                    User = user,
+                    Permissions = AdminPermission
+                }
+                
+            };
+
             #endregion
 
             //Act
-            var result = testGuilds.FilterAdministrator();
+            var result = testUserGuilds.FilterAdministrator();
 
             //Assert
             Assert.True(result.Count == 1);
@@ -101,21 +117,18 @@ namespace Tests.Unit.Volvox.Helios.Service
                 {
                     Id = 1,
                     Name = "NotAdmin",
-                    Permissions = NotAdminPermission
                 },
 
                 new Guild
                 {
                     Id = 2,
                     Name = "NotAdmin2",
-                    Permissions = NotAdminPermission
                 },
 
                 new Guild
                 {
                     Id = 3,
                     Name = "Admin",
-                    Permissions = AdminPermission
                 }
             };
 

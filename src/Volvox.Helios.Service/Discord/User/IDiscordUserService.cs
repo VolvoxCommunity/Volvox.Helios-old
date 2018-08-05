@@ -10,6 +10,6 @@ namespace Volvox.Helios.Service.Discord.User
         /// Get all of the logged in users guilds.
         /// </summary>
         /// <returns>List of all of the logged in users guilds.</returns>
-        Task<List<Domain.Discord.Guild>> GetUserGuilds();
+        Task<List<Domain.Discord.UserGuild>> GetUserGuilds();
     }
 }
