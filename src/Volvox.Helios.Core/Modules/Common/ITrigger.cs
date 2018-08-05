@@ -13,6 +13,6 @@ namespace Volvox.Helios.Core.Modules.Common
         /// </summary>
         /// <param name="context">Given context to check</param>
         /// <returns></returns>
-        Task<bool> TryTrigger(DiscordFacingContext context);
+        bool Valid(DiscordFacingContext context);
     }
 }

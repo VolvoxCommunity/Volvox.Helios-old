@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
 using System.Collections.Generic;
+using Volvox.Helios.Core.Modules.DiscordFacing;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.ModuleSettings;
 
@@ -15,8 +16,10 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
     /// <summary>
     /// Announce the user to a specified channel when the user starts streaming.
     /// </summary>
-    public class StreamAnnouncerModule : Module
+    public class StreamAnnouncerModule : IModule
     {
+        private readonly DiscordSocketClient discordSocketClient;
+        private readonly ILogger<StreamAnnouncerModule> logger;
         private readonly IModuleSettingsService<StreamAnnouncerSettings> _settingsService;
         
         private IDictionary<ulong, HashSet<ulong>> StreamingList { get; } = new Dictionary<ulong, HashSet<ulong>>();
@@ -27,27 +30,11 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
         /// <param name="settingsService">Settings serivce.</param>
-        public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService) : base(discordSettings, logger)
+        public StreamAnnouncerModule(DiscordSocketClient discordSocketClient, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService) 
         {
+            this.discordSocketClient = discordSocketClient;
+            this.logger = logger;
             _settingsService = settingsService;
-        }
-
-        /// <summary>
-        /// Initialize the module on GuildMemberUpdated event.
-        /// </summary>
-        /// <param name="client">Client for the module to be registed to.</param>
-        public override Task Init(DiscordSocketClient client)
-        {
-            // Subscribe to the GuildMemberUpdated event.
-            client.GuildMemberUpdated += async (user, guildUser) =>
-            {
-                if (IsEnabled)
-                {
-                    await CheckUser(guildUser);
-                }
-            };
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -64,14 +51,14 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             }
             
             // Check to make sure the user is streaming and not in the streaming list.
-            if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch &&
+            if (user.Game?.StreamType == StreamType.Twitch &&
                 !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Contains(user.Id)))
             {
                 // Add user to the streaming list.
                 StreamingList[user.Guild.Id].Add(user.Id);
 
                 // Announce that the user is streaming.
-                await AnnounceUser(user);
+                await AnnounceUser(user).ConfigureAwait(false);
             }
 
             // User is not streaming.
@@ -97,7 +84,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
                 .AddInlineField("Title", user.Game?.Name).Build();
 
             // Get the settings from the database.
-            var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id);
+            var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id).ConfigureAwait(false);
 
             if (settings != null)
             {
@@ -105,13 +92,35 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
 
                 if (announceChannelId != 0)
                 {
-                    Logger.LogDebug($"StreamAnnouncer Module: Announcing {user.Username}");
+                    logger.LogDebug($"StreamAnnouncer Module: Announcing {user.Username}");
 
                     // Announce the user to the channel specified in settings.
                     await user.Guild.GetTextChannel(announceChannelId)
-                        .SendMessageAsync("", embed: embed);
+                        .SendMessageAsync("", embed: embed).ConfigureAwait(false);
                 }
             }
+        }
+
+        public void Enable()
+        {
+            // Subscribe to the GuildMemberUpdated event.
+            discordSocketClient.GuildMemberUpdated += OnDiscordSocketClientOnGuildMemberUpdated;
+        }
+
+        private async Task OnDiscordSocketClientOnGuildMemberUpdated(SocketGuildUser _, SocketGuildUser guildUser)
+        {
+            await CheckUser(guildUser).ConfigureAwait(false);
+        }
+
+        public void Disable()
+        {
+            discordSocketClient.GuildMemberUpdated -= OnDiscordSocketClientOnGuildMemberUpdated;
+        }
+
+        public Task InvokeAsync(DiscordFacingContext discordFacingContext)
+        {
+            // TODO Technically this is not a command and therefore this is not needed, therefore refactor IModule
+            throw new NotImplementedException();
         }
     }
 }
