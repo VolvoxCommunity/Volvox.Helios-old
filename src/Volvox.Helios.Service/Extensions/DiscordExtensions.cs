@@ -18,7 +18,7 @@ namespace Volvox.Helios.Service.Extensions
         {
             var filteredGuilds = new List<Guild>(); 
 
-            foreach (UserGuild userGuild in userGuilds)
+            foreach (var userGuild in userGuilds)
             {
                 const int admin = 0x00000008;
 
