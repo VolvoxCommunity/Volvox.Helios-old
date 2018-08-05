@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Volvox.Helios.Domain.Discord.Leveling;
 using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Service
@@ -11,8 +10,5 @@ namespace Volvox.Helios.Service
         { }
         
         public DbSet<StreamAnnouncerSettings> StreamAnnouncerSettings { get; set; }
-        
-
-
     }
 }

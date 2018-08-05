@@ -59,7 +59,6 @@ namespace Tests.Unit.Volvox.Helios.Service
                     User = user,
                     Permissions = AdminPermission
                 }
-                
             };
 
             #endregion
