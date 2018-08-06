@@ -119,7 +119,7 @@ namespace Volvox.Helios.Web
             });
 
             // Discord Services
-            services.AddScoped<IDiscordUserGuildService, DiscordUserGuildGuildService>();
+            services.AddScoped<IDiscordUserGuildService, DiscordUserGuildService>();
             services.AddScoped<IDiscordGuildService, DiscordGuildService>();
 
             // Services

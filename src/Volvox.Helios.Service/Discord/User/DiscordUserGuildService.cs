@@ -9,11 +9,11 @@ using Volvox.Helios.Service.Clients;
 
 namespace Volvox.Helios.Service.Discord.User
 {
-    public class DiscordUserGuildGuildService : IDiscordUserGuildService
+    public class DiscordUserGuildService : IDiscordUserGuildService
     {
         private readonly DiscordAPIClient _client;
 
-        public DiscordUserGuildGuildService(DiscordAPIClient client)
+        public DiscordUserGuildService(DiscordAPIClient client)
         {
             _client = client;
         }
