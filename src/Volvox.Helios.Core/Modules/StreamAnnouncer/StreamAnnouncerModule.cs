@@ -31,10 +31,10 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService, Metadata meta) : base(discordSettings, logger)
         {
             _settingsService = settingsService;
-            var thisMeta = meta.FromJson.Single(m => m.Name == "StreamerRoleModule");
+            var thisMeta = meta.FromJson.Single(m => m.Name == "StreamAnnouncerModule");
             Name = thisMeta.Name;
             Version = thisMeta.Version;
-            Synopsis = thisMeta.Synopsis;
+            Description = thisMeta.Description;
             ReleaseState = thisMeta.ReleaseState;
         }
 

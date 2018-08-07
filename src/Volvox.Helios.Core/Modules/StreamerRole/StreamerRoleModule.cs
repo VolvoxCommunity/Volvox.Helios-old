@@ -25,7 +25,7 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
             var thisMeta = meta.FromJson.Single(m => m.Name == "StreamerRoleModule");
             Name = thisMeta.Name;
             Version = thisMeta.Version;
-            Synopsis = thisMeta.Synopsis;
+            Description = thisMeta.Description;
             ReleaseState = thisMeta.ReleaseState;
         }
 

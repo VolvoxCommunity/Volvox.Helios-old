@@ -3,7 +3,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Volvox.Helios.Core.Modules.Common;
 
-namespace Volvox.Helios.Core.Modules
+namespace Volvox.Helios.Core.Utilities
 {
     public class Metadata
     {
@@ -12,7 +12,7 @@ namespace Volvox.Helios.Core.Modules
 
         public Metadata()
         {
-            JsonPath = "../Volvox.Helios.Core/Modules/metadata.json";
+            JsonPath = "../Volvox.Helios.Core/Utilities/metadata.json";
             
             if (File.Exists(JsonPath))
             {
@@ -31,7 +31,7 @@ namespace Volvox.Helios.Core.Modules
         {
             public string Name;
             public string Version;
-            public string Synopsis;
+            public string Description;
             public ReleaseState ReleaseState;
         }
     }

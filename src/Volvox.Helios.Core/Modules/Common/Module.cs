@@ -65,7 +65,7 @@ namespace Volvox.Helios.Core.Modules.Common
 
         public string Name { get; set; }
         public string Version { get; set; }
-        public string Synopsis { get; set; }
+        public string Description { get; set; }
         public ReleaseState ReleaseState { get; set; }
     }
 }

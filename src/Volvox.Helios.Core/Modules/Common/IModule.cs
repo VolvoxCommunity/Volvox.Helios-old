@@ -44,9 +44,5 @@ namespace Volvox.Helios.Core.Modules.Common
         /// To execute or not to execute the module. (Default: true)
         /// </summary>
         bool IsEnabled { get; set; }
-        
-        string Name { get; set; }
-        string Version { get; set; }
-        string Synopsis { get; set; }
     }
 }

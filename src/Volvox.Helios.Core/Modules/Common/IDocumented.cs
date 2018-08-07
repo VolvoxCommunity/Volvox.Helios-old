@@ -4,7 +4,7 @@
     {
         string Name { get; }
         string Version { get; }
-        string Synopsis { get; }
+        string Description { get; }
         ReleaseState ReleaseState { get; }
     }
 }
