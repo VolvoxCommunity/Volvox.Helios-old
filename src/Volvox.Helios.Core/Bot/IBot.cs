@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot.Connector;
 using Volvox.Helios.Core.Modules.Common;
+using Volvox.Helios.Domain.Discord;
 
 namespace Volvox.Helios.Core.Bot
 {
@@ -35,6 +36,12 @@ namespace Volvox.Helios.Core.Bot
         List<SocketGuild> GetGuilds();
 
         /// <summary>
+        /// Returns true if the specified guild is in the bot and false otherwise.
+        /// </summary>
+        /// <returns>Returns true if the specified guild is in the bot and false otherwise.</returns>
+        bool IsGuildInBot(Guild guild);
+
+            /// <summary>
         /// Log an event.
         /// </summary>
         /// <param name="message">Message to log.</param>

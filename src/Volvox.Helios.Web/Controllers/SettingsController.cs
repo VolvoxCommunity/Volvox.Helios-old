@@ -14,6 +14,7 @@ using Volvox.Helios.Web.ViewModels.Settings;
 namespace Volvox.Helios.Web.Controllers
 {
     [Authorize]
+    [Route("/Settings")]
     public class SettingsController : Controller
     {
         private readonly IModuleSettingsService<StreamAnnouncerSettings> _streamAnnouncerSettingsService;
@@ -23,13 +24,14 @@ namespace Volvox.Helios.Web.Controllers
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
         }
 
-        public IActionResult Index()
+        [Route("{guildId}")]
+        public IActionResult Index(ulong guildId)
         {
-            return View();
+            return View(guildId);
         }
 
         // GET
-        [HttpGet]
+        [HttpGet("GetGuildChannels")]
         public async Task<JsonResult> GetGuildChannels([FromServices] IDiscordGuildService guildService, ulong guildId)
         {
             var channels = await guildService.GetChannels(guildId);
@@ -38,7 +40,7 @@ namespace Volvox.Helios.Web.Controllers
             return Json(channels.FilterChannelType(0).Select(c => new {id = c.Id.ToString(), name = c.Name}));
         }
         
-        [HttpGet]
+        [HttpGet("GetUserAdminGuilds")]
         public async Task<JsonResult> GetUserAdminGuilds([FromServices] IDiscordUserService userService)
         {
             var guilds = await userService.GetUserGuilds();
@@ -50,7 +52,8 @@ namespace Volvox.Helios.Web.Controllers
         #region StreamAnnouncer
 
         // GET
-        public async Task<IActionResult> StreamAnnouncerSettings([FromServices] IDiscordUserService userService,
+        [HttpGet("{guildId}/StreamAnnouncer")]
+        public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId, [FromServices] IDiscordUserService userService,
             [FromServices] IBot bot)
         {
             var guilds = await userService.GetUserGuilds();
@@ -67,7 +70,7 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         // POST
-        [HttpPost]
+        [HttpPost("{guildId}/StreamAnnouncer")]
         public async Task<IActionResult> StreamAnnouncerSettings(StreamAnnouncerSettingsViewModel viewModel)
         {
             // Save the settings to the database

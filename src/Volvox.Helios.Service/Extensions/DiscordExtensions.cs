@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 using Volvox.Helios.Domain.Discord;
 
 namespace Volvox.Helios.Service.Extensions
@@ -10,10 +7,10 @@ namespace Volvox.Helios.Service.Extensions
     public static class DiscordExtensions
     {
         /// <summary>
-        /// Filter a list of guilds to only the ones that atheuser is an adminstrator of.
+        /// Filter a list of guilds to only the ones that the user is an administrator of.
         /// </summary>
         /// <param name="guilds">List of guilds.</param>
-        /// <returns>List of guilds that the user is an adminstrator of.</returns>
+        /// <returns>List of guilds that the user is an administrator of.</returns>
         public static List<Guild> FilterAdministrator(this IEnumerable<Guild> guilds)
         {
             var filteredGuilds = new List<Guild>(); 
