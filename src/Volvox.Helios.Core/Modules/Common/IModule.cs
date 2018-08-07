@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
@@ -43,5 +44,9 @@ namespace Volvox.Helios.Core.Modules.Common
         /// To execute or not to execute the module. (Default: true)
         /// </summary>
         bool IsEnabled { get; set; }
+        
+        string Name { get; set; }
+        string Version { get; set; }
+        string Synopsis { get; set; }
     }
 }

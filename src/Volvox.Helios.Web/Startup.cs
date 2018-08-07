@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
+using Volvox.Helios.Core.Modules;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Core.Utilities;
@@ -110,6 +111,9 @@ namespace Volvox.Helios.Web
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
+            
+            // Module Metadata
+            services.AddSingleton<Metadata>();
 
             // Http Clients
             services.AddHttpClient<DiscordAPIClient>(options =>
