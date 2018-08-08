@@ -4,7 +4,7 @@
 #### An easy to use, customizable, modular discord bot, all managed from your favorite browser.
 
 ## Getting Started
-Visit the Volvox.Helios [website](http://volvoxhelios.azurewebsites.net/) to get started adding the bot to your Discord server.
+Visit the Volvox.Helios [website](https://volvoxhelios.azurewebsites.net/) to get started adding the bot to your Discord server.
 
 ## Prerequisits
 .NET Core ->  Latest  
