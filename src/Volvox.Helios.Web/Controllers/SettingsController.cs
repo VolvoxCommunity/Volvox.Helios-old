@@ -41,17 +41,18 @@ namespace Volvox.Helios.Web.Controllers
         #region StreamAnnouncer
 
         // GET
-        public async Task<IActionResult> StreamAnnouncerSettings([FromServices] IDiscordUserService userService,
+        public async Task<IActionResult> StreamAnnouncerSettings([FromServices] IDiscordUserGuildService userGuildService,
             [FromServices] IBot bot)
         {
-            var guilds = await userService.GetUserGuilds();
+            var userGuilds = await userGuildService.GetUserGuilds();
 
             var botGuilds = bot.GetGuilds();
 
+            var userAdminGuilds = userGuilds.FilterAdministrator().Select(g => g.Guild);
+
             var viewModel = new StreamAnnouncerSettingsViewModel
             {
-                Guilds = new SelectList(
-                    guilds.FilterAdministrator().FilterGuildsByIds(botGuilds.Select(b => b.Id).ToList()), "Id", "Name")
+                Guilds = new SelectList(userAdminGuilds.FilterGuildsByIds(botGuilds.Select(b => b.Id).ToList()), "Id", "Name")
             };
 
             return View(viewModel);

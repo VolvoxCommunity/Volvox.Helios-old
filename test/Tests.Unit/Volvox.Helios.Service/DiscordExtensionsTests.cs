@@ -42,7 +42,9 @@ namespace Tests.Unit.Volvox.Helios.Service
                     Name = "Server3"
                 }
             };
+
             var user = new User {Id = 200, Name = "AA"};
+
             var testUserGuilds = new List<UserGuild> {
                 new UserGuild {
                     Guild = guilds[0],
@@ -68,7 +70,7 @@ namespace Tests.Unit.Volvox.Helios.Service
 
             //Assert
             Assert.True(result.Count == 1);
-            Assert.Equal("Server1", result[0].Name);
+            Assert.Equal("Server1", result[0].Guild.Name);
         }
 
         [Fact]

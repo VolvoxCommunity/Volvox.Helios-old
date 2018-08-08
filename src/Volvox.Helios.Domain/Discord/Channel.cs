@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Volvox.Helios.Domain.Discord
+﻿namespace Volvox.Helios.Domain.Discord
 {
     public class Channel
     {
