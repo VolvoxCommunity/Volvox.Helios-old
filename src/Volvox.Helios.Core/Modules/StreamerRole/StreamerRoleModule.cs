@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -19,8 +20,13 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
-        public StreamerRoleModule(IDiscordSettings discordSettings, ILogger<StreamerRoleModule> logger) : base(discordSettings, logger)
+        public StreamerRoleModule(IDiscordSettings discordSettings, ILogger<StreamerRoleModule> logger, Metadata meta) : base(discordSettings, logger)
         {
+            var thisMeta = meta.FromJson.Single(m => m.Name == "StreamerRoleModule");
+            Name = thisMeta.Name;
+            Version = thisMeta.Version;
+            Description = thisMeta.Description;
+            ReleaseState = thisMeta.ReleaseState;
         }
 
         /// <summary>

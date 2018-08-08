@@ -109,6 +109,9 @@ namespace Volvox.Helios.Web
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
+            
+            // Module Metadata
+            services.AddSingleton<Metadata>();
 
             // HTTP Clients
             services.AddHttpClient<DiscordAPIClient>(options =>
