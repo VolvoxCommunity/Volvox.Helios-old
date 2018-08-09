@@ -10,7 +10,7 @@
             selectElement.prop("selectedIndex", 0);
             selectElement.prop("disabled", false);
 
-            const url = `/Settings/GetGuildChannels?guildId=${guildId}`;
+            const url = `/api/GetGuildChannels?guildId=${guildId}`;
 
             $.getJSON(url, function (data) {
                 $.each(data, function (key, entry) {
@@ -24,7 +24,7 @@
         return this.each(function() {
             const element = $(this);
             
-            const url = "/Settings/GetUserAdminGuilds";
+            const url = "/api/GetUserAdminGuilds";
 
             $.getJSON(url, function (data) {
                 element.empty();
