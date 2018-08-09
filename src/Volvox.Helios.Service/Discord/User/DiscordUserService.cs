@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Volvox.Helios.Domain.Discord;
 using Volvox.Helios.Service.Clients;
 
 namespace Volvox.Helios.Service.Discord.User
@@ -16,7 +15,7 @@ namespace Volvox.Helios.Service.Discord.User
         }
 
         /// <summary>
-        /// Get all of the logged in users guilds.
+        ///     Get all of the logged in users guilds.
         /// </summary>
         /// <returns>List of all of the logged in users guilds.</returns>
         public async Task<List<Domain.Discord.Guild>> GetUserGuilds()
