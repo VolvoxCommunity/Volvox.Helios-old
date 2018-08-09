@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Domain.ModuleSettings;
-using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Service.ModuleSettings;
@@ -23,7 +22,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
         }
-        
+
         public IActionResult Index(ulong guildId)
         {
             return View(guildId);
@@ -33,15 +32,20 @@ namespace Volvox.Helios.Web.Controllers
 
         // GET
         [HttpGet("StreamAnnouncer")]
-        public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId, [FromServices] IDiscordUserService userService,
-            [FromServices] IBot bot)
+        public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId,
+            [FromServices] IDiscordUserService userService,
+            [FromServices] IBot bot, [FromServices] IModuleSettingsService<StreamAnnouncerSettings> settingsService)
         {
             var guilds = await userService.GetUserGuilds();
 
             var botGuilds = bot.GetGuilds();
 
+            var settings = await settingsService.GetSettingsByGuild(guildId);
+
             var viewModel = new StreamAnnouncerSettingsViewModel
             {
+                ChannelId = settings.AnnouncementChannelId,
+                Enabled = settings.Enabled,
                 Guilds = new SelectList(
                     guilds.FilterAdministrator().FilterGuildsByIds(botGuilds.Select(b => b.Id).ToList()), "Id", "Name")
             };
