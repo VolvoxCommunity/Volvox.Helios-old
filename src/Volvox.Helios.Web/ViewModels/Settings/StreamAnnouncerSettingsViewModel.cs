@@ -10,11 +10,7 @@ namespace Volvox.Helios.Web.ViewModels.Settings
     [Authorize]
     public class StreamAnnouncerSettingsViewModel
     {
-        public SelectList Guilds { get; set; }
-        
-        [Required]
-        [DisplayName("Guild")]
-        public ulong GuildId { get; set; }
+        public SelectList Channels { get; set; }
         
         [Required]
         [DisplayName("Channel")]

@@ -28,7 +28,7 @@ namespace Volvox.Helios.Web.Controllers
             var guilds = await userService.GetUserGuilds();
 
             // Format the ulong to string.
-            return Json(guilds.FilterAdministrator());
+            return Json(guilds.FilterAdministrator().Select(g => new {id = g.Id.ToString(), name = g.Name}));
         }
     }
 }
