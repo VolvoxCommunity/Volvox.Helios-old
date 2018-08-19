@@ -149,8 +149,12 @@ namespace Volvox.Helios.Web
             services.AddSingleton<ICache>(new FluentIMemoryCache(new MemoryCache(new MemoryCacheOptions())));
 
             // MVC
-            services.AddMvc(options => options.Filters.Add(new ModelStateValidationFilter()))
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new ModelStateValidationFilter());
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            })
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Entity Framework
             services.AddDbContext<VolvoxHeliosContext>(options =>
