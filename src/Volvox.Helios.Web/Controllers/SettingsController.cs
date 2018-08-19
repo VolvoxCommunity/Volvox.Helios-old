@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord.Guild;
+using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.ViewModels.Settings;
 
@@ -32,14 +33,19 @@ namespace Volvox.Helios.Web.Controllers
         public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId,
             [FromServices] IDiscordGuildService guildService)
         {
-            var settings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId);
+            var channels = await guildService.GetChannels(guildId);
 
             var viewModel = new StreamAnnouncerSettingsViewModel
             {
-                ChannelId = settings.AnnouncementChannelId,
-                Enabled = settings.Enabled,
-                Channels = new SelectList(await guildService.GetChannels(guildId), "Id", "Name")
+                Channels = new SelectList(channels.FilterChannelType(0), "Id", "Name")
             };
+
+            var settings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId);
+
+            if (settings == null) return View(viewModel);
+
+            viewModel.ChannelId = settings.AnnouncementChannelId;
+            viewModel.Enabled = settings.Enabled;
 
             return View(viewModel);
         }
