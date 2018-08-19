@@ -36,6 +36,14 @@ namespace Volvox.Helios.Core.Bot
             });
 
             Client.Log += Log;
+
+            // Log when the bot is disconnected.
+            Client.Disconnected += exception =>
+            {
+                Logger.LogCritical("Bot has been disconnected!");
+                
+                return Task.CompletedTask;
+            };
             
             Connector = new BotConnector(settings, Client);
         }
