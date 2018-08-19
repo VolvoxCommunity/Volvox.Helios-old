@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -9,45 +8,35 @@ using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Modules.DiscordFacing
 {
-    public class DiscordFacingManager : Module
+    public class DiscordFacingManager : IModule
     {
-        public IList<ITriggerable> Modules { get; private set; }
-        private DiscordSocketClient Client { get; set; }
-             
-        public DiscordFacingManager(IDiscordSettings discordSettings, ILogger<IModule> logger, IList<ITriggerable> modules) : base(discordSettings, logger)
+        private readonly IList<TriggerableModuleDecorator> modules;
+
+        public DiscordFacingManager(IList<TriggerableModuleDecorator> modules)
         {
-            Modules = modules;
-        }
-        
-        /// <summary>
-        /// Binds DiscordFacingManager to the provided client and initializes DModule properties.
-        /// </summary>
-        public override Task Init(DiscordSocketClient client)
-        {
-            Client = client;
-            Client.MessageReceived += HandleCommandAsync;
-            return Task.CompletedTask;
+            this.modules = modules;
         }
 
-        /// <summary>
-        /// Called every time the bound client emits a SocketMessage. Used to match to a DModule and execute with a
-        /// context created with the message.
-        /// </summary>
-        public async Task HandleCommandAsync(SocketMessage m)
+        public void Enable()
         {
-            if (!(m is SocketUserMessage message) || message.Channel is IDMChannel || message.Author.IsBot) return;
-            var context = new DiscordFacingContext(message, Client, "h-"); 
-            // h- is the placeholder prefix while Bapes finishes the settings framework.
+            // TODO
+            throw new System.NotImplementedException();
+        }
 
-            foreach (var mod in Modules)
+        public void Disable()
+        {
+            // TODO
+            throw new System.NotImplementedException();
+        }
+
+        public async Task InvokeAsync(DiscordFacingContext discordFacingContext)
+        {
+            if (!(discordFacingContext.Channel is IDMChannel || discordFacingContext.Message.Author.IsBot)) return;
+
+            foreach (var module in modules)
             {
-                if (await mod.TryTrigger(context)) break;
+                await module.InvokeAsync(discordFacingContext).ConfigureAwait(false);
             }
         }
-        
-        /// <summary>
-        /// Base implementation throws an exception.
-        /// </summary>
-        public override Task Execute(DiscordSocketClient client) => Task.CompletedTask;
     }
 }

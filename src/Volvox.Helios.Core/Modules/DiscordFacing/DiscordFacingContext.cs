@@ -1,45 +1,28 @@
-﻿using Discord;
-using Discord.WebSocket;
+﻿using Discord.WebSocket;
 
 namespace Volvox.Helios.Core.Modules.DiscordFacing
 {
     public class DiscordFacingContext
     {
         /// <summary>
-        /// Emitted by DiscordFacingManager's bound client
+        ///     Initializes a new instance of the <see cref="DiscordFacingContext" /> class.
         /// </summary>
-        public SocketUserMessage Message { get; }
-        
-        /// <summary>
-        /// Taken from Message
-        /// </summary>
-        public ISocketMessageChannel Channel { get; }
-        
-        /// <summary>
-        /// Taken from Message
-        /// </summary>
-        public SocketUser User { get; }
-        
-        /// <summary>
-        /// Fed by DiscordFacingManager
-        /// </summary>
-        public DiscordSocketClient Client { get; }
-        
-        /// <summary>
-        /// The prefix the invoking guiild has set for the bot. Useful once Bapes finishes the settings framework.
-        /// </summary>
-        public string GivenPrefix { get; }
-        
-        /// <param name="message">Pass the message emitted by your DiscordSocketClient.</param>
-        /// <param name="client">Pass the client the emitted the given message.</param>
-        /// <param name="prefix">If the guild the message originated from has configured a custom prefix, pass it here.</param>
-        public DiscordFacingContext(SocketUserMessage message, DiscordSocketClient client, string prefix)
+        /// <param name="socketUserMessage">Pass the message emitted by your DiscordSocketClient.</param>
+        /// <param name="discordSocketClient">Pass the client the emitted the given message.</param>
+        public DiscordFacingContext(SocketUserMessage socketUserMessage, DiscordSocketClient discordSocketClient)
         {
-            Message = message;
-            Channel = message.Channel;
-            User = message.Author;
-            Client = client;
-            GivenPrefix = prefix;
+            Message = socketUserMessage;
+            Channel = socketUserMessage.Channel;
+            User = socketUserMessage.Author;
+            Client = discordSocketClient;
         }
+
+        public SocketUserMessage Message { get; }
+
+        public ISocketMessageChannel Channel { get; }
+
+        public SocketUser User { get; }
+
+        public DiscordSocketClient Client { get; }
     }
 }
