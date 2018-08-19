@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +11,17 @@ using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Bot
 {
+    public class DiscordSocketClientFactory
+    {
+        public DiscordSocketClient Create()
+        {
+            // TODO: Convert logging to module
+            return new DiscordSocketClient(new DiscordSocketConfig()
+            {
+                LogLevel = LogSeverity.Verbose
+            });
+        }
+    }
     /// <summary>
     /// Discord bot.
     /// </summary>
@@ -23,32 +33,15 @@ namespace Volvox.Helios.Core.Bot
         /// <param name="modules">List of modules for the bot.</param>
         /// <param name="settings">Settings used to connect to Discord.</param>
         /// <param name="logger">Application logger.</param>
-        public Bot(IList<IModule> modules, IDiscordSettings settings, ILogger<Bot> logger)
+        public Bot(DiscordSocketClient discordSocketClient, IList<IModule> modules, IDiscordSettings settings, ILogger<Bot> logger)
         {
+            this.discordSocketClient = discordSocketClient;
             Modules = modules;
             Logger = logger;
 
             // TODO: Convert logging to module
-            Client = new DiscordSocketClient(new DiscordSocketConfig()
-            {
-                LogLevel = LogSeverity.Verbose
-            });
-
-            Client.Log += Log;
-            
-            Connector = new BotConnector(settings, Client);
-        }
-
-        /// <summary>
-        /// Initialize all of modules available to the bot.
-        /// </summary>
-        public async Task InitModules()
-        {
-            foreach (var module in Modules)
-            {
-                Logger.LogInformation($"Initializing {module.GetType().Name}");
-                await module.Init(Client);
-            }
+            discordSocketClient.Log += Log;
+            Connector = new BotConnector(settings, discordSocketClient);
         }
 
         /// <summary>
@@ -56,8 +49,6 @@ namespace Volvox.Helios.Core.Bot
         /// </summary>
         public async Task Start()
         {
-            await InitModules();
-
             await Connector.Connect();
 
             await Task.Delay(Timeout.Infinite);
@@ -73,7 +64,7 @@ namespace Volvox.Helios.Core.Bot
 
         public List<SocketGuild> GetGuilds()
         {
-            return Client.Guilds.ToList();
+            return discordSocketClient.Guilds.ToList();
         }
 
         /// <summary>
@@ -108,10 +99,11 @@ namespace Volvox.Helios.Core.Bot
             return Task.CompletedTask;
         }
 
+
         /// <summary>
         /// Client for the bot.
         /// </summary>
-        public DiscordSocketClient Client { get; }
+        private readonly DiscordSocketClient discordSocketClient;
 
         /// <summary>
         /// Connector that the bot uses to connect to Discord.

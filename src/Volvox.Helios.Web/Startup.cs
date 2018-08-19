@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Discord.WebSocket;
 using FluentCache;
 using FluentCache.Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,6 +20,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
+using Volvox.Helios.Core.Modules.DiscordFacing;
+using Volvox.Helios.Core.Modules.DiscordFacing.Commands;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
@@ -78,7 +81,7 @@ namespace Volvox.Helios.Web
                         OnTicketReceived = context =>
                         {
                             // Add access token claim
-                            var claimsIdentity = (ClaimsIdentity)context.Principal.Identity;
+                            var claimsIdentity = (ClaimsIdentity) context.Principal.Identity;
 
                             claimsIdentity.AddClaim(new Claim("access_token",
                                 context.Properties.Items.FirstOrDefault(p => p.Key == ".Token.access_token").Value));
@@ -103,12 +106,29 @@ namespace Volvox.Helios.Web
             // Bot
             services.AddSingleton<IBot, Bot>();
 
+            // DiscordSocketClientFactory
+            services.AddSingleton<DiscordSocketClientFactory>();
+            services.AddSingleton<DiscordSocketClient>(provider => provider.GetService<DiscordSocketClientFactory>().Create());
+
             // Modules
             //services.AddSingleton<IModule, StreamerRoleModule>();
             services.AddSingleton<IModule, StreamAnnouncerModule>();
 
+            // DiscordFacing
+            // TODO Replace null with DiscordSocketClient
+            services.AddSingleton<IModule>(provider => 
+                new MessageReceiverModuleDecorator(provider.GetService<DiscordSocketClient>(),
+                    new TriggerableModuleDecorator(
+                        new StringTrigger("!"),
+                        new DiscordFacingManager(
+                            new List<TriggerableModuleDecorator>
+                            {
+                                new TriggerableModuleDecorator(new StringTrigger("help"), new HelpModule())
+                            }))));
+
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
+            services.AddSingleton<IList<ITrigger>>(s => s.GetServices<ITrigger>().ToList());
 
             // HTTP Clients
             services.AddHttpClient<DiscordAPIClient>(options =>
