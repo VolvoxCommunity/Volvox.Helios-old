@@ -10,21 +10,21 @@ namespace Volvox.Helios.Service.Extensions
     public static class DiscordExtensions
     {
         /// <summary>
-        /// Filter a list of guilds to only the ones that atheuser is an adminstrator of.
+        /// Filter a list of guilds to only the ones that the user is an administrator of.
         /// </summary>
-        /// <param name="guilds">List of guilds.</param>
-        /// <returns>List of guilds that the user is an adminstrator of.</returns>
-        public static List<Guild> FilterAdministrator(this IEnumerable<Guild> guilds)
+        /// <param name="userGuilds">List of guilds.</param>
+        /// <returns>List of guilds that the user is an administrator of.</returns>
+        public static List<UserGuild> FilterAdministrator(this IEnumerable<UserGuild> userGuilds)
         {
-            var filteredGuilds = new List<Guild>(); 
+            var filteredGuilds = new List<UserGuild>(); 
 
-            foreach (var guild in guilds)
+            foreach (var userGuild in userGuilds)
             {
                 const int admin = 0x00000008;
 
-                if ((guild.Permissions & admin) == admin)
+                if ((userGuild.Permissions & admin) == admin)
                 {
-                    filteredGuilds.Add(guild);
+                    filteredGuilds.Add(userGuild);
                 }
             }
 

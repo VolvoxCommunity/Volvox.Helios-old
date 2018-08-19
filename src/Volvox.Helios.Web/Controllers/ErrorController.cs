@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Volvox.Helios.Web.Controllers
 {
@@ -44,8 +40,8 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         /// <summary>
-        ///  Put custom error pages here.
-        ///  Add new case in switch block for new non-generic error page.
+        ///     Put custom error pages here.
+        ///     Add new case in switch block for new non-generic error page.
         /// </summary>
         [HttpGet]
         public IActionResult Errors(int Id)
@@ -62,7 +58,7 @@ namespace Volvox.Helios.Web.Controllers
         [HttpGet]
         public IActionResult Error(int? Id)
         {
-            int errorCode = Id.HasValue ? Id.Value : 500;
+            var errorCode = Id.HasValue ? Id.Value : 500;
             ViewData["StatusCode"] = errorCode;
             ViewData["StatusDescription"] = GetStatusDescription(errorCode);
             return View("~/Views/Shared/Errors/ErrGeneral.cshtml");
