@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -111,7 +110,7 @@ namespace Volvox.Helios.Web
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
 
-            // Http Clients
+            // HTTP Clients
             services.AddHttpClient<DiscordAPIClient>(options =>
             {
                 options.BaseAddress = new Uri("https://discordapp.com/api/");
@@ -120,7 +119,7 @@ namespace Volvox.Helios.Web
             });
 
             // Discord Services
-            services.AddScoped<IDiscordUserService, DiscordUserService>();
+            services.AddScoped<IDiscordUserGuildService, DiscordUserGuildService>();
             services.AddScoped<IDiscordGuildService, DiscordGuildService>();
 
             // Services
@@ -130,8 +129,12 @@ namespace Volvox.Helios.Web
             services.AddSingleton<ICache>(new FluentIMemoryCache(new MemoryCache(new MemoryCacheOptions())));
 
             // MVC
-            services.AddMvc(options => options.Filters.Add(new ModelStateValidationFilter()))
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new ModelStateValidationFilter());
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            })
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Entity Framework
             services.AddDbContext<VolvoxHeliosContext>(options =>

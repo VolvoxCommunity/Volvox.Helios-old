@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Text;
 using Volvox.Helios.Domain.Discord;
 
 namespace Volvox.Helios.Service.Extensions
@@ -7,26 +10,29 @@ namespace Volvox.Helios.Service.Extensions
     public static class DiscordExtensions
     {
         /// <summary>
-        ///     Filter a list of guilds to only the ones that the user is an administrator of.
+        /// Filter a list of guilds to only the ones that the user is an administrator of.
         /// </summary>
-        /// <param name="guilds">List of guilds.</param>
+        /// <param name="userGuilds">List of guilds.</param>
         /// <returns>List of guilds that the user is an administrator of.</returns>
-        public static List<Guild> FilterAdministrator(this IEnumerable<Guild> guilds)
+        public static List<UserGuild> FilterAdministrator(this IEnumerable<UserGuild> userGuilds)
         {
-            var filteredGuilds = new List<Guild>();
+            var filteredGuilds = new List<UserGuild>(); 
 
-            foreach (var guild in guilds)
+            foreach (var userGuild in userGuilds)
             {
                 const int admin = 0x00000008;
 
-                if ((guild.Permissions & admin) == admin) filteredGuilds.Add(guild);
+                if ((userGuild.Permissions & admin) == admin)
+                {
+                    filteredGuilds.Add(userGuild);
+                }
             }
 
             return filteredGuilds;
         }
 
         /// <summary>
-        ///     Filter a list of channels by type.
+        /// Filter a list of channels by type.
         /// </summary>
         /// <param name="channels">List of channels.</param>
         /// <param name="type">Type of channel.</param>
@@ -37,7 +43,7 @@ namespace Volvox.Helios.Service.Extensions
         }
 
         /// <summary>
-        ///     Filter a list of guilds to a list of ids.
+        /// Filter a list of guilds to a list of ids.
         /// </summary>
         /// <param name="guilds">List of guilds.</param>
         /// <param name="ids">List of ids.</param>
