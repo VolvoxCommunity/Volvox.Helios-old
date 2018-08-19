@@ -4,13 +4,13 @@
       "Name": "StreamAnnouncerModule",
       "Version": "prerelease",
       "Description": "put something here",
-      "ReleaseState": 0
+      "ReleaseState": "Canary"
     },
     "StreamerRoleModule": {
       "Name": "StreamerRoleModule",
       "Version": "prerelease",
       "Description": "put something here",
-      "ReleaseState": 0
+      "ReleaseState": "Canary"
     }
   }
 }

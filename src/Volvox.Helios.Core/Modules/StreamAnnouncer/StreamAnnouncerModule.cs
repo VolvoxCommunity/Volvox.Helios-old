@@ -37,7 +37,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             Name = config[$"Metadata:{moduleQuery}:Name"];
             Version = config[$"Metadata:{moduleQuery}:Version"];
             Description = config[$"Metadata:{moduleQuery}:Description"];
-            ReleaseState = (Common.ReleaseState) Convert.ToInt32(config[$"Metadata:{moduleQuery}:ReleaseState"]);
+            ReleaseState = Enum.Parse<ReleaseState>(config[$"Metadata:{moduleQuery}:ReleaseState"]);
         }
 
         /// <summary>
