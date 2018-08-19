@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volvox.Helios.Domain.Discord;
 
 namespace Volvox.Helios.Service.Discord.User
 {
