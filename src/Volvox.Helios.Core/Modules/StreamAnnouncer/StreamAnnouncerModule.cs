@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.ModuleSettings;
 
@@ -28,14 +29,15 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="logger">Logger.</param>
         /// <param name="settingsService">Settings serivce.</param>
         /// <param name="meta">Service that provides all the module metadata</param>
-        public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService, Metadata meta) : base(discordSettings, logger)
+        /// /// <param name="config">Used to access metadata.json</param>
+        public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService, IConfiguration config) : base(discordSettings, logger)
         {
             _settingsService = settingsService;
-            var thisMeta = meta.FromJson.Single(m => m.Name == "StreamAnnouncerModule");
-            Name = thisMeta.Name;
-            Version = thisMeta.Version;
-            Description = thisMeta.Description;
-            ReleaseState = thisMeta.ReleaseState;
+            string moduleQuery = GetType().Name;
+            Name = config[$"Metadata:{moduleQuery}:Name"];
+            Version = config[$"Metadata:{moduleQuery}:Version"];
+            Description = config[$"Metadata:{moduleQuery}:Description"];
+            ReleaseState = (Common.ReleaseState) Convert.ToInt32(config[$"Metadata:{moduleQuery}:ReleaseState"]);
         }
 
         /// <summary>
