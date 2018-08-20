@@ -7,8 +7,10 @@ namespace Volvox.Helios.Core.Utilities
         public DiscordSettings(IConfiguration config)
         {
             Token = config["Discord:Token"];
+            Config = config;
         }
 
         public string Token { get; set; }
+        public IConfiguration Config { get; }
     }
 }

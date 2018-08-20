@@ -1,6 +1,6 @@
 ﻿namespace Volvox.Helios.Domain.Discord
 {
-    public class Guild
+    public class User
     {
         public ulong Id { get; set; }
 

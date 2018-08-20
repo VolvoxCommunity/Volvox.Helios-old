@@ -1,7 +1,10 @@
-﻿using System.Linq;
+using System;
+using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
@@ -18,9 +21,14 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
-        public StreamerRoleModule(IDiscordSettings discordSettings, ILogger<StreamerRoleModule> logger) : base(
-            discordSettings, logger)
+        /// <param name="config">Used to access metadata.json</param>
+        public StreamerRoleModule(IDiscordSettings discordSettings, ILogger<StreamerRoleModule> logger, IConfiguration config) : base(discordSettings, logger)
         {
+            string moduleQuery = GetType().Name;
+            Name = config[$"Metadata:{moduleQuery}:Name"];
+            Version = config[$"Metadata:{moduleQuery}:Version"];
+            Description = config[$"Metadata:{moduleQuery}:Description"];
+            ReleaseState = Enum.Parse<ReleaseState>(config[$"Metadata:{moduleQuery}:ReleaseState"]);
         }
 
         /// <summary>
