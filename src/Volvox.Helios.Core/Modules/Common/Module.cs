@@ -9,7 +9,7 @@ namespace Volvox.Helios.Core.Modules.Common
     /// <summary>
     ///     Unit of the bot.
     /// </summary>
-    public abstract class Module : IModule
+    public abstract class Module : IModule, IDocumented
     {
         /// <summary>
         ///     Unit of the bot.
@@ -59,5 +59,10 @@ namespace Volvox.Helios.Core.Modules.Common
         ///     To execute or not to execute the module. (Default: true)
         /// </summary>
         public bool IsEnabled { get; set; } = true;
+
+        public string Name { get; set; }
+        public string Version { get; set; }
+        public string Description { get; set; }
+        public ReleaseState ReleaseState { get; set; }
     }
 }
