@@ -76,9 +76,9 @@ namespace Volvox.Helios.Core.Bot
         /// Get a list of the guilds the bot is in.
         /// </summary>
         /// <returns>List of the guilds the bot is in.</returns>
-        public List<SocketGuild> GetGuilds()
+        public IReadOnlyCollection<SocketGuild> GetGuilds()
         {
-            return Client.Guilds.ToList();
+            return Client.Guilds;
         }
 
         /// <summary>

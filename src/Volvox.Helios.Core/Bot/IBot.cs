@@ -33,7 +33,7 @@ namespace Volvox.Helios.Core.Bot
         /// Get a list of the guilds the bot is in.
         /// </summary>
         /// <returns>List of the guilds the bot is in.</returns>
-        List<SocketGuild> GetGuilds();
+        IReadOnlyCollection<SocketGuild> GetGuilds();
 
         /// <summary>
         /// Returns true if the specified guild is in the bot and false otherwise.
