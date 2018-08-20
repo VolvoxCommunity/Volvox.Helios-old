@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -11,8 +10,8 @@ namespace Volvox.Helios.Service.Clients
     public class DiscordAPIClient
     {
         private readonly HttpClient _client;
-        private readonly IHttpContextAccessor _context;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _context;
 
         public DiscordAPIClient(HttpClient client, IHttpContextAccessor context, IConfiguration configuration)
         {
@@ -26,23 +25,25 @@ namespace Volvox.Helios.Service.Clients
         }
 
         /// <summary>
-        /// Get all of the currently logged in users.
+        ///     Get all of the currently logged in users.
         /// </summary>
         /// <returns>List of the logged in users guilds.</returns>
         public async Task<string> GetUserGuilds()
         {
+            // TOOD: Add caching
             return await _client.GetStringAsync("users/@me/guilds");
         }
 
         /// <summary>
-        /// Get all of the channels for the specififed guild.
+        ///     Get all of the channels for the specififed guild.
         /// </summary>
         /// <param name="guildId">Id of the guild.</param>
         /// <returns>List opf channels in the guild.</returns>
         public async Task<string> GetGuildChannels(ulong guildId)
         {
             // Set bot token.
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bot", _configuration["Discord:Token"]);
+            _client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bot", _configuration["Discord:Token"]);
 
             return await _client.GetStringAsync($"guilds/{guildId}/channels");
         }

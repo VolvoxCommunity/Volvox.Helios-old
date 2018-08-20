@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot.Connector;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
+using Volvox.Helios.Domain.Discord;
 
 namespace Volvox.Helios.Core.Bot
 {
@@ -79,9 +80,22 @@ namespace Volvox.Helios.Core.Bot
             await Connector.Disconnect();
         }
 
-        public List<SocketGuild> GetGuilds()
+        /// <summary>
+        /// Get a list of the guilds the bot is in.
+        /// </summary>
+        /// <returns>List of the guilds the bot is in.</returns>
+        public IReadOnlyCollection<SocketGuild> GetGuilds()
         {
-            return Client.Guilds.ToList();
+            return Client.Guilds;
+        }
+
+        /// <summary>
+        /// Returns true if the specified guild is in the bot and false otherwise.
+        /// </summary>
+        /// <returns>Returns true if the specified guild is in the bot and false otherwise.</returns>
+        public bool IsGuildInBot(Guild guild)
+        {
+            return GetGuilds().Any(g => g.Id == guild.Id);
         }
 
         /// <summary>
