@@ -1,0 +1,16 @@
+{
+  "Metadata": {
+    "StreamAnnouncerModule": {
+      "Name": "StreamAnnouncerModule",
+      "Version": "prerelease",
+      "Description": "put something here",
+      "ReleaseState": "Canary"
+    },
+    "StreamerRoleModule": {
+      "Name": "StreamerRoleModule",
+      "Version": "prerelease",
+      "Description": "put something here",
+      "ReleaseState": "Canary"
+    }
+  }
+}

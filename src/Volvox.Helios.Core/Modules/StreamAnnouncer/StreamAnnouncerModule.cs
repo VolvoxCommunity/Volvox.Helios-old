@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.ModuleSettings;
 
@@ -27,9 +28,16 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
         /// <param name="settingsService">Settings serivce.</param>
-        public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService) : base(discordSettings, logger)
+        /// <param name="meta">Service that provides all the module metadata</param>
+        /// /// <param name="config">Used to access metadata.json</param>
+        public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService, IConfiguration config) : base(discordSettings, logger)
         {
             _settingsService = settingsService;
+            string moduleQuery = GetType().Name;
+            Name = config[$"Metadata:{moduleQuery}:Name"];
+            Version = config[$"Metadata:{moduleQuery}:Version"];
+            Description = config[$"Metadata:{moduleQuery}:Description"];
+            ReleaseState = Enum.Parse<ReleaseState>(config[$"Metadata:{moduleQuery}:ReleaseState"]);
         }
 
         /// <summary>
