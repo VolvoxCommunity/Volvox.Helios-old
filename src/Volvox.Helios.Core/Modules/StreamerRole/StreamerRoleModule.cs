@@ -24,7 +24,7 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
         /// <param name="config">Used to access metadata.json</param>
         public StreamerRoleModule(IDiscordSettings discordSettings, ILogger<StreamerRoleModule> logger, IConfiguration config) : base(discordSettings, logger)
         {
-            string moduleQuery = GetType().Name;
+            var moduleQuery = GetType().Name;
             Name = config[$"Metadata:{moduleQuery}:Name"];
             Version = config[$"Metadata:{moduleQuery}:Version"];
             Description = config[$"Metadata:{moduleQuery}:Description"];

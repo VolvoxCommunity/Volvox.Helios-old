@@ -23,12 +23,12 @@ namespace Volvox.Helios.Web.Controllers
         }
         
         [HttpGet("GetUserAdminGuilds")]
-        public async Task<object> GetUserAdminGuilds([FromServices] IDiscordUserService userService)
+        public async Task<object> GetUserAdminGuilds([FromServices] IDiscordUserGuildService userGuildService)
         {
-            var guilds = await userService.GetUserGuilds();
+            var guilds = await userGuildService.GetUserGuilds();
 
             // Format the ulong to string.
-            return guilds.FilterAdministrator().Select(g => new {id = g.Id.ToString(), name = g.Name});
+            return guilds.FilterAdministrator().Select(g => new {id = g.Guild.Id.ToString(), name = g.Guild.Name});
         }
     }
 }

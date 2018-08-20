@@ -28,12 +28,12 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
         /// <param name="settingsService">Settings serivce.</param>
-        /// <param name="meta">Service that provides all the module metadata</param>
         /// <param name="config">Used to access metadata.json</param>
         public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService, IConfiguration config) : base(discordSettings, logger)
         {
             _settingsService = settingsService;
-            string moduleQuery = GetType().Name;
+            
+            var moduleQuery = GetType().Name;
             Name = config[$"Metadata:{moduleQuery}:Name"];
             Version = config[$"Metadata:{moduleQuery}:Version"];
             Description = config[$"Metadata:{moduleQuery}:Description"];
