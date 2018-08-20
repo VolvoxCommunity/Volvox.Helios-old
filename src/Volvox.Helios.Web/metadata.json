@@ -2,14 +2,14 @@
   "Metadata": {
     "StreamAnnouncerModule": {
       "Name": "StreamAnnouncerModule",
-      "Version": "prerelease",
-      "Description": "put something here",
-      "ReleaseState": "Canary"
+      "Version": "1.0",
+      "Description": "Announce to a specific channel when a user starts streaming.",
+      "ReleaseState": "Stable"
     },
     "StreamerRoleModule": {
       "Name": "StreamerRoleModule",
-      "Version": "prerelease",
-      "Description": "put something here",
+      "Version": "1.0",
+      "Description": "Assign a specific role to a user when they start streaming.",
       "ReleaseState": "Canary"
     }
   }
