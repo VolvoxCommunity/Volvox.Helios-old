@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Volvox.Helios.Domain.Discord;
@@ -20,10 +17,10 @@ namespace Volvox.Helios.Service.Discord.Guild
 
         /// <inheritdoc />
         /// <summary>
-        /// Get all of the channels for the specififed guild.
+        ///     Get all of the channels for the specified guild.
         /// </summary>
         /// <param name="guildId">Id of the guild.</param>
-        /// <returns>List opf channels in the guild.</returns>
+        /// <returns>List of channels in the guild.</returns>
         public async Task<List<Channel>> GetChannels(ulong guildId)
         {
             var channels = await _client.GetGuildChannels(guildId);

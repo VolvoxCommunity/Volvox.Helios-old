@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Volvox.Helios.Core.Bot;
-using Volvox.Helios.Domain.Discord;
 using Volvox.Helios.Domain.ModuleSettings;
-using Volvox.Helios.Service.Discord;
 using Volvox.Helios.Service.Discord.Guild;
-using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.ViewModels.Settings;
@@ -19,6 +11,7 @@ using Volvox.Helios.Web.ViewModels.Settings;
 namespace Volvox.Helios.Web.Controllers
 {
     [Authorize]
+    [Route("/Settings/{guildId}")]
     public class SettingsController : Controller
     {
         private readonly IModuleSettingsService<StreamAnnouncerSettings> _streamAnnouncerSettingsService;
@@ -28,49 +21,50 @@ namespace Volvox.Helios.Web.Controllers
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(ulong guildId)
         {
-            return View();
+            return View(guildId);
         }
+
+        #region StreamAnnouncer
 
         // GET
-        public async Task<IActionResult> StreamAnnouncerSettings([FromServices] IDiscordUserService userService, [FromServices] IBot bot)
+        [HttpGet("StreamAnnouncer")]
+        public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId,
+            [FromServices] IDiscordGuildService guildService)
         {
-            var guilds = await userService.GetUserGuilds();
-            
-            var botGuilds = bot.GetGuilds();
+            var channels = await guildService.GetChannels(guildId);
 
-            var viewModel = new StreamAnnouncerSettingsViewModel()
+            var viewModel = new StreamAnnouncerSettingsViewModel
             {
-                Guilds = new SelectList(
-                    guilds.FilterAdministrator().FilterGuildsByIds(botGuilds.Select(b => b.Id).ToList()), "Id", "Name")
+                Channels = new SelectList(channels.FilterChannelType(0), "Id", "Name")
             };
-            
+
+            var settings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId);
+
+            if (settings == null) return View(viewModel);
+
+            viewModel.ChannelId = settings.AnnouncementChannelId;
+            viewModel.Enabled = settings.Enabled;
+
             return View(viewModel);
         }
-        
+
         // POST
-        [HttpPost]
-        public async Task<IActionResult> StreamAnnouncerSettings(StreamAnnouncerSettingsViewModel viewModel)
+        [HttpPost("StreamAnnouncer")]
+        public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId, StreamAnnouncerSettingsViewModel viewModel)
         {
             // Save the settings to the database
-            await _streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings()
+            await _streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings
             {
-                GuildId = viewModel.GuildId,
+                GuildId = guildId,
+                Enabled = viewModel.Enabled,
                 AnnouncementChannelId = viewModel.ChannelId
             });
 
             return RedirectToAction("Index");
         }
 
-        // GET
-        [HttpGet]
-        public async Task<JsonResult> GetGuildChannels([FromServices] IDiscordGuildService guildService, ulong guildId)
-        {
-            var channels = await guildService.GetChannels(guildId);
-
-            // Format the ulong to string.
-            return Json(channels.FilterChannelType(0).Select(c => new { id = c.Id.ToString(), name = c.Name }));
-        }
+        #endregion
     }
 }

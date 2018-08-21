@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.ModuleSettings;
 
@@ -27,21 +28,30 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
         /// <param name="settingsService">Settings serivce.</param>
-        public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService) : base(discordSettings, logger)
+        /// <param name="config">Used to access metadata.json</param>
+        public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService, IConfiguration config) : base(discordSettings, logger)
         {
             _settingsService = settingsService;
+            
+            var moduleQuery = GetType().Name;
+            Name = config[$"Metadata:{moduleQuery}:Name"];
+            Version = config[$"Metadata:{moduleQuery}:Version"];
+            Description = config[$"Metadata:{moduleQuery}:Description"];
+            ReleaseState = Enum.Parse<ReleaseState>(config[$"Metadata:{moduleQuery}:ReleaseState"]);
         }
 
         /// <summary>
         /// Initialize the module on GuildMemberUpdated event.
         /// </summary>
-        /// <param name="client">Client for the module to be registed to.</param>
+        /// <param name="client">Client for the module to be registered to.</param>
         public override Task Init(DiscordSocketClient client)
         {
             // Subscribe to the GuildMemberUpdated event.
             client.GuildMemberUpdated += async (user, guildUser) =>
             {
-                if (IsEnabled)
+                var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id);
+
+                if (settings.Enabled)
                 {
                     await CheckUser(guildUser);
                 }
@@ -56,7 +66,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="user">User to be evaluated/adjusted for streaming announcement.</param>
         private async Task CheckUser(SocketGuildUser user)
         {
-            // Add initial hashset set for the guild.
+            // Add initial hash set for the guild.
             if (!StreamingList.TryGetValue(user.Guild.Id, out var set))
             {
                 set = new HashSet<ulong>();
