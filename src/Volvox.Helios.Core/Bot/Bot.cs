@@ -44,6 +44,19 @@ namespace Volvox.Helios.Core.Bot
                 
                 return Task.CompletedTask;
             };
+
+            Client.Ready += () =>
+            {
+                Task.Run(async () =>
+                {
+                    for (;;)
+                    {
+                        await Task.Delay(180000);
+                        await Client.SetGameAsync($"with {Client.Guilds.Count} guilds | helios.volvox.app");
+                    }
+                });
+                return Task.CompletedTask;
+            };
             
             Connector = new BotConnector(settings, Client);
         }
