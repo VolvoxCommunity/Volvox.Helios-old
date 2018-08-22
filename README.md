@@ -6,7 +6,7 @@
 ## Getting Started
 Visit the Volvox.Helios [website](http://volvoxhelios.azurewebsites.net/) to get started adding the bot to your Discord server.
 
-## Prerequisits
+## Prerequisites
 .NET Core ->  Latest  
 NPM -> Latest
 
