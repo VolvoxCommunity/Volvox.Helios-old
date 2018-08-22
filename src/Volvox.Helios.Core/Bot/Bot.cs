@@ -51,10 +51,11 @@ namespace Volvox.Helios.Core.Bot
                 {
                     for (;;)
                     {
-                        await Task.Delay(180000);
                         await Client.SetGameAsync($"with {Client.Guilds.Count} guilds | helios.volvox.app");
+                        await Task.Delay(180000);
                     }
                 });
+                
                 return Task.CompletedTask;
             };
             
