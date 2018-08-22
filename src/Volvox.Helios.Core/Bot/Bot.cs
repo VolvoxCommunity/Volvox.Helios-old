@@ -93,9 +93,9 @@ namespace Volvox.Helios.Core.Bot
         /// Returns true if the specified guild is in the bot and false otherwise.
         /// </summary>
         /// <returns>Returns true if the specified guild is in the bot and false otherwise.</returns>
-        public bool IsGuildInBot(Guild guild)
+        public bool IsBotInGuild(ulong guildId)
         {
-            return GetGuilds().Any(g => g.Id == guild.Id);
+            return GetGuilds().Any(g => g.Id == guildId);
         }
 
         /// <summary>

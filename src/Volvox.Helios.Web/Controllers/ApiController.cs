@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Service.Extensions;
@@ -29,6 +30,12 @@ namespace Volvox.Helios.Web.Controllers
 
             // Format the ulong to string.
             return guilds.FilterAdministrator().Select(g => new {id = g.Guild.Id.ToString(), name = g.Guild.Name});
+        }
+
+        [HttpGet("IsBotInGuild")]
+        public bool IsBotInGuild(ulong guildId, [FromServices] IBot bot)
+        {
+            return bot.IsBotInGuild(guildId);
         }
     }
 }

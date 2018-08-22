@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Volvox.Helios.Core.Bot;
+using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Extensions;
@@ -21,9 +24,18 @@ namespace Volvox.Helios.Web.Controllers
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
         }
 
-        public IActionResult Index(ulong guildId)
+        public IActionResult Index(ulong guildId, [FromServices] IBot bot,
+            [FromServices] IDiscordSettings discordSettings)
         {
-            return View(guildId);
+            if (bot.IsBotInGuild(guildId))
+                return View(guildId);
+
+            // Bot is not in guild so redirect to the add bot URL.
+            var redirectUrl = Uri.EscapeDataString($"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}");
+
+            return Redirect(
+                $"https://discordapp.com/api/oauth2/authorize?client_id={discordSettings.ClientId}&permissions=8&redirect_uri={redirectUrl}&scope=bot&guild_id={guildId}&response_type=code");
+
         }
 
         #region StreamAnnouncer

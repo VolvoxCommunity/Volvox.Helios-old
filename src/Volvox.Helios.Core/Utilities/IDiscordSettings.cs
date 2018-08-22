@@ -4,7 +4,10 @@ namespace Volvox.Helios.Core.Utilities
 {
     public interface IDiscordSettings
     {
-        string Token { get; set; }
+        string Token { get; }
+
+        string ClientId { get; }
+
         IConfiguration Config { get; }
     }
 }
