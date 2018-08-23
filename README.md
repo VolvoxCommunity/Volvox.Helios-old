@@ -1,6 +1,6 @@
 
 
-# Volvox.Helios [![Build Status](https://travis-ci.org/BillChirico/Volvox.Helios.svg?branch=master)](https://travis-ci.org/BillChirico/Volvox.Helios) [![CodeFactor](https://www.codefactor.io/repository/github/billchirico/volvox.helios/badge)](https://www.codefactor.io/repository/github/billchirico/volvox.helios)
+# Volvox.Helios [![Build Status](https://travis-ci.org/VolvoxCommunity/Volvox.Helios.svg?branch=master)](https://travis-ci.org/VolvoxCommunity/Volvox.Helios) [![CodeFactor](https://www.codefactor.io/repository/github/volvoxcommunity/volvox.helios/badge)](https://www.codefactor.io/repository/github/volvoxcommunity/volvox.helios)
 #### An easy to use, customizable, modular discord bot, all managed from your favorite browser.
 
 ## Getting Started
@@ -43,7 +43,7 @@ $ dotnet run
 
 
 ## Contributing
-Read [CONTRIBUTING.md](https://github.com/BillChirico/Volvox.Helios/blob/master/CONTRIBUTING.md) for details on how to contribute.  
+Read [CONTRIBUTING.md](https://github.com/VolvoxCommunity/Volvox.Helios/blob/master/CONTRIBUTING.md) for details on how to contribute.  
 
 ## Credits
 Helios was produced by Volvox, a community dedicated to learning.  
@@ -51,4 +51,4 @@ Join our [Discord](https://discord.gg/W45xA4t)
 
 
 ## License
-Volvox.Helios is [MIT licensed](https://github.com/BillChirico/Volvox.Helios/blob/master/LICENSE).
+Volvox.Helios is [MIT licensed](https://github.com/VolvoxCommunity/Volvox.Helios/blob/master/LICENSE).
