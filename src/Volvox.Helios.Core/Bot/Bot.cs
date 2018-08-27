@@ -46,7 +46,6 @@ namespace Volvox.Helios.Core.Bot
                 return Task.CompletedTask;
             };
 
-
             // Set bot game.
             Client.Ready += () =>
             {
