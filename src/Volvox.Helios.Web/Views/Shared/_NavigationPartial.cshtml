@@ -1,9 +1,15 @@
 <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" asp-is-active>Home</a></li>
-<li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Index" asp-is-active>Settings</a></li>
-
 
 @if (User?.Identity?.IsAuthenticated ?? false)
 {
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="settingsNavDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Settings
+        </a>
+        <div class="dropdown-menu" aria-labelledby="settingsNavDropdown" id="settingsDropDown">
+            <div class="dropdown-item">Loading...</div>
+        </div>
+    </li>
     <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Authentication" asp-action="SignOut" asp-is-active>Log Out</a></li>
 }
 
@@ -11,3 +17,4 @@ else
 {
     <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Authentication" asp-action="SignIn" asp-is-active>Login</a></li>
 }
+    <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="About" asp-is-active>About</a></li>

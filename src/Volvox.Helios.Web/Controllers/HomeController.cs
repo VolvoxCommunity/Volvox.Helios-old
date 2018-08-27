@@ -8,10 +8,9 @@ namespace Volvox.Helios.Web.Controllers
         {
             return View();
         }
+        
+        public IActionResult Privacy() => View();
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        public IActionResult About() => View();
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot.Connector;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
+using Volvox.Helios.Domain.Discord;
 
 namespace Volvox.Helios.Core.Bot
 {
@@ -35,6 +36,28 @@ namespace Volvox.Helios.Core.Bot
             });
 
             Client.Log += Log;
+
+            // Log when the bot is disconnected.
+            Client.Disconnected += exception =>
+            {
+                Logger.LogCritical("Bot has been disconnected!");
+                
+                return Task.CompletedTask;
+            };
+
+            Client.Ready += () =>
+            {
+                Task.Run(async () =>
+                {
+                    for (;;)
+                    {
+                        await Client.SetGameAsync($"with {Client.Guilds.Count} servers | volvox.tech");
+                        await Task.Delay(180000);
+                    }
+                });
+                
+                return Task.CompletedTask;
+            };
             
             Connector = new BotConnector(settings, Client);
         }
@@ -71,9 +94,22 @@ namespace Volvox.Helios.Core.Bot
             await Connector.Disconnect();
         }
 
-        public List<SocketGuild> GetGuilds()
+        /// <summary>
+        /// Get a list of the guilds the bot is in.
+        /// </summary>
+        /// <returns>List of the guilds the bot is in.</returns>
+        public IReadOnlyCollection<SocketGuild> GetGuilds()
         {
-            return Client.Guilds.ToList();
+            return Client.Guilds;
+        }
+
+        /// <summary>
+        /// Returns true if the specified guild is in the bot and false otherwise.
+        /// </summary>
+        /// <returns>Returns true if the specified guild is in the bot and false otherwise.</returns>
+        public bool IsBotInGuild(ulong guildId)
+        {
+            return GetGuilds().Any(g => g.Id == guildId);
         }
 
         /// <summary>

@@ -66,5 +66,10 @@
     </environment>
 
     @RenderSection("Scripts", required: false)
+    <script>
+        $('#settingsNavDropdown').click(() => {
+            $('#settingsDropDown').populateSettings();
+        });
+    </script>
 </body>
 </html>

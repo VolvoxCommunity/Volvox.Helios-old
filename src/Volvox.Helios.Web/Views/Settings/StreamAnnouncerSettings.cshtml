@@ -11,16 +11,14 @@
         <form method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="GuildId"></label>
-                <select onchange="getGuildChannels(this.value)" asp-for="GuildId" class="form-control" asp-items="Model.Guilds">
-                    <option selected disabled hidden>Please select one</option>
-                </select>
-                <span asp-validation-for="GuildId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="ChannelId"></label>
-                <select asp-for="ChannelId" id="channels" class="form-control" disabled></select>
+                <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
                 <span asp-validation-for="ChannelId" class="text-danger"></span>
+            </div>
+            <div class="form-check">
+                <input asp-for="Enabled" class="form-check-input" />
+                <label asp-for="Enabled" class="form-check-label"></label>
+                <span asp-validation-for="Enabled" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-success" />
@@ -30,8 +28,8 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
     <script>
         function getGuildChannels(guildId) {
             $('#channels').populateGuildChannels(guildId);
