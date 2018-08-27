@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volvox.Helios.Web", "src\Vo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{663B0812-383E-4172-B210-92B3DB384257}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Unit", "test\Tests.Unit\Tests.Unit.csproj", "{8F1467D2-3BAB-4BD1-8478-E86F23179D75}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Integration", "test\Tests.Integration\Tests.Integration.csproj", "{2D3B0578-C514-4A17-835F-9F619ED4A1E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,9 +39,21 @@ Global
 		{C792E950-8407-4879-AAA4-1A736E122B9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C792E950-8407-4879-AAA4-1A736E122B9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C792E950-8407-4879-AAA4-1A736E122B9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F1467D2-3BAB-4BD1-8478-E86F23179D75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F1467D2-3BAB-4BD1-8478-E86F23179D75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F1467D2-3BAB-4BD1-8478-E86F23179D75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F1467D2-3BAB-4BD1-8478-E86F23179D75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D3B0578-C514-4A17-835F-9F619ED4A1E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D3B0578-C514-4A17-835F-9F619ED4A1E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D3B0578-C514-4A17-835F-9F619ED4A1E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D3B0578-C514-4A17-835F-9F619ED4A1E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8F1467D2-3BAB-4BD1-8478-E86F23179D75} = {663B0812-383E-4172-B210-92B3DB384257}
+		{2D3B0578-C514-4A17-835F-9F619ED4A1E7} = {663B0812-383E-4172-B210-92B3DB384257}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {385C6906-A43B-45D2-B3B3-0EB49E654CE3}
