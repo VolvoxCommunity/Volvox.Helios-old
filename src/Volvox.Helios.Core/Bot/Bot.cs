@@ -10,7 +10,6 @@ using Volvox.Helios.Core.Bot.Connector;
 using Volvox.Helios.Core.Bot.Reliability;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
-using Volvox.Helios.Domain.Discord;
 
 namespace Volvox.Helios.Core.Bot
 {
@@ -96,6 +95,8 @@ namespace Volvox.Helios.Core.Bot
         /// </summary>
         public async Task Stop()
         {
+            Logger.LogInformation("Disconnecting bot naturally");
+
             await Connector.Disconnect();
         }
 
