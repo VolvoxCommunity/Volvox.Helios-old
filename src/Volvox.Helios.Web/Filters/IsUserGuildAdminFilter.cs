@@ -7,6 +7,9 @@ using Volvox.Helios.Service.Extensions;
 
 namespace Volvox.Helios.Web.Filters
 {
+    /// <summary>
+    ///     Returns an unauthorized result if the logged in user is not an admin of the selected guild.
+    /// </summary>
     public class IsUserGuildAdminFilter : ActionFilterAttribute
     {
         public override async void OnActionExecuting(ActionExecutingContext context)
