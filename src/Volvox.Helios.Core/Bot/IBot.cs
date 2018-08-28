@@ -46,7 +46,7 @@ namespace Volvox.Helios.Core.Bot
         /// </summary>
         /// <param name="guildId">Id of the guild to get the hierarchy from.</param>
         /// <returns>Bots role position.</returns>
-        int GetBotHierarchy(ulong guildId);
+        int GetBotRoleHierarchy(ulong guildId);
 
             /// <summary>
         /// Log an event.

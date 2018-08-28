@@ -103,6 +103,7 @@ namespace Volvox.Helios.Core.Bot
             await Connector.Disconnect();
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get a list of the guilds the bot is in.
         /// </summary>
@@ -128,7 +129,7 @@ namespace Volvox.Helios.Core.Bot
         /// </summary>
         /// <param name="guildId">Id of the guild to get the hierarchy from.</param>
         /// <returns>Bots role position.</returns>
-        public int GetBotHierarchy(ulong guildId)
+        public int GetBotRoleHierarchy(ulong guildId)
         {
             var hierarchy = GetGuilds()?.FirstOrDefault(g => g.Id == guildId)?.CurrentUser.Hierarchy;
 

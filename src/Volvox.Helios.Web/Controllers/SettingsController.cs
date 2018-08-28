@@ -121,8 +121,24 @@ namespace Volvox.Helios.Web.Controllers
 
         // POST
         [HttpPost("StreamerRole")]
-        public async Task<IActionResult> StreamerRoleSettings(ulong guildId, StreamerRoleSettingsViewModel viewModel)
+        public async Task<IActionResult> StreamerRoleSettings(ulong guildId, StreamerRoleSettingsViewModel viewModel, [FromServices] IBot bot, [FromServices] IDiscordGuildService guildService)
         {
+            var botRolePosition = bot.GetBotRoleHierarchy(guildId);
+
+            var roles = await guildService.GetRoles(guildId);
+
+            var selectedRolePosition = roles.FirstOrDefault(r => r.Id == viewModel.RoleId)?.Position;
+
+            // Discord bots cannot assign to roles that are higher then them in the hierarchy.
+            if (selectedRolePosition > botRolePosition)
+            {
+                ModelState.AddModelError("RolePosition", "The bots managed role must be positioned higher then the selected role");
+
+                viewModel.Roles = new SelectList(roles.RemoveManaged(), "Id", "Name");
+
+                return View(viewModel);
+            }
+
             // Save the settings to the database
             await _streamerRoleSettingsService.SaveSettings(new StreamerRoleSettings
             {
