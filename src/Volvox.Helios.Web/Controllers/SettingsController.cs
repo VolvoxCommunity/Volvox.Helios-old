@@ -1,20 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Core.Bot;
+using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord.Guild;
+using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Service.ModuleSettings;
+using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.ViewModels.Settings;
 
 namespace Volvox.Helios.Web.Controllers
 {
     [Authorize]
     [Route("/Settings/{guildId}")]
+    [IsUserGuildAdminFilter]
     public class SettingsController : Controller
     {
         private readonly IModuleSettingsService<StreamAnnouncerSettings> _streamAnnouncerSettingsService;
@@ -25,20 +32,28 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         public IActionResult Index(ulong guildId, [FromServices] IBot bot,
-            [FromServices] IDiscordSettings discordSettings)
+            [FromServices] IDiscordSettings discordSettings, [FromServices] IList<IModule> modules)
         {
             if (bot.IsBotInGuild(guildId))
-                return View(guildId);
+            {
+                var viewModel = new SettingsIndexViewModel
+                {
+                    GuildId = guildId,
+                    Modules = modules
+                };
+
+                return View(viewModel);
+            }
 
             // Bot is not in guild so redirect to the add bot URL.
             var redirectUrl = Uri.EscapeDataString($"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}");
 
             return Redirect(
                 $"https://discordapp.com/api/oauth2/authorize?client_id={discordSettings.ClientId}&permissions=8&redirect_uri={redirectUrl}&scope=bot&guild_id={guildId}");
-
         }
 
         #region StreamAnnouncer
+        
         // GET
         [HttpGet("StreamAnnouncer")]
         public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId,
@@ -75,6 +90,7 @@ namespace Volvox.Helios.Web.Controllers
 
             return RedirectToAction("Index");
         }
+        
         #endregion
     }
 }

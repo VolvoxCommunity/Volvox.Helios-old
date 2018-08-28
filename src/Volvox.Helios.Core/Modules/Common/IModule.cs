@@ -10,7 +10,7 @@ namespace Volvox.Helios.Core.Modules.Common
     /// <summary>
     ///     Unit of the bot.
     /// </summary>
-    public interface IModule
+    public interface IModule : IDocumented
     {
         /// <summary>
         ///     Settings for Discord bot.
