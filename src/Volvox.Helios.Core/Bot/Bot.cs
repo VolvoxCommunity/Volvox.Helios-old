@@ -66,6 +66,7 @@ namespace Volvox.Helios.Core.Bot
             Connector = new BotConnector(settings, Client);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Initialize all of modules available to the bot.
         /// </summary>
@@ -78,6 +79,7 @@ namespace Volvox.Helios.Core.Bot
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Start the bot.
         /// </summary>
@@ -90,6 +92,7 @@ namespace Volvox.Helios.Core.Bot
             await Task.Delay(Timeout.Infinite);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Stop the bot.
         /// </summary>
@@ -109,6 +112,7 @@ namespace Volvox.Helios.Core.Bot
             return Client.Guilds;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Returns true if the specified guild is in the bot and false otherwise.
         /// </summary>
@@ -118,6 +122,21 @@ namespace Volvox.Helios.Core.Bot
             return GetGuilds().Any(g => g.Id == guildId);
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Get the bots role in the hierarchy of the specified guild.
+        /// </summary>
+        /// <param name="guildId">Id of the guild to get the hierarchy from.</param>
+        /// <returns>Bots role position.</returns>
+        public int GetBotHierarchy(ulong guildId)
+        {
+            var hierarchy = GetGuilds()?.FirstOrDefault(g => g.Id == guildId)?.CurrentUser.Hierarchy;
+
+            return hierarchy ?? 0;
+        }
+
+
+        /// <inheritdoc />
         /// <summary>
         /// Log an event.
         /// </summary>
@@ -150,21 +169,25 @@ namespace Volvox.Helios.Core.Bot
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Client for the bot.
         /// </summary>
         public DiscordSocketClient Client { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Connector that the bot uses to connect to Discord.
         /// </summary>
         public IBotConnector Connector { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// List of modules for the bot.
         /// </summary>
         public IList<IModule> Modules { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Application logger.
         /// </summary>
