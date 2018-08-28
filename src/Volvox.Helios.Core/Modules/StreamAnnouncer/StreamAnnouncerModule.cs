@@ -27,7 +27,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
-        /// <param name="settingsService">Settings serivce.</param>
+        /// <param name="settingsService">Settings service.</param>
         /// <param name="config">Used to access metadata.json</param>
         public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger, IModuleSettingsService<StreamAnnouncerSettings> settingsService, IConfiguration config) : base(discordSettings, logger)
         {
@@ -51,7 +51,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             {
                 var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id);
 
-                if (settings.Enabled)
+                if (settings != null && settings.Enabled)
                 {
                     await CheckUser(guildUser);
                 }

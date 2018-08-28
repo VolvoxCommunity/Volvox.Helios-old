@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Volvox.Helios.Web.ViewModels.Settings
 {
-    public class StreamAnnouncerSettingsViewModel
+    public class StreamerRoleSettingsViewModel
     {
-        public SelectList Channels { get; set; }
-        
+        public SelectList Roles { get; set; }
+
         [Required]
-        [DisplayName("Channel")]
-        public ulong ChannelId { get; set; }
+        [DisplayName("Role")]
+        public ulong RoleId { get; set; }
 
         [Required]
         [DisplayName("Enabled")]
