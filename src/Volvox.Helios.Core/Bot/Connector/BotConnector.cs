@@ -35,7 +35,7 @@ namespace Volvox.Helios.Core.Bot.Connector
         }
 
         /// <summary>
-        ///     Discconect the bot from Discord.
+        ///     Disconnect the bot from Discord.
         /// </summary>
         public async Task Disconnect()
         {

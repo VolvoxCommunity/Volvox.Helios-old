@@ -7,9 +7,9 @@ using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot.Connector;
+using Volvox.Helios.Core.Bot.Reliability;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
-using Volvox.Helios.Domain.Discord;
 
 namespace Volvox.Helios.Core.Bot
 {
@@ -45,20 +45,24 @@ namespace Volvox.Helios.Core.Bot
                 return Task.CompletedTask;
             };
 
+            // Set bot game.
             Client.Ready += () =>
             {
                 Task.Run(async () =>
                 {
                     for (;;)
                     {
-                        await Client.SetGameAsync($"with {Client.Guilds.Count} servers | volvox.tech");
-                        await Task.Delay(180000);
+                        await Client.SetGameAsync($"volvox.tech | with {Client.Guilds.Count} servers");
+                        await Task.Delay(TimeSpan.FromMinutes(15));
                     }
                 });
                 
                 return Task.CompletedTask;
             };
-            
+
+            // Add reliability service.
+            _ = new ReliabilityService(Client, logger);
+
             Connector = new BotConnector(settings, Client);
         }
 
@@ -91,6 +95,8 @@ namespace Volvox.Helios.Core.Bot
         /// </summary>
         public async Task Stop()
         {
+            Logger.LogInformation("Disconnecting bot naturally");
+
             await Connector.Disconnect();
         }
 
