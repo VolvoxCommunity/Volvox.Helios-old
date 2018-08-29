@@ -54,12 +54,12 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
 
                         Logger.LogError("StreamingRole Module: Role could not be found!");
                     }
-
                     else
                     {
+                        // Add use to role.
                         if (guildUser.Game != null && guildUser.Game.Value.StreamType == StreamType.Twitch)
                             await AddUserToStreamingRole(guildUser, streamingRole);
-                        
+                        // Remove user from role.
                         else if (guildUser.Roles.Any(r => r == streamingRole))
                             await RemoveUserFromStreamingRole(guildUser, streamingRole);
                     }
