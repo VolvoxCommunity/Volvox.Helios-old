@@ -9,8 +9,8 @@
     "StreamerRoleModule": {
       "Name": "Streamer Role",
       "Version": "1.0",
-      "Description": "Assign a specific role to a user when they start streaming.",
-      "ReleaseState": "Canary"
+      "Description": "Assign a role users that are streaming.",
+      "ReleaseState": "Stable"
     }
   }
 }
