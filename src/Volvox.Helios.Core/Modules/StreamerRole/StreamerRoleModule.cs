@@ -25,7 +25,9 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
         /// <param name="logger">Logger.</param>
         /// <param name="config">Application configuration.</param>
         /// <param name="settingsService">Settings service.</param>
-        public StreamerRoleModule(IDiscordSettings discordSettings, ILogger<StreamerRoleModule> logger, IConfiguration config, IModuleSettingsService<StreamerRoleSettings> settingsService) : base(discordSettings, logger, config)
+        public StreamerRoleModule(IDiscordSettings discordSettings, ILogger<StreamerRoleModule> logger,
+            IConfiguration config, IModuleSettingsService<StreamerRoleSettings> settingsService) : base(discordSettings,
+            logger, config)
         {
             _settingsService = settingsService;
         }
@@ -45,13 +47,24 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
                     // Get the streaming role.
                     var streamingRole = guildUser.Guild.Roles.FirstOrDefault(r => r.Id == settings.RoleId);
 
-                    // Add user to role.
-                    if (guildUser.Game != null && guildUser.Game.Value.StreamType == StreamType.Twitch)
-                        await AddUserToStreamingRole(guildUser, streamingRole);
+                    // Remove the streaming role if it does no exist
+                    if (streamingRole == null)
+                    {
+                        await _settingsService.RemoveSetting(settings);
 
-                    // Remove user from role.
-                    else if (guildUser.Roles.Any(r => r == streamingRole))
-                        await RemoveUserFromStreamingRole(guildUser, streamingRole);
+                        Logger.LogError("StreamingRole Module: Role cannot be found!");
+                    }
+
+                    else
+                    {
+                        // Add user to role.
+                        if (guildUser.Game != null && guildUser.Game.Value.StreamType == StreamType.Twitch)
+                            await AddUserToStreamingRole(guildUser, streamingRole);
+
+                        // Remove user from role.
+                        else if (guildUser.Roles.Any(r => r == streamingRole))
+                            await RemoveUserFromStreamingRole(guildUser, streamingRole);
+                    }
                 }
             };
 
