@@ -136,7 +136,6 @@ namespace Volvox.Helios.Core.Bot
             return hierarchy ?? 0;
         }
 
-
         /// <inheritdoc />
         /// <summary>
         /// Log an event.
