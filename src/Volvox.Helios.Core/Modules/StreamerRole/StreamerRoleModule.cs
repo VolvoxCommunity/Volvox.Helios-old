@@ -47,12 +47,12 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
                     // Get the streaming role.
                     var streamingRole = guildUser.Guild.Roles.FirstOrDefault(r => r.Id == settings.RoleId);
 
-                    // Remove the streaming role if it does no exist
+                    // Remove the streaming role if it does not exist.
                     if (streamingRole == null)
                     {
                         await _settingsService.RemoveSetting(settings);
 
-                        Logger.LogError("StreamingRole Module: Role cannot be found!");
+                        Logger.LogError("StreamingRole Module: Role could not be found!");
                     }
 
                     else
