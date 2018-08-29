@@ -47,7 +47,7 @@ Read [CONTRIBUTING.md](https://github.com/VolvoxCommunity/Volvox.Helios/blob/mas
 
 ## Credits
 Helios was produced by Volvox, a community dedicated to learning.  
-Join our [Discord](https://discord.gg/W45xA4t)
+Join our [Discord](https://discord.gg/jReSmc3)
 
 
 ## License
