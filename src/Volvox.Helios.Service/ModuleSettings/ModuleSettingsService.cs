@@ -73,7 +73,6 @@ namespace Volvox.Helios.Service.ModuleSettings
 
                 await context.SaveChangesAsync();
             }
-
         }
 
         /// <summary>

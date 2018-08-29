@@ -57,11 +57,9 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
 
                     else
                     {
-                        // Add user to role.
                         if (guildUser.Game != null && guildUser.Game.Value.StreamType == StreamType.Twitch)
                             await AddUserToStreamingRole(guildUser, streamingRole);
-
-                        // Remove user from role.
+                        
                         else if (guildUser.Roles.Any(r => r == streamingRole))
                             await RemoveUserFromStreamingRole(guildUser, streamingRole);
                     }
