@@ -41,6 +41,7 @@ namespace Volvox.Helios.Web.Controllers
                 var viewModel = new SettingsIndexViewModel
                 {
                     GuildId = guildId,
+                    GuildName = bot.GetGuilds().FirstOrDefault(g => g.Id == guildId)?.Name,
                     Modules = modules
                 };
 
