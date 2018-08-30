@@ -133,7 +133,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         ///     Remove announcement message from channel if neccesary.
         /// </summary>
         /// <param name="user">User whom stopped streaming</param>
-        /// <param name="UserDataFromList">Data taken from the StreamingList hashset. 
+        /// <param name="userDataFromList">Data taken from the StreamingList hashset. 
         ///     This is where the messageId is stored
         /// </param>
         private async Task AnnouncedMessagesHandler(SocketGuildUser user, StreamAnnouncerMessage userDataFromList)
