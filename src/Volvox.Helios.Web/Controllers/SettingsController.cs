@@ -75,6 +75,7 @@ namespace Volvox.Helios.Web.Controllers
 
             viewModel.ChannelId = settings.AnnouncementChannelId;
             viewModel.Enabled = settings.Enabled;
+            viewModel.RemoveMessages = settings.RemoveMessages;
 
             return View(viewModel);
         }
@@ -88,7 +89,8 @@ namespace Volvox.Helios.Web.Controllers
             {
                 GuildId = guildId,
                 Enabled = viewModel.Enabled,
-                AnnouncementChannelId = viewModel.ChannelId
+                AnnouncementChannelId = viewModel.ChannelId,
+                RemoveMessages = viewModel.RemoveMessages
             });
 
             return RedirectToAction("Index");
