@@ -4,6 +4,7 @@
     {
         public ulong AnnouncementChannelId { get; set; }
 
-        public bool ShouldRemoveMessagesOnStreamConclusion { get; set; }
+        // Determines if stream announcement messages should be removed on stream conclusion
+        public bool RemoveMessages { get; set; }
     }
 }

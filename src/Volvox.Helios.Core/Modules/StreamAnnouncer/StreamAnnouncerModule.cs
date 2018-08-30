@@ -69,26 +69,26 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch &&
                 !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
             {
-                var Message = new StreamAnnouncerMessage() { UserId = user.Id};
+                var message = new StreamAnnouncerMessage() { UserId = user.Id};
 
                 // Add user to the streaming list.
-                StreamingList[user.Guild.Id].Add(Message);
+                StreamingList[user.Guild.Id].Add(message);
 
                 // Announce that the user is streaming.
-                await AnnounceUser(user, Message);
+                await AnnounceUser(user, message);
             }
 
             // User is not streaming.
             else if (user.Game == null || user.Game.Value.StreamType != StreamType.Twitch)
             {
                 // Get user from streaming list.
-                var UserDataFromList = StreamingList[user.Guild.Id].Where(x => x.UserId == user.Id).First();
+                var userDataFromList = StreamingList[user.Guild.Id].FirstOrDefault(x => x.UserId == user.Id);
 
                 // Remove message from channel if neccesary.
-                await AnnouncedMessagesHandler(user, UserDataFromList);
+                await AnnouncedMessagesHandler(user, userDataFromList);
 
                 // Remove user from list.
-                StreamingList[user.Guild.Id].Remove(UserDataFromList);
+                StreamingList[user.Guild.Id].Remove(userDataFromList);
             }
         }
 
@@ -118,13 +118,13 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
                     Logger.LogDebug($"StreamAnnouncer Module: Announcing {user.Username}");
 
                     // Announce the user to the channel specified in settings.
-                    var MessageData = await user.Guild.GetTextChannel(announceChannelId)
+                    var messageData = await user.Guild.GetTextChannel(announceChannelId)
                         .SendMessageAsync("", embed: embed);
 
-                    ulong MessageId = MessageData.Id;
+                    ulong messageId = messageData.Id;
                     
                     // Sets MessageId in hashet, as hashset holds reference to the message param.
-                    message.MessageId = MessageId;
+                    message.MessageId = messageId;
                 }
             }
         }
@@ -136,17 +136,17 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="UserDataFromList">Data taken from the StreamingList hashset. 
         ///     This is where the messageId is stored
         /// </param>
-        private async Task AnnouncedMessagesHandler(SocketGuildUser user, StreamAnnouncerMessage UserDataFromList)
+        private async Task AnnouncedMessagesHandler(SocketGuildUser user, StreamAnnouncerMessage userDataFromList)
         {
             var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id);
 
             if (settings != null)
             {
                 // Deletes messages if option is checked
-                if (settings.ShouldRemoveMessagesOnStreamConclusion)
+                if (settings.RemoveMessages)
                 {
                     // Announcement message Id.
-                    ulong messageId = UserDataFromList.MessageId;
+                    ulong messageId = userDataFromList.MessageId;
 
                     // Convert to array to work with DeleteMessagesAsync.
                     ulong[] messageIds = new ulong[1] { messageId };

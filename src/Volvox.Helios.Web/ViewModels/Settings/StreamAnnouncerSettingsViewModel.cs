@@ -20,6 +20,6 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         [Required]
         [DisplayName("Delete messages on stream conclusion")]
         [DefaultValue(false)]
-        public bool ShouldDeleteMessagesOnstreamConclusion { get; set; }
+        public bool RemoveMessages { get; set; }
     }
 }
