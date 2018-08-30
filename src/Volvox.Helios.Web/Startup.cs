@@ -163,7 +163,7 @@ namespace Volvox.Helios.Web
 
             app.UseAuthentication();
 
-            loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
+            //loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
 
             app.UseMvc(routes =>
             {
