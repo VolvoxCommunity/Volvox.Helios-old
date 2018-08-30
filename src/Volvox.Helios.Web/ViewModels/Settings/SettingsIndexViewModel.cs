@@ -7,6 +7,8 @@ namespace Volvox.Helios.Web.ViewModels.Settings
     {
         public ulong GuildId { get; set; }
 
+        public string GuildName { get; set; }
+
         public IList<IModule> Modules { get; set; }
     }
 }
