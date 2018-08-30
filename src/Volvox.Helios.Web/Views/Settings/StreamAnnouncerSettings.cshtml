@@ -15,7 +15,7 @@
                 <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
                 <span asp-validation-for="ChannelId" class="text-danger"></span>
             </div>
-            <div class="form-check">
+            <div class="form-group form-check">
                 <input asp-for="Enabled" class="form-check-input" />
                 <label asp-for="Enabled" class="form-check-label"></label>
                 <span asp-validation-for="Enabled" class="text-danger"></span>
@@ -29,10 +29,4 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-
-    <script>
-        function getGuildChannels(guildId) {
-            $('#channels').populateGuildChannels(guildId);
-        }
-    </script>
 }
