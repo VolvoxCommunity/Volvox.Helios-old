@@ -16,6 +16,7 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing.Framework
             Channel = message.Channel;
             User = message.Author;
             Client = client;
+            GivenPrefix = prefix;
         }
     }
 }

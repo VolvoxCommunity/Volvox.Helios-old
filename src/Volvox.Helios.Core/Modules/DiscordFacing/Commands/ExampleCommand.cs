@@ -7,7 +7,10 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing.Commands
     {
         public async Task TryTrigger(DiscordFacingContext context)
         {
-            if(context.Message.Content.StartsWith($"{context.GivenPrefix}helloworld")) throw new TriggerFailException();
+            if (context.Message.Content.StartsWith($"{context.GivenPrefix}helloworld") == false)
+            {
+                throw new TriggerFailException();
+            }
             await Execute(context);
         }
 
