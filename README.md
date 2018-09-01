@@ -1,6 +1,6 @@
 
 
-# Volvox.Helios [![Build Status](https://travis-ci.org/VolvoxCommunity/Volvox.Helios.svg?branch=master)](https://travis-ci.org/VolvoxCommunity/Volvox.Helios) [![CodeFactor](https://www.codefactor.io/repository/github/volvoxcommunity/volvox.helios/badge)](https://www.codefactor.io/repository/github/volvoxcommunity/volvox.helios)
+# Volvox.Helios [![Build Status](https://travis-ci.org/VolvoxCommunity/Volvox.Helios.svg?branch=master)](https://travis-ci.org/VolvoxCommunity/Volvox.Helios) [![CodeFactor](https://www.codefactor.io/repository/github/volvoxcommunity/volvox.helios/badge)](https://www.codefactor.io/repository/github/volvoxcommunity/volvox.helios) [![Discord](https://discordapp.com/api/guilds/468467000344313866/widget.png)](https://discord.gg/jReSmc3)
 #### An easy to use, customizable, modular discord bot, all managed from your favorite browser.
 
 ## Getting Started
@@ -47,7 +47,7 @@ Read [CONTRIBUTING.md](https://github.com/VolvoxCommunity/Volvox.Helios/blob/mas
 
 ## Credits
 Helios was produced by Volvox, a community dedicated to learning.  
-Join our [Discord](https://discord.gg/W45xA4t)
+Join our [Discord](https://discord.gg/jReSmc3)!
 
 
 ## License

@@ -1,24 +1,27 @@
-﻿@model ulong
+﻿@model Volvox.Helios.Web.ViewModels.Settings.SettingsIndexViewModel
 
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Settings";
 }
 
-<h2>Settings</h2>
+<h2>@Model.GuildName</h2>
 <hr />
 <h4>Modules</h4>
 <div class="row">
-    <div class="col-sm">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">
-                    Stream Announcer
-                    <a style="color: black" class="float-right" asp-controller="Settings" asp-action="StreamAnnouncerSettings">
-                        <i class="fas fa-cog"></i>
-                    </a>
-                </h5>
-                <p class="card-text">Announce to a specific channel when a user starts streaming to Twitch</p>
+    @foreach (var module in Model.Modules)
+    {
+        <div class="col-sm">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        @module.Name
+                        <a style="color: black" class="float-right" asp-controller="Settings" asp-action="@(module.Name.Replace(" ", "") + "Settings")">
+                            <i class="fas fa-cog"></i>
+                        </a>
+                    </h5>
+                    <p class="card-text">@module.Description</p>
+                </div>
             </div>
         </div>
-    </div>
+    }
 </div>
