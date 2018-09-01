@@ -64,5 +64,10 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
                 }
             }
         }
+
+        public string Name { get; }
+        public string Version { get; }
+        public string Description { get; }
+        public ReleaseState ReleaseState { get; }
     }
 }
