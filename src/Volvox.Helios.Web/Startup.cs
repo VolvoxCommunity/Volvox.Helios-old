@@ -19,9 +19,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
-using Volvox.Helios.Core.Modules.DiscordFacing;
-using Volvox.Helios.Core.Modules.DiscordFacing.Commands;
-using Volvox.Helios.Core.Modules.DiscordFacing.Framework;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Core.Modules.StreamerRole;
 using Volvox.Helios.Core.Utilities;
@@ -54,7 +51,7 @@ namespace Volvox.Helios.Web
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-                                    
+
             // Authentication
             services.AddAuthentication(options =>
                 {
@@ -108,16 +105,11 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IBot, Bot>();
 
             // Modules
-            services.AddSingleton<IModule, StreamerRoleModule>();
             services.AddSingleton<IModule, StreamAnnouncerModule>();
-            
-            // DiscordFacing
-            services.AddSingleton<IModule, DiscordFacingManager>();
-            services.AddSingleton<ICommand, ExampleCommand>();
+            services.AddSingleton<IModule, StreamerRoleModule>();
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
-            services.AddSingleton<IList<ICommand>>(s => s.GetServices<ICommand>().ToList());
 
             // HTTP Clients
             services.AddHttpClient<DiscordAPIClient>(options =>
