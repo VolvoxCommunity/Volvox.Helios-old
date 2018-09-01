@@ -13,7 +13,7 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
 {
     public class DiscordFacingManager : Module
     {
-        public DiscordSocketClient Client { get; private set; }
+        private DiscordSocketClient Client { get; set; }
         public IList<ICommand> Modules { get; }
         
         public IDiscordSettings DiscordSettings { get; }
