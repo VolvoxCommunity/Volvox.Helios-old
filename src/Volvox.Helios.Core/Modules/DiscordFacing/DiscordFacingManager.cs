@@ -14,33 +14,28 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
     public class DiscordFacingManager : Module
     {
         private DiscordSocketClient Client { get; set; }
-        public IList<ICommand> Modules { get; }
-        
-        public IDiscordSettings DiscordSettings { get; }
-        public ILogger<IModule> Logger { get; }
-        public bool IsEnabled { get; set; }
+
+        private IList<ICommand> Modules { get; }
 
         public DiscordFacingManager(ILogger<IModule> logger, IList<ICommand> modules, IDiscordSettings settings, IConfiguration config) : base(settings, logger, config)
         {
+            Modules = modules;
         }
         
         public override Task Init(DiscordSocketClient client)
         {
             Client = client;
             Client.MessageReceived += HandleCommandAsync;
+            
             return Task.CompletedTask;
         }
 
-        public new Task Start(DiscordSocketClient client) => Task.CompletedTask;
-
-        public new Task Execute(DiscordSocketClient client) => Task.CompletedTask;
-
-        public async Task HandleCommandAsync(SocketMessage emitted)
+        private async Task HandleCommandAsync(SocketMessage emitted)
         {
             if (!(emitted is SocketUserMessage message) || emitted.Channel is IDMChannel || !message.Content.StartsWith("h-") /*placeholder prefix */) return;
             var context = new DiscordFacingContext(message, Client, "h-");
 
-            foreach (ICommand module in Modules)
+            foreach (var module in Modules)
             {
                 try
                 {
