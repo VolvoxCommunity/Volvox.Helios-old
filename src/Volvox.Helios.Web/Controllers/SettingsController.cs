@@ -42,7 +42,7 @@ namespace Volvox.Helios.Web.Controllers
                 {
                     GuildId = guildId,
                     GuildName = bot.GetGuilds().FirstOrDefault(g => g.Id == guildId)?.Name,
-                    Modules = modules
+                    Modules = modules.Where(mod => mod.Configurable).ToList()
                 };
 
                 return View(viewModel);

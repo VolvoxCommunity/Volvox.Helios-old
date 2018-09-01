@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.DiscordFacing.Framework;
@@ -10,7 +11,7 @@ using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Modules.DiscordFacing
 {
-    public class DiscordFacingManager : IModule
+    public class DiscordFacingManager : Module
     {
         public DiscordSocketClient Client { get; private set; }
         public IList<ICommand> Modules { get; }
@@ -19,22 +20,20 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
         public ILogger<IModule> Logger { get; }
         public bool IsEnabled { get; set; }
 
-        public DiscordFacingManager(ILogger<IModule> logger, IList<ICommand> modules)
+        public DiscordFacingManager(ILogger<IModule> logger, IList<ICommand> modules, IDiscordSettings settings, IConfiguration config) : base(settings, logger, config)
         {
-            Logger = logger;
-            Modules = modules;
         }
         
-        public Task Init(DiscordSocketClient client)
+        public override Task Init(DiscordSocketClient client)
         {
             Client = client;
             Client.MessageReceived += HandleCommandAsync;
             return Task.CompletedTask;
         }
 
-        public Task Start(DiscordSocketClient client) => Task.CompletedTask;
+        public new Task Start(DiscordSocketClient client) => Task.CompletedTask;
 
-        public Task Execute(DiscordSocketClient client) => Task.CompletedTask;
+        public new Task Execute(DiscordSocketClient client) => Task.CompletedTask;
 
         public async Task HandleCommandAsync(SocketMessage emitted)
         {
@@ -64,21 +63,5 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
                 }
             }
         }
-        /// <summary>
-        /// DON'T CALL THIS IT'S NOT DEFINED
-        /// </summary>
-        public string Name { get; }
-        /// <summary>
-        /// DON'T CALL THIS IT'S NOT DEFINED
-        /// </summary>
-        public string Version { get; }
-        /// <summary>
-        /// DON'T CALL THIS IT'S NOT DEFINED
-        /// </summary>
-        public string Description { get; }
-        /// <summary>
-        /// DON'T CALL THIS IT'S NOT DEFINED
-        /// </summary>
-        public ReleaseState ReleaseState { get; }
     }
 }
