@@ -13,13 +13,13 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
     public class DiscordFacingManager : IModule
     {
         public DiscordSocketClient Client { get; private set; }
-        public IList<IDiscordFacingModule> Modules { get; }
+        public IList<ICommand> Modules { get; }
         
         public IDiscordSettings DiscordSettings { get; }
         public ILogger<IModule> Logger { get; }
         public bool IsEnabled { get; set; }
 
-        public DiscordFacingManager(ILogger<IModule> logger, IList<IDiscordFacingModule> modules)
+        public DiscordFacingManager(ILogger<IModule> logger, IList<ICommand> modules)
         {
             Logger = logger;
             Modules = modules;
@@ -41,7 +41,7 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
             if (!(emitted is SocketUserMessage message) || emitted.Channel is IDMChannel || !message.Content.StartsWith("h-") /*placeholder prefix */) return;
             var context = new DiscordFacingContext(message, Client, "h-");
 
-            foreach (IDiscordFacingModule module in Modules)
+            foreach (ICommand module in Modules)
             {
                 try
                 {

@@ -3,7 +3,7 @@ using Volvox.Helios.Core.Modules.DiscordFacing.Framework;
 
 namespace Volvox.Helios.Core.Modules.DiscordFacing.Commands
 {
-    public class ExampleCommand : IDiscordFacingModule
+    public class ExampleCommand : ICommand
     {
         public async Task TryTrigger(DiscordFacingContext context)
         {
