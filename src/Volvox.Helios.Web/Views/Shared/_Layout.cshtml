@@ -4,6 +4,15 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google-site-verification" content="18JHtM67T9ZVSSo1HwwLB5r8lghAxcJba3RRZb3r_Lg" />
+    <meta property="og:title" content="Volvox.Helios" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://www.volvox.tech/" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content="http://www.volvox.tech/images/volvox.png" />
+    <meta property="og:image:width" content="400" />
+    <meta property="og:image:height" content="300" />
+    <meta property="og:description" content="A powerful, community built discord bot." />
     <title>@ViewData["Title"] - Volvox.Helios</title>
 
     <environment include="Development">
@@ -18,6 +27,7 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
     </environment>
+    <link rel="icon" type="image/x-icon" href="~/images/volvox.png">
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
 <body>
@@ -30,6 +40,9 @@
             <div class="navbar-collapse collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     @await Html.PartialAsync("_NavigationPartial")
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    @await Html.PartialAsync("_LoginNavigationPartial")
                 </ul>
             </div>
         </div>

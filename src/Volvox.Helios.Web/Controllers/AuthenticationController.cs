@@ -11,8 +11,16 @@ namespace Volvox.Helios.Web.Controllers
         {
             var returnUrl = HttpContext.Request.Query["ReturnUrl"].ToString();
 
+            if (
+                   string.IsNullOrWhiteSpace(returnUrl)
+                || !Url.IsLocalUrl(returnUrl)
+                )
+            {
+                returnUrl = "/";
+            }
+
             return Challenge(
-                new AuthenticationProperties {RedirectUri = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl},
+                new AuthenticationProperties {RedirectUri =  returnUrl},
                 "Discord");
         }
 
