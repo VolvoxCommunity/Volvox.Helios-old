@@ -19,6 +19,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
+using Volvox.Helios.Core.Modules.DiscordFacing;
+using Volvox.Helios.Core.Modules.DiscordFacing.Commands;
+using Volvox.Helios.Core.Modules.DiscordFacing.Framework;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Core.Modules.StreamerRole;
 using Volvox.Helios.Core.Utilities;
@@ -107,9 +110,14 @@ namespace Volvox.Helios.Web
             // Modules
             services.AddSingleton<IModule, StreamAnnouncerModule>();
             services.AddSingleton<IModule, StreamerRoleModule>();
+            
+            // DiscordFacing
+            services.AddSingleton<IModule, DiscordFacingManager>();
+            services.AddSingleton<ICommand, ExampleCommand>();
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
+            services.AddSingleton<IList<ICommand>>(s => s.GetServices<ICommand>().ToList());
 
             // HTTP Clients
             services.AddHttpClient<DiscordAPIClient>(options =>

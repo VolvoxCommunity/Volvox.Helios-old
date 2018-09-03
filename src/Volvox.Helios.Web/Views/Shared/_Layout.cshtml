@@ -27,6 +27,7 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
     </environment>
+    <link rel="icon" type="image/x-icon" href="~/images/volvox.png">
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
 <body>
@@ -39,6 +40,9 @@
             <div class="navbar-collapse collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     @await Html.PartialAsync("_NavigationPartial")
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    @await Html.PartialAsync("_LoginNavigationPartial")
                 </ul>
             </div>
         </div>

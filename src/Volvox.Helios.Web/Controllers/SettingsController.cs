@@ -41,7 +41,8 @@ namespace Volvox.Helios.Web.Controllers
                 var viewModel = new SettingsIndexViewModel
                 {
                     GuildId = guildId,
-                    Modules = modules
+                    GuildName = bot.GetGuilds().FirstOrDefault(g => g.Id == guildId)?.Name,
+                    Modules = modules.Where(mod => mod.Configurable).ToList()
                 };
 
                 return View(viewModel);
@@ -74,6 +75,7 @@ namespace Volvox.Helios.Web.Controllers
 
             viewModel.ChannelId = settings.AnnouncementChannelId;
             viewModel.Enabled = settings.Enabled;
+            viewModel.RemoveMessages = settings.RemoveMessages;
 
             return View(viewModel);
         }
@@ -87,7 +89,8 @@ namespace Volvox.Helios.Web.Controllers
             {
                 GuildId = guildId,
                 Enabled = viewModel.Enabled,
-                AnnouncementChannelId = viewModel.ChannelId
+                AnnouncementChannelId = viewModel.ChannelId,
+                RemoveMessages = viewModel.RemoveMessages
             });
 
             return RedirectToAction("Index");
