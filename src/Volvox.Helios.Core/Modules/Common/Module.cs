@@ -28,6 +28,7 @@ namespace Volvox.Helios.Core.Modules.Common
             Version = config[$"Metadata:{moduleQuery}:Version"];
             Description = config[$"Metadata:{moduleQuery}:Description"];
             ReleaseState = Enum.Parse<ReleaseState>(config[$"Metadata:{moduleQuery}:ReleaseState"]);
+            Configurable = bool.Parse(config[$"Metadata:{moduleQuery}:Configurable"]);
         }
 
         /// <summary>
@@ -72,6 +73,7 @@ namespace Volvox.Helios.Core.Modules.Common
         public string Name { get; set; }
         public string Version { get; set; }
         public string Description { get; set; }
+        public bool Configurable { get; }
         public ReleaseState ReleaseState { get; set; }
     }
 }
