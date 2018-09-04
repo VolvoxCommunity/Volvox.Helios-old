@@ -163,10 +163,9 @@ namespace Volvox.Helios.Web
                 app.UseExceptionHandler("/Error/Error");
                 app.UseStatusCodePagesWithReExecute("/Error/Errors/{0}");
                 app.UseHsts();
+
+                loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
             }
-            
-            // Comment this out while developing
-            loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
