@@ -126,17 +126,17 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
                 .WithDescription($"{user.Game?.StreamUrl} - {user.Mention}")
                 .WithColor(new Color(0x4A90E2))
                 .WithThumbnailUrl(user.GetAvatarUrl())
-                .AddInlineField("Title", user.Game?.Name).Build();
-
-            Logger.LogDebug($"StreamAnnouncer Module: Deleting streaming message (ID: {m.MessageId}) " +
-            $"from {user.Username} (ID: {m.UserId}), " +
-            $"on channel {m.ChannelId}");
+                .AddInlineField("Title", user.Game?.Name).Build();         
 
             // Announce the user to the channel specified in settings.
             var messageData = await user.Guild.GetTextChannel(channelSettings.ChannelId)
                 .SendMessageAsync("", embed: embed);
 
             var messageId = messageData.Id;
+
+            Logger.LogDebug($"StreamAnnouncer Module: Announcing user {user.Username}" +
+                $" (ID: {m.UserId}) to channel {m.ChannelId}. " +
+                $" (message ID: {m.MessageId}).");
 
             // Sets MessageId in hashset, as hashset holds reference to the message param.
             m.MessageId = messageId;            
