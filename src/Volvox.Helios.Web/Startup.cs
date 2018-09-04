@@ -110,7 +110,7 @@ namespace Volvox.Helios.Web
             // Modules
             services.AddSingleton<IModule, StreamAnnouncerModule>();
             services.AddSingleton<IModule, StreamerRoleModule>();
-            
+
             // DiscordFacing
             services.AddSingleton<IModule, DiscordFacingManager>();
             services.AddSingleton<ICommand, ExampleCommand>();
@@ -163,6 +163,7 @@ namespace Volvox.Helios.Web
                 app.UseExceptionHandler("/Error/Error");
                 app.UseStatusCodePagesWithReExecute("/Error/Errors/{0}");
                 app.UseHsts();
+                loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
             }
 
             app.UseHttpsRedirection();
@@ -170,8 +171,6 @@ namespace Volvox.Helios.Web
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-
-            loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
 
             app.UseMvc(routes =>
             {
