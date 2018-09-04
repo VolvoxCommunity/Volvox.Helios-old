@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Volvox.Helios.Service.ModuleSettings
 {
@@ -19,7 +21,7 @@ namespace Volvox.Helios.Service.ModuleSettings
         /// </summary>
         /// <param name="guildId">Guild settings to get.</param>
         /// <returns>Settings from the specified guild.</returns>
-        Task<T> GetSettingsByGuild(ulong guildId);
+        Task<T> GetSettingsByGuild(ulong guildId, params Expression<Func<T, object>>[] includes);
 
         /// <summary>
         ///     Remove the specified setting record.
