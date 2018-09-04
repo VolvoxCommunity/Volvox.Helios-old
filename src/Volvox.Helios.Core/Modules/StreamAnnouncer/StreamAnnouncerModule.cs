@@ -84,7 +84,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
                 // Get user from streaming list.
                 var userDataFromList = StreamingList[user.Guild.Id].FirstOrDefault(x => x.UserId == user.Id);
 
-                // Remove message from channel if neccesary.
+                // Remove message from channel if necessary.
                 await AnnouncedMessagesHandler(user, userDataFromList);
 
                 // Remove user from list.
@@ -121,19 +121,19 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
                     var messageData = await user.Guild.GetTextChannel(announceChannelId)
                         .SendMessageAsync("", embed: embed);
 
-                    ulong messageId = messageData.Id;
-                    
-                    // Sets MessageId in hashet, as hashset holds reference to the message param.
+                    var messageId = messageData.Id;
+
+                    // Sets MessageId in hashset, as hashset holds reference to the message param.
                     message.MessageId = messageId;
                 }
             }
         }
 
         /// <summary>
-        ///     Remove announcement message from channel if neccesary.
+        ///     Remove announcement message from channel if necessary.
         /// </summary>
         /// <param name="user">User whom stopped streaming</param>
-        /// <param name="userDataFromList">Data taken from the StreamingList hashset. 
+        /// <param name="userDataFromList">Data taken from the StreamingList hashset.
         ///     This is where the messageId is stored
         /// </param>
         private async Task AnnouncedMessagesHandler(SocketGuildUser user, StreamAnnouncerMessage userDataFromList)
@@ -145,11 +145,13 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
                 // Deletes messages if option is checked
                 if (settings.RemoveMessages)
                 {
+                    Logger.LogDebug($"StreamAnnouncer Module: Deleting streaming message from {user.Username}");
+
                     // Announcement message Id.
-                    ulong messageId = userDataFromList.MessageId;
+                    var messageId = userDataFromList.MessageId;
 
                     // Convert to array to work with DeleteMessagesAsync.
-                    ulong[] messageIds = new ulong[1] { messageId };
+                    var messageIds = new[] { messageId };
 
                     // Delete messages
                     await user.Guild.GetTextChannel(settings.AnnouncementChannelId).DeleteMessagesAsync(messageIds);

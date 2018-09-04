@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentCache;
 using Microsoft.EntityFrameworkCore;
@@ -43,7 +45,7 @@ namespace Volvox.Helios.Service.ModuleSettings
         }
 
         /// <inheritdoc />
-        public async Task<T> GetSettingsByGuild(ulong guildId)
+        public async Task<T> GetSettingsByGuild(ulong guildId, params Expression<Func<T, object>>[] includes)
         {
             // Create a new scope to get the db context.
             using (var scope = _scopeFactory.CreateScope())
@@ -52,7 +54,17 @@ namespace Volvox.Helios.Service.ModuleSettings
 
                 // Cache the settings.
                 var cachedSetting = await _cache.WithKey(GetCacheKey(guildId))
-                    .RetrieveUsingAsync(async () => await context.Set<T>().FirstOrDefaultAsync(s => s.GuildId == guildId))
+                    .RetrieveUsingAsync(async () =>
+                    {
+                        var query = context.Set<T>().AsQueryable();
+
+                        if (includes != null)
+                        {
+                            query = includes.Aggregate(query, (current, include) => current.Include(include));
+                        }
+
+                        return await query.FirstOrDefaultAsync(s => s.GuildId == guildId);
+                    })
                     .InvalidateIf(cachedValue => cachedValue.Value != null)
                     .ExpireAfter(TimeSpan.FromDays(1))
                     .GetValueAsync();
@@ -68,7 +80,7 @@ namespace Volvox.Helios.Service.ModuleSettings
             using (var scope = _scopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<VolvoxHeliosContext>();
-                
+
                 context.Remove(settings);
 
                 await context.SaveChangesAsync();
