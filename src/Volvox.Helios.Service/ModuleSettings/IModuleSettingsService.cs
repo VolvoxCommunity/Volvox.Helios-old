@@ -20,6 +20,7 @@ namespace Volvox.Helios.Service.ModuleSettings
         ///     Get the module settings from the database for the specified guild and cache it.
         /// </summary>
         /// <param name="guildId">Guild settings to get.</param>
+        /// <param name="includes">Navigation property includes to eager load.</param>
         /// <returns>Settings from the specified guild.</returns>
         Task<T> GetSettingsByGuild(ulong guildId, params Expression<Func<T, object>>[] includes);
 
