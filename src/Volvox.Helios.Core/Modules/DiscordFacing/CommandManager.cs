@@ -12,28 +12,29 @@ using Volvox.Helios.Core.Utilities;
 namespace Volvox.Helios.Core.Modules.DiscordFacing
 {
     /// <summary>
-    /// Manager for Discord message commands.
+    ///     Manager for Discord message commands.
     /// </summary>
     public class CommandManager : Module
     {
-        private DiscordSocketClient Client { get; set; }
-
-        private IList<ICommand> Modules { get; }
-
         /// <summary>
-        /// Manager for Discord message commands.
+        ///     Manager for Discord message commands.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="modules">List of Command modules to be used by the manager.</param>
         /// <param name="settings">Discord settings.</param>
         /// <param name="config">Configuration.</param>
-        public CommandManager(ILogger<IModule> logger, IList<ICommand> modules, IDiscordSettings settings, IConfiguration config) : base(settings, logger, config)
+        public CommandManager(ILogger<IModule> logger, IList<ICommand> modules, IDiscordSettings settings,
+            IConfiguration config) : base(settings, logger, config)
         {
             Modules = modules;
         }
 
+        private DiscordSocketClient Client { get; set; }
+
+        private IList<ICommand> Modules { get; }
+
         /// <summary>
-        /// Initialize the manager by binding to the MessageReceived event.
+        ///     Initialize the manager by binding to the MessageReceived event.
         /// </summary>
         /// <param name="client">Client to subscribe to.</param>
         public override Task Init(DiscordSocketClient client)
@@ -45,7 +46,7 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
         }
 
         /// <summary>
-        /// Handle the MessageReceived event.
+        ///     Handle the MessageReceived event.
         /// </summary>
         /// <param name="emitted">Message that was sent.</param>
         private async Task HandleCommand(SocketMessage emitted)
@@ -56,7 +57,6 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
             var context = new CommandContext(message, Client, "h-");
 
             foreach (var module in Modules)
-            {
                 try
                 {
                     await module.TryTrigger(context);
@@ -78,7 +78,6 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing
 
                     await context.Channel.SendMessageAsync("", false, embed);
                 }
-            }
         }
     }
 }
