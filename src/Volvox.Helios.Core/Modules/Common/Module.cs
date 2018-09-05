@@ -23,24 +23,32 @@ namespace Volvox.Helios.Core.Modules.Common
             DiscordSettings = discordSettings;
             Logger = logger;
 
-            var moduleQuery = GetType().Name;
-            Name = config[$"Metadata:{moduleQuery}:Name"];
-            Version = config[$"Metadata:{moduleQuery}:Version"];
-            Description = config[$"Metadata:{moduleQuery}:Description"];
-            ReleaseState = Enum.Parse<ReleaseState>(config[$"Metadata:{moduleQuery}:ReleaseState"]);
-            Configurable = bool.Parse(config[$"Metadata:{moduleQuery}:Configurable"]);
+            var moduleName = GetType().Name;
+
+            // Check if the module is in the metadata.
+            if (config[$"Metadata:{moduleName}"] != null)
+            {
+                Name = config[$"Metadata:{moduleName}:Name"];
+                Version = config[$"Metadata:{moduleName}:Version"];
+                Description = config[$"Metadata:{moduleName}:Description"];
+                Configurable = bool.Parse(config[$"Metadata:{moduleName}:Configurable"]);
+                ReleaseState = Enum.Parse<ReleaseState>(config[$"Metadata:{moduleName}:ReleaseState"]);
+            }
+
+            else
+                Logger.LogError($"Module cannot be found in the metadata! Name: {moduleName}");
         }
 
         /// <summary>
         ///     Initialize the module.
         /// </summary>
-        /// <param name="client">Client for the module to be registed to.</param>
+        /// <param name="client">Client for the module to be registered to.</param>
         public abstract Task Init(DiscordSocketClient client);
 
         /// <summary>
         ///     Start the module.
         /// </summary>
-        /// <param name="client">Client for the module to be registed to.</param>
+        /// <param name="client">Client for the module to be registered to.</param>
         public virtual async Task Start(DiscordSocketClient client)
         {
             if (IsEnabled) await Execute(client);
@@ -49,7 +57,7 @@ namespace Volvox.Helios.Core.Modules.Common
         /// <summary>
         ///     Execute the module.
         /// </summary>
-        /// <param name="client">Client for the module to be registed to.</param>
+        /// <param name="client">Client for the module to be registered to.</param>
         public virtual Task Execute(DiscordSocketClient client)
         {
             throw new NotImplementedException();
@@ -70,10 +78,29 @@ namespace Volvox.Helios.Core.Modules.Common
         /// </summary>
         public bool IsEnabled { get; set; } = true;
 
-        public string Name { get; set; }
-        public string Version { get; set; }
-        public string Description { get; set; }
+        /// <summary>
+        ///     Module name.
+        /// </summary>
+        public string Name { get; }
+
+        /// <summary>
+        ///     Module version.
+        /// </summary>
+        public string Version { get; }
+
+        /// <summary>
+        ///     Description of what the module does.
+        /// </summary>
+        public string Description { get; }
+
+        /// <summary>
+        ///     True if you can manage configuration for the module otherwise false.
+        /// </summary>
         public bool Configurable { get; }
-        public ReleaseState ReleaseState { get; set; }
+
+        /// <summary>
+        ///     Module release state.
+        /// </summary>
+        public ReleaseState ReleaseState { get; }
     }
 }
