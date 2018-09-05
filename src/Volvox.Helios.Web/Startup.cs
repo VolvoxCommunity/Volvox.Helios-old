@@ -111,9 +111,9 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IModule, StreamAnnouncerModule>();
             services.AddSingleton<IModule, StreamerRoleModule>();
 
-            // DiscordFacing
-            services.AddSingleton<IModule, DiscordFacingManager>();
-            services.AddSingleton<ICommand, ExampleCommand>();
+            // Commands
+            services.AddSingleton<IModule, CommandManager>();
+            services.AddSingleton<ICommand, HelpCommand>();
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
