@@ -49,6 +49,7 @@ trim_trailing_whitespace = false
 [*.{htm,html,js,ts,tsx,css,sass,scss,less,svg,vue}]
 indent_size = 2
 insert_final_newline = true
+html_space_before_self_closing = true
  
 # Batch Files
 [*.{cmd,bat}]
