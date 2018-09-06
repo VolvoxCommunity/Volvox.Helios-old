@@ -38,8 +38,8 @@ namespace Tests.Integration.Infrastructure
                         {
                             OnValidatePrincipal = context =>
                             {
-                                if (context.Username.ToLower() == "testname"
-                                && context.Password == "testpass")
+                                if (context.Username.ToLower() == "testuser"
+                                && context.Password == "testpassword")
                                 {
                                     var claims = new List<Claim>
                                     {
