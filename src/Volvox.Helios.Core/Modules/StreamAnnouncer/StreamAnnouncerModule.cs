@@ -100,12 +100,12 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         {
             var announcements = new List<Task>();
 
-            // Announce to all channels in guild and store message in list
+            // Announce to all enabled channels in guild and store message in list
             foreach (var c in channels)
             {
                 var message = new StreamAnnouncerMessage() { UserId = user.Id, ChannelId = c.ChannelId };
                 StreamingList[user.Guild.Id].Add(message);
-                announcements.Add(AnnounceUser(user, message, c));
+                announcements.Add(AnnounceUser(user, message, c.ChannelId));
             }
 
             await Task.WhenAll(announcements.ToArray());
@@ -118,7 +118,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="m">Message from StreamingList, this is so it's MessageId can be set.</param>
         /// <param name="channelSettings">Settings of channel the message will be to be announced to.</param>
         /// <returns></returns>
-        private async Task AnnounceUser(SocketGuildUser user, StreamAnnouncerMessage m, StreamAnnouncerChannelSettings channelSettings)
+        private async Task AnnounceUser(SocketGuildUser user, StreamAnnouncerMessage m, ulong channelId)
         {
             // Build the embedded message.
             var embed = new EmbedBuilder()
@@ -129,13 +129,13 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
                 .AddInlineField("Title", user.Game?.Name).Build();         
 
             // Announce the user to the channel specified in settings.
-            var messageData = await user.Guild.GetTextChannel(channelSettings.ChannelId)
+            var messageData = await user.Guild.GetTextChannel(channelId)
                 .SendMessageAsync("", embed: embed);
 
             var messageId = messageData.Id;
 
             Logger.LogDebug($"StreamAnnouncer Module: Announcing user {user.Username}" +
-                $" (ID: {m.UserId}) to channel {m.ChannelId}. " +
+                $" (ID: {m.UserId}) to channel {channelId}. " +
                 $" (message ID: {m.MessageId}).");
 
             // Sets MessageId in hashset, as hashset holds reference to the message param.
