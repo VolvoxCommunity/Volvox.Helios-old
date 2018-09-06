@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,10 +18,13 @@ namespace Tests.Integration.Infrastructure
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Volvox.Helios.Web.Startup>
     {
 
+        
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureServices(services =>
+
+            builder.ConfigureTestServices(services =>
             {
+                
                 //TODO: seed in memory db with test data
                 var serviceProvider = new ServiceCollection()
                 .AddEntityFrameworkInMemoryDatabase()
