@@ -10,6 +10,7 @@ using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.Models;
+using Volvox.Helios.Web.ViewModels.Settings;
 
 namespace Volvox.Helios.Web.Controllers
 {
@@ -29,21 +30,21 @@ namespace Volvox.Helios.Web.Controllers
 
         [IsUserGuildAdminFilter]
         [HttpGet("GetChannelSettingsAnnouncer")]
-        public async Task<StreamAnnouncerChannelSettingsModel> GetChannelSettingsAnnouncer([FromServices] IDiscordUserGuildService userGuildService,
+        public async Task<StreamAnnouncerChannelSettingsViewModel> GetChannelSettingsAnnouncer([FromServices] IDiscordUserGuildService userGuildService,
             [FromServices] IModuleSettingsService<StreamAnnouncerSettings> streamAnnouncerSettingsService, ulong guildId, ulong channelId)
         {
             // all channel's settings in guild
             var allChannelSettings = await streamAnnouncerSettingsService.GetSettingsByGuild(guildId, x => x.ChannelSettings);
 
             if (allChannelSettings == null)
-                return new StreamAnnouncerChannelSettingsModel() { Enabled = false, RemoveMessages = false };
+                return new StreamAnnouncerChannelSettingsViewModel() { Enabled = false, RemoveMessages = false };
 
             // settings for specific channel
             var channelSettings = allChannelSettings.ChannelSettings.FirstOrDefault(x => x.ChannelId == channelId);
 
             var isEnabled = channelSettings == null ? false : true;
 
-            var settings = new StreamAnnouncerChannelSettingsModel()
+            var settings = new StreamAnnouncerChannelSettingsViewModel()
             {
                 Enabled = isEnabled,
                 RemoveMessages = isEnabled ? channelSettings.RemoveMessage : false
