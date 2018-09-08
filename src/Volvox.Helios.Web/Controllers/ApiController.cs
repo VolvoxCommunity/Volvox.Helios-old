@@ -3,9 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Volvox.Helios.Core.Bot;
+using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Service.Extensions;
+using Volvox.Helios.Service.ModuleSettings;
+using Volvox.Helios.Web.Filters;
+using Volvox.Helios.Web.Models;
 
 namespace Volvox.Helios.Web.Controllers
 {
@@ -22,7 +26,32 @@ namespace Volvox.Helios.Web.Controllers
             // Format the ulong to string.
             return channels.FilterChannelType(0).Select(c => new {id = c.Id.ToString(), name = c.Name});
         }
-        
+
+        [IsUserGuildAdminFilter]
+        [HttpGet("GetChannelSettingsAnnouncer")]
+        public async Task<StreamAnnouncerChannelSettingsModel> GetChannelSettingsAnnouncer([FromServices] IDiscordUserGuildService userGuildService,
+            [FromServices] IModuleSettingsService<StreamAnnouncerSettings> streamAnnouncerSettingsService, ulong guildId, ulong channelId)
+        {
+            // all channel's settings in guild
+            var allChannelSettings = await streamAnnouncerSettingsService.GetSettingsByGuild(guildId, x => x.ChannelSettings);
+
+            if (allChannelSettings == null)
+                return new StreamAnnouncerChannelSettingsModel() { Enabled = false, RemoveMessages = false };
+
+            // settings for specific channel
+            var channelSettings = allChannelSettings.ChannelSettings.FirstOrDefault(x => x.ChannelId == channelId);
+
+            var isEnabled = channelSettings == null ? false : true;
+
+            var settings = new StreamAnnouncerChannelSettingsModel()
+            {
+                Enabled = isEnabled,
+                RemoveMessages = isEnabled ? channelSettings.RemoveMessage : false
+            };
+
+            return settings;
+        }
+
         [HttpGet("GetUserAdminGuilds")]
         public async Task<object> GetUserAdminGuilds([FromServices] IDiscordUserGuildService userGuildService)
         {
