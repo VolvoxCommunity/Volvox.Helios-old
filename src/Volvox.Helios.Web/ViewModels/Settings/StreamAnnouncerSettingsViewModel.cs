@@ -20,6 +20,6 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         [DefaultValue(true)]
         public bool Enabled { get; set; }
 
-        public StreamAnnouncerChannelSettingsModel ChannelSettings { get; set; }
+        public StreamAnnouncerChannelSettingsViewModel ChannelSettings { get; set; }
     }
 }
