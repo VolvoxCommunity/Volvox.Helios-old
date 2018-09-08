@@ -12,10 +12,9 @@
 
             <div style="display:flex;" class="form-group">
                 <label asp-for="Enabled" style="margin: 0 20px 0 0;" class="font-size-small"></label>
-                <label class="switch">
-                    <input asp-for="Enabled" type="checkbox" />
-                    <div class="slider round"></div>
-                </label>
+                <label class="switch" />
+                <input asp-for="Enabled" type="checkbox" />
+                <div class="slider round"></div>
                 <span asp-validation-for="Enabled" class="text-danger"></span>
             </div>
 
