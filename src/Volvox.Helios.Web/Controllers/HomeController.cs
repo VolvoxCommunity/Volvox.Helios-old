@@ -12,5 +12,7 @@ namespace Volvox.Helios.Web.Controllers
         public IActionResult Privacy() => View();
 
         public IActionResult About() => View();
+
+        public IActionResult Example() => View();
     }
 }

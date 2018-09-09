@@ -1,0 +1,92 @@
+@{
+    ViewData["Title"] = "Example";
+}
+
+<div id="wrapper">
+    
+    <nav id="sidebar">
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="img-server-icon" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="img-server-icon" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="img-server-icon" >
+    </nav>
+
+    <div id="content">
+        <h5>Current Modules</h5>
+
+            <div class="col-12">
+                <div class="card">
+                    <h5 class="card-header text-center color-enabled">Stream Role</h5>
+                    <div class="card-body">
+                        <h6>Status: Enabled</h6>
+                        <p class="card-text">
+                            This lets you add a role to someone who goes live on Twitch and remove it when they are done.  
+                            Take the new role and put it on the top of the list so everyone knows when someone is hosting a stream.
+                            At least now you have something else to watch on that second monitor when you are not paying attention to your own game. 
+                        </p>
+
+                        <div class="collapse" id="StreamRoleConfig">
+                            <hr>
+                            <h5>Config</h5>
+                        </div>   
+                    </div>
+
+                    <div class="card-footer">
+                        <a class="btn btn-link btn-block" role="button" data-toggle="collapse" data-target="#StreamRoleConfig" aria-expanded="false" aria-controls="StreamRoleConfig" >Manage Module</a>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="col-12">
+                <div class="card">
+                    <h5 class="card-header text-center color-disabled">Stream Announcer</h5>
+                    <div class="card-body">
+                        <h6>Status: Disabled</h6>
+                        <p class="card-text">
+                            Description: 
+                            With this module you are able to announce to a defined text channel when someone on the server goes live on Twitch.
+                        </p>
+
+                        <div class="collapse" id="StreamAnnouncerConfig">
+                            <hr>
+                            <h5>Config</h5>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                                <label class="form-check-label" for="defaultCheck1">
+                                    Enabled
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="exampleFormControlSelect1">Select text-channel to send the messages to:</label>
+                                <select class="form-control" id="exampleFormControlSelect1">
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                </select>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                                <label class="form-check-label" for="defaultCheck1">
+                                    Delete messages on stream conclusion
+                                </label>
+                            </div>
+
+                            <button type="button" class="btn btn-info">Save</button>
+
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-link btn-block" role="button" data-toggle="collapse" data-target="#StreamAnnouncerConfig" aria-expanded="false" aria-controls="StreamAnnouncerConfig" >Manage Module</a>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+
+</div>

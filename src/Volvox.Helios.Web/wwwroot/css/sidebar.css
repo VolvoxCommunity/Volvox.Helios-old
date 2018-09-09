@@ -1,0 +1,40 @@
+
+#wrapper {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+#sidebar {
+    min-width: 74px;
+    max-width: 74px;
+    background: #202225;
+}
+
+li.Server-Icons {
+    list-style-type: none;
+}
+
+#sidebar.active {
+    margin-left: -74px; 
+}
+
+#content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.img-server-icon {
+    width: 64px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border: .25rem!important;
+}
+
+.color-enabled {
+    background: #43b581;
+}
+
+.color-disabled {
+    background: #f04747;
+}
