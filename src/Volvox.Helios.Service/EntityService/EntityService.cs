@@ -18,35 +18,41 @@ namespace Volvox.Helios.Service.EntityService
         }
 
         /// <inheritdoc />
-        public async Task Save(T entity)
+        public Task<T> Find(object key)
+        {
+            return _context.Set<T>().FindAsync(key);
+        }
+
+        /// <inheritdoc />
+        public Task<List<T>> Get(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
+        {
+            var query = GetIncludesQuery(includes);
+
+            return query.Where(filter).ToListAsync();
+        }
+
+        /// <inheritdoc />
+        public Task<List<T>> GetAll(params Expression<Func<T, object>>[] includes)
+        {
+            var query = GetIncludesQuery(includes);
+
+            return query.ToListAsync();
+        }
+
+        /// <inheritdoc />
+        public Task Save(T entity)
         {
             _context.Set<T>().Add(entity);
 
-            await _context.SaveChangesAsync();
+            return _context.SaveChangesAsync();
         }
 
         /// <inheritdoc />
-        public async Task<T> Get(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
-        {
-            var query = GetIncludesQuery(includes);
-
-            return await query.FirstOrDefaultAsync(filter);
-        }
-
-        /// <inheritdoc />
-        public async Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] includes)
-        {
-            var query = GetIncludesQuery(includes);
-
-            return await query.ToListAsync();
-        }
-
-        /// <inheritdoc />
-        public async Task Remove(T entity)
+        public Task Remove(T entity)
         {
             _context.Set<T>().Remove(entity);
-
-            await _context.SaveChangesAsync();
+            
+            return _context.SaveChangesAsync();
         }
 
         /// <summary>
