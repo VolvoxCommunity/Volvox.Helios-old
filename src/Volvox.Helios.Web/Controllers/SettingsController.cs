@@ -63,7 +63,6 @@ namespace Volvox.Helios.Web.Controllers
 
         #region StreamAnnouncer
 
-
         // GET
         [HttpGet("StreamAnnouncer")]
         public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId,
