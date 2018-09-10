@@ -28,10 +28,7 @@ namespace Volvox.Helios.Service.EntityService
         /// <inheritdoc />
         public async Task<T> Get(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
         {
-            var query = _context.Set<T>().AsQueryable();
-
-            if (includes != null)
-                query = includes.Aggregate(query, (current, include) => current.Include(include));
+            var query = GetIncludesQuery(includes);
 
             return await query.FirstOrDefaultAsync(filter);
         }
@@ -39,10 +36,7 @@ namespace Volvox.Helios.Service.EntityService
         /// <inheritdoc />
         public async Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] includes)
         {
-            var query = _context.Set<T>().AsQueryable();
-
-            if (includes != null)
-                query = includes.Aggregate(query, (current, include) => current.Include(include));
+            var query = GetIncludesQuery(includes);
 
             return await query.ToListAsync();
         }
@@ -53,6 +47,21 @@ namespace Volvox.Helios.Service.EntityService
             _context.Set<T>().Remove(entity);
 
             await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        ///     Get the database query with added includes.
+        /// </summary>
+        /// <param name="includes">Properties to eagerly load.</param>
+        /// <returns>Query set to the type and includes added.</returns>
+        private IQueryable<T> GetIncludesQuery(Expression<Func<T, object>>[] includes)
+        {
+            var query = _context.Set<T>().AsQueryable();
+
+            if (includes != null)
+                query = includes.Aggregate(query, (current, include) => current.Include(include));
+
+            return query;
         }
     }
 }
