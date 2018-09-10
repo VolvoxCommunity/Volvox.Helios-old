@@ -145,7 +145,7 @@ namespace Volvox.Helios.Web.Controllers
             }
             else
             {
-                if(!isSettingsInDb)
+                if(isSettingsInDb)
                     saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Remove(settings));
             }
 
