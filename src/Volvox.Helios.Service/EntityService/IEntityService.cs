@@ -11,10 +11,10 @@ namespace Volvox.Helios.Service.EntityService
     public interface IEntityService<T> where T : class
     {
         /// <summary>
-        ///     Get the first entity from the database that matches the filter.
+        ///     Get the first entity from the database that matches the primary key.
         /// </summary>
         /// <param name="key">Primary key used to find the entity.</param>
-        /// <returns>First entity matching the filter.</returns>
+        /// <returns>First entity matching the primary key.</returns>
         Task<T> Find(object key);
 
         /// <summary>

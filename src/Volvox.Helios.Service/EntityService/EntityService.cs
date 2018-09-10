@@ -51,7 +51,7 @@ namespace Volvox.Helios.Service.EntityService
         public Task Remove(T entity)
         {
             _context.Set<T>().Remove(entity);
-            
+
             return _context.SaveChangesAsync();
         }
 
