@@ -1,3 +1,5 @@
+using System;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Volvox.Helios.Domain.Common;
 
@@ -15,8 +17,9 @@ namespace Volvox.Helios.Service.EntityService
         ///     Get an entity from the database.
         /// </summary>
         /// <param name="id">Id of the entity.</param>
+        /// <param name="includes">Properties to eagerly load.</param>
         /// <returns>Entity with the matching id.</returns>
-        Task<T> Get(int id);
+        Task<T> Get(int id, params Expression<Func<T, object>>[] includes);
 
         /// <summary>
         ///     Remove an entity from the database.
