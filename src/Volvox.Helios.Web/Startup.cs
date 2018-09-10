@@ -29,6 +29,7 @@ using Volvox.Helios.Service;
 using Volvox.Helios.Service.Clients;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.HostedServices.Bot;
@@ -131,7 +132,8 @@ namespace Volvox.Helios.Web
             services.AddScoped<IDiscordUserGuildService, DiscordUserGuildService>();
             services.AddScoped<IDiscordGuildService, DiscordGuildService>();
 
-            // Services
+            // Database Services
+            services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
             services.AddSingleton(typeof(IModuleSettingsService<>), typeof(ModuleSettingsService<>));
 
             // Cache
