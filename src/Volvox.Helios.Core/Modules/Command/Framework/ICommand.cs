@@ -4,8 +4,8 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing.Framework
 {
     public interface ICommand
     {
-        Task TryTrigger(DiscordFacingContext context);
+        Task TryTrigger(CommandContext context);
 
-        Task Execute(DiscordFacingContext context);
+        Task Execute(CommandContext context);
     }
 }

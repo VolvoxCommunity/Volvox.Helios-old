@@ -14,12 +14,12 @@ using Volvox.Helios.Core.Utilities;
 namespace Volvox.Helios.Core.Bot
 {
     /// <summary>
-    /// Discord bot.
+    ///     Discord bot.
     /// </summary>
     public class Bot : IBot
     {
         /// <summary>
-        /// Discord bot.
+        ///     Discord bot.
         /// </summary>
         /// <param name="modules">List of modules for the bot.</param>
         /// <param name="settings">Settings used to connect to Discord.</param>
@@ -30,7 +30,7 @@ namespace Volvox.Helios.Core.Bot
             Logger = logger;
 
             // TODO: Convert logging to module
-            Client = new DiscordSocketClient(new DiscordSocketConfig()
+            Client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose
             });
@@ -41,7 +41,7 @@ namespace Volvox.Helios.Core.Bot
             Client.Disconnected += exception =>
             {
                 Logger.LogCritical("Bot has been disconnected!");
-                
+
                 return Task.CompletedTask;
             };
 
@@ -56,7 +56,7 @@ namespace Volvox.Helios.Core.Bot
                         await Task.Delay(TimeSpan.FromMinutes(15));
                     }
                 });
-                
+
                 return Task.CompletedTask;
             };
 
@@ -68,7 +68,7 @@ namespace Volvox.Helios.Core.Bot
 
         /// <inheritdoc />
         /// <summary>
-        /// Initialize all of modules available to the bot.
+        ///     Initialize all of modules available to the bot.
         /// </summary>
         public async Task InitModules()
         {
@@ -81,7 +81,7 @@ namespace Volvox.Helios.Core.Bot
 
         /// <inheritdoc />
         /// <summary>
-        /// Start the bot.
+        ///     Start the bot.
         /// </summary>
         public async Task Start()
         {
@@ -94,7 +94,7 @@ namespace Volvox.Helios.Core.Bot
 
         /// <inheritdoc />
         /// <summary>
-        /// Stop the bot.
+        ///     Stop the bot.
         /// </summary>
         public async Task Stop()
         {
@@ -105,7 +105,7 @@ namespace Volvox.Helios.Core.Bot
 
         /// <inheritdoc />
         /// <summary>
-        /// Get a list of the guilds the bot is in.
+        ///     Get a list of the guilds the bot is in.
         /// </summary>
         /// <returns>List of the guilds the bot is in.</returns>
         public IReadOnlyCollection<SocketGuild> GetGuilds()
@@ -115,7 +115,7 @@ namespace Volvox.Helios.Core.Bot
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns true if the specified guild is in the bot and false otherwise.
+        ///     Returns true if the specified guild is in the bot and false otherwise.
         /// </summary>
         /// <returns>Returns true if the specified guild is in the bot and false otherwise.</returns>
         public bool IsBotInGuild(ulong guildId)
@@ -125,7 +125,7 @@ namespace Volvox.Helios.Core.Bot
 
         /// <inheritdoc />
         /// <summary>
-        /// Get the bots role in the hierarchy of the specified guild.
+        ///     Get the bots role in the hierarchy of the specified guild.
         /// </summary>
         /// <param name="guildId">Id of the guild to get the hierarchy from.</param>
         /// <returns>Bots role position.</returns>
@@ -138,7 +138,7 @@ namespace Volvox.Helios.Core.Bot
 
         /// <inheritdoc />
         /// <summary>
-        /// Log an event.
+        ///     Log an event.
         /// </summary>
         /// <param name="message">Message to log.</param>
         public Task Log(LogMessage message)
@@ -171,25 +171,25 @@ namespace Volvox.Helios.Core.Bot
 
         /// <inheritdoc />
         /// <summary>
-        /// Client for the bot.
+        ///     Client for the bot.
         /// </summary>
         public DiscordSocketClient Client { get; }
 
         /// <inheritdoc />
         /// <summary>
-        /// Connector that the bot uses to connect to Discord.
+        ///     Connector that the bot uses to connect to Discord.
         /// </summary>
         public IBotConnector Connector { get; }
 
         /// <inheritdoc />
         /// <summary>
-        /// List of modules for the bot.
+        ///     List of modules for the bot.
         /// </summary>
         public IList<IModule> Modules { get; }
 
         /// <inheritdoc />
         /// <summary>
-        /// Application logger.
+        ///     Application logger.
         /// </summary>
         public ILogger<Bot> Logger { get; }
     }

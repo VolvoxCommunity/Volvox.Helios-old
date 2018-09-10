@@ -1,5 +1,5 @@
 {
-  "Metadata": {
+  "ModuleMetadata": {
     "StreamAnnouncerModule": {
       "Name": "Stream Announcer",
       "Version": "1.0",
@@ -14,7 +14,7 @@
       "ReleaseState": "Stable",
       "Configurable": "true"
     },
-    "DiscordFacingManager": {
+    "CommandManager": {
       "Name": "Command Manager",
       "Version": "1.0",
       "Description": "If you're seeing this, run before the rest of the site explodes",
