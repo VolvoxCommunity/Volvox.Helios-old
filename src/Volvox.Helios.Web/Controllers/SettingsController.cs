@@ -69,10 +69,10 @@ namespace Volvox.Helios.Web.Controllers
         public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId,
             [FromServices] IDiscordGuildService guildService)
         {
-            // All channels for guild
+            // All channels for guild.
             var channels = await guildService.GetChannels(guildId);
 
-            // Text channels for guild
+            // Text channels for guild.
             var textChannels = channels.Where(x => x.Type == 0).ToList();
 
             var viewModel = new StreamAnnouncerSettingsViewModel
@@ -82,7 +82,7 @@ namespace Volvox.Helios.Web.Controllers
                 GuildId = guildId.ToString()
             };
 
-            // Get general module settings for guild, from database
+            // Get general module settings for guild, from database.
             var settings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId, x => x.ChannelSettings);
 
             if (settings == null)
@@ -90,7 +90,7 @@ namespace Volvox.Helios.Web.Controllers
 
             viewModel.Enabled = settings.Enabled;
 
-            // Gets first text channel's settings to prepopulate view with
+            // Gets first text channel's settings to prepopulate view with.
             var defaultChannel = settings.ChannelSettings.FirstOrDefault(x => x.ChannelId == textChannels[0].Id);
 
             // No channels setting saved, return viewmodel as is.
@@ -111,6 +111,7 @@ namespace Volvox.Helios.Web.Controllers
         {         
             var settings = await _streamAnnouncerChannelSettingsService.Find(viewModel.ChannelId);
 
+            // Remember if there were settings in db, as settings will be populated later if they aren't.
             var isSettingsInDb = settings != null;
 
             var saveSettingsTasks = new List<Task>();
@@ -133,7 +134,7 @@ namespace Volvox.Helios.Web.Controllers
 
             settings.RemoveMessage = viewModel.ChannelSettings.RemoveMessages;
 
-            // Save specific channel settings to the database
+            // Save specific channel settings to the database.
             if (viewModel.ChannelSettings.Enabled)
             {
                 if (!isSettingsInDb)
@@ -199,7 +200,7 @@ namespace Volvox.Helios.Web.Controllers
                 return View(viewModel);
             }
 
-            // Save the settings to the database
+            // Save the settings to the database.
             await _streamerRoleSettingsService.SaveSettings(new StreamerRoleSettings
             {
                 GuildId = guildId,

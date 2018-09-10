@@ -81,10 +81,10 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
                 // Get user from streaming list.
                 var userDataFromList = StreamingList[user.Guild.Id].Where(x => x.UserId == user.Id).ToList();
 
-                // Handle announced streaming messages
+                // Handle announced streaming messages.
                 await AnnouncedMessageHandler(user, userDataFromList, channels);
 
-                // Remove messages from hashset
+                // Remove messages from hashset.
                 foreach (var m in userDataFromList)
                     StreamingList[user.Guild.Id].Remove(m);       
             }
@@ -100,7 +100,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         {
             var announcements = new List<Task>();
 
-            // Announce to all enabled channels in guild and store message in list
+            // Announce to all enabled channels in guild and store message in list.
             foreach (var c in channels)
             {
                 var message = new StreamAnnouncerMessage() { UserId = user.Id, ChannelId = c.ChannelId };
@@ -153,7 +153,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         {
             var messageDeletions = new List<Task>();
 
-            // Delete message from channels where RemoveMessages is true
+            // Delete message from channels where RemoveMessages is true.
             foreach (var m in messages)
             {
                 var channel = channels.FirstOrDefault(x => x.ChannelId == m.ChannelId);
@@ -180,7 +180,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             // Convert to array to work with DeleteMessagesAsync.
             var messageIds = new[] { m.MessageId };
 
-            // Delete message
+            // Delete message.
             await user.Guild.GetTextChannel(m.ChannelId).DeleteMessagesAsync(messageIds);           
         }
     }
