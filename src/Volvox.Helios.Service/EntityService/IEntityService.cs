@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Volvox.Helios.Domain.Common;
 
 namespace Volvox.Helios.Service.EntityService
 {
     /// <summary>
     ///     Entity service to manage CRUD operations to the database.
     /// </summary>
-    public interface IEntityService<T> where T : Entity
+    public interface IEntityService<T> where T : class
     {
         /// <summary>
         ///     Save an entity to the database.
@@ -18,12 +17,12 @@ namespace Volvox.Helios.Service.EntityService
         Task Save(T entity);
 
         /// <summary>
-        ///     Get an entity from the database.
+        ///     Get the first entity from the database that matches the filter.
         /// </summary>
-        /// <param name="id">Id of the entity.</param>
+        /// <param name="filter">Filter to use to get the entity.</param>
         /// <param name="includes">Properties to eagerly load.</param>
         /// <returns>Entity with the matching id.</returns>
-        Task<T> Get(int id, params Expression<Func<T, object>>[] includes);
+        Task<T> Get(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes);
 
         /// <summary>
         ///     Get all entities from the database.

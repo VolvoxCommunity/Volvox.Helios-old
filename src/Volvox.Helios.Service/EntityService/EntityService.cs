@@ -4,12 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Volvox.Helios.Domain.Common;
 
 namespace Volvox.Helios.Service.EntityService
 {
     /// <inheritdoc />
-    public class EntityService<T> : IEntityService<T> where T : Entity
+    public class EntityService<T> : IEntityService<T> where T : class
     {
         private readonly VolvoxHeliosContext _context;
 
@@ -27,13 +26,14 @@ namespace Volvox.Helios.Service.EntityService
         }
 
         /// <inheritdoc />
-        public async Task<T> Get(int id, params Expression<Func<T, object>>[] includes)
+        public async Task<T> Get(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
         {
             var query = _context.Set<T>().AsQueryable();
 
-            if (includes != null) query = includes.Aggregate(query, (current, include) => current.Include(include));
+            if (includes != null)
+                query = includes.Aggregate(query, (current, include) => current.Include(include));
 
-            return await query.FirstOrDefaultAsync(e => e.Id == id);
+            return await query.FirstOrDefaultAsync(filter);
         }
 
         /// <inheritdoc />
@@ -41,7 +41,8 @@ namespace Volvox.Helios.Service.EntityService
         {
             var query = _context.Set<T>().AsQueryable();
 
-            if (includes != null) query = includes.Aggregate(query, (current, include) => current.Include(include));
+            if (includes != null)
+                query = includes.Aggregate(query, (current, include) => current.Include(include));
 
             return await query.ToListAsync();
         }
