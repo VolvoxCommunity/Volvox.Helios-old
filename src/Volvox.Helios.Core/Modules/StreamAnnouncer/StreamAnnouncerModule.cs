@@ -47,8 +47,8 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             {
                 var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id, x => x.ChannelSettings);
 
-                if (settings != null && settings.Enabled)
-                    await CheckUser(guildUser, settings.ChannelSettings);   
+                if (settings != null && settings.Enabled && settings.ChannelSettings != null)
+                    await CheckUser(guildUser, settings.ChannelSettings);
             };
 
             return Task.CompletedTask;
