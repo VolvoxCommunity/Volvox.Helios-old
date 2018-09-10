@@ -44,9 +44,19 @@ namespace Volvox.Helios.Service.EntityService
         }
 
         /// <inheritdoc />
-        public Task Save(T entity)
+        public Task Create(T entity)
         {
             _context.Set<T>().Add(entity);
+
+            return _context.SaveChangesAsync();
+        }
+
+        public Task Update(T entity)
+        {
+            if (!_context.Set<T>().Local.Any(e => e == entity))
+            {
+                throw new InvalidOperationException("You must use an attached entity when updating.");
+            }
 
             return _context.SaveChangesAsync();
         }

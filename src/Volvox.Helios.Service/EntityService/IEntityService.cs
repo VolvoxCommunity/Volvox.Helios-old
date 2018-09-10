@@ -33,10 +33,16 @@ namespace Volvox.Helios.Service.EntityService
         Task<List<T>> GetAll(params Expression<Func<T, object>>[] includes);
 
         /// <summary>
-        ///     Save an entity to the database.
+        ///     Create an entity and save to database.
         /// </summary>
-        /// <param name="entity">Entity to save to the database.</param>
-        Task Save(T entity);
+        /// <param name="entity">Entity to create/save to database.</param>
+        Task Create(T entity);
+
+        /// <summary>
+        ///     Update an entity in database.
+        /// </summary>
+        /// <param name="entity">Entity to update.</param>
+        Task Update(T entity);
 
         /// <summary>
         ///     Remove an entity from the database.

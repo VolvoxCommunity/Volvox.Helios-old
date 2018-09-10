@@ -9,12 +9,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
+using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
+using Volvox.Helios.Web.Models;
 using Volvox.Helios.Web.ViewModels.Settings;
 
 namespace Volvox.Helios.Web.Controllers
@@ -26,11 +29,14 @@ namespace Volvox.Helios.Web.Controllers
     {
         private readonly IModuleSettingsService<StreamAnnouncerSettings> _streamAnnouncerSettingsService;
         private readonly IModuleSettingsService<StreamerRoleSettings> _streamerRoleSettingsService;
+        private readonly IEntityService<StreamAnnouncerChannelSettings> _streamAnnouncerChannelSettingsService;
 
-        public SettingsController(IModuleSettingsService<StreamAnnouncerSettings> streamAnnouncerSettingsService, IModuleSettingsService<StreamerRoleSettings> streamerRoleSettingsService)
-        {
+        public SettingsController(IModuleSettingsService<StreamAnnouncerSettings> streamAnnouncerSettingsService,
+            IModuleSettingsService<StreamerRoleSettings> streamerRoleSettingsService, IEntityService<StreamAnnouncerChannelSettings> streamAnnouncerChannelSettingsService)
+        {    
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamerRoleSettingsService = streamerRoleSettingsService;
+            _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
         }
 
         public IActionResult Index(ulong guildId, [FromServices] IBot bot,
@@ -56,26 +62,42 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         #region StreamAnnouncer
-        
+
         // GET
         [HttpGet("StreamAnnouncer")]
         public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId,
             [FromServices] IDiscordGuildService guildService)
         {
+            // All channels for guild.
             var channels = await guildService.GetChannels(guildId);
+
+            // Text channels for guild.
+            var textChannels = channels.Where(x => x.Type == 0).ToList();
 
             var viewModel = new StreamAnnouncerSettingsViewModel
             {
-                Channels = new SelectList(channels.FilterChannelType(0), "Id", "Name")
+                Channels = new SelectList(textChannels, "Id", "Name"),
+                ChannelSettings = new StreamAnnouncerChannelSettingsViewModel(),
+                GuildId = guildId.ToString()
             };
 
-            var settings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId);
+            // Get general module settings for guild, from database.
+            var settings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId, x => x.ChannelSettings);
 
             if (settings == null) return View(viewModel);
 
-            viewModel.ChannelId = settings.AnnouncementChannelId;
             viewModel.Enabled = settings.Enabled;
-            viewModel.RemoveMessages = settings.RemoveMessages;
+
+            // Gets first text channel's settings to prepopulate view with.
+            var defaultChannel = settings.ChannelSettings.FirstOrDefault(x => x.ChannelId == textChannels[0].Id);
+
+            // No channels setting saved, return viewmodel as is.
+            if (defaultChannel == null) return View(viewModel);
+
+            viewModel.ChannelSettings.RemoveMessages = defaultChannel.RemoveMessage;
+
+            // Channel settings only exist if the module is enabled.
+            viewModel.ChannelSettings.Enabled = true;
 
             return View(viewModel);
         }
@@ -83,15 +105,51 @@ namespace Volvox.Helios.Web.Controllers
         // POST
         [HttpPost("StreamAnnouncer")]
         public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId, StreamAnnouncerSettingsViewModel viewModel)
-        {
-            // Save the settings to the database
-            await _streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings
+        {         
+            var settings = await _streamAnnouncerChannelSettingsService.Find(viewModel.ChannelId);
+
+            // Remember if there were settings in db, as settings will be populated later if they aren't.
+            var isSettingsInDb = settings != null;
+
+            var saveSettingsTasks = new List<Task>();
+
+            // Save general module settings to the database
+            saveSettingsTasks.Add(_streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings
             {
                 GuildId = guildId,
                 Enabled = viewModel.Enabled,
-                AnnouncementChannelId = viewModel.ChannelId,
-                RemoveMessages = viewModel.RemoveMessages
-            });
+            }));
+
+            if (!isSettingsInDb)
+            {
+                settings = new StreamAnnouncerChannelSettings()
+                {
+                    GuildId = guildId,
+                    ChannelId = viewModel.ChannelId
+                };
+            }
+
+            settings.RemoveMessage = viewModel.ChannelSettings.RemoveMessages;
+
+            // Save specific channel settings to the database.
+            if (viewModel.ChannelSettings.Enabled)
+            {
+                if (!isSettingsInDb)
+                {
+                    saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Create(settings));
+                }
+                else
+                {
+                    saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Update(settings));
+                }
+            }
+            else
+            {
+                if(!isSettingsInDb)
+                    saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Remove(settings));
+            }
+
+            await Task.WhenAll(saveSettingsTasks.ToArray());
 
             return RedirectToAction("Index");
         }
@@ -142,7 +200,7 @@ namespace Volvox.Helios.Web.Controllers
                 return View(viewModel);
             }
 
-            // Save the settings to the database
+            // Save the settings to the database.
             await _streamerRoleSettingsService.SaveSettings(new StreamerRoleSettings
             {
                 GuildId = guildId,

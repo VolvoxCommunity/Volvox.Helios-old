@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
+using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.ModuleSettings;
 
@@ -43,10 +45,10 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             // Subscribe to the GuildMemberUpdated event.
             client.GuildMemberUpdated += async (user, guildUser) =>
             {
-                var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id);
+                var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id, x => x.ChannelSettings);
 
-                if (settings != null && settings.Enabled)
-                    await CheckUser(guildUser);
+                if (settings != null && settings.Enabled && settings.ChannelSettings != null)
+                    await CheckUser(guildUser, settings.ChannelSettings);
             };
 
             return Task.CompletedTask;
@@ -56,7 +58,8 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         ///     Announces the user if it's appropriate to do so.
         /// </summary>
         /// <param name="user">User to be evaluated/adjusted for streaming announcement.</param>
-        private async Task CheckUser(SocketGuildUser user)
+        /// <param name="channels">List of channels with module enabled</param>
+        private async Task CheckUser(SocketGuildUser user, List<StreamAnnouncerChannelSettings> channels)
         {
             // Add initial hash set for the guild.
             if (!StreamingList.TryGetValue(user.Guild.Id, out var set))
@@ -69,34 +72,53 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch &&
                 !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
             {
-                var message = new StreamAnnouncerMessage() { UserId = user.Id};
-
-                // Add user to the streaming list.
-                StreamingList[user.Guild.Id].Add(message);
-
-                // Announce that the user is streaming.
-                await AnnounceUser(user, message);
+                await AnnounceUserHandler(user, channels);
             }
 
             // User is not streaming.
             else if (user.Game == null || user.Game.Value.StreamType != StreamType.Twitch)
             {
                 // Get user from streaming list.
-                var userDataFromList = StreamingList[user.Guild.Id].FirstOrDefault(x => x.UserId == user.Id);
+                var userDataFromList = StreamingList[user.Guild.Id].Where(x => x.UserId == user.Id).ToList();
 
-                // Remove message from channel if necessary.
-                await AnnouncedMessagesHandler(user, userDataFromList);
+                // Handle announced streaming messages.
+                await AnnouncedMessageHandler(user, userDataFromList, channels);
 
-                // Remove user from list.
-                StreamingList[user.Guild.Id].Remove(userDataFromList);
+                // Remove messages from hashset.
+                foreach (var m in userDataFromList)
+                    StreamingList[user.Guild.Id].Remove(m);       
             }
         }
 
         /// <summary>
-        ///     Announces the users stream to the appropriate channel.
+        ///     Handles announcement of a user to specified channels.
         /// </summary>
-        /// <param name="user">User to be announced.</param>
-        private async Task AnnounceUser(SocketGuildUser user, StreamAnnouncerMessage message)
+        /// <param name="user">user to be announced.</param>
+        /// <param name="channels">List of channels with module enabled.</param>
+        /// <returns></returns>
+        private async Task AnnounceUserHandler(SocketGuildUser user, List<StreamAnnouncerChannelSettings> channels)
+        {
+            var announcements = new List<Task>();
+
+            // Announce to all enabled channels in guild and store message in list.
+            foreach (var c in channels)
+            {
+                var message = new StreamAnnouncerMessage() { UserId = user.Id, ChannelId = c.ChannelId };
+                StreamingList[user.Guild.Id].Add(message);
+                announcements.Add(AnnounceUser(user, message, c.ChannelId));
+            }
+
+            await Task.WhenAll(announcements.ToArray());
+        }
+
+        /// <summary>
+        ///     Announces the users stream to channel.
+        /// </summary>
+        /// <param name="user">User to be announecd</param>
+        /// <param name="m">Message from StreamingList, this is so it's MessageId can be set.</param>
+        /// <param name="channelSettings">Settings of channel the message will be to be announced to.</param>
+        /// <returns></returns>
+        private async Task AnnounceUser(SocketGuildUser user, StreamAnnouncerMessage m, ulong channelId)
         {
             // Build the embedded message.
             var embed = new EmbedBuilder()
@@ -104,59 +126,62 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
                 .WithDescription($"{user.Game?.StreamUrl} - {user.Mention}")
                 .WithColor(new Color(0x4A90E2))
                 .WithThumbnailUrl(user.GetAvatarUrl())
-                .AddInlineField("Title", user.Game?.Name).Build();
+                .AddInlineField("Title", user.Game?.Name).Build();         
 
-            // Get the settings from the database.
-            var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id);
+            // Announce the user to the channel specified in settings.
+            var messageData = await user.Guild.GetTextChannel(channelId)
+                .SendMessageAsync("", embed: embed);
 
-            if (settings != null)
+            var messageId = messageData.Id;
+
+            Logger.LogDebug($"StreamAnnouncer Module: Announcing user {user.Username}" +
+                $" (ID: {m.UserId}) to channel {channelId}. " +
+                $" (message ID: {m.MessageId}).");
+
+            // Sets MessageId in hashset, as hashset holds reference to the message param.
+            m.MessageId = messageId;            
+        }
+
+        /// <summary>
+        ///     Handles the announced messages for a given user.
+        /// </summary>
+        /// <param name="user">User whom stopped streaming.</param>
+        /// <param name="messages">List of messages associated the said user.</param>
+        /// <param name="channels">List of channels with module enabled.</param>
+        /// <returns></returns>
+        private async Task AnnouncedMessageHandler(SocketGuildUser user, List<StreamAnnouncerMessage> messages, List<StreamAnnouncerChannelSettings> channels)
+        {
+            var messageDeletions = new List<Task>();
+
+            // Delete message from channels where RemoveMessages is true.
+            foreach (var m in messages)
             {
-                var announceChannelId = settings.AnnouncementChannelId;
+                var channel = channels.FirstOrDefault(x => x.ChannelId == m.ChannelId);
 
-                if (announceChannelId != 0)
-                {
-                    Logger.LogDebug($"StreamAnnouncer Module: Announcing {user.Username}");
+                if (!channel.RemoveMessage || channel.ChannelId == 0)
+                    continue;
 
-                    // Announce the user to the channel specified in settings.
-                    var messageData = await user.Guild.GetTextChannel(announceChannelId)
-                        .SendMessageAsync("", embed: embed);
-
-                    var messageId = messageData.Id;
-
-                    // Sets MessageId in hashset, as hashset holds reference to the message param.
-                    message.MessageId = messageId;
-                }
+                messageDeletions.Add(DeleteMessageAsync(user, m));
             }
+            await Task.WhenAll(messageDeletions.ToArray());
         }
 
         /// <summary>
         ///     Remove announcement message from channel if necessary.
         /// </summary>
         /// <param name="user">User whom stopped streaming</param>
-        /// <param name="userDataFromList">Data taken from the StreamingList hashset.
-        ///     This is where the messageId is stored
-        /// </param>
-        private async Task AnnouncedMessagesHandler(SocketGuildUser user, StreamAnnouncerMessage userDataFromList)
+        /// <param name="m">Message to delete </param>
+        private async Task DeleteMessageAsync(SocketGuildUser user, StreamAnnouncerMessage m)
         {
-            var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id);
+            Logger.LogDebug($"StreamAnnouncer Module: Deleting streaming message {m.MessageId} " +
+                $"from {user.Username} (ID: {m.UserId}), " +
+                $"on channel {m.ChannelId}.");
 
-            if (settings != null)
-            {
-                // Deletes messages if option is checked
-                if (settings.RemoveMessages)
-                {
-                    Logger.LogDebug($"StreamAnnouncer Module: Deleting streaming message from {user.Username}");
+            // Convert to array to work with DeleteMessagesAsync.
+            var messageIds = new[] { m.MessageId };
 
-                    // Announcement message Id.
-                    var messageId = userDataFromList.MessageId;
-
-                    // Convert to array to work with DeleteMessagesAsync.
-                    var messageIds = new[] { messageId };
-
-                    // Delete messages
-                    await user.Guild.GetTextChannel(settings.AnnouncementChannelId).DeleteMessagesAsync(messageIds);
-                }
-            }
+            // Delete message.
+            await user.Guild.GetTextChannel(m.ChannelId).DeleteMessagesAsync(messageIds);           
         }
     }
 }
