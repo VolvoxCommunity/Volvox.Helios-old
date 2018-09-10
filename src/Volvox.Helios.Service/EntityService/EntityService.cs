@@ -12,6 +12,10 @@ namespace Volvox.Helios.Service.EntityService
     {
         private readonly VolvoxHeliosContext _context;
 
+        /// <summary>
+        ///     Initialize a new EntityService class.
+        /// </summary>
+        /// <param name="context">Volvox.Helios context.</param>
         public EntityService(VolvoxHeliosContext context)
         {
             _context = context;
