@@ -27,7 +27,7 @@ namespace Tests.Integration.WebTests
         public async Task Get_Default(string url)
         {
             var client = _webApplicationFactory.CreateClient();
-            var credBytes = Encoding.Unicode.GetBytes("testuser:testpassword");
+            var credBytes = Encoding.UTF8.GetBytes("testuser:testpassword");
             var b64Creds = Convert.ToBase64String(credBytes);
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", b64Creds);
 

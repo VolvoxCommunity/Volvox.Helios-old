@@ -42,8 +42,8 @@ namespace Tests.Integration.Infrastructure
                         {
                             OnValidatePrincipal = context =>
                             {
-                                if (context.Username.ToLower() == "testuser"
-                                && context.Password == "testpassword")
+                                if (context.Username.Equals("testuser")
+                                && context.Password.Equals("testpassword"))
                                 {
                                     var claims = new List<Claim>
                                     {
