@@ -50,14 +50,16 @@ namespace Tests.Integration.Infrastructure
                                         new Claim(ClaimTypes.Name, context.Username, context.Options.ClaimsIssuer)
                                     };
 
-                                    var ticket = new AuthenticationTicket(
-                                        new ClaimsPrincipal(new ClaimsIdentity(claims, BasicAuthenticationDefaults.AuthenticationScheme)),
-                                        new AuthenticationProperties(),
-                                        BasicAuthenticationDefaults.AuthenticationScheme);
-                                    return Task.FromResult(AuthenticateResult.Success(ticket));
+                                    var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, BasicAuthenticationDefaults.AuthenticationScheme));
+                                    context.Principal = principal;
                                 }
-                                return Task.FromResult(AuthenticateResult.Fail("Authentication Failed"));
+                                else
+                                {
+                                    context.AuthenticationFailMessage = "Auth failed";
+                                }
+                                return Task.CompletedTask;
                             }
+
                         };
                     });
 

@@ -33,6 +33,8 @@ namespace Tests.Integration.WebTests
 
             var response = await client.GetAsync(url);
 
+            var content = await response.Content.ReadAsStringAsync();
+
             response.EnsureSuccessStatusCode();
         }
 
