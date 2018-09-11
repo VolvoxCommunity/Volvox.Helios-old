@@ -134,12 +134,12 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
 
             var messageId = messageData.Id;
 
+            // Sets MessageId in hashset, as hashset holds reference to the message param.
+            m.MessageId = messageId;
+
             Logger.LogDebug($"StreamAnnouncer Module: Announcing user {user.Username}" +
                 $" (ID: {m.UserId}) to channel {channelId}. " +
-                $" (message ID: {m.MessageId}).");
-
-            // Sets MessageId in hashset, as hashset holds reference to the message param.
-            m.MessageId = messageId;            
+                $" (message ID: {m.MessageId}).");       
         }
 
         /// <summary>
