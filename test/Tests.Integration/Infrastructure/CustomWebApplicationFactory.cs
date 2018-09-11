@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Tests.Integration.Helpers;
 using Tests.Integration.TestAuth;
 using Volvox.Helios.Service;
 
@@ -45,9 +47,12 @@ namespace Tests.Integration.Infrastructure
                                 if (context.Username.Equals("testuser")
                                 && context.Password.Equals("testpassword"))
                                 {
+                                    var tokenHelper = new DiscordClientCredTokenHelper(ConfigurationHelper.Configuration);
+                                    var token = tokenHelper.GetToken().Result;
                                     var claims = new List<Claim>
                                     {
-                                        new Claim(ClaimTypes.Name, context.Username, context.Options.ClaimsIssuer)
+                                        new Claim(ClaimTypes.Name, context.Username, context.Options.ClaimsIssuer),
+                                        new Claim("access_token", token)
                                     };
 
                                     var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, BasicAuthenticationDefaults.AuthenticationScheme));
