@@ -9,6 +9,8 @@ namespace Volvox.Helios.Domain.Module.ChatTracker
 
         public ulong AuthorId { get; set; }
 
+        public ulong GuildId { get; set; }
+
         public ulong ChannelId { get; set; }
     }
 }

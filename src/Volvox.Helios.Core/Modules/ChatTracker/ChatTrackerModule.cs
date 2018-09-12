@@ -36,12 +36,14 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
             {
                 var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<Message>>();
 
-                await messageService.Create(new Message
-                {
-                    Id = message.Id,
-                    AuthorId = message.Author.Id,
-                    ChannelId = message.Channel.Id
-                });
+                if (message.Channel is IGuildChannel guildChannel)
+                    await messageService.Create(new Message
+                    {
+                        Id = message.Id,
+                        AuthorId = message.Author.Id,
+                        GuildId = guildChannel.GuildId,
+                        ChannelId = guildChannel.Id
+                    });
             }
         }
 
