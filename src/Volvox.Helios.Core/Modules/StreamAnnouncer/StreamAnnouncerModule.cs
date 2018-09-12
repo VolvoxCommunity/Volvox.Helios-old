@@ -139,7 +139,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
 
             Logger.LogDebug($"StreamAnnouncer Module: Announcing user {user.Username}" +
                 $" (ID: {m.UserId}) to channel {channelId}. " +
-                $" (message ID: {m.MessageId}).");       
+                $" (message ID: {messageId}).");       
         }
 
         /// <summary>
