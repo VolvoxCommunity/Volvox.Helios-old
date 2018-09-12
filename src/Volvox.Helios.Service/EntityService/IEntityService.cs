@@ -13,9 +13,9 @@ namespace Volvox.Helios.Service.EntityService
         /// <summary>
         ///     Get the first entity from the database that matches the primary key.
         /// </summary>
-        /// <param name="key">Primary key used to find the entity.</param>
+        /// <param name="keys">Primary keys used to find the entity.</param>
         /// <returns>First entity matching the primary key.</returns>
-        Task<T> Find(object key);
+        Task<T> Find(params object[] keys);
 
         /// <summary>
         ///     Get all entities that match the filter.
