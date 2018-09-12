@@ -60,7 +60,7 @@ namespace Volvox.Helios.Web.Controllers
 
             if (inGuild)
             {
-                guilds.RemoveAll(g => bot.IsBotInGuild(g.Guild.Id));
+                guilds.RemoveAll(g => !bot.IsBotInGuild(g.Guild.Id));
             }
 
             // Format the ulong to string.
