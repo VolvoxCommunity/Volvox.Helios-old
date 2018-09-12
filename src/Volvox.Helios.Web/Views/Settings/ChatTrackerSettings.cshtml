@@ -1,0 +1,30 @@
+﻿@model Volvox.Helios.Web.ViewModels.Settings.ChatTrackerSettingsViewModel
+@{
+    ViewData["Title"] = "ChatTracker Settings";
+}
+
+<h2>Streamer Role Settings</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div style="display:flex;" class="form-group">
+                <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
+                <label class="switch" />
+                <input asp-for="Enabled" type="checkbox" />
+                <div class="slider round"></div>
+                <span asp-validation-for="Enabled" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
+
