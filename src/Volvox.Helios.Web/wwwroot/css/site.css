@@ -34,6 +34,7 @@
 .vertical-margin-large {
     margin: 40px 0;
 }
+
 .vertical-margin-medium {
     margin: 20px 0;
 }
@@ -121,6 +122,23 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+/*****************************************/
+
+/************ Guild Dropdown *************/
+
+.dropdown-image-small {
+  height: 32px;
+  width: 32px;
+  margin-right: 8px;
+  border-radius: 3px;
+  border: 2px rgba(0,0,0,.15) solid;
+}
+
+.dropdown-item-container {
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
 }
 
 /*****************************************/
