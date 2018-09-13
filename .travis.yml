@@ -7,4 +7,10 @@ install:
 script:
 - dotnet build
 - dotnet test test/Tests.Unit/Tests.Unit.csproj
+- sonar-scanner
 #- dotnet test test/Tests.Integration/Tests.Integration.csproj
+addons:
+  sonarcloud:
+    organization: billchirico-github
+    token:
+      secure: $SONAR_TOKEN
