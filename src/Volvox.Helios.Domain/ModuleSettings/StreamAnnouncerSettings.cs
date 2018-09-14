@@ -1,10 +1,10 @@
-﻿namespace Volvox.Helios.Domain.ModuleSettings
+﻿using System.Collections.Generic;
+using Volvox.Helios.Domain.Module;
+
+namespace Volvox.Helios.Domain.ModuleSettings
 {
     public class StreamAnnouncerSettings : ModuleSettings
     {
-        public ulong AnnouncementChannelId { get; set; }
-
-        // Determines if stream announcement messages should be removed on stream conclusion
-        public bool RemoveMessages { get; set; }
+        public List<StreamAnnouncerChannelSettings> ChannelSettings { get; set; }
     }
 }
