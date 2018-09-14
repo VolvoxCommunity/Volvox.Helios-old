@@ -1,12 +1,10 @@
 language: csharp
 dist: trusty
-mono: latest
+mono: none
 dotnet: 2.1
 install:
 - dotnet restore
 script:
-- mono ../tools/sonar/SonarQube.Scanner.MSBuild.exe begin /d:sonar.login=${SONAR_TOKEN} /d:sonar.host.url="https://sonarcloud.io"
 - dotnet build
 - dotnet test test/Tests.Unit/Tests.Unit.csproj
 - dotnet test test/Tests.Integration/Tests.Integration.csproj
-- mono ../tools/sonar/SonarQube.Scanner.MSBuild.exe end /d:sonar.login=${SONAR_TOKEN}
