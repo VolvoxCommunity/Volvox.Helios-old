@@ -23,14 +23,14 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
 
         public override Task Init(DiscordSocketClient client)
         {
-            client.MessageReceived += MessageRecieved;
+            client.MessageReceived += MessageReceived;
 
             client.MessageDeleted += MessageDeleted;
 
             return Task.CompletedTask;
         }
 
-        private async Task MessageRecieved(SocketMessage message)
+        private async Task MessageReceived(SocketMessage message)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
