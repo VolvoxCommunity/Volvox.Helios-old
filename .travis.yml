@@ -4,15 +4,10 @@ mono: none
 dotnet: 2.1
 install:
 - dotnet restore
-- dotnet tool install -g dotnet-sonarscanner
+- dotnet tool install --global dotnet-sonarscanner
 script:
 - dotnet sonarscanner begin /k:"$SONAR_TOKEN"
 - dotnet build
 - dotnet test test/Tests.Unit/Tests.Unit.csproj
 - dotnet sonarscanner end
 #- dotnet test test/Tests.Integration/Tests.Integration.csproj
-addons:
-  sonarcloud:
-    organization: billchirico-github
-    token:
-      secure: $SONAR_TOKEN
