@@ -4,7 +4,7 @@ mono: none
 dotnet: 2.1
 install:
 - dotnet restore
-- dotnet tool install dotnet-sonarscanner
+- dotnet tool install -g dotnet-sonarscanner
 script:
 - dotnet sonarscanner begin /k:"$SONAR_TOKEN"
 - dotnet build
