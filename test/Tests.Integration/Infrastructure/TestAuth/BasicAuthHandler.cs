@@ -58,7 +58,7 @@ namespace Tests.Integration.TestAuth
                 return AuthenticateResult.NoResult();
             }
 
-            string credentials = basicAuthHeader.Replace($"Basic ", string.Empty).Trim();
+            var credentials = basicAuthHeader.Replace($"Basic ", string.Empty).Trim();
 
             if (string.IsNullOrEmpty(credentials))
             {

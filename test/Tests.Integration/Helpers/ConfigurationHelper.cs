@@ -2,7 +2,7 @@
 
 namespace Tests.Integration.Helpers
 {
-    class ConfigurationHelper
+    public class ConfigurationHelper
     {
         public static IConfiguration Configuration;
 

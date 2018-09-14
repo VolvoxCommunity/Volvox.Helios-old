@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tests.Integration.Helpers;
 using Tests.Integration.TestAuth;
+using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Service;
 
 namespace Tests.Integration.Infrastructure
@@ -32,9 +33,6 @@ namespace Tests.Integration.Infrastructure
                 .AddEntityFrameworkInMemoryDatabase()
                 .BuildServiceProvider();
 
-                //This might kind of work, but doesn't seem to actually work. Allows access to the page, but we're still unauthed.
-                //services.AddMvc(o => { o.Filters.Add(new AllowAnonymousFilter()); });
-
                 services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
                 .AddBasicAuth(
                     options =>
@@ -52,7 +50,7 @@ namespace Tests.Integration.Infrastructure
                                     var claims = new List<Claim>
                                     {
                                         new Claim(ClaimTypes.Name, context.Username, context.Options.ClaimsIssuer),
-                                        new Claim("access_token", token)
+                                        new Claim("access_token", token),
                                     };
 
                                     var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, BasicAuthenticationDefaults.AuthenticationScheme));
