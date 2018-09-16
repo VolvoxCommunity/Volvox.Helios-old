@@ -28,11 +28,6 @@ namespace Tests.Integration.Infrastructure
             builder.ConfigureTestServices(services =>
             {
                 
-                //TODO: seed in memory db with test data
-                var serviceProvider = new ServiceCollection()
-                .AddEntityFrameworkInMemoryDatabase()
-                .BuildServiceProvider();
-
                 services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
                 .AddBasicAuth(
                     options =>
@@ -65,12 +60,6 @@ namespace Tests.Integration.Infrastructure
 
                         };
                     });
-
-                services.AddDbContext<VolvoxHeliosContext>(options =>
-                {
-                    options.UseInMemoryDatabase("HeliosInMemory");
-                    options.UseInternalServiceProvider(serviceProvider);
-                });
 
                 //services.AddHttpClient<IDiscordAPIClient, TestDiscordAPIClient>();
 
