@@ -24,6 +24,5 @@ namespace Tests.Integration.TestAuth
             Realm = BasicAuthenticationDefaults.Realm;
             this.Events = new BasicAuthEvents();
         }
-
     }
 }

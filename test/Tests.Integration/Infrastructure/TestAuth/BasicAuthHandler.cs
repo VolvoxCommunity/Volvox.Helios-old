@@ -18,7 +18,6 @@ namespace Tests.Integration.TestAuth
         public BasicAuthHandler(IOptionsMonitor<BasicAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(
             options, logger, encoder, clock)
         {
-
         }
 
         protected new BasicAuthEvents Events
@@ -38,7 +37,6 @@ namespace Tests.Integration.TestAuth
         {
             return Task.FromResult<object>(new BasicAuthEvents());
         }
-
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
@@ -92,7 +90,6 @@ namespace Tests.Integration.TestAuth
             }
 
             return AuthenticateResult.Success(new AuthenticationTicket(context.Principal, context.Properties, this.Scheme.Name));
-
         }
 
         protected override Task HandleChallengeAsync(Microsoft.AspNetCore.Authentication.AuthenticationProperties context)
@@ -100,7 +97,6 @@ namespace Tests.Integration.TestAuth
             var realmHeader = new NameValueHeaderValue("realm", $"\"{this.Options.Realm}\"");
             this.Response.StatusCode = StatusCodes.Status401Unauthorized;
             this.Response.Headers.Append(HeaderNames.WWWAuthenticate, $"Basic {realmHeader}");
-
             return Task.CompletedTask;
         } 
     }

@@ -15,6 +15,5 @@ namespace Tests.Integration.TestAuth
         /// Default Value for Realm
         /// </summary>
         public const string Realm = "Basic Realm";
-
     }
 }

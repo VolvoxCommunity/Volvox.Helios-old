@@ -17,8 +17,6 @@ namespace Tests.Integration.TestAuth
             Username = username;
             Password = password;
         }
-
         public string AuthenticationFailMessage { get; set; } = "Authentication failed.";
-
     }
 }

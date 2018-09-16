@@ -27,7 +27,6 @@ namespace Tests.Integration.Infrastructure
 
             builder.ConfigureTestServices(services =>
             {
-                
                 services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
                 .AddBasicAuth(
                     options =>
@@ -57,7 +56,6 @@ namespace Tests.Integration.Infrastructure
                                 }
                                 return Task.CompletedTask;
                             }
-
                         };
                     });
 
@@ -74,11 +72,8 @@ namespace Tests.Integration.Infrastructure
 
                     db.Database.EnsureCreated();
                 }
-
-
             });
             base.ConfigureWebHost(builder);
         }
-
     }
 }

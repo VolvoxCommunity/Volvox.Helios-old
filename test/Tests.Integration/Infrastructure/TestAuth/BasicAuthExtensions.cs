@@ -29,6 +29,5 @@ namespace Tests.Integration.TestAuth
         {
             return builder.AddScheme<BasicAuthOptions, BasicAuthHandler>(authScheme, options);
         }
-
     }
 }
