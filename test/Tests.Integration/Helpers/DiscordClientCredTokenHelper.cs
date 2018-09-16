@@ -18,7 +18,6 @@ namespace Tests.Integration.Helpers
 
         public DiscordClientCredTokenHelper(IConfiguration configuration)
         {
-
             clientId = configuration["Discord:ClientID"];
             clientSecret = configuration["Discord:ClientSecret"];
 

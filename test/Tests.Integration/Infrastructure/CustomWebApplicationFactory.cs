@@ -20,11 +20,8 @@ namespace Tests.Integration.Infrastructure
 {
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Volvox.Helios.Web.Startup>
     {
-
-        
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-
             builder.ConfigureTestServices(services =>
             {
                 services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
