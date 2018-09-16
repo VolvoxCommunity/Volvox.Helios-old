@@ -45,6 +45,5 @@ namespace Tests.Integration.Helpers
 
             return token;
         }
-
     }
 }
