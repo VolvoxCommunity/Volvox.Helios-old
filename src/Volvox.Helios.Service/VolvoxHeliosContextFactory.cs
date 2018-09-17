@@ -8,8 +8,7 @@ namespace Volvox.Helios.Service
         public VolvoxHeliosContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<VolvoxHeliosContext>();
-            optionsBuilder.UseSqlServer(
-                "Server=(localdb)\\mssqllocaldb;Database=VolvoxHelios;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer("");
 
             return new VolvoxHeliosContext(optionsBuilder.Options);
         }
