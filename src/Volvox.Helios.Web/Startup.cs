@@ -150,16 +150,8 @@ namespace Volvox.Helios.Web
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Entity Framework
-            var connectionString = Configuration.GetConnectionString("VolvoxHeliosDatabase");
-
-            // Set connection string to environment variable if in staging (travis-ci)
-            if (_env.IsStaging())
-            {
-                connectionString = Environment.GetEnvironmentVariable("DEV_CONNECTION_STRING");
-            }
-
             services.AddDbContext<VolvoxHeliosContext>(options =>
-                options.UseSqlServer(connectionString ?? throw new ArgumentException("Connection string not found!")));
+                options.UseSqlServer(Environment.GetEnvironmentVariable("DEV_CONNECTION_STRING") ?? Configuration.GetConnectionString("VolvoxHeliosDatabase")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
