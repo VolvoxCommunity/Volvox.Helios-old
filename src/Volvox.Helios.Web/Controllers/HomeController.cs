@@ -14,5 +14,7 @@ namespace Volvox.Helios.Web.Controllers
         public IActionResult About() => View();
 
         public IActionResult Example() => View();
+
+        public IActionResult Example2() => View();
     }
 }
