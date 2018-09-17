@@ -39,12 +39,10 @@ namespace Volvox.Helios.Web
 {
     public class Startup
     {
-        private readonly IHostingEnvironment _env;
         private IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            _env = env;
             Configuration = configuration;
         }
 
@@ -149,9 +147,10 @@ namespace Volvox.Helios.Web
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // Entity Framework
-            services.AddDbContext<VolvoxHeliosContext>(options =>
-                options.UseSqlServer(Environment.GetEnvironmentVariable("DEV_CONNECTION_STRING") ?? Configuration.GetConnectionString("VolvoxHeliosDatabase")));
+            // Entity Framework - Only enable if the DISABLE_EF environment variable is not set.
+            if (Environment.GetEnvironmentVariable("DISABLE_EF") == null)
+                services.AddDbContext<VolvoxHeliosContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("VolvoxHeliosDatabase")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
