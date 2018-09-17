@@ -39,12 +39,14 @@ namespace Volvox.Helios.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IHostingEnvironment _env;
+        private IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
+            _env = env;
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -148,8 +150,16 @@ namespace Volvox.Helios.Web
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Entity Framework
+            var connectionString = Configuration.GetConnectionString("VolvoxHeliosDatabase");
+
+            // Set connection string to environment variable if in staging (travis-ci)
+            if (_env.IsStaging())
+            {
+                connectionString = Environment.GetEnvironmentVariable("DEV_CONNECTION_STRING");
+            }
+
             services.AddDbContext<VolvoxHeliosContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("VolvoxHeliosDatabase")));
+                options.UseSqlServer(connectionString ?? throw new ArgumentException("Connection string not found!")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
