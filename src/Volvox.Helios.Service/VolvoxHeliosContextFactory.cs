@@ -8,7 +8,7 @@ namespace Volvox.Helios.Service
         public VolvoxHeliosContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<VolvoxHeliosContext>();
-            optionsBuilder.UseSqlServer("");
+            optionsBuilder.UseSqlServer("$DEV_CONNECTION_STRING");
 
             return new VolvoxHeliosContext(optionsBuilder.Options);
         }
