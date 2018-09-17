@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace Volvox.Helios.Service
@@ -8,7 +9,7 @@ namespace Volvox.Helios.Service
         public VolvoxHeliosContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<VolvoxHeliosContext>();
-            optionsBuilder.UseSqlServer("$DEV_CONNECTION_STRING");
+            optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("DEV_CONNECTION_STRING"));
 
             return new VolvoxHeliosContext(optionsBuilder.Options);
         }
