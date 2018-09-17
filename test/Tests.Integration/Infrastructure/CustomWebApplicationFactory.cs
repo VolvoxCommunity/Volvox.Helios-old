@@ -20,19 +20,10 @@ namespace Tests.Integration.Infrastructure
 {
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Volvox.Helios.Web.Startup>
     {
-
-        
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-
             builder.ConfigureTestServices(services =>
             {
-                
-                //TODO: seed in memory db with test data
-                var serviceProvider = new ServiceCollection()
-                .AddEntityFrameworkInMemoryDatabase()
-                .BuildServiceProvider();
-
                 services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
                 .AddBasicAuth(
                     options =>
@@ -62,15 +53,8 @@ namespace Tests.Integration.Infrastructure
                                 }
                                 return Task.CompletedTask;
                             }
-
                         };
                     });
-
-                services.AddDbContext<VolvoxHeliosContext>(options =>
-                {
-                    options.UseInMemoryDatabase("HeliosInMemory");
-                    options.UseInternalServiceProvider(serviceProvider);
-                });
 
                 //services.AddHttpClient<IDiscordAPIClient, TestDiscordAPIClient>();
 
@@ -85,11 +69,8 @@ namespace Tests.Integration.Infrastructure
 
                     db.Database.EnsureCreated();
                 }
-
-
             });
             base.ConfigureWebHost(builder);
         }
-
     }
 }

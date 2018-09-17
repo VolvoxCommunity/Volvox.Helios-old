@@ -43,8 +43,6 @@ namespace Tests.Integration.WebTests
             var content = await response.Content.ReadAsStringAsync();
 
             response.EnsureSuccessStatusCode();
-
         }
-
     }
 }
