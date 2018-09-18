@@ -64,7 +64,7 @@ namespace Volvox.Helios.Web.Controllers
             }
 
             // Format the ulong to string.
-            return guilds.FilterAdministrator().Select(g => new {id = g.Guild.Id.ToString(), name = g.Guild.Name});
+            return guilds.FilterAdministrator().Select(g => new {id = g.Guild.Id.ToString(), name = g.Guild.Name, icon = g.Guild.Icon});
         }
 
         [HttpGet("IsBotInGuild")]

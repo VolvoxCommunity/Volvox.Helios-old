@@ -51,6 +51,7 @@ namespace Volvox.Helios.Service.EntityService
             return _context.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
         public Task Update(T entity)
         {
             if (!_context.Set<T>().Local.Any(e => e == entity))

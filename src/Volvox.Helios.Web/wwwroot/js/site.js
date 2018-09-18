@@ -41,7 +41,7 @@
       const element = $(this);
 
       const url = "/api/GetUserAdminGuilds";
-
+      
       $.getJSON(url, function (data) {
         element.empty();
 
@@ -70,5 +70,5 @@
     </div>
     `)
   }
-
+   
 }(jQuery));
