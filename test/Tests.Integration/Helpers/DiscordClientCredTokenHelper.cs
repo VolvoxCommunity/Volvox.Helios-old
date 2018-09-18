@@ -17,8 +17,15 @@ namespace Tests.Integration.Helpers
 
         public DiscordClientCredTokenHelper(IConfiguration configuration)
         {
-            _clientId = configuration["Discord:ClientID"];
-            _clientSecret = configuration["Discord:ClientSecret"];
+            // Discord Client Id
+            _clientId = Environment.GetEnvironmentVariable("DISCORD_CLIENTID") != null
+                ? Environment.GetEnvironmentVariable("DISCORD_CLIENTID")
+                : configuration["Discord:ClientID"];
+
+            // Discord Client Secret
+            _clientSecret = Environment.GetEnvironmentVariable("DISCORD_CLIENTSECRET") != null
+                ? Environment.GetEnvironmentVariable("DISCORD_CLIENTSECRET")
+                : configuration["Discord:ClientSecret"];
         }
 
         public async Task<string> GetToken()
