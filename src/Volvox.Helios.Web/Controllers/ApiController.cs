@@ -42,21 +42,26 @@ namespace Volvox.Helios.Web.Controllers
             // Settings for specific channel.
             var channelSettings = allChannelSettings.ChannelSettings.FirstOrDefault(x => x.ChannelId == channelId);
 
-            var isEnabled = channelSettings == null ? false : true;
+            var isEnabled = channelSettings != null;
 
             var settings = new StreamAnnouncerChannelSettingsViewModel()
             {
                 Enabled = isEnabled,
-                RemoveMessages = isEnabled ? channelSettings.RemoveMessage : false
+                RemoveMessages = isEnabled && channelSettings.RemoveMessage
             };
 
             return settings;
         }
 
         [HttpGet("GetUserAdminGuilds")]
-        public async Task<object> GetUserAdminGuilds([FromServices] IDiscordUserGuildService userGuildService)
+        public async Task<object> GetUserAdminGuilds([FromServices] IDiscordUserGuildService userGuildService, [FromServices] IBot bot, bool inGuild = false)
         {
             var guilds = await userGuildService.GetUserGuilds();
+
+            if (inGuild)
+            {
+                guilds.RemoveAll(g => !bot.IsBotInGuild(g.Guild.Id));
+            }
 
             // Format the ulong to string.
             return guilds.FilterAdministrator().Select(g => new {id = g.Guild.Id.ToString(), name = g.Guild.Name, icon = g.Guild.Icon});
