@@ -24,6 +24,16 @@ namespace Tests.Integration.Infrastructure
         {
             builder.ConfigureTestServices(services =>
             {
+                var serviceProvider = new ServiceCollection()
+                .AddEntityFrameworkInMemoryDatabase()
+                .BuildServiceProvider();
+
+                services.AddDbContext<VolvoxHeliosContext>(options =>
+                {
+                    options.UseInMemoryDatabase("InMemoryDbForTesting");
+                    options.UseInternalServiceProvider(serviceProvider);
+                });
+
                 services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
                 .AddBasicAuth(
                     options =>
@@ -55,8 +65,6 @@ namespace Tests.Integration.Infrastructure
                             }
                         };
                     });
-
-                //services.AddHttpClient<IDiscordAPIClient, TestDiscordAPIClient>();
 
                 var sp = services.BuildServiceProvider();
 
