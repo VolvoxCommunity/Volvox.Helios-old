@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace Volvox.Helios.Service
@@ -8,8 +9,8 @@ namespace Volvox.Helios.Service
         public VolvoxHeliosContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<VolvoxHeliosContext>();
-            optionsBuilder.UseSqlServer(
-                "Server=(localdb)\\mssqllocaldb;Database=VolvoxHelios;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("DEV_CONNECTION_STRING") ??
+                                        "Server=(localdb)\\mssqllocaldb;Database=VolvoxHelios;Trusted_Connection=True;");
 
             return new VolvoxHeliosContext(optionsBuilder.Options);
         }
