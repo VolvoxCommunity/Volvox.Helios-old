@@ -15,12 +15,10 @@ namespace Tests.Integration.Helpers
         private readonly string _clientSecret;
         private const string _discordTokenEndpoint = "https://discordapp.com/api/oauth2/token";
 
-
         public DiscordClientCredTokenHelper(IConfiguration configuration)
         {
             _clientId = configuration["Discord:ClientID"];
             _clientSecret = configuration["Discord:ClientSecret"];
-
         }
 
         public async Task<string> GetToken()
