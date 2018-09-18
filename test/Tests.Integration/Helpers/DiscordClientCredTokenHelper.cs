@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -11,17 +10,17 @@ namespace Tests.Integration.Helpers
 {
     public class DiscordClientCredTokenHelper
     {
-        private readonly HttpClient _client;
+        private static readonly HttpClient _client = new HttpClient();
         private readonly string clientId;
         private readonly string clientSecret;
         private const string DiscordTokenEndpoint = "https://discordapp.com/api/oauth2/token";
+
 
         public DiscordClientCredTokenHelper(IConfiguration configuration)
         {
             clientId = configuration["Discord:ClientID"];
             clientSecret = configuration["Discord:ClientSecret"];
 
-            _client = new HttpClient();
         }
 
         public async Task<string> GetToken()
