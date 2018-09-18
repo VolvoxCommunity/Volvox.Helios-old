@@ -11,15 +11,15 @@ namespace Tests.Integration.Helpers
     public class DiscordClientCredTokenHelper
     {
         private static readonly HttpClient _client = new HttpClient();
-        private readonly string clientId;
-        private readonly string clientSecret;
-        private const string DiscordTokenEndpoint = "https://discordapp.com/api/oauth2/token";
+        private readonly string _clientId;
+        private readonly string _clientSecret;
+        private const string _discordTokenEndpoint = "https://discordapp.com/api/oauth2/token";
 
 
         public DiscordClientCredTokenHelper(IConfiguration configuration)
         {
-            clientId = configuration["Discord:ClientID"];
-            clientSecret = configuration["Discord:ClientSecret"];
+            _clientId = configuration["Discord:ClientID"];
+            _clientSecret = configuration["Discord:ClientSecret"];
 
         }
 
@@ -28,7 +28,7 @@ namespace Tests.Integration.Helpers
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri(DiscordTokenEndpoint),
+                RequestUri = new Uri(_discordTokenEndpoint),
                 Content = new StringContent("grant_type=client_credentials")
             };
 
