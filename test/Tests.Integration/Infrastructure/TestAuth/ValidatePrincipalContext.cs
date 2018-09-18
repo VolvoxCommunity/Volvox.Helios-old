@@ -5,8 +5,8 @@ namespace Tests.Integration.TestAuth
 {
     public class ValidatePrincipalContext : PrincipalContext<BasicAuthOptions>
     {
-        public string Username { get; }
-        public string Password { get; }
+        public readonly string Username;
+        public readonly string Password;
 
         public ValidatePrincipalContext(HttpContext context, AuthenticationScheme scheme, BasicAuthOptions options, string username, string password) : base (
             context,
