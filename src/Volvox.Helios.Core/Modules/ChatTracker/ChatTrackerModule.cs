@@ -21,6 +21,10 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
             _scopeFactory = scopeFactory;
         }
 
+        /// <summary>
+        ///     Initialize the module by subscribing to the events.
+        /// </summary>
+        /// <param name="client">Client to subscribe to.</param>
         public override Task Init(DiscordSocketClient client)
         {
             client.MessageReceived += MessageReceived;
@@ -30,6 +34,10 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        ///     Add the message to the database.
+        /// </summary>
+        /// <param name="message">Message to handle.</param>
         private async Task MessageReceived(SocketMessage message)
         {
             using (var scope = _scopeFactory.CreateScope())
@@ -47,6 +55,10 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
             }
         }
 
+        /// <summary>
+        ///     Mark the message as deleted.
+        /// </summary>
+        /// <param name="message">Message to handle.</param>
         private async Task MessageDeleted(Cacheable<IMessage, ulong> message, ISocketMessageChannel channel)
         {
             using (var scope = _scopeFactory.CreateScope())
@@ -55,7 +67,12 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
 
                 var m = await messageService.Find(message.Id);
 
-                if (m != null) await messageService.Remove(m);
+                if (m != null)
+                {
+                    m.Deleted = true;
+
+                    await messageService.Update(m);
+                }
             }
         }
     }
