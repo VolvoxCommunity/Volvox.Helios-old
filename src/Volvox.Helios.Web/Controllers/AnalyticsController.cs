@@ -20,9 +20,17 @@ namespace Volvox.Helios.Web.Controllers
             _messageEntityService = messageEntityService;
         }
 
-        public IActionResult Index(ulong guildId)
+        public async Task<IActionResult> Index(ulong guildId)
         {
-            return View();
+            var viewModel = new AnalyticsViewModel
+            {
+                ChatTracker = new ChatTrackerViewModel
+                {
+                    Messages = await _messageEntityService.Get(message => message.GuildId == guildId)
+                }
+            };
+
+            return View(viewModel);
         }
 
         [HttpGet("ChatTracker")]

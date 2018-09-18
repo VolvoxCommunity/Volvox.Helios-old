@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Volvox.Helios.Web.ViewModels.Analytics.AnalyticsViewModel
+
+@{
     ViewData["Title"] = "Analytics";
 }
 
@@ -9,12 +11,9 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">
-               ChatTracker
-                <a style="color: black" class="float-right" asp-controller="Analytics" asp-action="ChatTracker">
-                    <i class="fas fa-cog"></i>
-                </a>
+                ChatTracker
             </h5>
-            <p class="card-text">Description</p>
+            <p class="card-text">Total Messages: @Model.ChatTracker.Messages.Count</p>
         </div>
     </div>
 </div>
