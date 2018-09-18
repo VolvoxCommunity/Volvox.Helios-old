@@ -39,12 +39,12 @@ namespace Volvox.Helios.Web
 {
     public class Startup
     {
-        private IConfiguration Configuration { get; }
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
+
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -141,16 +141,32 @@ namespace Volvox.Helios.Web
 
             // MVC
             services.AddMvc(options =>
-            {
-                options.Filters.Add(new ModelStateValidationFilter());
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-            })
-            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                {
+                    options.Filters.Add(new ModelStateValidationFilter());
+                    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // Entity Framework - Set connection string to environment variable if present.
+            // Entity Framework
+            ConfigureEntityFramework(services);
+        }
+
+        private void ConfigureEntityFramework(IServiceCollection services)
+        {
+            var connectionString = Configuration.GetConnectionString("VolvoxHeliosDatabase");
+
+            // Get environment variables.
+            var server = Environment.GetEnvironmentVariable("DEV_DB_SERVER");
+            var userName = Environment.GetEnvironmentVariable("DEV_DB_USERNAME");
+            var password = Environment.GetEnvironmentVariable("DEV_DB_PASSWORD");
+
+            // Only set connection string if all environment variables are present.
+            if (server != null && userName != null && password != null)
+                connectionString =
+                    $"Server={server},1433;Initial Catalog=Volvox.Helios;Persist Security Info=False;User ID={userName};Password={password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=true;Connection Timeout=30;";
+
             services.AddDbContext<VolvoxHeliosContext>(options =>
-                options.UseSqlServer(Environment.GetEnvironmentVariable("DEV_CONNECTION_STRING") ??
-                                     Configuration.GetConnectionString("VolvoxHeliosDatabase")));
+                options.UseSqlServer(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
