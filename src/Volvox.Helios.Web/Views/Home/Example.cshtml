@@ -3,57 +3,103 @@
 }
 
 <div id="wrapper">
-    
-    <nav id="serverbar">
+
+    <div id="sidebar-wrapper">
         <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="img-server-icon" >
         <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="img-server-icon" >
         <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="img-server-icon" >
-    </nav>
+    </div>
 
-    <nav id="modulebar">
-        <h5 class="text-center">Current Modules</h5>
+    <div id="modulebar-wrapper">
+        streamer module
+    </div>
 
-        <button type="button" class="btn btn-link btn-block" data-toggle="collapse" data-target="#StreamRole" aria-expanded="false" aria-controls="StreamRole" >Stream Role</button>
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            hi
 
-        <button type="button" class="btn btn-link btn-block" data-toggle="collapse" data-target="#StreamAnnouncer" aria-expanded="false" aria-controls="StreamAnnouncer" >Stream Announcer</button>
-        <button type="button" class="btn btn-link btn-block" data-toggle="collapse" data-target="#Example2" aria-expanded="false" aria-controls="Example2" >Example2</button>
-
-    </nav>
-
-    <div id="content">
-    
-        <div class="collapse" id="StreamRole">
-            <h5 class="text-center">Stream Role</h5>
             <div class="col-12">
-                <!-- Accordion so we only have one tab open at a time -->
-                <div class="accordion" id="accordionExample">
-                    <div class="card text-center">
-                        <div class="card-header">
-                            <ul class="nav nav-tabs card-header-tabs">
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="collapse" data-target="#StreamRoleDescription" aria-expanded="false" aria-controls="StreamRoleDescription"aria-controls="collapseOne" >Description</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="collapse" data-target="#StreamRoleConfig" aria-expanded="false" aria-controls="StreamRoleConfig" >Configuration</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="collapse" data-target="#StreamRoleExample" aria-expanded="false" aria-controls="StreamRoleExample" >Example</a>
-                                </li>
-                            </ul>
-                        </div>
 
-                        <div class="collapse" id="StreamRoleDescription" data-parent="#accordionExample">
-                            <div class="card-body">
-                                <p class="card-text">
-                                    This lets you add a role to someone who goes live on Twitch and remove it when they are done.  
-                                    Take the new role and put it on the top of the list so everyone knows when someone is hosting a stream.
-                                    At least now you have something else to watch on that second monitor when you are not paying attention to your own game. 
-                                </p>
+                <div class="collapse" id="StreamRole">
+                    <h5 class="text-center">Stream Role</h5>
+                        <!-- Accordion so we only have one tab open at a time -->
+                    <div class="accordion" id="accordionExample">
+                        <div class="card">
+                            <div class="card text-center">
+                                <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="collapse" data-target="#StreamRoleDescription" aria-expanded="false" aria-controls="StreamRoleDescription"aria-controls="collapseOne" >Description</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="collapse" data-target="#StreamRoleConfig" aria-expanded="false" aria-controls="StreamRoleConfig" >Configuration</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="collapse" data-target="#StreamRoleExample" aria-expanded="false" aria-controls="StreamRoleExample" >Example</a>
+                                    </li>
+                                </ul>
+                                </div>
+
+                                <div class="collapse" id="StreamRoleDescription" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            This lets you add a role to someone who goes live on Twitch and remove it when they are done.  
+                                            Take the new role and put it on the top of the list so everyone knows when someone is hosting a stream.
+                                            At least now you have something else to watch on that second monitor when you are not paying attention to your own game. 
+                                        </p>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        hi?
+                                    </div>
+                                </div>
+
+                                <div class="collapse" id="StreamRoleConfig" data-parent="#accordionExample" >
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                                            <label class="form-check-label" for="defaultCheck1">
+                                                Enabled
+                                            </label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleFormControlSelect1">Select text-channel to send the messages to:</label>
+                                            <select class="form-control" id="exampleFormControlSelect1">
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                            <option>4</option>
+                                            <option>5</option>
+                                            </select>
+                                        </div>
+
+                                        <button type="button" class="btn btn-info">Save</button>
+                                    </div>
+                                </div>
+
+                                <div class="collapse" id="StreamRoleExample" data-parent="#accordionExample" >
+                                    This is a placeholder for Example tab.
+                                </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="collapse" id="StreamRoleConfig" data-parent="#accordionExample" >
-                            <div class="card-body">
+                <div class="collapse" id="StreamAnnouncer">
+                    <div class="collapse" id="StreamAnnouncer">
+                    <div class="card">
+                        <h5 class="card-header text-center color-disabled">Stream Announcer</h5>
+                        <div class="card-body">
+                            <h5 class="text-center">Description</h5>
+                            <p class="card-text">
+                                With this module you are able to announce to a defined text channel when someone on the server goes live on Twitch.
+                            </p>
+
+                            <div class="collapse" id="StreamAnnouncerConfig">
+                                <hr>
+                                <h5 class="text-center">Config</h5>
+
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                                     <label class="form-check-label" for="defaultCheck1">
@@ -72,114 +118,68 @@
                                     </select>
                                 </div>
 
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                                    <label class="form-check-label" for="defaultCheck1">
+                                        Delete messages on stream conclusion
+                                    </label>
+                                </div>
+
                                 <button type="button" class="btn btn-info">Save</button>
+
                             </div>
                         </div>
-
-                        <div class="collapse" id="StreamRoleExample" data-parent="#accordionExample" >
-
+                        <div class="card-footer">
+                            <a class="btn btn-link btn-block" role="button" data-toggle="collapse" data-target="#StreamAnnouncerConfig" aria-expanded="false" aria-controls="StreamAnnouncerConfig" >Manage Module</a>
                         </div>
                     </div>
-
                 </div>
-            </div>
-        </div>
+                </div>  
 
-        <div class="collapse" id="StreamAnnouncer">
-            <div class="col-12" class="collapse" id="StreamAnnouncer">
-            <div class="card">
-                <h5 class="card-header text-center color-disabled">Stream Announcer</h5>
-                <div class="card-body">
-                    <h5 class="text-center">Description</h5>
-                    <p class="card-text">
-                        With this module you are able to announce to a defined text channel when someone on the server goes live on Twitch.
-                    </p>
+                <div class="collapse" id="Example2">
+                    <h5 class="text-center">Example2</h5>
 
-                    <div class="collapse" id="StreamAnnouncerConfig">
-                        <hr>
-                        <h5 class="text-center">Config</h5>
+                    <div class="card">
+                        <h5 class="card-header text-center">Description</h5>
 
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                            <label class="form-check-label" for="defaultCheck1">
-                                Enabled
-                            </label>
-                        </div>
+                        <p class="card-text">
+                            This is a fully placeholder given I am only using this as an example given I have no idea what I am doing.
+                        </p>
+                    </div>
 
-                        <div class="form-group">
-                            <label for="exampleFormControlSelect1">Select text-channel to send the messages to:</label>
-                            <select class="form-control" id="exampleFormControlSelect1">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                            </select>
-                        </div>
+                    <br>
 
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                            <label class="form-check-label" for="defaultCheck1">
-                                Delete messages on stream conclusion
-                            </label>
-                        </div>
+                    <div class="card">
+                        <h5 class="card-header text-center">Configuration</h5>
 
-                        <button type="button" class="btn btn-info">Save</button>
+                        <p class="card-text">
+                            This is a fully placeholder given I am only using this as an example given I have no idea what I am doing.
+                        </p>
+                    </div>
 
+                    <br>
+
+                    <div class="card">
+                        <h5 class="card-header text-center">Example</h5>
+
+                        <p class="card-text">
+                            This is a fully placeholder given I am only using this as an example given I have no idea what I am doing.
+                        </p>
+                    </div>
+
+                    <br>
+
+                    <div class="card">
+                        <h5 class="card-header text-center">Logs</h5>
+
+                        <p class="card-text">
+                            This is a fully placeholder given I am only using this as an example given I have no idea what I am doing.
+                        </p>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <a class="btn btn-link btn-block" role="button" data-toggle="collapse" data-target="#StreamAnnouncerConfig" aria-expanded="false" aria-controls="StreamAnnouncerConfig" >Manage Module</a>
-                </div>
-            </div>
-        </div>
-        </div>    
 
-        <div class="col-12">
-            <div class="collapse" id="Example2">
-                <h5 class="text-center">Example2</h5>
-
-                <div class="card">
-                    <h5 class="card-header text-center">Description</h5>
-
-                    <p class="card-text">
-                        This is a fully placeholder given I am only using this as an example given I have no idea what I am doing.
-                    </p>
-                </div>
-
-                <br>
-
-                <div class="card">
-                    <h5 class="card-header text-center">Configuration</h5>
-
-                    <p class="card-text">
-                        This is a fully placeholder given I am only using this as an example given I have no idea what I am doing.
-                    </p>
-                </div>
-
-                <br>
-
-                <div class="card">
-                    <h5 class="card-header text-center">Example</h5>
-
-                    <p class="card-text">
-                        This is a fully placeholder given I am only using this as an example given I have no idea what I am doing.
-                    </p>
-                </div>
-
-                <br>
-
-                <div class="card">
-                    <h5 class="card-header text-center">Logs</h5>
-
-                    <p class="card-text">
-                        This is a fully placeholder given I am only using this as an example given I have no idea what I am doing.
-                    </p>
-                </div>
             </div>
         </div>
 
-        
     </div>
-
 </div>

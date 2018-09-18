@@ -28,6 +28,7 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+        <link rel="stylesheet" href="~/css/sidebar.css" />
     </environment>
     <link rel="icon" type="image/x-icon" href="~/images/volvox.png">
     @Html.Raw(JavaScriptSnippet.FullScript)
@@ -52,13 +53,19 @@
 
     <partial name="_CookieConsentPartial" />
 
+    @RenderBody()
+
+    <!--
     <main role="main" class="container body-content">
-        @RenderBody()
+        
+        
         <hr />
         <footer>
             <p>&copy; 2018 - Volvox.Helios</p>
         </footer>
+        
     </main>
+    -->
 
     <environment include="Development">
         <script src="~/vendor.min.js"></script>
