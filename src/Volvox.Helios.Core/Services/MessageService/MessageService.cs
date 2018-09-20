@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
 using Volvox.Helios.Core.Bot;
-using System.Linq;
 
 namespace Volvox.Helios.Core.Services.MessageService
 {
@@ -44,10 +39,8 @@ namespace Volvox.Helios.Core.Services.MessageService
         }
 
         ///<inheritdoc />
-        public async Task<IUserMessage> Modify(ulong channelId, ulong messageId, string text = "", Embed embed = null)
+        public async Task<IUserMessage> Modify(IUserMessage message, string text = "", Embed embed = null)
         {
-            var message = await GetMessage(channelId, messageId);
-
             await message.ModifyAsync(m => {
                 m.Content = text;
                 m.Embed = embed;
@@ -64,7 +57,6 @@ namespace Volvox.Helios.Core.Services.MessageService
             return channel.DeleteMessagesAsync(messageIds);
         }
 
-        ///<inheritdoc />
         private IMessageChannel GetChannel(ulong channelId)
         {
             var channel = _bot.Client.GetChannel(channelId) as IMessageChannel;
