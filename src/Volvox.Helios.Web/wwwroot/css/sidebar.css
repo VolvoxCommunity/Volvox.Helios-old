@@ -45,7 +45,7 @@
 
 #modulebar-wrapper {
     position: fixed;
-    margin-left: 84px;
+    margin-left: 69px;
     padding-left: 5px;
     padding-top: 15px;
     width: 200px;
@@ -72,7 +72,8 @@
 }
 
 .container-content {
-
+    padding-left: 284px;
+    padding-top: 15px;
 }
 
 /* Sidebar Styles */
@@ -143,11 +144,9 @@
 
     #page-content-wrapper {
         padding: 10px;
-        padding-top: 15px;
         padding-left: 15px;
         padding-right: 15px;
         position: fixed;
-        margin-left: 284PX;
         color: #fff;
     }
 
@@ -155,6 +154,10 @@
         position: relative;
         margin-right: 0;
     }
+}
+
+#configbar {
+
 }
 
 .server-img {
@@ -165,4 +168,18 @@
     font-weight: 400;
     color: #fff;
     background-color: transparent;
+}
+
+.background-dark1 {
+    background-color: #202225;
+    color: #fff;
+}
+
+.background-dark2 {
+    background-color: #2f3136;
+    color: #fff;
+}
+.background-dark3 {
+    background-color: #36393f;
+    color: #fff;
 }
