@@ -64,6 +64,7 @@
     padding: 15px;
     background: #36393f;
     height: 100%;
+    overflow: auto;
 }
 
 #wrapper.toggled #page-content-wrapper {
