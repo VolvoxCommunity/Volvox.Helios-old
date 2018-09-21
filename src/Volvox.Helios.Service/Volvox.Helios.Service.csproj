@@ -3,6 +3,15 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Migrations\20180921120016_Added-poll-module-tables.cs" />
+    <Compile Remove="Migrations\20180921120531_Added-poll-module-tables.cs" />
+    <Compile Remove="Migrations\20180921123736_Added-poll-module-tables.cs" />
+    <Compile Remove="Migrations\20180921124040_Added-poll-module-tables.cs" />
+    <Compile Remove="Migrations\20180921124259_Added-poll-module-tables.cs" />
+    <Compile Remove="Migrations\20180921124914_Added-poll-module-tables.cs" />
+    <Compile Remove="Migrations\20180921125458_Added-poll-module-tables.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1" />
