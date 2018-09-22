@@ -289,3 +289,7 @@ __pycache__/
 /src/Volvox.Helios.Web/aws-beanstalk-tools-defaults.json
 .vscode/launch.json
 .vscode/tasks.json
+
+src/Volvox\.Helios\.Web/wwwroot/vendor\.min\.css
+
+src/Volvox\.Helios\.Web/wwwroot/vendor\.min\.js
