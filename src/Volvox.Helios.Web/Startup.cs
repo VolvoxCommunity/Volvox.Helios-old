@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
+using Volvox.Helios.Core.Modules.ChatTracker;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.DiscordFacing;
 using Volvox.Helios.Core.Modules.DiscordFacing.Commands;
@@ -29,6 +30,7 @@ using Volvox.Helios.Service;
 using Volvox.Helios.Service.Clients;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.HostedServices.Bot;
@@ -110,10 +112,11 @@ namespace Volvox.Helios.Web
             // Modules
             services.AddSingleton<IModule, StreamAnnouncerModule>();
             services.AddSingleton<IModule, StreamerRoleModule>();
+            services.AddSingleton<IModule, ChatTrackerModule>();
 
-            // DiscordFacing
-            services.AddSingleton<IModule, DiscordFacingManager>();
-            services.AddSingleton<ICommand, ExampleCommand>();
+            // Commands
+            services.AddSingleton<IModule, CommandManager>();
+            services.AddSingleton<ICommand, HelpCommand>();
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
@@ -131,7 +134,8 @@ namespace Volvox.Helios.Web
             services.AddScoped<IDiscordUserGuildService, DiscordUserGuildService>();
             services.AddScoped<IDiscordGuildService, DiscordGuildService>();
 
-            // Services
+            // Database Services
+            services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
             services.AddSingleton(typeof(IModuleSettingsService<>), typeof(ModuleSettingsService<>));
 
             // Cache
@@ -163,6 +167,7 @@ namespace Volvox.Helios.Web
                 app.UseExceptionHandler("/Error/Error");
                 app.UseStatusCodePagesWithReExecute("/Error/Errors/{0}");
                 app.UseHsts();
+
                 loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
             }
 

@@ -2,7 +2,7 @@ using Discord.WebSocket;
 
 namespace Volvox.Helios.Core.Modules.DiscordFacing.Framework
 {
-    public class DiscordFacingContext
+    public class CommandContext
     {
         public SocketUserMessage Message { get; }
         public ISocketMessageChannel Channel { get; }
@@ -10,7 +10,7 @@ namespace Volvox.Helios.Core.Modules.DiscordFacing.Framework
         public DiscordSocketClient Client { get; }
         public string GivenPrefix { get; }
 
-        public DiscordFacingContext(SocketUserMessage message, DiscordSocketClient client, string prefix)
+        public CommandContext(SocketUserMessage message, DiscordSocketClient client, string prefix)
         {
             Message = message;
             Channel = message.Channel;
