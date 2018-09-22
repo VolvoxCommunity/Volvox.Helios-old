@@ -19,6 +19,8 @@ namespace Volvox.Helios.Core.Services.MessageService
         {
             var channel = GetChannel(channelId);
 
+            if (channel == null) return null;
+
             var message = await channel.GetMessageAsync(messageId) as IUserMessage;
 
             return message;
@@ -28,6 +30,8 @@ namespace Volvox.Helios.Core.Services.MessageService
         public Task<IUserMessage> Post(ulong channelId, string text, Embed embed = null, bool isTTS = false, RequestOptions options = null)
         {
             var channel = GetChannel(channelId);
+
+            if (channel == null) return null;
 
             return channel.SendMessageAsync(text, isTTS, embed, options);
         }
@@ -54,17 +58,14 @@ namespace Volvox.Helios.Core.Services.MessageService
         {
             var channel = GetChannel(channelId);
 
+            if (channel == null) return null;
+
             return channel.DeleteMessagesAsync(messageIds);
         }
 
         private IMessageChannel GetChannel(ulong channelId)
         {
-            var channel = _bot.Client.GetChannel(channelId) as IMessageChannel;
-
-            if (channel == null)
-                throw new InvalidOperationException("Channel doesn't exist");
-
-            return channel;
+            return _bot.Client.GetChannel(channelId) as IMessageChannel;
         }
     }
 }
