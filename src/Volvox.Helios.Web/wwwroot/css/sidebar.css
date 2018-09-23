@@ -73,6 +73,7 @@
 }
 
 .container-content {
+    overflow: hidden;
     padding-left: 284px;
     padding-top: 15px;
 }
@@ -164,6 +165,12 @@
 
 .server-img {
     padding-bottom: 10px;
+}
+
+.img-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .btn-module {
