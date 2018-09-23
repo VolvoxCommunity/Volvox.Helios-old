@@ -23,7 +23,7 @@ namespace Volvox.Helios.Web.ViewModels.PollModule
         [Required]
         public string GuildId { get; set; }
 
-        //Number of option text boxes to display in form.
+        // Number of option text boxes to display in form.
         [Required]
         public int TotOptions { get; set; }
     } 

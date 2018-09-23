@@ -9,8 +9,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Core.Services.MessageService;
+using Volvox.Helios.Domain.Module;
+using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord.Guild;
+using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Web.Filters;
+using Volvox.Helios.Web.ViewModels.Poll;
 using Volvox.Helios.Web.ViewModels.PollModule;
 
 namespace Volvox.Helios.Web.Controllers
@@ -20,7 +24,16 @@ namespace Volvox.Helios.Web.Controllers
     [IsUserGuildAdminFilter]
     public class PollController : Controller
     {
-        #region Poll
+        private readonly IEntityService<Poll> _entityServicePoll;
+        private readonly IEntityService<PollSettings> _entityServicePollSettings;
+
+        public PollController(IEntityService<Poll> polls, IEntityService<PollSettings> pollSettings)
+        {
+            _entityServicePoll = polls;
+            _entityServicePollSettings = pollSettings;
+        }
+
+        #region NewPoll
         [HttpGet("NewPoll")]
         public async Task<IActionResult> NewPoll(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
@@ -51,6 +64,7 @@ namespace Volvox.Helios.Web.Controllers
             var textChannels = channels.Where(x => x.Type == 0).ToList();
 
             // Authentication - make sure channel belongs to the guild (prevents exploitation by providing a channel that isn't theirs, if they're authorized).
+            // Note - this should be extracted into a seperate web filter.
             if (textChannels.FirstOrDefault(x => x.Id == viewModel.ChannelId) == null)
             {
                 ModelState.AddModelError("All", "You are not authorized to perform this action.");
@@ -89,12 +103,56 @@ namespace Volvox.Helios.Web.Controllers
             // Post message and get message details.
             var message = await messageService.Post(viewModel.ChannelId, poll.ToString());
 
+            // Save poll to database
+            await _entityServicePoll.Create(new Poll()
+            {
+                ChannelId = viewModel.ChannelId,
+                MessageId = message.Id,
+                PollTitle = viewModel.Title,
+                GuildId = guildId
+            });
+
             // Add reactions to message to act as voting buttons.
             for (var i = 1; i < validOptions.Count + 1; i++)
                 await messageService.AddReaction(message, new Emoji(discordNumbers[i]));
 
+            // Create poll settings entry for guild in db, if doesn't exist.
+            if (await _entityServicePollSettings.Find(guildId) == null)
+            {
+                await _entityServicePollSettings.Create(new PollSettings()
+                {
+                    GuildId = guildId
+                });
+            }     
+
             return RedirectToAction("Index");
         }
+        #endregion
+
+        #region ViewPoll
+        [HttpGet("ViewPoll")]
+        public async Task<IActionResult> ViewPoll(ulong guildId, [FromServices] IEntityService<Poll> entityServicePolls)
+        {
+            var polls = await entityServicePolls.Get(p => p.GuildId == guildId);
+
+            // Format polls for use in selectlist
+            var formattedPolls = polls.Select(p => new PollSelectListViewModel() {
+                ChannelId = p.ChannelId,
+                MessageId = p.MessageId,
+                Title = p.PollTitle
+            }).ToList();
+
+            var viewModel = new ViewPollsViewModel()
+            {
+                // ConcattedIds is a string in format messageId-channelId, so can store both in select list.
+                Polls = new SelectList(formattedPolls, "ConcattedIds", "Title"),
+                Title = "",
+                Options = new List<OptionModel>()
+            };
+
+            return View(viewModel);
+        }
+
         #endregion
     }
 }
