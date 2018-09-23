@@ -64,8 +64,6 @@
             var channelId = Ids[1];
 
             $.when(GetPollDetails(channelId, messageId)).done(function (response) {
-
-
                 $("#Title").text(RemoveLeadingEmoticon(response.title));
                 $("#Options").empty();
 

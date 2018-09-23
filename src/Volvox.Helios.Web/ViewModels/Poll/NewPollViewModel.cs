@@ -25,6 +25,6 @@ namespace Volvox.Helios.Web.ViewModels.PollModule
 
         // Number of option text boxes to display in form.
         [Required]
-        public int TotOptions { get; set; }
+        public int TotalOptions { get; set; }
     } 
 }

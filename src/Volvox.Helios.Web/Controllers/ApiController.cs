@@ -100,8 +100,7 @@ namespace Volvox.Helios.Web.Controllers
 
             var pollOptions = new List<OptionModel>();
 
-            // Unicode representations of discord 0-10 emoticons.
-            var discordNumbers = new string[11] { "0\u20e3", "1\u20e3", "2\u20e3", "3\u20e3", "4\u20e3", "5\u20e3", "6\u20e3", "7\u20e3", "8\u20e3", "9\u20e3", "🔟" };
+            var discordNumbers = MessageService.DiscordNumberEmotes;
             
             for (var i = 1; i < pollDetails.GetLength(0); i++)
             {

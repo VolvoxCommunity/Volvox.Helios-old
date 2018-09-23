@@ -7,6 +7,13 @@ namespace Volvox.Helios.Core.Services.MessageService
 {
     public class MessageService : IMessageService
     {
+        #region static props
+
+        // Unicode representations of discord's 0-10 emoticons.
+        public static string[] DiscordNumberEmotes = new string[11] { "0\u20e3", "1\u20e3", "2\u20e3", "3\u20e3", "4\u20e3", "5\u20e3", "6\u20e3", "7\u20e3", "8\u20e3", "9\u20e3", "🔟" };
+
+        #endregion
+
         private readonly IBot _bot;
 
         public MessageService(IBot bot)

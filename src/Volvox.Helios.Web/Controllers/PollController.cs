@@ -46,7 +46,7 @@ namespace Volvox.Helios.Web.Controllers
             var viewModel = new NewPollViewModel
             {
                 Channels = new SelectList(textChannels, "Id", "Name"),
-                TotOptions = 10,
+                TotalOptions = 10,
                 GuildId = guildId.ToString()
             };
 
@@ -93,8 +93,7 @@ namespace Volvox.Helios.Web.Controllers
             // Add poll title.
             poll.Append(":small_blue_diamond: " + viewModel.Title + Environment.NewLine);
 
-            // Unicode representations of discord's 0-10 emoticons.
-            var discordNumbers = new string[11] { "0\u20e3", "1\u20e3", "2\u20e3", "3\u20e3", "4\u20e3", "5\u20e3", "6\u20e3", "7\u20e3", "8\u20e3", "9\u20e3", "🔟" };
+            var discordNumbers = MessageService.DiscordNumberEmotes;
 
             // Add options to poll.
             for (var i = 0; i < validOptions.Count; i++)

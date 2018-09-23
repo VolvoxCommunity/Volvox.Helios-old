@@ -23,9 +23,9 @@
                 <span asp-validation-for="Title" style="color:red"></span>
             </div>
 
-            <input type="hidden" asp-for="TotOptions" value="@Model.TotOptions" />
+            <input type="hidden" asp-for="TotalOptions" value="@Model.TotalOptions" />
 
-            @for (int i = 0; i < Model.TotOptions; i++)
+            @for (int i = 0; i < Model.TotalOptions; i++)
             {
                 var optionNo = i + 1;
 
