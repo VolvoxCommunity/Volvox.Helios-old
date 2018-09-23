@@ -40,7 +40,7 @@ namespace Volvox.Helios.Web.Controllers
             // All channels for guild.
             var channels = await guildService.GetChannels(guildId);
 
-            // Text channels for guild.
+            // Text channels for guild. Discord tracks channel types by number. Number 0 == text channel.
             var textChannels = channels.Where(x => x.Type == 0).ToList();
 
             var viewModel = new NewPollViewModel
@@ -60,10 +60,10 @@ namespace Volvox.Helios.Web.Controllers
             // All channels for guild.
             var channels = await guildService.GetChannels(guildId);
 
-            // Text channels for guild.
+            // Text channels for guild. Discord tracks channel types by number. Number 0 == text channel.
             var textChannels = channels.Where(x => x.Type == 0).ToList();
 
-            // Authentication - make sure channel belongs to the guild (prevents exploitation by providing a channel that isn't theirs, if they're authorized).
+            // Authorization - make sure channel belongs to the guild (prevents exploitation by providing a channel that isn't theirs, if they're authorized).
             // Note - this should be extracted into a seperate web filter.
             if (textChannels.FirstOrDefault(x => x.Id == viewModel.ChannelId) == null)
             {
