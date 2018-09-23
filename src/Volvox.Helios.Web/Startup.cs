@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
+using Volvox.Helios.Core.Modules.ChatTracker;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.DiscordFacing;
 using Volvox.Helios.Core.Modules.DiscordFacing.Commands;
@@ -113,6 +114,7 @@ namespace Volvox.Helios.Web
             // Modules
             services.AddSingleton<IModule, StreamAnnouncerModule>();
             services.AddSingleton<IModule, StreamerRoleModule>();
+            services.AddSingleton<IModule, ChatTrackerModule>();
 
             // Commands
             services.AddSingleton<IModule, CommandManager>();
@@ -156,7 +158,7 @@ namespace Volvox.Helios.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, VolvoxHeliosContext context)
         {
             if (env.IsDevelopment())
             {
@@ -171,6 +173,9 @@ namespace Volvox.Helios.Web
 
                 loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
             }
+
+            // Update the database.
+            context.Database.Migrate();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
