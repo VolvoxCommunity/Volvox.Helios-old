@@ -144,9 +144,10 @@
     }
 
     #page-content-wrapper {
-        padding: 10px;
+        padding: 6px;
         padding-left: 15px;
         padding-right: 15px;
+        padding-bottom: 70px;
         position: fixed;
         color: #fff;
     }
