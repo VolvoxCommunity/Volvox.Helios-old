@@ -130,8 +130,8 @@ namespace Volvox.Helios.Web.Controllers
         #endregion
 
         #region ViewPoll
-        [HttpGet("ViewPoll")]
-        public async Task<IActionResult> ViewPoll(ulong guildId, [FromServices] IEntityService<Poll> entityServicePolls)
+        [HttpGet]
+        public async Task<IActionResult> Index(ulong guildId, [FromServices] IEntityService<Poll> entityServicePolls)
         {
             var polls = await entityServicePolls.Get(p => p.GuildId == guildId);
 
