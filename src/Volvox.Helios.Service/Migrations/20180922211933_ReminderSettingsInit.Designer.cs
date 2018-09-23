@@ -2,15 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volvox.Helios.Service;
 
 namespace Volvox.Helios.Service.Migrations
 {
     [DbContext(typeof(VolvoxHeliosContext))]
-    partial class VolvoxHeliosContextModelSnapshot : ModelSnapshot
+    [Migration("20180922211933_ReminderSettingsInit")]
+    partial class ReminderSettingsInit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,40 +40,6 @@ namespace Volvox.Helios.Service.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("Volvox.Helios.Domain.Module.RecurringReminderMessage", b =>
-                {
-                    b.Property<decimal>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
-                    b.Property<decimal>("ChannelId")
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
-                    b.Property<string>("CronExpression")
-                        .IsRequired();
-
-                    b.Property<bool>("Enabled");
-
-                    b.Property<decimal>("GuildId")
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
-                    b.Property<string>("JobId")
-                        .IsRequired();
-
-                    b.Property<string>("Message")
-                        .IsRequired();
-
-                    b.Property<string>("ReadableCronExpression")
-                        .IsRequired();
-
-                    b.HasKey("Id")
-                        .HasAnnotation("SqlServer:Clustered", true);
-
-                    b.HasIndex("GuildId");
-
-                    b.ToTable("RecurringReminderMessages");
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.Module.StreamAnnouncerChannelSettings", b =>
@@ -145,14 +113,6 @@ namespace Volvox.Helios.Service.Migrations
                     b.HasKey("GuildId");
 
                     b.ToTable("StreamerRoleSettings");
-                });
-
-            modelBuilder.Entity("Volvox.Helios.Domain.Module.RecurringReminderMessage", b =>
-                {
-                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.ReminderSettings")
-                        .WithMany("RecurringReminders")
-                        .HasForeignKey("GuildId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.Module.StreamAnnouncerChannelSettings", b =>

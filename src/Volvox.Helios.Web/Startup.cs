@@ -39,6 +39,7 @@ using Hangfire.SqlServer;
 using Volvox.Helios.Service.Jobs;
 
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Volvox.Helios.Domain.Module;
 
 namespace Volvox.Helios.Web
 {
@@ -141,6 +142,7 @@ namespace Volvox.Helios.Web
             // Database Services
             services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
             services.AddSingleton(typeof(IModuleSettingsService<>), typeof(ModuleSettingsService<>));
+            services.AddSingleton(typeof(EntityChangedDispatcher<>));
 
             // Cache
             services.AddSingleton<ICache>(new FluentIMemoryCache(new MemoryCache(new MemoryCacheOptions())));

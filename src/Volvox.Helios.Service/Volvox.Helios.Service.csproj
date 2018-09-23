@@ -3,6 +3,9 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Migrations\20180923013907_RecurringReminderMessageAddReadableCron.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.2" />
     <PackageReference Include="Hangfire" Version="1.6.20" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1" />
