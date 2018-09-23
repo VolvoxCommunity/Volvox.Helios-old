@@ -37,14 +37,14 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
         /// <summary>
         ///     Add the message to the database.
         /// </summary>
-        /// <param name="message">Message to handle.</param>
+        /// <param name="message">Message to add.</param>
         private async Task MessageReceived(SocketMessage message)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
                 var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<Message>>();
 
-                if (message.Channel is IGuildChannel guildChannel)
+                if (message.Channel is IGuildChannel guildChannel && !message.Author.IsBot)
                     await messageService.Create(new Message
                     {
                         Id = message.Id,
@@ -58,7 +58,7 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
         /// <summary>
         ///     Mark the message as deleted.
         /// </summary>
-        /// <param name="message">Message to handle.</param>
+        /// <param name="message">Message to delete.</param>
         private async Task MessageDeleted(Cacheable<IMessage, ulong> message, ISocketMessageChannel channel)
         {
             using (var scope = _scopeFactory.CreateScope())
