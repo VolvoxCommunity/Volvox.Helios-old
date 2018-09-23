@@ -102,6 +102,15 @@ namespace Volvox.Helios.Web.Controllers
             // Post message and get message details.
             var message = await messageService.Post(viewModel.ChannelId, poll.ToString());
 
+            // Create poll settings entry for guild in db, if doesn't exist.
+            if (await _entityServicePollSettings.Find(guildId) == null)
+            {
+                await _entityServicePollSettings.Create(new PollSettings()
+                {
+                    GuildId = guildId
+                });
+            }
+
             // Save poll to database
             await _entityServicePoll.Create(new Poll()
             {
@@ -114,15 +123,6 @@ namespace Volvox.Helios.Web.Controllers
             // Add reactions to message to act as voting buttons.
             for (var i = 1; i < validOptions.Count + 1; i++)
                 await messageService.AddReaction(message, new Emoji(discordNumbers[i]));
-
-            // Create poll settings entry for guild in db, if doesn't exist.
-            if (await _entityServicePollSettings.Find(guildId) == null)
-            {
-                await _entityServicePollSettings.Create(new PollSettings()
-                {
-                    GuildId = guildId
-                });
-            }     
 
             return RedirectToAction("Index");
         }
