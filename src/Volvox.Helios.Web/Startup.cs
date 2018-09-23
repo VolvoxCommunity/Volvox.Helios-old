@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
+using Volvox.Helios.Core.Modules.ChatTracker;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.DiscordFacing;
 using Volvox.Helios.Core.Modules.DiscordFacing.Commands;
@@ -111,6 +112,7 @@ namespace Volvox.Helios.Web
             // Modules
             services.AddSingleton<IModule, StreamAnnouncerModule>();
             services.AddSingleton<IModule, StreamerRoleModule>();
+            services.AddSingleton<IModule, ChatTrackerModule>();
 
             // Commands
             services.AddSingleton<IModule, CommandManager>();
