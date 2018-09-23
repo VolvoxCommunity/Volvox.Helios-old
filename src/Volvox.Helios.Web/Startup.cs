@@ -155,7 +155,7 @@ namespace Volvox.Helios.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, VolvoxHeliosContext context)
         {
             if (env.IsDevelopment())
             {
@@ -170,6 +170,9 @@ namespace Volvox.Helios.Web
 
                 loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
             }
+
+            // Update the database.
+            context.Database.Migrate();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
