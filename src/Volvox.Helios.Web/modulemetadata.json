@@ -20,6 +20,13 @@
       "Description": "If you're seeing this, run before the rest of the site explodes",
       "ReleaseState": "Stable",
       "Configurable": "false"
+    },
+    "PollModule": {
+      "Name": "Poll",
+      "Version": "1.0",
+      "Description": "Create and view polls.",
+      "ReleaseState": "Stable",
+      "Configurable": "false"
     }
   }
 }
