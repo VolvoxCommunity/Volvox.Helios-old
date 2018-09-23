@@ -9,6 +9,6 @@ namespace Volvox.Helios.Web.ViewModels.Poll
     {
         public string Title { get; set; }
 
-        public List<OptionModel> Options {get;set;}
+        public List<OptionModel> Options { get; set; }
     }
 }

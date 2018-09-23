@@ -52,4 +52,3 @@ namespace Volvox.Helios.Core.Services.MessageService
         Task Delete(ulong channelId, ulong[] messageIds);
     }
 }
-
