@@ -26,14 +26,22 @@
 
         <div class="form-group">
             <label asp-for="Title" class="font-size-small"></label>
-            <p id="Title"></p>
+            <p id="Title">
+                Hey, how cool is this example?
+            </p>
         </div>
 
         <br />
 
         <div class="form-group">
             <label asp-for="Options" class="font-size-small"></label>
-            <div id="Options"></div>
+            <div id="Options">
+                <p>Not cool : 0</p>
+
+                <p>Pretty cool : 3</p>
+
+                <p>It's a masterpiece! : 99</p>
+            </div>
         </div>
     </div>
 </div>
@@ -54,6 +62,7 @@
         }
 
         function RemoveLeadingEmoticon(text) {
+            if (!text) return "";
             return text.trim().substr(text.indexOf(" ") + 1)
         }
 
@@ -68,8 +77,8 @@
                 $("#Options").empty();
 
                 $.each(response.options, function (i, option) {
-                    console.log(option);
-                    $("#Options").append($("<p></p>").text(RemoveLeadingEmoticon(option.option) + " : " + option.voteCount));
+                    // Remove 1 from option count as the bot will add one vote to all options, to display them as buttons.
+                    $("#Options").append($("<p></p>").text(RemoveLeadingEmoticon(option.option) + " : " + parseInt(option.voteCount - 1)));
                 })
             });
         });
