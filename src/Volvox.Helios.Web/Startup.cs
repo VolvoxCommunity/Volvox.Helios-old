@@ -34,6 +34,10 @@ using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.HostedServices.Bot;
+using Hangfire;
+using Hangfire.SqlServer;
+using Volvox.Helios.Service.Jobs;
+
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Volvox.Helios.Web
@@ -141,6 +145,9 @@ namespace Volvox.Helios.Web
             // Cache
             services.AddSingleton<ICache>(new FluentIMemoryCache(new MemoryCache(new MemoryCacheOptions())));
 
+            // Background Job Service
+            services.AddTransient<IJobService, HangfireJobService>();
+
             // MVC
             services.AddMvc(options =>
             {
@@ -152,6 +159,15 @@ namespace Volvox.Helios.Web
             // Entity Framework
             services.AddDbContext<VolvoxHeliosContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("VolvoxHeliosDatabase")));
+
+            services.AddHangfire(gc =>
+            {
+                gc.UseSqlServerStorage(Configuration.GetConnectionString("VolvoxHeliosDatabase"), new SqlServerStorageOptions
+                {
+                    SchemaName = "hangfire",
+                    PrepareSchemaIfNecessary = true
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -170,7 +186,7 @@ namespace Volvox.Helios.Web
 
                 loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
             }
-
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
@@ -182,6 +198,11 @@ namespace Volvox.Helios.Web
                 routes.MapRoute(
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
+            });
+
+            app.UseHangfireServer(new BackgroundJobServerOptions
+            {
+                Activator = new VolvoxJobActivator(app.ApplicationServices)
             });
         }
     }
