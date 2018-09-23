@@ -274,9 +274,30 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpGet("EditRecurringReminder")]
-        public async Task<IActionResult> EditRecurringReminder()
+        public async Task<IActionResult> EditRecurringReminder(ulong guildId, [FromQuery]ulong rid)
         {
-            return View();
+            var reminder = await _recurringReminderService.Find(rid);
+
+            if (reminder is null)
+                return View(new RecurringReminderMessageViewModel());
+
+            var vm = new RecurringReminderMessageViewModel
+            {
+                ChannelId = reminder.ChannelId,
+                Enabled = reminder.Enabled,
+                Id = reminder.Id,
+                Message = reminder.Message,
+                Recurrence = reminder.ReadableCronExpression
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost("EditRecurringReminder")]
+        public async Task<IActionResult> EditRecurringReminder(ulong guildId, RecurringReminderMessageViewModel vm)
+        {
+
+            return RedirectToAction("ReminderSettings");
         }
         #endregion
     }

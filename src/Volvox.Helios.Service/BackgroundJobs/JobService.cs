@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Volvox.Helios.Service.Jobs
+namespace Volvox.Helios.Service.BackgroundJobs
 {
-    public class HangfireJobService : IJobService
+    public class JobService : IJobService
     {
         string IJobService.RunJob(Expression<Action> jobToRun)
         {

@@ -35,14 +35,11 @@
                     {
                         <tr>
                             <td>@reminder.Name</td>
-                        </tr>
-                        <tr>
-                            <td>@reminder.PostDate.LocalDateTime.ToShortTimeString()</td>
-                        </tr>
-                        <tr>
+
+                            <td>@reminder.Recurrence</td>
+
                             <td>@(reminder.Enabled ? "Yes" : "No")</td>
-                        </tr>
-                        <tr>
+
                             <td>
                                 <a class="btn btn-primary"
                                    asp-controller="Settings"

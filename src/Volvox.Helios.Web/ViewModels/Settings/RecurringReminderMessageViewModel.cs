@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Volvox.Helios.Web.ViewModels.Settings
 {
+    public enum RecurrenceType { Minutly, Hourly, Daily, Weekly, Monthly, Yearly }
+
     public class RecurringReminderMessageViewModel
     {
         public ulong Id { get; set; }
@@ -21,6 +23,7 @@ namespace Volvox.Helios.Web.ViewModels.Settings
 
         public DateTimeOffset PostDate { get; set; }
         public ulong ChannelId { get; set; }
+        public string Recurrence { get; set; }
         public bool Enabled { get; set; }
     }
 }

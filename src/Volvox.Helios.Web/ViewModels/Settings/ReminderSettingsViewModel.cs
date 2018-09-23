@@ -36,6 +36,7 @@ namespace Volvox.Helios.Web.ViewModels.Settings
                     Enabled = x.Enabled,
                     Id = x.Id,
                     Message = x.Message,
+                    Recurrence = x.ReadableCronExpression
                 }) ?? Enumerable.Empty<RecurringReminderMessageViewModel>()
             };
         }
