@@ -2,19 +2,21 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volvox.Helios.Service;
 
 namespace Volvox.Helios.Service.Migrations
 {
     [DbContext(typeof(VolvoxHeliosContext))]
-    partial class VolvoxHeliosContextModelSnapshot : ModelSnapshot
+    [Migration("20180912001653_AddGuildToMessage")]
+    partial class AddGuildToMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.0-rtm-30799")
+                .HasAnnotation("ProductVersion", "2.1.2-rtm-30932")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -29,8 +31,6 @@ namespace Volvox.Helios.Service.Migrations
 
                     b.Property<decimal>("ChannelId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
-                    b.Property<bool>("Deleted");
 
                     b.Property<decimal>("GuildId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
