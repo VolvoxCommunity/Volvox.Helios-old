@@ -1,0 +1,126 @@
+﻿@model Volvox.Helios.Web.ViewModels.Settings.EditRecurringReminderMessageViewModel
+
+@{
+    ViewData["Title"] = "EditRecurringReminder";
+}
+
+<h2>Edit Ongoing Reminder</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="EditRecurringReminder">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-row">
+                <div style="display:flex;" class="form-group float-right">
+                    <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
+                    <label class="switch" />
+                    <input asp-for="Enabled" type="checkbox" />
+                    <div class="slider round"></div>
+                    <span asp-validation-for="Enabled" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="ChannelId"></label>
+                        <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
+                        <span asp-validation-for="ChannelId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label asp-for="Message" class="control-label"></label>
+                        <textarea asp-for="Message" class="form-control"></textarea>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <h3>Recurrence</h3><hr />
+
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label asp-for="Minutes" class="control-label"></label>
+                        <input asp-for="Minutes" class="form-control" />
+                        <span asp-validation-for="Minutes" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="form-group">
+                        <label asp-for="Hours" class="control-label"></label>
+                        <input asp-for="Hours" class="form-control" />
+                        <span asp-validation-for="Hours" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="form-group">
+                        <label asp-for="DayOfMonth" class="control-label"></label>
+                        <input asp-for="DayOfMonth" class="form-control" />
+                        <span asp-validation-for="DayOfMonth" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label asp-for="Month" class="control-label"></label>
+                        <input asp-for="Month" class="form-control" />
+                        <span asp-validation-for="Month" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label asp-for="DayOfWeek" class="control-label"></label>
+                        <input asp-for="DayOfWeek" class="form-control" />
+                        <span asp-validation-for="DayOfWeek" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" style="display:none">
+                <label asp-for="Id" class="control-label"></label>
+                <input asp-for="Id" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save Reminder" class="btn btn-success" />
+                @if (Model.Id != default(Guid))
+                {
+                    <input type="button" id="deleteBtn" value="Delete Reminder" class="btn btn-danger" />
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <form asp-action="DeleteRecurringReminder" id="deleteForm">
+        <div class="form-group" style="display:none">
+            <label asp-for="Id" class="control-label"></label>
+            <input asp-for="Id" class="form-control" />
+        </div>
+        
+    </form>
+    <a asp-action="RemembotSettings" asp-controller="Settings">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#deleteBtn").click(function (e) {
+                if (confirm("Are you sure you want to delete this reminder? This cannot be undone.")) {
+                    $("#deleteForm").submit();
+                }
+            });
+
+        });
+    </script>
+}

@@ -66,7 +66,7 @@ namespace Volvox.Helios.Service.Jobs
                         var trackedEntity = await entityService.Find(reminder.Id);
                         trackedEntity.Enabled = false;
                         await entityService.Update(trackedEntity);
-                        _jobService.CancelRecurringJob(reminder.JobId);
+                        _jobService.CancelRecurringJob(reminder.GetJobId());
                 
                 }
             }

@@ -4,6 +4,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Migrations\20180923013907_RecurringReminderMessageAddReadableCron.cs" />
+    <Compile Remove="Migrations\20180923172052_RecurringMessageIdentityColumn.cs" />
+    <Compile Remove="Migrations\20180923173115_RecurringReminderIdentityColumn.cs" />
+    <Compile Remove="Migrations\20180923182931_RecurringReminderGuidPk.cs" />
+    <Compile Remove="Migrations\20180923183809_RecurringReminderValueConverter.cs" />
+    <Compile Remove="Migrations\20180923184536_Test.cs" />
+    <Compile Remove="Migrations\20180923185622_ReminderModuleData.cs" />
+    <Compile Remove="Migrations\20180923191328_ReminderModuleData.cs" />
+    <Compile Remove="Migrations\20180923191432_ReminderModuleData.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.2" />

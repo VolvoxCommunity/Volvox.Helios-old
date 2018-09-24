@@ -28,14 +28,14 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IEntityService<StreamAnnouncerChannelSettings> _streamAnnouncerChannelSettingsService;
         private readonly IModuleSettingsService<StreamAnnouncerSettings> _streamAnnouncerSettingsService;
         private readonly IModuleSettingsService<StreamerRoleSettings> _streamerRoleSettingsService;
-        private readonly IModuleSettingsService<ReminderSettings> _reminderSettingsService;
+        private readonly IModuleSettingsService<RemembotSettings> _reminderSettingsService;
         private readonly IEntityService<RecurringReminderMessage> _recurringReminderService;
 
         public SettingsController(IModuleSettingsService<StreamAnnouncerSettings> streamAnnouncerSettingsService,
             IModuleSettingsService<StreamerRoleSettings> streamerRoleSettingsService,
             IEntityService<StreamAnnouncerChannelSettings> streamAnnouncerChannelSettingsService,
             IModuleSettingsService<ChatTrackerSettings> chatTrackerSettingsService,
-            IModuleSettingsService<ReminderSettings> reminderSettingsService,
+            IModuleSettingsService<RemembotSettings> reminderSettingsService,
             IEntityService<RecurringReminderMessage> recurringReminderService)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
@@ -253,51 +253,40 @@ namespace Volvox.Helios.Web.Controllers
         #endregion
 
         #region Reminder
-        [HttpGet("Reminder")]
-        public async Task<IActionResult> ReminderSettings(ulong guildId)
+        [HttpGet("Remembot")]
+        public async Task<IActionResult> RemembotSettings(ulong guildId,
+            [FromServices]IDiscordGuildService guildService)
         {
-            var settings = await _reminderSettingsService.GetSettingsByGuild(guildId, rs => rs.RecurringReminders);
-            var viewModel = ReminderSettingsViewModel.FromData(settings);
+            var settings = await _reminderSettingsService.GetSettingsByGuild(guildId);
+            var channels = await guildService.GetChannels(guildId);
+            var textChannels = channels.Where(x => x.Type == 0).ToList();
+            if(settings is null)
+            {
+                settings = new RemembotSettings
+                {
+                    Enabled = false,
+                    GuildId = guildId
+                };
+
+                await _reminderSettingsService.SaveSettings(settings);
+            }
+
+            var reminders = await _recurringReminderService.Get(x => x.GuildId == guildId);
+            settings.RecurringReminders = reminders;
+            var viewModel = ReminderSettingsViewModel.FromData(settings, channels);
             return View(viewModel);
         }
 
-        [HttpPost("Reminder")]
-        public async Task<IActionResult> ReminderSettings(ulong guildId, ReminderSettingsViewModel reminderSettings)
+        [HttpPost("Remembot")]
+        public async Task<IActionResult> RemembotSettings(ulong guildId, ReminderSettingsViewModel reminderSettings)
         {
-            await _reminderSettingsService.SaveSettings(new ReminderSettings
+            await _reminderSettingsService.SaveSettings(new RemembotSettings
             {
                 Enabled = reminderSettings.Enabled,
                 GuildId = guildId
             });
 
             return RedirectToAction("Index");
-        }
-
-        [HttpGet("EditRecurringReminder")]
-        public async Task<IActionResult> EditRecurringReminder(ulong guildId, [FromQuery]ulong rid)
-        {
-            var reminder = await _recurringReminderService.Find(rid);
-
-            if (reminder is null)
-                return View(new RecurringReminderMessageViewModel());
-
-            var vm = new RecurringReminderMessageViewModel
-            {
-                ChannelId = reminder.ChannelId,
-                Enabled = reminder.Enabled,
-                Id = reminder.Id,
-                Message = reminder.Message,
-                Recurrence = reminder.ReadableCronExpression
-            };
-
-            return View(vm);
-        }
-
-        [HttpPost("EditRecurringReminder")]
-        public async Task<IActionResult> EditRecurringReminder(ulong guildId, RecurringReminderMessageViewModel vm)
-        {
-
-            return RedirectToAction("ReminderSettings");
         }
         #endregion
     }

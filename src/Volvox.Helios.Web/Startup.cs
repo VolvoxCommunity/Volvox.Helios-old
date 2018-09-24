@@ -121,7 +121,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IModule, StreamAnnouncerModule>();
             services.AddSingleton<IModule, StreamerRoleModule>();
             services.AddSingleton<IModule, ChatTrackerModule>();
-            services.AddSingleton<IModule, ReminderModule>();
+            services.AddSingleton<IModule, RemembotModule>();
 
             // Commands
             services.AddSingleton<IModule, CommandManager>();
