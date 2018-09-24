@@ -1,10 +1,17 @@
 ﻿@model Volvox.Helios.Web.ViewModels.Settings.EditRecurringReminderMessageViewModel
 
 @{
-    ViewData["Title"] = "EditRecurringReminder";
+    if (Model.Id == default(Guid))
+    {
+        ViewData["Title"] = "Add Reminder";
+    }
+    else
+    {
+        ViewData["Title"] = "Edit Reminder";
+    }
 }
 
-<h2>Edit Ongoing Reminder</h2>
+<h2>@ViewData["Title"]</h2>
 
 <hr />
 <div class="row">
@@ -36,15 +43,18 @@
                 <div class="col-12">
                     <div class="form-group">
                         <label asp-for="Message" class="control-label"></label>
-                        <textarea asp-for="Message" class="form-control"></textarea>
+                        <textarea asp-for="Message" rows="5" class="form-control"></textarea>
                         <span asp-validation-for="Message" class="text-danger"></span>
                     </div>
                 </div>
             </div>
             <br />
-            <h3>Recurrence</h3><hr />
+            <h3>Recurrence</h3>
+            <p>This bot uses Cron Expressions to specify recurrences. Check out <a href="https://en.wikipedia.org/wiki/Cron#CRON_expression">this wiki page</a> for more information.</p>
+            <hr />
 
             <div class="form-row">
+
                 <div class="col">
                     <div class="form-group">
                         <label asp-for="Minutes" class="control-label"></label>
@@ -88,6 +98,7 @@
                 <label asp-for="Id" class="control-label"></label>
                 <input asp-for="Id" class="form-control" />
             </div>
+            <br/><br/>
             <div class="form-group">
                 <input type="submit" value="Save Reminder" class="btn btn-success" />
                 @if (Model.Id != default(Guid))
