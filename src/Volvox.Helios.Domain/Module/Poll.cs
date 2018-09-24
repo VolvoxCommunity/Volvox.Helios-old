@@ -9,6 +9,8 @@ namespace Volvox.Helios.Domain.Module
     public class Poll
     {
         [Key]
+        public int Id { get; set; }
+
         public ulong MessageId { get; set; }
 
         public ulong ChannelId { get; set; }
