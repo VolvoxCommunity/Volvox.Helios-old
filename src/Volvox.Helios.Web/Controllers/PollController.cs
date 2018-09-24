@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Core.Services.MessageService;
+using Volvox.Helios.Core.Utilities.Constants;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord.Guild;
@@ -40,13 +41,13 @@ namespace Volvox.Helios.Web.Controllers
             // All channels for guild.
             var channels = await guildService.GetChannels(guildId);
 
-            // Text channels for guild. Discord tracks channel types by number. Number 0 == text channel.
-            var textChannels = channels.Where(x => x.Type == 0).ToList();
+            // Text channels for guild.
+            var textChannels = channels.Where(x => x.Type == (int)ChannelType.Text).ToList();
 
             var viewModel = new NewPollViewModel
             {
                 Channels = new SelectList(textChannels, "Id", "Name"),
-                TotalOptions = 10,
+                TotalOptions = ModuleConstants.TotalOptions,
                 GuildId = guildId.ToString()
             };
 
@@ -60,8 +61,8 @@ namespace Volvox.Helios.Web.Controllers
             // All channels for guild.
             var channels = await guildService.GetChannels(guildId);
 
-            // Text channels for guild. Discord tracks channel types by number. Number 0 == text channel.
-            var textChannels = channels.Where(x => x.Type == 0).ToList();
+            // Text channels for guild.
+            var textChannels = channels.Where(x => x.Type == (int)ChannelType.Text).ToList();
 
             // Authorization - make sure channel belongs to the guild (prevents exploitation by providing a channel that isn't theirs, if they're authorized).
             // Note - this should be extracted into a seperate web filter.
@@ -77,9 +78,9 @@ namespace Volvox.Helios.Web.Controllers
             var validOptions = options.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
             // Make sure user supplied valid no of options
-            if (validOptions.Count < 2 || validOptions.Count > 10)
+            if (validOptions.Count < 2 || validOptions.Count > ModuleConstants.TotalOptions)
             {
-                ModelState.AddModelError("All", "Please provide between 2 and 10 valid options.");
+                ModelState.AddModelError("All", $"Please provide between 2 and {ModuleConstants.TotalOptions} valid options.");
 
                 viewModel.Channels = new SelectList(textChannels, "Id", "Name");
 
