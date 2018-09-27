@@ -50,6 +50,13 @@ namespace Volvox.Helios.Service.EntityService
             return Context.SaveChangesAsync();
         }
 
+        ///<inheritdoc />
+        public virtual async Task CreateBulk(IEnumerable<T> entities)
+        {
+            Context.Set<T>().AddRange(entities);
+            await Context.SaveChangesAsync();
+        }
+
         /// <inheritdoc />
         public virtual async Task Update(T entity)
         {
@@ -65,6 +72,13 @@ namespace Volvox.Helios.Service.EntityService
         public virtual async Task Remove(T entity)
         {
             Context.Set<T>().Remove(entity);
+            await Context.SaveChangesAsync();
+        }
+
+        ///<inheritdoc />
+        public virtual async Task RemoveBulk(IEnumerable<T> entities)
+        {
+            Context.Set<T>().RemoveRange(entities);
             await Context.SaveChangesAsync();
         }
 
