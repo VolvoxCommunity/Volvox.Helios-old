@@ -31,7 +31,7 @@ using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
 using Volvox.Helios.Service.Clients;
 using Volvox.Helios.Service.Discord.Guild;
-using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Service.Discord.UserGuild;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;

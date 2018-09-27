@@ -10,7 +10,7 @@ using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord.Guild;
-using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Service.Discord.UserGuild;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Service.ModuleSettings;
