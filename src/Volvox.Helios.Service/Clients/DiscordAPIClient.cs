@@ -70,6 +70,18 @@ namespace Volvox.Helios.Service.Clients
         }
 
         /// <summary>
+        ///     Get a specific user.
+        /// </summary>
+        /// <param name="userId">Id of the user to get.</param>
+        /// <returns>JSON of the User object.</returns>
+        public async Task<string> GetUser(ulong userId)
+        {
+            SetBotToken();
+
+            return await _client.GetStringAsync($"users/{userId}");
+        }
+
+        /// <summary>
         ///     Add the bot token to the authentication header.
         /// </summary>
         private void SetBotToken()

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Volvox.Helios.Domain.Discord;
 
-namespace Volvox.Helios.Service.Discord.User
+namespace Volvox.Helios.Service.Discord.UserGuild
 {
     public interface IDiscordUserGuildService
     {
@@ -10,6 +9,6 @@ namespace Volvox.Helios.Service.Discord.User
         ///     Get all of the logged in users guilds.
         /// </summary>
         /// <returns>List of all of the logged in users guilds.</returns>
-        Task<List<UserGuild>> GetUserGuilds();
+        Task<List<Domain.Discord.UserGuild>> GetUserGuilds();
     }
 }

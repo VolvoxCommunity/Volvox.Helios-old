@@ -18,9 +18,11 @@ namespace Volvox.Helios.Service
         public DbSet<StreamAnnouncerChannelSettings> StreamAnnouncerChannelSettings { get; set; }
 
         public DbSet<StreamerRoleSettings> StreamerRoleSettings { get; set; }
-
+        
         public DbSet<StreamAnnouncerMessage> StreamAnnouncerMessages { get; set;  }
-
+        
+        public DbSet<PollSettings> PollSettings { get; set; }
+        
         #region ChatTracker
 
         public DbSet<ChatTrackerSettings> ChatTrackerSettings { get; set; }

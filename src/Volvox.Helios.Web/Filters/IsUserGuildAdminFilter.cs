@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Service.Discord.UserGuild;
 using Volvox.Helios.Service.Extensions;
 
 namespace Volvox.Helios.Web.Filters
