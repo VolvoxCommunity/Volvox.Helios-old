@@ -8,6 +8,6 @@ namespace Volvox.Helios.Domain.ModuleSettings
     {
         public List<StreamAnnouncerChannelSettings> ChannelSettings { get; set; }
 
-        public List<StreamAnnouncerMessages> StreamMessages { get; set; }
+        public List<StreamAnnouncerMessage> StreamMessages { get; set; }
     }
 }

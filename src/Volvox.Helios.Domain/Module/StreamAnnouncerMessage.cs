@@ -3,7 +3,7 @@ using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.StreamAnnouncer
 {
-    public class StreamAnnouncerMessages
+    public class StreamAnnouncerMessage
     {
         [Key]
         public int Id { get; set; }

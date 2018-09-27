@@ -25,7 +25,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
     {
         private readonly IModuleSettingsService<StreamAnnouncerSettings> _settingsService;
         private readonly IServiceScopeFactory _scopeFactory;
-        private IDictionary<ulong, HashSet<StreamAnnouncerMessages>> _streamingList { get; } = new Dictionary<ulong, HashSet<StreamAnnouncerMessages>>();
+        private IDictionary<ulong, HashSet<StreamAnnouncerMessage>> _streamingList { get; } = new Dictionary<ulong, HashSet<StreamAnnouncerMessage>>();
 
         /// <summary>
         ///     Announce the user to a specified channel when streaming.
@@ -54,14 +54,14 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             // Populate streaming list from database. This is incase the bot restarts, the messages won't be lost.
             using (var scope = _scopeFactory.CreateScope())
             {
-                var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessages>>();
+                var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessage>>();
 
                 var messages = await messageService.GetAll(x => x.StreamAnnouncerSettings);
 
                 foreach (var m in messages)
                 {
                     if (!_streamingList.ContainsKey(m.StreamAnnouncerSettings.GuildId))
-                        _streamingList.Add(m.StreamAnnouncerSettings.GuildId, new HashSet<StreamAnnouncerMessages>());
+                        _streamingList.Add(m.StreamAnnouncerSettings.GuildId, new HashSet<StreamAnnouncerMessage>());
 
                     _streamingList[m.StreamAnnouncerSettings.GuildId].Add(m);
                 }
@@ -89,7 +89,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             // Add initial hash set for the guild.
             if (!_streamingList.TryGetValue(user.Guild.Id, out var set))
             {
-                set = new HashSet<StreamAnnouncerMessages>();
+                set = new HashSet<StreamAnnouncerMessage>();
                 _streamingList[user.Guild.Id] = set;
             }
 
@@ -123,12 +123,12 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <returns></returns>
         private async Task AnnounceUserHandler(SocketGuildUser user, List<StreamAnnouncerChannelSettings> channels)
         {
-            var announcements = new List<Task<StreamAnnouncerMessages>>();
+            var announcements = new List<Task<StreamAnnouncerMessage>>();
 
             // Announce to all enabled channels in guild and store message in list.
             foreach (var c in channels)
             {
-                var message = new StreamAnnouncerMessages() { UserId = user.Id, ChannelId = c.ChannelId };
+                var message = new StreamAnnouncerMessage() { UserId = user.Id, ChannelId = c.ChannelId };
                 _streamingList[user.Guild.Id].Add(message);
                 announcements.Add(AnnounceUser(user, message, c.ChannelId));
             }
@@ -137,7 +137,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
 
             using (var scope = _scopeFactory.CreateScope())
             {
-                var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessages>>();
+                var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessage>>();
 
                 await messageService.CreateBulk(messages);             
             }
@@ -150,7 +150,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="m">Message from _streamingList, this is so it's MessageId can be set.</param>
         /// <param name="channelSettings">Settings of channel the message will be to be announced to.</param>
         /// <returns></returns>
-        private async Task<StreamAnnouncerMessages> AnnounceUser(SocketGuildUser user, StreamAnnouncerMessages m, ulong channelId)
+        private async Task<StreamAnnouncerMessage> AnnounceUser(SocketGuildUser user, StreamAnnouncerMessage m, ulong channelId)
         {
             // Build the embedded message.
             var embed = new EmbedBuilder()
@@ -186,7 +186,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="messages">List of messages associated the said user.</param>
         /// <param name="channels">List of channels with module enabled.</param>
         /// <returns></returns>
-        private async Task AnnouncedMessageHandler(SocketGuildUser user, List<StreamAnnouncerMessages> messages, List<StreamAnnouncerChannelSettings> channels)
+        private async Task AnnouncedMessageHandler(SocketGuildUser user, List<StreamAnnouncerMessage> messages, List<StreamAnnouncerChannelSettings> channels)
         {
             var messageDeletions = new List<Task>();
 
@@ -206,7 +206,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             // Remove streaming messages from databsae.
             using (var scope = _scopeFactory.CreateScope())
             {
-                var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessages>>();
+                var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessage>>();
 
                 await messageService.RemoveBulk(messages);
             }
@@ -217,7 +217,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// </summary>
         /// <param name="user">User whom stopped streaming</param>
         /// <param name="m">Message to delete </param>
-        private async Task DeleteMessageAsync(SocketGuildUser user, StreamAnnouncerMessages m)
+        private async Task DeleteMessageAsync(SocketGuildUser user, StreamAnnouncerMessage m)
         {
             Logger.LogDebug($"StreamAnnouncer Module: Deleting streaming message {m.MessageId} " +
                 $"from {user.Username} (ID: {m.UserId}), " +
