@@ -147,7 +147,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         ///     Announces the users stream to channel.
         /// </summary>
         /// <param name="user">User to be announecd</param>
-        /// <param name="m">Message from _streamingList, this is so it's MessageId can be set.</param>
+        /// <param name="m">Message from streaming list, this is so it's MessageId can be set.</param>
         /// <param name="channelSettings">Settings of channel the message will be to be announced to.</param>
         /// <returns></returns>
         private async Task<StreamAnnouncerMessage> AnnounceUser(SocketGuildUser user, StreamAnnouncerMessage m, ulong channelId)
