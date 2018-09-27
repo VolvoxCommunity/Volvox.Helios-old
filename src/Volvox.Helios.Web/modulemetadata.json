@@ -1,5 +1,5 @@
 {
-  "Metadata": {
+  "ModuleMetadata": {
     "StreamAnnouncerModule": {
       "Name": "Stream Announcer",
       "Version": "1.0",
@@ -17,9 +17,23 @@
     "CommandManager": {
       "Name": "Command Manager",
       "Version": "1.0",
-      "Description": "If you're seeing this, run before the rest of the site explodes",
+      "Description": "If you're seeing this, run before the rest of the site explodes!",
       "ReleaseState": "Stable",
       "Configurable": "false"
+    },
+    "PollModule": {
+      "Name": "Poll",
+      "Version": "1.0",
+      "Description": "Create and view polls.",
+      "ReleaseState": "Stable",
+      "Configurable": "false"
+    },
+    "ChatTrackerModule": {
+      "Name": "Chat Tracker",
+      "Version": "1.0",
+      "Description": "Track your chat.",
+      "ReleaseState": "Canary",
+      "Configurable": "true"
     }
   }
 }

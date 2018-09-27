@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Utilities;
@@ -25,14 +27,14 @@ namespace Volvox.Helios.Core.Modules.Common
 
             var moduleName = GetType().Name;
 
-            // Check if the module is in the metadata.
-            if (config[$"Metadata:{moduleName}"] != null)
+            // Check if the module exists in the metadata.
+            if (config.GetSection($"ModuleMetadata:{moduleName}").Exists())
             {
-                Name = config[$"Metadata:{moduleName}:Name"];
-                Version = config[$"Metadata:{moduleName}:Version"];
-                Description = config[$"Metadata:{moduleName}:Description"];
-                Configurable = bool.Parse(config[$"Metadata:{moduleName}:Configurable"]);
-                ReleaseState = Enum.Parse<ReleaseState>(config[$"Metadata:{moduleName}:ReleaseState"]);
+                Name = config[$"ModuleMetadata:{moduleName}:Name"];
+                Version = config[$"ModuleMetadata:{moduleName}:Version"];
+                Description = config[$"ModuleMetadata:{moduleName}:Description"];
+                Configurable = bool.Parse(config[$"ModuleMetadata:{moduleName}:Configurable"]);
+                ReleaseState = Enum.Parse<ReleaseState>(config[$"ModuleMetadata:{moduleName}:ReleaseState"]);
             }
 
             else
