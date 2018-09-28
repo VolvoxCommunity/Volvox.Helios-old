@@ -20,11 +20,27 @@
     });
   };
 
-  $.fn.populateGuildsInBot = function () {
+  $.fn.populateAnalytics = function () {
     return this.each(function () {
       const element = $(this);
 
       const url = "/api/GetUserAdminGuilds?inGuild=true";
+
+      $.getJSON(url, function (data) {
+        element.empty();
+
+        $.each(data, function (key, entry) {
+          element.append($('<a class="dropdown-item"></a>').attr("href", `/Analytics/${entry.id}`).text(entry.name));
+        });
+      });
+    });
+  };
+
+  $.fn.populateSettings = function () {
+    return this.each(function () {
+      const element = $(this);
+
+      const url = "/api/GetUserAdminGuilds";
 
       $.getJSON(url, function (data) {
         element.empty();
@@ -54,5 +70,5 @@
     </div>
     `)
   }
-   
+
 }(jQuery));
