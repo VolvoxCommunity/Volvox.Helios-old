@@ -3,8 +3,8 @@
 # Volvox.Helios [![Build Status](https://travis-ci.org/VolvoxCommunity/Volvox.Helios.svg?branch=master)](https://travis-ci.org/VolvoxCommunity/Volvox.Helios) [![CodeFactor](https://www.codefactor.io/repository/github/volvoxcommunity/volvox.helios/badge)](https://www.codefactor.io/repository/github/volvoxcommunity/volvox.helios) [![Discord](https://discordapp.com/api/guilds/468467000344313866/widget.png)](https://discord.gg/jReSmc3)
 #### An easy to use, customizable, modular discord bot, all managed from your favorite browser.
 
-## Getting Started
-Visit the Volvox.Helios [website](http://www.volvox.tech) to get started adding the bot to your Discord server.
+## Add the bot to your server.
+Visit the Volvox.Helios [website](http://www.volvox.tech) to add the bot to your Discord server.
 
 ## Prerequisites
 .NET Core ->  Latest  
@@ -28,6 +28,8 @@ Add the following application settings
     "ClientSecret": "BOTCLIENTSECRETHERE"
   }
 ```
+_note_: You might want to store these as user secrets to avoid them being sent with commits/prs.
+
 
 Next, run the following commands to build the project and install the dependencies:
 ```
