@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Service.Discord.Guild;
 using Volvox.Helios.Service.EntityService;
+using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.ViewModels.Settings;
 
@@ -60,6 +61,10 @@ namespace Volvox.Helios.Web.Controllers
                 CronExpression = reminder.CronExpression,
                 Enabled = reminder.Enabled,
                 Message = reminder.Message,
+                FaultMessage = reminder.GetFaultLongMessage(),
+                ChannelId = reminder.ChannelId,
+                ChannelName = selectedChannel.Name,
+                FaultType = (int)reminder.Fault,
                 Id = reminder.Id
             };
 

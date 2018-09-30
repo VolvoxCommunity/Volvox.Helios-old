@@ -116,9 +116,11 @@ namespace Volvox.Helios.Core.Modules.ReminderModule
                     return;
 
                 var disableTasks = existingReminders
+                    .Where(x => x.Fault == RecurringReminderMessage.FaultType.None)
                     .Select(async rmd =>
                     {
                         rmd.Enabled = false;
+                        rmd.Fault = RecurringReminderMessage.FaultType.InvalidChannel;
                         await reminderService.Update(rmd);
                         StopJobIfExists(rmd);
                     });
@@ -140,6 +142,12 @@ namespace Volvox.Helios.Core.Modules.ReminderModule
         private async void OnReminderChanged(object sender, EntityChangedEventArgs<RecurringReminderMessage> args)
         {
             var reminder = args.Entity;
+
+            // Don't do anything with faulted reminders. User needs to correct
+            // the fault before reminders can continue.
+            if (reminder.Fault != RecurringReminderMessage.FaultType.None)
+                return;
+
             var settings = await _moduleSettings.GetSettingsByGuild(args.Entity.GuildId);
             if (settings.Enabled)
             {
@@ -174,9 +182,18 @@ namespace Volvox.Helios.Core.Modules.ReminderModule
             using (var scope = _scopeFactory.CreateScope())
             {
                 var reminderJob = scope.ServiceProvider.GetRequiredService<RecurringReminderMessageJob>();
-                _jobService.ScheduleRecurringJob(() => reminderJob.Run(reminder),
-                    reminder.CronExpression,
-                    reminder.GetJobId());
+                try
+                {
+                    _jobService.ScheduleRecurringJob(() => reminderJob.Run(reminder),
+                        "3213",//reminder.CronExpression,
+                        reminder.GetJobId());
+                }
+                catch (ArgumentException)
+                {
+                    var reminderService = scope.ServiceProvider.GetRequiredService<IEntityService<RecurringReminderMessage>>();
+                    reminder.Fault = RecurringReminderMessage.FaultType.InvalidCron;
+                    reminderService.Update(reminder);
+                }
             }
         }
 

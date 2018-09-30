@@ -45,26 +45,33 @@
                         <tr>
                             <th>Channel</th>
                             <th>Message</th>
-                            <th>Enabled</th>
+                            <th>Status</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var reminder in Model.RecurringReminders)
                         {
-                            <tr>
-                                <td>@reminder.ChannelName</td>
-                                <td>@reminder.Message</td>
-                                <td>@(reminder.Enabled ? "Yes" : "No")</td>
+                        <tr>
+                            <td>@reminder.ChannelName</td>
+                            <td>@reminder.Message</td>
+                            @if (reminder.IsFaulted)
+                            {
+                                <td class="text-danger">@reminder.Status</td>
+                            }
+                            else
+                            {
+                                <td>@reminder.Status</td>
+                            }
 
-                                <td>
-                                    <a class="btn btn-primary"
-                                       asp-controller="Remembot"
-                                       asp-action="EditRecurringReminder"
-                                       asp-route-guildId="@Model.GuildId"
-                                       asp-route-rid="@reminder.Id">Edit</a>
-                                </td>
-                            </tr>
+                            <td>
+                                <a class="btn btn-primary"
+                                   asp-controller="Remembot"
+                                   asp-action="EditRecurringReminder"
+                                   asp-route-guildId="@Model.GuildId"
+                                   asp-route-rid="@reminder.Id">Edit</a>
+                            </td>
+                        </tr>
                         }
                     </tbody>
                 </table>

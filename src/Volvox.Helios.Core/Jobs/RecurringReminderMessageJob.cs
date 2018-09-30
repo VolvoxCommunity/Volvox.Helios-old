@@ -13,6 +13,9 @@ using Volvox.Helios.Service.EntityService;
 
 namespace Volvox.Helios.Service.Jobs
 {
+    /// <summary>
+    ///     Background job instance for the Remembot reminder messages.
+    /// </summary>
     public class RecurringReminderMessageJob
     {
         IJobService _jobService;
@@ -31,6 +34,13 @@ namespace Volvox.Helios.Service.Jobs
             _bot = bot;
         }
 
+        /// <summary>
+        ///     Background job execution for reminder messages for the Remembot module.
+        ///     ** NOTE - DO NOT make changes to this signature. If changes are needed, make a new method to use.
+        ///        Changing this file's signature will cause errors with the existing job queues.
+        /// </summary>
+        /// <param name="reminder"></param>
+        /// <returns></returns>
         public async Task Run(RecurringReminderMessage reminder)
         {
             using (var scope = _scopeFactory.CreateScope())
@@ -61,13 +71,14 @@ namespace Volvox.Helios.Service.Jobs
 
                 async Task DisableJob()
                 {
-                
-                        var entityService = scope.ServiceProvider.GetRequiredService<IEntityService<RecurringReminderMessage>>();
-                        var trackedEntity = await entityService.Find(reminder.Id);
-                        trackedEntity.Enabled = false;
-                        await entityService.Update(trackedEntity);
-                        _jobService.CancelRecurringJob(reminder.GetJobId());
-                
+
+                    var entityService = scope.ServiceProvider.GetRequiredService<IEntityService<RecurringReminderMessage>>();
+                    var trackedEntity = await entityService.Find(reminder.Id);
+                    trackedEntity.Enabled = false;
+                    trackedEntity.Fault = RecurringReminderMessage.FaultType.InvalidChannel;
+                    await entityService.Update(trackedEntity);
+                    _jobService.CancelRecurringJob(reminder.GetJobId());
+
                 }
             }
         }

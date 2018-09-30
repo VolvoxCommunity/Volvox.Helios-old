@@ -8,11 +8,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Volvox.Helios.Web.ViewModels.Settings
 {
-    public enum RecurrenceType { Minutly, Hourly, Daily, Weekly, Monthly, Yearly }
-
     public class EditRecurringReminderMessageViewModel
     {
         public Guid Id { get; set; }
+
         public ulong GuildId { get; set; }
 
         [Required]
@@ -29,6 +28,10 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         public string ChannelName { get; set; }
 
         public SelectList Channels { get; set; }
+
+        public int FaultType { get; set; }
+
+        public string FaultMessage { get; set; }
 
         [Required]
         public string CronExpression { get; set; }

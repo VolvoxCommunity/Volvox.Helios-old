@@ -7,7 +7,7 @@ namespace Volvox.Helios.Domain.Module
 {
     public class RecurringReminderMessage
     {
-        public enum FaultType { None = 0, InvalidCron = 1 }
+        public enum FaultType { None = 0, InvalidCron = 1, InvalidChannel = 2 }
 
         public Guid Id { get; set; }
         public ulong GuildId { get; set; }

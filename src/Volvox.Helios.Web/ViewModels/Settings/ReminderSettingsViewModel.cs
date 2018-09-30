@@ -6,7 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Domain.Discord;
+using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
+using Volvox.Helios.Service.Extensions;
 
 namespace Volvox.Helios.Web.ViewModels.Settings
 {
@@ -19,8 +21,8 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         [DefaultValue(false)]
         public bool Enabled { get; set; }
 
-        public IEnumerable<EditRecurringReminderMessageViewModel> RecurringReminders { get; set; }
-            = Enumerable.Empty<EditRecurringReminderMessageViewModel>();
+        public IEnumerable<ReminderListItemViewModel> RecurringReminders { get; set; }
+            = Enumerable.Empty<ReminderListItemViewModel>();
 
         public static ReminderSettingsViewModel FromData(RemembotSettings settings, IEnumerable<Channel> channels)
         {
@@ -31,14 +33,36 @@ namespace Volvox.Helios.Web.ViewModels.Settings
             {
                 GuildId = settings.GuildId,
                 Enabled = settings.Enabled,
-                RecurringReminders = settings.RecurringReminders?.Select(x => new EditRecurringReminderMessageViewModel
+                RecurringReminders = settings.RecurringReminders?.Select(x =>
                 {
-                    Enabled = x.Enabled,
-                    Id = x.Id,
-                    Message = x.Message,
-                    ChannelName = channels.FirstOrDefault(y => y.Id == x.ChannelId)?.Name ?? "NA"
-                }) ?? Enumerable.Empty<EditRecurringReminderMessageViewModel>()
+                    var (isFaulted, status) = GetEnabledStatus(x);
+                    var vm = new ReminderListItemViewModel
+                    {
+                        Id = x.Id,
+                        Status = status,
+                        IsFaulted = isFaulted,
+                        Message = x.Message,
+                        ChannelName = channels.FirstOrDefault(y => y.Id == x.ChannelId)?.Name ?? "NA"
+                    };
+
+                    return vm;
+                })
             };
+        }
+
+        static (bool HasFault, string Status) GetEnabledStatus(RecurringReminderMessage reminderMessage)
+        {
+            if(reminderMessage.Fault == RecurringReminderMessage.FaultType.None)
+            {
+                if (reminderMessage.Enabled)
+                    return (false, "Enabled");
+
+                return (false, "Disabled");
+            }
+            else
+            {
+                return (true, reminderMessage.GetFaultShortMessage());
+            }
         }
     }
 }
