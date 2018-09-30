@@ -40,7 +40,7 @@
     return this.each(function () {
       const element = $(this);
 
-      const url = "/api/GetUserAdminGuilds?inGuild=true";
+      const url = "/api/GetUserAdminGuilds";
 
       $.getJSON(url, function (data) {
         element.empty();
