@@ -175,7 +175,7 @@ namespace Volvox.Helios.Core.Modules.ReminderModule
             {
                 var reminderJob = scope.ServiceProvider.GetRequiredService<RecurringReminderMessageJob>();
                 _jobService.ScheduleRecurringJob(() => reminderJob.Run(reminder),
-                    reminder.GetCronExpression(),
+                    reminder.CronExpression,
                     reminder.GetJobId());
             }
         }

@@ -10,6 +10,8 @@
         ViewData["Title"] = "Edit Reminder";
     }
 }
+<link type="text/css" href="~/lib/gentleSelect/jquery-gentleSelect.css" rel="stylesheet" />
+<link type="text/css" href="~/lib/cron/jquery-cron.css" rel="stylesheet"/>
 
 <h2>@ViewData["Title"]</h2>
 
@@ -49,48 +51,24 @@
                 </div>
             </div>
             <br />
-            <h3>Recurrence</h3>
-            <p>This bot uses Cron Expressions to specify recurrences. Check out <a href="https://en.wikipedia.org/wiki/Cron#CRON_expression">this wiki page</a> for more information.</p>
-            <hr />
 
-            <div class="form-row">
+            <div id="easy_cron" ></div>
 
-                <div class="col">
-                    <div class="form-group">
-                        <label asp-for="Minutes" class="control-label"></label>
-                        <input asp-for="Minutes" class="form-control" />
-                        <span asp-validation-for="Minutes" class="text-danger"></span>
-                    </div>
-                </div>
+            <div id="manual_cron" style="display:none">
+                <h3>Recurrence</h3>
+                <p>This bot uses Cron Expressions to specify recurrences. Check out <a href="https://en.wikipedia.org/wiki/Cron#CRON_expression">this wiki page</a> for more information. All time is based on UTC timezone.</p>
+                <hr />
 
-                <div class="col">
-                    <div class="form-group">
-                        <label asp-for="Hours" class="control-label"></label>
-                        <input asp-for="Hours" class="form-control" />
-                        <span asp-validation-for="Hours" class="text-danger"></span>
-                    </div>
-                </div>
+                <div class="form-row">
 
-                <div class="col">
-                    <div class="form-group">
-                        <label asp-for="DayOfMonth" class="control-label"></label>
-                        <input asp-for="DayOfMonth" class="form-control" />
-                        <span asp-validation-for="DayOfMonth" class="text-danger"></span>
+                    <div class="col">
+                        <div class="form-group">
+                            <label asp-for="CronExpression" class="control-label"></label>
+                            <input asp-for="CronExpression" class="form-control" />
+                            <span asp-validation-for="CronExpression" class="text-danger"></span>
+                        </div>
                     </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label asp-for="Month" class="control-label"></label>
-                        <input asp-for="Month" class="form-control" />
-                        <span asp-validation-for="Month" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label asp-for="DayOfWeek" class="control-label"></label>
-                        <input asp-for="DayOfWeek" class="form-control" />
-                        <span asp-validation-for="DayOfWeek" class="text-danger"></span>
-                    </div>
+
                 </div>
             </div>
 
@@ -98,7 +76,7 @@
                 <label asp-for="Id" class="control-label"></label>
                 <input asp-for="Id" class="form-control" />
             </div>
-            <br/><br/>
+            <br /><br />
             <div class="form-group">
                 <input type="submit" value="Save Reminder" class="btn btn-success" />
                 @if (Model.Id != default(Guid))
@@ -116,16 +94,34 @@
             <label asp-for="Id" class="control-label"></label>
             <input asp-for="Id" class="form-control" />
         </div>
-        
+
     </form>
     <a asp-action="RemembotSettings" asp-controller="Settings">Back to List</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/lib/gentleSelect/jquery-gentleSelect-min.js"></script>
+    <script src="~/lib/cron/jquery-cron-min.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
+            var cronExpression = $("#CronExpression").val();
+
+            if (cronExpression === "") {
+                cronExpression = "* * * * *";
+            }
+
+            $("#easy_cron").cron({
+                initial: cronExpression,
+                useGentleSelect: true,
+                onChange: function () {
+                    var cronField = $("#CronExpression");
+                    var newExpression = $(this).cron("value");
+                    cronField.val(newExpression);
+                }
+            });
+
             $("#deleteBtn").click(function (e) {
                 if (confirm("Are you sure you want to delete this reminder? This cannot be undone.")) {
                     $("#deleteForm").submit();

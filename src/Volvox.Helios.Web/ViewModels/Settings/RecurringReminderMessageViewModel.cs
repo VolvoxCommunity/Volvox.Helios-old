@@ -31,26 +31,7 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         public SelectList Channels { get; set; }
 
         [Required]
-        [DefaultValue("*")]
-        public string Minutes { get; set; }
-
-        [Required]
-        [DefaultValue("*")]
-        public string Hours { get; set; }
-
-        [Required]
-        [DisplayName("Day of Month")]
-        [DefaultValue("*")]
-        public string DayOfMonth { get; set; }
-
-        [Required]
-        [DefaultValue("*")]
-        public string Month { get; set; }
-
-        [Required]
-        [DisplayName("Day of Week")]
-        [DefaultValue("*")]
-        public string DayOfWeek { get; set; }
+        public string CronExpression { get; set; }
 
         [Required]
         public bool Enabled { get; set; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -33,14 +34,17 @@ namespace Volvox.Helios.Web.Controllers
         {
             var channels = await _guildService.GetChannels(guildId);
             var textChannels = channels.Where(x => x.Type == 0);
-            if(rid == default(Guid))
+
+            if (rid == default(Guid))
             {
                 var newVm = new EditRecurringReminderMessageViewModel
                 {
                     Channels = new SelectList(textChannels, "Id", "Name"),
                     Enabled = true,
-                    GuildId = guildId
+                    GuildId = guildId,
+                    CronExpression = Cron.Minutely()
                 };
+
                 return View(newVm);
             }
 
@@ -53,13 +57,9 @@ namespace Volvox.Helios.Web.Controllers
             {
                 GuildId = guildId,
                 Channels = new SelectList(textChannels, "Id", "Name", selectedChannel),
-                DayOfMonth = reminder.DayOfMonthExpression,
-                DayOfWeek = reminder.DayOfWeekExpression,
+                CronExpression = reminder.CronExpression,
                 Enabled = reminder.Enabled,
-                Hours = reminder.HoursExpression,
                 Message = reminder.Message,
-                Minutes = reminder.MinutesExpression,
-                Month = reminder.MonthExpression,
                 Id = reminder.Id
             };
 
@@ -69,20 +69,17 @@ namespace Volvox.Helios.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> EditRecurringReminder(ulong guildId, EditRecurringReminderMessageViewModel vm)
         {
-            // TODO - Run validations
+            if (!ModelState.IsValid)
+                return View(vm);
 
             if (vm.Id == default(Guid))
             {
                 var newReminder = new RecurringReminderMessage
                 {
                     ChannelId = vm.ChannelId,
-                    DayOfMonthExpression = vm.DayOfMonth,
-                    DayOfWeekExpression = vm.DayOfWeek,
                     Enabled = vm.Enabled,
-                    HoursExpression = vm.Hours,
                     Message = vm.Message,
-                    MinutesExpression = vm.Minutes,
-                    MonthExpression = vm.Month,
+                    CronExpression = vm.CronExpression,
                     GuildId = guildId
                 };
 
@@ -92,13 +89,9 @@ namespace Volvox.Helios.Web.Controllers
 
             var reminder = await _reminderService.Find(vm.Id);
             reminder.ChannelId = vm.ChannelId;
-            reminder.DayOfMonthExpression = vm.DayOfMonth;
-            reminder.DayOfWeekExpression = vm.DayOfWeek;
             reminder.Enabled = vm.Enabled;
-            reminder.HoursExpression = vm.Hours;
             reminder.Message = vm.Message;
-            reminder.MinutesExpression = vm.Minutes;
-            reminder.MonthExpression = vm.Month;
+            reminder.CronExpression = vm.CronExpression;
 
             await _reminderService.Update(reminder);
 

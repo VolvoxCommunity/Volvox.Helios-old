@@ -63,19 +63,12 @@ namespace Volvox.Helios.Service
             recurringReminderModel.Property(x => x.Message)
                 .IsRequired();
 
-            recurringReminderModel.Property(x => x.MinutesExpression)
+            recurringReminderModel.Property(x => x.CronExpression)
+                .HasMaxLength(255)
                 .IsRequired();
 
-            recurringReminderModel.Property(x => x.HoursExpression)
-                .IsRequired();
-
-            recurringReminderModel.Property(x => x.DayOfMonthExpression)
-                .IsRequired();
-
-            recurringReminderModel.Property(x => x.MonthExpression)
-                .IsRequired();
-
-            recurringReminderModel.Property(x => x.DayOfWeekExpression)
+            recurringReminderModel.Property(x => x.Fault)
+                .HasDefaultValue(RecurringReminderMessage.FaultType.None)
                 .IsRequired();
         }
     }
