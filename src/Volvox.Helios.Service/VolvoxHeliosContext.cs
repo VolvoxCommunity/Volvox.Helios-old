@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.Module.ChatTracker;
 using Volvox.Helios.Domain.ModuleSettings;
@@ -27,7 +28,7 @@ namespace Volvox.Helios.Service
         #endregion
 
         #region Reminder
-        public DbSet<ReminderSettings> ReminderSettings { get; set; }
+        public DbSet<RemembotSettings> ReminderSettings { get; set; }
         public DbSet<RecurringReminderMessage> RecurringReminderMessages { get; set; }
         #endregion
 
@@ -39,7 +40,7 @@ namespace Volvox.Helios.Service
 
         private void SetupForReminderSchema(ModelBuilder modelBuilder)
         {
-            var reminderModel = modelBuilder.Entity<ReminderSettings>();
+            var reminderModel = modelBuilder.Entity<RemembotSettings>();
             var recurringReminderModel = modelBuilder.Entity<RecurringReminderMessage>();
 
             reminderModel.HasMany(x => x.RecurringReminders);
@@ -62,13 +63,12 @@ namespace Volvox.Helios.Service
             recurringReminderModel.Property(x => x.Message)
                 .IsRequired();
 
-            recurringReminderModel.Property(x => x.ReadableCronExpression)
-                .IsRequired();
-
-            recurringReminderModel.Property(x => x.JobId)
-                .IsRequired();
-
             recurringReminderModel.Property(x => x.CronExpression)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            recurringReminderModel.Property(x => x.Fault)
+                .HasDefaultValue(RecurringReminderMessage.FaultType.None)
                 .IsRequired();
         }
     }

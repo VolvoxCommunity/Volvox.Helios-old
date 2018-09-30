@@ -28,8 +28,8 @@
       "ReleaseState": "Canary",
       "Configurable": "true"
     },
-    "ReminderModule": {
-      "Name": "Reminder",
+    "RemembotModule": {
+      "Name": "Remembot",
       "Version": "1.0",
       "Description": "Set periodic reminders that will be sent to specific channels.",
       "ReleaseState": "Canary",

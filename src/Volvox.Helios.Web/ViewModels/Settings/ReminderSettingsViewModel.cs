@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Volvox.Helios.Domain.Discord;
 using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Web.ViewModels.Settings
@@ -18,10 +19,10 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         [DefaultValue(false)]
         public bool Enabled { get; set; }
 
-        public IEnumerable<RecurringReminderMessageViewModel> RecurringReminders { get; set; }
-            = Enumerable.Empty<RecurringReminderMessageViewModel>();
+        public IEnumerable<EditRecurringReminderMessageViewModel> RecurringReminders { get; set; }
+            = Enumerable.Empty<EditRecurringReminderMessageViewModel>();
 
-        public static ReminderSettingsViewModel FromData(ReminderSettings settings)
+        public static ReminderSettingsViewModel FromData(RemembotSettings settings, IEnumerable<Channel> channels)
         {
             if (settings is null)
                 return new ReminderSettingsViewModel();
@@ -30,13 +31,13 @@ namespace Volvox.Helios.Web.ViewModels.Settings
             {
                 GuildId = settings.GuildId,
                 Enabled = settings.Enabled,
-                RecurringReminders = settings.RecurringReminders?.Select(x => new RecurringReminderMessageViewModel
+                RecurringReminders = settings.RecurringReminders?.Select(x => new EditRecurringReminderMessageViewModel
                 {
-                    ChannelId = x.ChannelId,
                     Enabled = x.Enabled,
                     Id = x.Id,
                     Message = x.Message,
-                }) ?? Enumerable.Empty<RecurringReminderMessageViewModel>()
+                    ChannelName = channels.FirstOrDefault(y => y.Id == x.ChannelId)?.Name ?? "NA"
+                }) ?? Enumerable.Empty<EditRecurringReminderMessageViewModel>()
             };
         }
     }

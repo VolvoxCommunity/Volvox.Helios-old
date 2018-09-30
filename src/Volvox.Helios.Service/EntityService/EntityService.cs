@@ -18,9 +18,12 @@ namespace Volvox.Helios.Service.EntityService
         ///     Initialize a new EntityService class.
         /// </summary>
         /// <param name="context">Volvox.Helios context.</param>
-        public EntityService(VolvoxHeliosContext context)
+        public EntityService(VolvoxHeliosContext context,
+            EntityChangedDispatcher<T> dispatch)
         {
             _context = context;
+
+            Dispatch = dispatch;
         }
 
         /// <inheritdoc />

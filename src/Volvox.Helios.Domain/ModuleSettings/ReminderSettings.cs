@@ -5,7 +5,7 @@ using Volvox.Helios.Domain.Module;
 
 namespace Volvox.Helios.Domain.ModuleSettings
 {
-    public class ReminderSettings : ModuleSettings
+    public class RemembotSettings : ModuleSettings
     {
         public List<RecurringReminderMessage> RecurringReminders { get; set; }
     }
