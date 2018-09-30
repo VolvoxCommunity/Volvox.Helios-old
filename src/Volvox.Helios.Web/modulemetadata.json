@@ -27,6 +27,13 @@
       "Description": "Track your chat.",
       "ReleaseState": "Canary",
       "Configurable": "true"
+    },
+    "RemembotModule": {
+      "Name": "Remembot",
+      "Version": "1.0",
+      "Description": "Set periodic reminders that will be sent to specific channels.",
+      "ReleaseState": "Canary",
+      "Configurable": "true"
     }
   }
 }

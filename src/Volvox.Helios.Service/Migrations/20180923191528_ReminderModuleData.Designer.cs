@@ -3,16 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Service;
 
 namespace Volvox.Helios.Service.Migrations
 {
     [DbContext(typeof(VolvoxHeliosContext))]
-    partial class VolvoxHeliosContextModelSnapshot : ModelSnapshot
+    [Migration("20180923191528_ReminderModuleData")]
+    partial class ReminderModuleData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,20 +51,27 @@ namespace Volvox.Helios.Service.Migrations
                     b.Property<decimal>("ChannelId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
-                    b.Property<string>("CronExpression")
-                        .IsRequired()
-                        .HasMaxLength(255);
+                    b.Property<string>("DayOfMonthExpression")
+                        .IsRequired();
+
+                    b.Property<string>("DayOfWeekExpression")
+                        .IsRequired();
 
                     b.Property<bool>("Enabled");
-
-                    b.Property<int>("Fault")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(0);
 
                     b.Property<decimal>("GuildId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
+                    b.Property<string>("HoursExpression")
+                        .IsRequired();
+
                     b.Property<string>("Message")
+                        .IsRequired();
+
+                    b.Property<string>("MinutesExpression")
+                        .IsRequired();
+
+                    b.Property<string>("MonthExpression")
                         .IsRequired();
 
                     b.HasKey("Id")
@@ -105,7 +113,7 @@ namespace Volvox.Helios.Service.Migrations
                     b.ToTable("ChatTrackerSettings");
                 });
 
-            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.RemembotSettings", b =>
+            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.ReminderSettings", b =>
                 {
                     b.Property<decimal>("GuildId")
                         .ValueGeneratedOnAdd()
@@ -149,7 +157,7 @@ namespace Volvox.Helios.Service.Migrations
 
             modelBuilder.Entity("Volvox.Helios.Domain.Module.RecurringReminderMessage", b =>
                 {
-                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.RemembotSettings")
+                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.ReminderSettings")
                         .WithMany("RecurringReminders")
                         .HasForeignKey("GuildId")
                         .OnDelete(DeleteBehavior.Cascade);

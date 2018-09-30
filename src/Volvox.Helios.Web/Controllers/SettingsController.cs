@@ -28,16 +28,22 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IEntityService<StreamAnnouncerChannelSettings> _streamAnnouncerChannelSettingsService;
         private readonly IModuleSettingsService<StreamAnnouncerSettings> _streamAnnouncerSettingsService;
         private readonly IModuleSettingsService<StreamerRoleSettings> _streamerRoleSettingsService;
+        private readonly IModuleSettingsService<RemembotSettings> _reminderSettingsService;
+        private readonly IEntityService<RecurringReminderMessage> _recurringReminderService;
 
         public SettingsController(IModuleSettingsService<StreamAnnouncerSettings> streamAnnouncerSettingsService,
             IModuleSettingsService<StreamerRoleSettings> streamerRoleSettingsService,
             IEntityService<StreamAnnouncerChannelSettings> streamAnnouncerChannelSettingsService,
-            IModuleSettingsService<ChatTrackerSettings> chatTrackerSettingsService)
+            IModuleSettingsService<ChatTrackerSettings> chatTrackerSettingsService,
+            IModuleSettingsService<RemembotSettings> reminderSettingsService,
+            IEntityService<RecurringReminderMessage> recurringReminderService)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamerRoleSettingsService = streamerRoleSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
             _chatTrackerSettingsService = chatTrackerSettingsService;
+            _reminderSettingsService = reminderSettingsService;
+            _recurringReminderService = recurringReminderService;
         }
 
         public IActionResult Index(ulong guildId, [FromServices] IBot bot,
@@ -244,6 +250,44 @@ namespace Volvox.Helios.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        #endregion
+
+        #region Reminder
+        [HttpGet("Remembot")]
+        public async Task<IActionResult> RemembotSettings(ulong guildId,
+            [FromServices]IDiscordGuildService guildService)
+        {
+            var settings = await _reminderSettingsService.GetSettingsByGuild(guildId);
+            var channels = await guildService.GetChannels(guildId);
+            var textChannels = channels.Where(x => x.Type == 0).ToList();
+            if(settings is null)
+            {
+                settings = new RemembotSettings
+                {
+                    Enabled = false,
+                    GuildId = guildId
+                };
+
+                await _reminderSettingsService.SaveSettings(settings);
+            }
+
+            var reminders = await _recurringReminderService.Get(x => x.GuildId == guildId);
+            settings.RecurringReminders = reminders;
+            var viewModel = ReminderSettingsViewModel.FromData(settings, channels);
+            return View(viewModel);
+        }
+
+        [HttpPost("Remembot")]
+        public async Task<IActionResult> RemembotSettings(ulong guildId, ReminderSettingsViewModel reminderSettings)
+        {
+            await _reminderSettingsService.SaveSettings(new RemembotSettings
+            {
+                Enabled = reminderSettings.Enabled,
+                GuildId = guildId
+            });
+
+            return RedirectToAction("Index");
+        }
         #endregion
     }
 }

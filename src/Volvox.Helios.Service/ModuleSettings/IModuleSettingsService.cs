@@ -10,6 +10,8 @@ namespace Volvox.Helios.Service.ModuleSettings
     /// <typeparam name="T">Type of module setting.</typeparam>
     public interface IModuleSettingsService<T> where T : Domain.ModuleSettings.ModuleSettings
     {
+        event EventHandler<ModuleSettingsChangedArgs<T>> SettingsChanged;
+
         /// <summary>
         ///     Save the module settings to the database. Replace the settings if it is already stored for that particular guild.
         /// </summary>

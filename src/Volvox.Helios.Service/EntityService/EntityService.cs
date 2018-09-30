@@ -12,13 +12,18 @@ namespace Volvox.Helios.Service.EntityService
     {
         private readonly VolvoxHeliosContext _context;
 
+        public EntityChangedDispatcher<T> Dispatch { get; }
+
         /// <summary>
         ///     Initialize a new EntityService class.
         /// </summary>
         /// <param name="context">Volvox.Helios context.</param>
-        public EntityService(VolvoxHeliosContext context)
+        public EntityService(VolvoxHeliosContext context,
+            EntityChangedDispatcher<T> dispatch)
         {
             _context = context;
+
+            Dispatch = dispatch;
         }
 
         /// <inheritdoc />
@@ -44,30 +49,31 @@ namespace Volvox.Helios.Service.EntityService
         }
 
         /// <inheritdoc />
-        public Task Create(T entity)
+        public async Task Create(T entity)
         {
             _context.Set<T>().Add(entity);
-
-            return _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+            Dispatch.OnEntityCreated(this, entity);
         }
 
         /// <inheritdoc />
-        public Task Update(T entity)
+        public async Task Update(T entity)
         {
             if (!_context.Set<T>().Local.Any(e => e == entity))
             {
                 throw new InvalidOperationException("You must use an attached entity when updating.");
             }
 
-            return _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+            Dispatch.OnEntityUpdated(this, entity);
         }
 
         /// <inheritdoc />
-        public Task Remove(T entity)
+        public async Task Remove(T entity)
         {
             _context.Set<T>().Remove(entity);
-
-            return _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+            Dispatch.OnEntityDeleted(this, entity);
         }
 
         /// <summary>

@@ -10,6 +10,8 @@ namespace Volvox.Helios.Service.EntityService
     /// </summary>
     public interface IEntityService<T> where T : class
     {
+        EntityChangedDispatcher<T> Dispatch { get; }
+
         /// <summary>
         ///     Get the first entity from the database that matches the primary key.
         /// </summary>
