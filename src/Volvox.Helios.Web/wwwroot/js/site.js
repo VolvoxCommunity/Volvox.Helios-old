@@ -30,7 +30,7 @@
         element.empty();
 
         $.each(data, function (key, entry) {
-          element.append($('<a class="dropdown-item"></a>').attr("href", `/Analytics/${entry.id}`).text(entry.name));
+          element.append(generateGuildDropdownItem(entry.id, entry.name, entry.icon, `/Analytics/${entry.id}`));
         });
       });
     });
@@ -46,20 +46,20 @@
         element.empty();
 
         $.each(data, function (key, entry) {
-          element.append(generateGuildDropdownItem(entry.id, entry.name, entry.icon));
+          element.append(generateGuildDropdownItem(entry.id, entry.name, entry.icon, `/Settings/${entry.id}`));
         });
       });
     });
   };
 
-  function generateGuildDropdownItem(guildId, guildName, guildIcon) {
+  function generateGuildDropdownItem(guildId, guildName, guildIcon, href) {
 
     // guildIcon will be null if the guild doesn't have an icon. Therefore set src to default error icon.
     const iconUrl = guildIcon === null ? "/images/error.png" : `https://cdn.discordapp.com/icons/${guildId}/${guildIcon}.png`;
 
     return (`
       <div>
-        <a class="dropdown-item dropdown-item-container" href="/Settings/${guildId}">
+        <a class="dropdown-item dropdown-item-container" href="${href}">
             <span>
                 <img class="dropdown-image-small" src="${iconUrl}">
             </span>
