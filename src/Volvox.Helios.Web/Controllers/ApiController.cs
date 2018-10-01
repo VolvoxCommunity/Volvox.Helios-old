@@ -1,15 +1,22 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Volvox.Helios.Core.Bot;
+using Volvox.Helios.Core.Services.MessageService;
+using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord.Guild;
-using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Service.Discord.UserGuild;
+using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.Models;
+using Volvox.Helios.Web.ViewModels.Poll;
 using Volvox.Helios.Web.ViewModels.Settings;
 
 namespace Volvox.Helios.Web.Controllers
@@ -71,6 +78,47 @@ namespace Volvox.Helios.Web.Controllers
         public bool IsBotInGuild(ulong guildId, [FromServices] IBot bot)
         {
             return bot.IsBotInGuild(guildId);
+        }
+
+        [HttpGet("GetPollTitles")]
+        public async Task<List<string>> GetPollTitles(ulong guildId, [FromServices] IEntityService<Poll> entityServicePolls)
+        {
+            var polls = await entityServicePolls.Get(x => x.GuildId == guildId);
+
+            return polls.Select(g => g.PollTitle).ToList();
+        }
+
+        [HttpGet("GetPollData")]
+        public async Task<object> GetPollData(ulong channelId, ulong messageId,
+            [FromServices] IMessageService messageService)
+        {
+            var poll = await messageService.GetMessage(channelId, messageId);
+
+            var formattedPoll = new PollModel();
+
+            if (poll == null) return formattedPoll;
+
+            // Splitting by newline will provide array with title at index 0, and the rest will be the options
+            var pollDetails = poll.Content.Split(Environment.NewLine);
+
+            formattedPoll.Title = pollDetails[0];
+
+            var pollOptions = new List<OptionModel>();
+
+            var discordNumbers = MessageService.DiscordNumberEmotes;
+            
+            for (var i = 1; i < pollDetails.GetLength(0); i++)
+            {
+                pollOptions.Add(new OptionModel()
+                {
+                    Option = pollDetails[i],
+                    VoteCount = poll.Reactions[new Emoji(discordNumbers[i])].ReactionCount
+                });
+            }
+
+            formattedPoll.Options = pollOptions;
+
+            return formattedPoll;
         }
     }
 }

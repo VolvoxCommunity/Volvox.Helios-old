@@ -21,6 +21,13 @@
       "ReleaseState": "Stable",
       "Configurable": "false"
     },
+    "PollModule": {
+      "Name": "Poll",
+      "Version": "1.0",
+      "Description": "Create and view polls.",
+      "ReleaseState": "Stable",
+      "Configurable": "false"
+    },
     "ChatTrackerModule": {
       "Name": "Chat Tracker",
       "Version": "1.0",

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Discord.WebSocket;
 using FluentCache;
 using FluentCache.Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -25,11 +26,12 @@ using Volvox.Helios.Core.Modules.DiscordFacing.Commands;
 using Volvox.Helios.Core.Modules.DiscordFacing.Framework;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Core.Modules.StreamerRole;
+using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
 using Volvox.Helios.Service.Clients;
 using Volvox.Helios.Service.Discord.Guild;
-using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Service.Discord.UserGuild;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
@@ -142,6 +144,7 @@ namespace Volvox.Helios.Web
             // Discord Services
             services.AddScoped<IDiscordUserGuildService, DiscordUserGuildService>();
             services.AddScoped<IDiscordGuildService, DiscordGuildService>();
+            services.AddSingleton<IMessageService, MessageService>();
 
             // Database Services
             services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
@@ -182,7 +185,7 @@ namespace Volvox.Helios.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, VolvoxHeliosContext context)
         {
             if (env.IsDevelopment())
             {
@@ -198,7 +201,10 @@ namespace Volvox.Helios.Web
 
                 loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
             }
-            
+          
+            // Update the database.
+            context.Database.Migrate();
+          
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

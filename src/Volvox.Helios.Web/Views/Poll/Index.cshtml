@@ -1,0 +1,93 @@
+﻿@model Volvox.Helios.Web.ViewModels.Poll.ViewPollsViewModel
+@{
+    ViewData["Title"] = "View Polls";
+}
+
+<div class="row">
+    <div class="col-sm-11">
+        <h2>My Polls</h2>
+    </div>
+
+    <div class="col-sm-1">
+        <button class="btn btn-success" id="NewPoll">New</button>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <label asp-for="Polls"></label>
+            <select asp-items="Model.Polls" id="poll" class="form-control">
+                <option disabled selected> -- select a poll -- </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Title" class="font-size-small"></label>
+            <p id="Title">
+                Hey, how cool is this example?
+            </p>
+        </div>
+
+        <br />
+
+        <div class="form-group">
+            <label asp-for="Options" class="font-size-small"></label>
+            <div id="Options">
+                <p>Not cool: 0</p>
+
+                <p>Its alright...: 0</p>
+
+                <p>Pretty cool: 3</p>
+
+                <p>Top notch: 304</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        function GetPollDetails(channelId, messageId) {
+            const url = `/api/GetPollData?channelId=${channelId}&messageId=${messageId}`;
+            return $.ajax({
+                type: 'GET',
+                cache: false,
+                url: url
+            }).done(function (response) {
+                return response;
+            });
+        }
+
+        function RemoveLeadingEmoticon(text) {
+            if (!text) return "";
+            return text.trim().substr(text.indexOf(" ") + 1)
+        }
+
+        // Populate selected polls data
+        $("#poll").on('change', function () {
+            var Ids = $('#poll').val().split("-");
+            var messageId = Ids[0];
+            var channelId = Ids[1];
+
+            $.when(GetPollDetails(channelId, messageId)).done(function (response) {
+                $("#Title").text(RemoveLeadingEmoticon(response.title));
+                $("#Options").empty();
+
+                $.each(response.options, function (i, option) {
+                    // Remove 1 from option count as the bot will add one vote to all options, to display them as buttons.
+                    $("#Options").append($("<p></p>").text(RemoveLeadingEmoticon(option.option) + " : " + parseInt(option.voteCount - 1)));
+                })
+            });
+        });
+
+        // Direct user to new poll form
+        $("#NewPoll").on('click', function () {
+            window.location = `${window.location.href}/newpoll`
+        });
+    </script>
+}
