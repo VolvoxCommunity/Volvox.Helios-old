@@ -5,6 +5,9 @@ using Hangfire;
 
 namespace Volvox.Helios.Service.BackgroundJobs
 {
+    /// <summary>
+    ///     Job Activiator that allows hangfire to create an instance of a class that requires service injections.
+    /// </summary>
     public class ServiceProviderJobActivator : JobActivator
     {
         Func<IServiceProvider> _serviceProviderGetter;

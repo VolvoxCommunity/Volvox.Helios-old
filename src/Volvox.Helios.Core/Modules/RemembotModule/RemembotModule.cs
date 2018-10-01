@@ -185,7 +185,7 @@ namespace Volvox.Helios.Core.Modules.ReminderModule
                 try
                 {
                     _jobService.ScheduleRecurringJob(() => reminderJob.Run(reminder),
-                        "3213",//reminder.CronExpression,
+                        reminder.CronExpression,
                         reminder.GetJobId());
                 }
                 catch (ArgumentException)
