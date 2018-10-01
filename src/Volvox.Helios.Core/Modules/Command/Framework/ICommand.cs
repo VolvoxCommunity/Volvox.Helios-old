@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Volvox.Helios.Core.Modules.DiscordFacing.Framework
+namespace Volvox.Helios.Core.Modules.Command.Framework
 {
     public interface ICommand
     {
