@@ -122,7 +122,6 @@ namespace Volvox.Helios.Core.Modules.ReminderModule
                         rmd.Enabled = false;
                         rmd.Fault = RecurringReminderMessage.FaultType.InvalidChannel;
                         await reminderService.Update(rmd);
-                        StopJobIfExists(rmd);
                     });
 
                 await Task.WhenAll(disableTasks);
