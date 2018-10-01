@@ -1,6 +1,6 @@
 using Discord.WebSocket;
 
-namespace Volvox.Helios.Core.Modules.DiscordFacing.Framework
+namespace Volvox.Helios.Core.Modules.Command.Framework
 {
     public class CommandContext
     {

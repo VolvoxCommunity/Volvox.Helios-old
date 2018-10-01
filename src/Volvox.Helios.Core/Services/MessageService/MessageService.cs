@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
 using Volvox.Helios.Core.Bot;
 
@@ -10,7 +9,11 @@ namespace Volvox.Helios.Core.Services.MessageService
         #region static props
 
         // Unicode representations of discord's 0-10 emoticons.
-        public static string[] DiscordNumberEmotes = new string[11] { "0\u20e3", "1\u20e3", "2\u20e3", "3\u20e3", "4\u20e3", "5\u20e3", "6\u20e3", "7\u20e3", "8\u20e3", "9\u20e3", "🔟" };
+        public static readonly string[] DiscordNumberEmotes =
+        {
+            "0\u20e3", "1\u20e3", "2\u20e3", "3\u20e3", "4\u20e3", "5\u20e3", "6\u20e3", "7\u20e3", "8\u20e3",
+            "9\u20e3", "🔟"
+        };
 
         #endregion
 
@@ -34,13 +37,12 @@ namespace Volvox.Helios.Core.Services.MessageService
         }
 
         ///<inheritdoc />
-        public Task<IUserMessage> Post(ulong channelId, string text, Embed embed = null, bool isTTS = false, RequestOptions options = null)
+        public Task<IUserMessage> Post(ulong channelId, string text, Embed embed = null, bool isTTS = false,
+            RequestOptions options = null)
         {
             var channel = GetChannel(channelId);
 
-            if (channel == null) return null;
-
-            return channel.SendMessageAsync(text, isTTS, embed, options);
+            return channel?.SendMessageAsync(text, isTTS, embed, options);
         }
 
         ///<inheritdoc />
@@ -52,7 +54,8 @@ namespace Volvox.Helios.Core.Services.MessageService
         ///<inheritdoc />
         public async Task<IUserMessage> Modify(IUserMessage message, string text = "", Embed embed = null)
         {
-            await message.ModifyAsync(m => {
+            await message.ModifyAsync(m =>
+            {
                 m.Content = text;
                 m.Embed = embed;
             });
@@ -65,11 +68,14 @@ namespace Volvox.Helios.Core.Services.MessageService
         {
             var channel = GetChannel(channelId);
 
-            if (channel == null) return null;
-
-            return channel.DeleteMessagesAsync(messageIds);
+            return channel?.DeleteMessagesAsync(messageIds);
         }
 
+        /// <summary>
+        ///     Get a channel by id.
+        /// </summary>
+        /// <param name="channelId">Id of the channel to get.</param>
+        /// <returns>IMessageChannel.</returns>
         private IMessageChannel GetChannel(ulong channelId)
         {
             return _bot.Client.GetChannel(channelId) as IMessageChannel;
