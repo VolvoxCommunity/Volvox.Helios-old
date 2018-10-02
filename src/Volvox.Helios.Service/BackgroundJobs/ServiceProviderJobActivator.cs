@@ -10,16 +10,16 @@ namespace Volvox.Helios.Service.BackgroundJobs
     /// </summary>
     public class ServiceProviderJobActivator : JobActivator
     {
-        Func<IServiceProvider> _serviceProviderGetter;
+        readonly IServiceProvider _serviceProvider;
 
-        public ServiceProviderJobActivator(Func<IServiceProvider> serviceProviderGetter)
+        public ServiceProviderJobActivator(IServiceProvider serviceProvider)
         {
-            _serviceProviderGetter = serviceProviderGetter;
+            _serviceProvider = serviceProvider;
         }
 
         public override object ActivateJob(Type jobType)
         {
-            return _serviceProviderGetter().GetService(jobType);
+            return _serviceProvider.GetService(jobType);
         }
     }
 }

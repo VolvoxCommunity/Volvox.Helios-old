@@ -31,12 +31,12 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditRecurringReminder(ulong guildId, [FromQuery]Guid rid)
+        public async Task<IActionResult> EditRecurringReminder(ulong guildId, [FromQuery]long rid)
         {
             var channels = await _guildService.GetChannels(guildId);
             var textChannels = channels.Where(x => x.Type == 0);
 
-            if (rid == default(Guid))
+            if (rid == default(long))
             {
                 var newVm = new EditRecurringReminderMessageViewModel
                 {
@@ -77,7 +77,7 @@ namespace Volvox.Helios.Web.Controllers
             if (!ModelState.IsValid)
                 return View(vm);
 
-            if (vm.Id == default(Guid))
+            if (vm.Id == default(long))
             {
                 var newReminder = new RecurringReminderMessage
                 {
@@ -104,7 +104,7 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpPost("DeleteRecurringReminder")]
-        public async Task<IActionResult> DeleteRecurringReminder(ulong guildId, Guid id)
+        public async Task<IActionResult> DeleteRecurringReminder(ulong guildId, long id)
         {
             var reminder = await _reminderService.Find(id);
             if (reminder is null)

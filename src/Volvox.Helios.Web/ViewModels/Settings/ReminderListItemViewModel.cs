@@ -7,7 +7,7 @@ namespace Volvox.Helios.Web.ViewModels.Settings
 {
     public class ReminderListItemViewModel
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public string ChannelName { get; set; }
         public string Message { get; set; }
         public string Status { get; set; }

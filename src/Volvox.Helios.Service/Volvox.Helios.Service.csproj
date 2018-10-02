@@ -12,6 +12,9 @@
     <Compile Remove="Migrations\20180923185622_ReminderModuleData.cs" />
     <Compile Remove="Migrations\20180923191328_ReminderModuleData.cs" />
     <Compile Remove="Migrations\20180923191432_ReminderModuleData.cs" />
+    <Compile Remove="Migrations\20181002022633_ReminderChangeToLongId.cs" />
+    <Compile Remove="Migrations\20181002022742_ReminderChangeToLongId.cs" />
+    <Compile Remove="Migrations\20181002022927_ReminderModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.2" />

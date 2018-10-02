@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Volvox.Helios.Service.Migrations
 {
-    public partial class ReminderModuleData : Migration
+    public partial class ReminderModule : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,16 +23,14 @@ namespace Volvox.Helios.Service.Migrations
                 name: "RecurringReminderMessages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     GuildId = table.Column<decimal>(nullable: false),
                     Enabled = table.Column<bool>(nullable: false),
                     Message = table.Column<string>(nullable: false),
                     ChannelId = table.Column<decimal>(nullable: false),
-                    MinutesExpression = table.Column<string>(nullable: false),
-                    HoursExpression = table.Column<string>(nullable: false),
-                    DayOfMonthExpression = table.Column<string>(nullable: false),
-                    MonthExpression = table.Column<string>(nullable: false),
-                    DayOfWeekExpression = table.Column<string>(nullable: false)
+                    CronExpression = table.Column<string>(maxLength: 255, nullable: false),
+                    Fault = table.Column<int>(nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {

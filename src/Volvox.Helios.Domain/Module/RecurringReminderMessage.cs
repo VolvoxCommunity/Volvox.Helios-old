@@ -9,7 +9,7 @@ namespace Volvox.Helios.Domain.Module
     {
         public enum FaultType { None = 0, InvalidCron = 1, InvalidChannel = 2 }
 
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public ulong GuildId { get; set; }
         public bool Enabled { get; set; }
         public string Message { get; set; }
@@ -19,7 +19,7 @@ namespace Volvox.Helios.Domain.Module
 
         public string GetJobId()
         {
-            return $"RRM:{Id.ToString()}";
+            return $"RRM:{Id}";
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Volvox.Helios.Service
                 .ForSqlServerIsClustered();
 
             recurringReminderModel.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
+                .UseSqlServerIdentityColumn();
 
             recurringReminderModel
                 .HasIndex(x => x.GuildId);

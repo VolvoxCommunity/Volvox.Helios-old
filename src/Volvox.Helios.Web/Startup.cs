@@ -46,8 +46,6 @@ namespace Volvox.Helios.Web
 {
     public class Startup 
     {
-        private IServiceProvider _serviceProvider;
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -56,7 +54,7 @@ namespace Volvox.Helios.Web
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             // GDPR Cookie Consent
             services.Configure<CookiePolicyOptions>(options =>
@@ -153,6 +151,7 @@ namespace Volvox.Helios.Web
 
             // Background Job Service and Jobs
             services.AddSingleton<IJobService, JobService>();
+            services.AddTransient<JobActivator, ServiceProviderJobActivator>();
             services.AddTransient<RecurringReminderMessageJob>();
 
             // MVC
@@ -174,11 +173,7 @@ namespace Volvox.Helios.Web
                     SchemaName = "hangfire",
                     PrepareSchemaIfNecessary = true
                 });
-
-                gc.UseActivator(new ServiceProviderJobActivator(() => _serviceProvider));
             });
-
-            return _serviceProvider = services.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -212,7 +207,10 @@ namespace Volvox.Helios.Web
                     "{controller=Home}/{action=Index}/{id?}");
             });
 
-            app.UseHangfireServer();
+            app.UseHangfireServer(new BackgroundJobServerOptions
+            {
+                Activator = app.ApplicationServices.GetRequiredService<JobActivator>()
+            });
         }
     }
 }

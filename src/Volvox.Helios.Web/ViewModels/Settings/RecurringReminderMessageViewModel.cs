@@ -10,7 +10,7 @@ namespace Volvox.Helios.Web.ViewModels.Settings
 {
     public class EditRecurringReminderMessageViewModel
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
 
         public ulong GuildId { get; set; }
 

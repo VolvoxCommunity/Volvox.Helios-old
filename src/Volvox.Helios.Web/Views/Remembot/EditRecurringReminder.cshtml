@@ -1,7 +1,7 @@
 ﻿@model Volvox.Helios.Web.ViewModels.Settings.EditRecurringReminderMessageViewModel
 
 @{
-    if (Model.Id == default(Guid))
+    if (Model.Id == default(long))
     {
         ViewData["Title"] = "Add Reminder";
     }
@@ -84,7 +84,7 @@
             <br /><br />
             <div class="form-group">
                 <input type="submit" value="Save Reminder" class="btn btn-success" />
-                @if (Model.Id != default(Guid))
+                @if (Model.Id != default(long))
                 {
                     <input type="button" id="deleteBtn" value="Delete Reminder" class="btn btn-danger" />
                 }
