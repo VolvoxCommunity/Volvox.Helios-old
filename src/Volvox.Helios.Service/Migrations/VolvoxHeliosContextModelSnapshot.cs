@@ -19,6 +19,31 @@ namespace Volvox.Helios.Service.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Volvox.Helios.Core.Modules.StreamAnnouncer.StreamAnnouncerMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("ChannelId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<decimal>("GuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<decimal>("MessageId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<decimal>("UserId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildId");
+
+                    b.ToTable("StreamAnnouncerMessages");
+                });
+
             modelBuilder.Entity("Volvox.Helios.Domain.Module.ChatTracker.Message", b =>
                 {
                     b.Property<decimal>("Id")
@@ -40,7 +65,7 @@ namespace Volvox.Helios.Service.Migrations
 
                     b.ToTable("Messages");
                 });
-
+                
             modelBuilder.Entity("Volvox.Helios.Domain.Module.RecurringReminderMessage", b =>
                 {
                     b.Property<long>("Id")
@@ -49,7 +74,7 @@ namespace Volvox.Helios.Service.Migrations
 
                     b.Property<decimal>("ChannelId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
+                        
                     b.Property<string>("CronExpression")
                         .IsRequired()
                         .HasMaxLength(255);
@@ -72,6 +97,31 @@ namespace Volvox.Helios.Service.Migrations
                     b.HasIndex("GuildId");
 
                     b.ToTable("RecurringReminderMessages");
+                });
+                
+            modelBuilder.Entity("Volvox.Helios.Domain.Module.Poll", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("ChannelId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<decimal>("GuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<decimal>("MessageId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<string>("PollTitle")
+                        .HasMaxLength(150);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildId");
+
+                    b.ToTable("Poll");
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.Module.StreamAnnouncerChannelSettings", b =>
@@ -104,18 +154,29 @@ namespace Volvox.Helios.Service.Migrations
 
                     b.ToTable("ChatTrackerSettings");
                 });
-
+                
             modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.RemembotSettings", b =>
                 {
                     b.Property<decimal>("GuildId")
                         .ValueGeneratedOnAdd()
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
+                        
                     b.Property<bool>("Enabled");
 
                     b.HasKey("GuildId");
 
                     b.ToTable("ReminderSettings");
+                });
+                
+            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.PollSettings", b =>
+                {
+                    b.Property<decimal>("GuildId")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.HasKey("GuildId");
+
+                    b.ToTable("PollSettings");
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.StreamAnnouncerSettings", b =>
@@ -145,6 +206,22 @@ namespace Volvox.Helios.Service.Migrations
                     b.HasKey("GuildId");
 
                     b.ToTable("StreamerRoleSettings");
+                });
+                
+            modelBuilder.Entity("Volvox.Helios.Core.Modules.StreamAnnouncer.StreamAnnouncerMessage", b =>
+                {
+                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.StreamAnnouncerSettings", "StreamAnnouncerSettings")
+                        .WithMany("StreamMessages")
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+                
+            modelBuilder.Entity("Volvox.Helios.Domain.Module.Poll", b =>
+                {
+                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.PollSettings", "PollSettings")
+                        .WithMany("Polls")
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.Module.RecurringReminderMessage", b =>

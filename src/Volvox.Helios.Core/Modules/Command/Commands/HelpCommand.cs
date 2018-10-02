@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Volvox.Helios.Core.Modules.DiscordFacing.Framework;
+using Volvox.Helios.Core.Modules.Command.Framework;
 
-namespace Volvox.Helios.Core.Modules.DiscordFacing.Commands
+namespace Volvox.Helios.Core.Modules.Command.Commands
 {
     public class HelpCommand : ICommand
     {

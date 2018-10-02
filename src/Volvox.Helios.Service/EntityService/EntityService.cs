@@ -2,18 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Threading.Tasks;
+using FluentCache;
 using Microsoft.EntityFrameworkCore;
 
 namespace Volvox.Helios.Service.EntityService
 {
     /// <inheritdoc />
-    public class EntityService<T> : IEntityService<T> where T : class
+    public class EntityService<T> : EntityServiceBase<T>
+        where T : class
     {
         private readonly VolvoxHeliosContext _context;
 
         public EntityChangedDispatcher<T> Dispatch { get; }
-
+          
         /// <summary>
         ///     Initialize a new EntityService class.
         /// </summary>

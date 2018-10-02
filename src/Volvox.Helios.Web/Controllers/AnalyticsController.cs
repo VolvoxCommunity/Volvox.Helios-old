@@ -5,6 +5,7 @@ using Volvox.Helios.Domain.Module.ChatTracker;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.ViewModels.Analytics;
+using System.Linq;
 
 namespace Volvox.Helios.Web.Controllers
 {
@@ -22,11 +23,16 @@ namespace Volvox.Helios.Web.Controllers
 
         public async Task<IActionResult> Index(ulong guildId)
         {
+            var messages = await _messageEntityService.Get(message => message.GuildId == guildId);
+
+            var uniqueUsers = messages.Select(m => m.AuthorId).Distinct().Count();
+
             var viewModel = new AnalyticsViewModel
             {
                 ChatTracker = new ChatTrackerViewModel
                 {
-                    Messages = await _messageEntityService.Get(message => message.GuildId == guildId)
+                    Messages = messages,
+                    UniqueUsers = uniqueUsers
                 }
             };
 
@@ -38,9 +44,12 @@ namespace Volvox.Helios.Web.Controllers
         {
             var messages = await _messageEntityService.Get(message => message.GuildId == guildId);
 
+            var uniqueUsers = messages.Select(m => m.AuthorId).Distinct().Count();
+
             var viewModel = new ChatTrackerViewModel
             {
-                Messages = messages
+                Messages = messages,
+                UniqueUsers = uniqueUsers
             };
 
             return View(viewModel);

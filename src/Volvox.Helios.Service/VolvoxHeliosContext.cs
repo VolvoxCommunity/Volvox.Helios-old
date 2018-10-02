@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.Module.ChatTracker;
 using Volvox.Helios.Domain.ModuleSettings;
@@ -18,7 +19,11 @@ namespace Volvox.Helios.Service
         public DbSet<StreamAnnouncerChannelSettings> StreamAnnouncerChannelSettings { get; set; }
 
         public DbSet<StreamerRoleSettings> StreamerRoleSettings { get; set; }
-
+        
+        public DbSet<StreamAnnouncerMessage> StreamAnnouncerMessages { get; set;  }
+        
+        public DbSet<PollSettings> PollSettings { get; set; }
+        
         #region ChatTracker
 
         public DbSet<ChatTrackerSettings> ChatTrackerSettings { get; set; }

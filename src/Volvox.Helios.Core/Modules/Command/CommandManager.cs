@@ -5,11 +5,11 @@ using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Volvox.Helios.Core.Modules.Command.Framework;
 using Volvox.Helios.Core.Modules.Common;
-using Volvox.Helios.Core.Modules.DiscordFacing.Framework;
 using Volvox.Helios.Core.Utilities;
 
-namespace Volvox.Helios.Core.Modules.DiscordFacing
+namespace Volvox.Helios.Core.Modules.Command
 {
     /// <summary>
     ///     Manager for Discord message commands.
