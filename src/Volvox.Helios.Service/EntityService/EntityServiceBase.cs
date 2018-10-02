@@ -14,13 +14,17 @@ namespace Volvox.Helios.Service.EntityService
     {
         protected readonly VolvoxHeliosContext Context;
 
+        public EntityChangedDispatcher<T> Dispatch { get; }
+
         /// <summary>
         ///     Initialize a new EntityService class.
         /// </summary>
         /// <param name="context">Volvox.Helios context.</param>
-        protected EntityServiceBase(VolvoxHeliosContext context)
+        protected EntityServiceBase(VolvoxHeliosContext context,
+            EntityChangedDispatcher<T> dispatch)
         {
             Context = context;
+            Dispatch = dispatch;
         }
 
         /// <inheritdoc />
@@ -44,10 +48,11 @@ namespace Volvox.Helios.Service.EntityService
         }
 
         /// <inheritdoc />
-        public virtual Task Create(T entity)
+        public virtual async Task Create(T entity)
         {
             Context.Set<T>().Add(entity);
-            return Context.SaveChangesAsync();
+            await Context.SaveChangesAsync();
+            Dispatch.OnEntityCreated(this, entity);
         }
 
         ///<inheritdoc />
@@ -55,6 +60,9 @@ namespace Volvox.Helios.Service.EntityService
         {
             Context.Set<T>().AddRange(entities);
             await Context.SaveChangesAsync();
+
+            foreach (var entity in entities)
+                Dispatch.OnEntityCreated(this, entity);
         }
 
         /// <inheritdoc />
@@ -66,6 +74,7 @@ namespace Volvox.Helios.Service.EntityService
             }
 
             await Context.SaveChangesAsync();
+            Dispatch.OnEntityUpdated(this, entity);
         }
 
         /// <inheritdoc />
@@ -73,6 +82,7 @@ namespace Volvox.Helios.Service.EntityService
         {
             Context.Set<T>().Remove(entity);
             await Context.SaveChangesAsync();
+            Dispatch.OnEntityDeleted(this, entity);
         }
 
         ///<inheritdoc />
@@ -80,6 +90,9 @@ namespace Volvox.Helios.Service.EntityService
         {
             Context.Set<T>().RemoveRange(entities);
             await Context.SaveChangesAsync();
+
+            foreach (var entity in entities)
+                Dispatch.OnEntityDeleted(this, entity);
         }
 
         /// <summary>
