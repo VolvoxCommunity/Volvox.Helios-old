@@ -66,8 +66,6 @@ namespace Volvox.Helios.Core.Modules.ReminderModule
             _entityChangedDispatcher.EntityDeleted += OnReminderDeleted;
             client.ChannelDestroyed += OnChannelDestroyed;
 
-            var weekly = Cron.Weekly(DayOfWeek.Monday, 8, 0);
-
             return Task.CompletedTask;
         }
 
