@@ -17,8 +17,10 @@ namespace Volvox.Helios.Service.EntityService
     {
         private readonly ICache _cache;
 
-        public CachedEntityService(VolvoxHeliosContext context, ICache cache)
-            : base(context)
+        public CachedEntityService(VolvoxHeliosContext context,
+            EntityChangedDispatcher<T> dispatch,
+            ICache cache)
+            : base(context, dispatch)
         {
             _cache = cache;
         }
