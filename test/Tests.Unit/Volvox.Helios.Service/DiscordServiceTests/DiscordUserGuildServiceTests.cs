@@ -1,10 +1,10 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Moq;
 using Volvox.Helios.Service.Clients;
 using Volvox.Helios.Service.Discord.UserGuild;
 using Xunit;
 
-namespace DiscordService.Tests
+namespace Tests.Unit.Volvox.Helios.Service.DiscordServiceTests
 {
     public class DiscordUserGuildServiceTests
     {
@@ -25,6 +25,7 @@ namespace DiscordService.Tests
             discordApiClient.Verify(d => d.GetUserGuilds(), Times.AtMostOnce);
             Assert.True(guilds.Count == 2);
             Assert.Equal("Volvox", guilds[0].Guild.Name);
+            Assert.Equal("BapesTestServer", guilds[1].Guild.Name);
         }
     }
 }
