@@ -9,14 +9,19 @@ using Microsoft.Extensions.Configuration;
 
 namespace Volvox.Helios.Service.Clients
 {
-    public class DiscordAPIClient
+    public abstract class DiscordAPIClient
     {
         private readonly ICache _cache;
         private readonly HttpClient _client;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _context;
 
-        public DiscordAPIClient(HttpClient client, IHttpContextAccessor context, IConfiguration configuration,
+        protected DiscordAPIClient()
+        {
+
+        }
+
+        protected DiscordAPIClient(HttpClient client, IHttpContextAccessor context, IConfiguration configuration,
             ICache cache)
         {
             _client = client;
@@ -33,7 +38,7 @@ namespace Volvox.Helios.Service.Clients
         ///     Get all of the currently logged in users guilds.
         /// </summary>
         /// <returns>JSON array of the logged in users guilds.</returns>
-        public async Task<string> GetUserGuilds()
+        public virtual async Task<string> GetUserGuilds()
         {
             // Cache the users guilds.
             var cachedUserGuilds = await _cache.WithKey($"UserGuilds:{GetUserId()}")
