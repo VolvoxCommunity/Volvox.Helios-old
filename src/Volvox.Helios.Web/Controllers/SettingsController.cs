@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
@@ -12,12 +11,10 @@ using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord.Guild;
-using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
-using Volvox.Helios.Web.Models;
 using Volvox.Helios.Web.ViewModels.Settings;
 
 namespace Volvox.Helios.Web.Controllers

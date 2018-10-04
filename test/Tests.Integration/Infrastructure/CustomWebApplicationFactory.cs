@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +13,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tests.Integration.Helpers;
+using Tests.Integration.Infrastructure.TestServices;
 using Tests.Integration.TestAuth;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Service;
+using Volvox.Helios.Service.Clients;
 
 namespace Tests.Integration.Infrastructure
 {
@@ -65,6 +68,9 @@ namespace Tests.Integration.Infrastructure
                             }
                         };
                     });
+
+                services.Remove(services.FirstOrDefault(d => d.ServiceType == typeof(IDiscordAPIClient)));
+                services.AddHttpClient<IDiscordAPIClient, TestDiscordApiClient>();
 
                 var sp = services.BuildServiceProvider();
 
