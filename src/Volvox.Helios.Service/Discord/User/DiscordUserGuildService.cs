@@ -11,9 +11,9 @@ namespace Volvox.Helios.Service.Discord.User
 {
     public class DiscordUserGuildService : IDiscordUserGuildService
     {
-        private readonly DiscordAPIClient _client;
+        private readonly IDiscordAPIClient _client;
 
-        public DiscordUserGuildService(DiscordAPIClient client)
+        public DiscordUserGuildService(IDiscordAPIClient client)
         {
             _client = client;
         }
