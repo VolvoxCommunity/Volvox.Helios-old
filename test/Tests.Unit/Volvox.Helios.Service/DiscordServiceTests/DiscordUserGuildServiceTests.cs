@@ -12,7 +12,7 @@ namespace Tests.Unit.Volvox.Helios.Service.DiscordServiceTests
         public async Task GetUserGuilds()
         {
             // Arrange
-            var discordApiClient = new Mock<DiscordAPIClient>();
+            var discordApiClient = new Mock<IDiscordAPIClient>();
             discordApiClient.Setup(d => d.GetUserGuilds()).ReturnsAsync(
                 "[{\"id\":\"468467000344313866\",\"name\":\"Volvox\",\"icon\":\"72225e0911dc450048250a6b28dfab5b\"},{\"id\":\"471503658694213632\",\"name\":\"BapesTestServer\",\"icon\":null}]");
 
