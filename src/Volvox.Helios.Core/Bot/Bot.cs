@@ -24,17 +24,13 @@ namespace Volvox.Helios.Core.Bot
         /// <param name="modules">List of modules for the bot.</param>
         /// <param name="settings">Settings used to connect to Discord.</param>
         /// <param name="logger">Application logger.</param>
-        public Bot(IList<IModule> modules, IDiscordSettings settings, ILogger<Bot> logger)
+        public Bot(IList<IModule> modules, IDiscordSettings settings, ILogger<Bot> logger, DiscordSocketClient client)
         {
             Modules = modules;
             Logger = logger;
+            Client = client;
 
             // TODO: Convert logging to module
-            Client = new DiscordSocketClient(new DiscordSocketConfig
-            {
-                LogLevel = LogSeverity.Verbose
-            });
-
             Client.Log += Log;
 
             // Log when the bot is disconnected.

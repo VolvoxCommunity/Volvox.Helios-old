@@ -42,6 +42,7 @@ using Volvox.Helios.Service.BackgroundJobs;
 using Volvox.Helios.Service.Jobs;
 
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Discord.WebSocket;
 
 namespace Volvox.Helios.Web
 {
@@ -114,6 +115,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IDiscordSettings, DiscordSettings>();
 
             // Bot
+            services.AddSingleton<DiscordSocketClient>();
             services.AddSingleton<IBot, Bot>();
 
             // Modules
