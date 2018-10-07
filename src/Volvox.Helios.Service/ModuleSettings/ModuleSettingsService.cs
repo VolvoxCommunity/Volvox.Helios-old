@@ -14,6 +14,8 @@ namespace Volvox.Helios.Service.ModuleSettings
         private readonly ICache _cache;
         private readonly IServiceScopeFactory _scopeFactory;
 
+        public event EventHandler<ModuleSettingsChangedArgs<T>> SettingsChanged;
+
         public ModuleSettingsService(IServiceScopeFactory scopeFactory, ICache cache)
         {
             _scopeFactory = scopeFactory;
@@ -41,6 +43,8 @@ namespace Volvox.Helios.Service.ModuleSettings
 
                 // Reset the cache value.
                 _cache.WithKey(GetCacheKey(settings.GuildId)).ClearValue();
+
+                OnSettingsChanged(settings);
             }
         }
 
@@ -84,6 +88,8 @@ namespace Volvox.Helios.Service.ModuleSettings
                 context.Remove(settings);
 
                 await context.SaveChangesAsync();
+
+                OnSettingsChanged(settings);
             }
         }
 
@@ -95,6 +101,11 @@ namespace Volvox.Helios.Service.ModuleSettings
         private static string GetCacheKey(ulong guildId)
         {
             return $"Setting:{typeof(T).Name}Guild:{guildId}";
+        }
+
+        private void OnSettingsChanged(T settings)
+        {
+            SettingsChanged?.Invoke(this, new ModuleSettingsChangedArgs<T>(settings));
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Discord.WebSocket;
 using FluentCache;
 using FluentCache.Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -20,10 +19,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.ChatTracker;
+using Volvox.Helios.Core.Modules.Command;
+using Volvox.Helios.Core.Modules.Command.Commands;
+using Volvox.Helios.Core.Modules.Command.Framework;
 using Volvox.Helios.Core.Modules.Common;
-using Volvox.Helios.Core.Modules.DiscordFacing;
-using Volvox.Helios.Core.Modules.DiscordFacing.Commands;
-using Volvox.Helios.Core.Modules.DiscordFacing.Framework;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Core.Modules.StreamerRole;
 using Volvox.Helios.Core.Services.MessageService;
@@ -31,16 +30,22 @@ using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
 using Volvox.Helios.Service.Clients;
 using Volvox.Helios.Service.Discord.Guild;
-using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Service.Discord.UserGuild;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.HostedServices.Bot;
+using Hangfire;
+using Hangfire.SqlServer;
+using Volvox.Helios.Core.Modules.ReminderModule;
+using Volvox.Helios.Service.BackgroundJobs;
+using Volvox.Helios.Service.Jobs;
+
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Volvox.Helios.Web
 {
-    public class Startup
+    public class Startup 
     {
         public Startup(IConfiguration configuration)
         {
@@ -61,46 +66,46 @@ namespace Volvox.Helios.Web
 
             // Authentication
             services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                })
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
 
-                // Cookie Authentication
-                .AddCookie(options =>
-                {
-                    options.LoginPath = "/signin";
-                    options.LogoutPath = "/signout";
-                })
+            // Cookie Authentication
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/signin";
+                options.LogoutPath = "/signout";
+            })
 
-                // Discord Authentication
-                .AddDiscord(options =>
+            // Discord Authentication
+            .AddDiscord(options =>
+            {
+                options.ClientId = Configuration["Discord:ClientID"];
+                options.ClientSecret = Configuration["Discord:ClientSecret"];
+                options.Scope.Add("identify");
+                options.Scope.Add("email");
+                options.Scope.Add("guilds");
+                options.SaveTokens = true;
+                options.Events = new OAuthEvents
                 {
-                    options.ClientId = Configuration["Discord:ClientID"];
-                    options.ClientSecret = Configuration["Discord:ClientSecret"];
-                    options.Scope.Add("identify");
-                    options.Scope.Add("email");
-                    options.Scope.Add("guilds");
-                    options.SaveTokens = true;
-                    options.Events = new OAuthEvents
+                    OnTicketReceived = context =>
                     {
-                        OnTicketReceived = context =>
-                        {
-                            // Add access token claim
-                            var claimsIdentity = (ClaimsIdentity)context.Principal.Identity;
+                        // Add access token claim
+                        var claimsIdentity = (ClaimsIdentity)context.Principal.Identity;
 
-                            claimsIdentity.AddClaim(new Claim("access_token",
-                                context.Properties.Items.FirstOrDefault(p => p.Key == ".Token.access_token").Value));
+                        claimsIdentity.AddClaim(new Claim("access_token",
+                            context.Properties.Items.FirstOrDefault(p => p.Key == ".Token.access_token").Value));
 
-                            return Task.CompletedTask;
-                        },
-                        OnRemoteFailure = context =>
-                        {
-                            context.Response.Redirect("/");
-                            context.HandleResponse();
-                            return Task.CompletedTask;
-                        }
-                    };
-                });
+                        return Task.CompletedTask;
+                    },
+                    OnRemoteFailure = context =>
+                    {
+                        context.Response.Redirect("/");
+                        context.HandleResponse();
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
             // Hosted Services
             services.AddSingleton<IHostedService, BotHostedService>();
@@ -115,6 +120,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IModule, StreamAnnouncerModule>();
             services.AddSingleton<IModule, StreamerRoleModule>();
             services.AddSingleton<IModule, ChatTrackerModule>();
+            services.AddSingleton<IModule, RemembotModule>();
 
             // Commands
             services.AddSingleton<IModule, CommandManager>();
@@ -140,9 +146,15 @@ namespace Volvox.Helios.Web
             // Database Services
             services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
             services.AddSingleton(typeof(IModuleSettingsService<>), typeof(ModuleSettingsService<>));
+            services.AddSingleton(typeof(EntityChangedDispatcher<>));
 
             // Cache
             services.AddSingleton<ICache>(new FluentIMemoryCache(new MemoryCache(new MemoryCacheOptions())));
+
+            // Background Job Service and Jobs
+            services.AddSingleton<IJobService, JobService>();
+            services.AddTransient<JobActivator, ServiceProviderJobActivator>();
+            services.AddTransient<RecurringReminderMessageJob>();
 
             // MVC
             services.AddMvc(options =>
@@ -155,6 +167,15 @@ namespace Volvox.Helios.Web
             // Entity Framework
             services.AddDbContext<VolvoxHeliosContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("VolvoxHeliosDatabase")));
+
+            services.AddHangfire(gc =>
+            {
+                gc.UseSqlServerStorage(Configuration.GetConnectionString("VolvoxHeliosDatabase"), new SqlServerStorageOptions
+                {
+                    SchemaName = "hangfire",
+                    PrepareSchemaIfNecessary = true
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -164,6 +185,7 @@ namespace Volvox.Helios.Web
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
+                app.UseHangfireDashboard();
             }
             else
             {
@@ -173,10 +195,10 @@ namespace Volvox.Helios.Web
 
                 loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
             }
-
+          
             // Update the database.
             context.Database.Migrate();
-
+          
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
@@ -188,6 +210,11 @@ namespace Volvox.Helios.Web
                 routes.MapRoute(
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
+            });
+
+            app.UseHangfireServer(new BackgroundJobServerOptions
+            {
+                Activator = app.ApplicationServices.GetRequiredService<JobActivator>()
             });
         }
     }

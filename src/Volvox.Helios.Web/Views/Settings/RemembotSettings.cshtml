@@ -1,0 +1,109 @@
+﻿@model Volvox.Helios.Web.ViewModels.Settings.ReminderSettingsViewModel
+@{
+    ViewData["Title"] = "Remembot Settings";
+}
+
+<h2>Remembot Settings</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div style="display:flex;" class="form-group">
+                <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
+                <label class="switch" />
+                <input asp-for="Enabled" type="checkbox" />
+                <div class="slider round"></div>
+                <span asp-validation-for="Enabled" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-success" />
+            </div>
+
+            <br/>
+            <h3>Reminders</h3>
+            <hr />
+            <br />
+
+            <div class="form-group">
+                <a asp-controller="Remembot" asp-action="EditRecurringReminder" class="btn btn-primary">Add Reminder</a>
+            </div>
+
+            @if (Model.RecurringReminders != null && Model.RecurringReminders.Any())
+            {
+                <table class="table table-striped">
+                    <colgroup>
+                        <col />
+                        <col width="100%" />
+                        <col />
+                        <col />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Channel</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reminder in Model.RecurringReminders)
+                        {
+                        <tr>
+                            <td>@reminder.ChannelName</td>
+                            <td>@reminder.Message</td>
+                            @if (reminder.IsFaulted)
+                            {
+                                <td class="text-danger">@reminder.Status</td>
+                            }
+                            else
+                            {
+                                <td>@reminder.Status</td>
+                            }
+
+                            <td>
+                                <a class="btn btn-primary"
+                                   asp-controller="Remembot"
+                                   asp-action="EditRecurringReminder"
+                                   asp-route-guildId="@Model.GuildId"
+                                   asp-route-rid="@reminder.Id">Edit</a>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+
+
+
+        </form>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Modal body text goes here.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

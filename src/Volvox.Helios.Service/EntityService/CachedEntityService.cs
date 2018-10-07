@@ -17,8 +17,10 @@ namespace Volvox.Helios.Service.EntityService
     {
         private readonly ICache _cache;
 
-        public CachedEntityService(VolvoxHeliosContext context, ICache cache)
-            : base(context)
+        public CachedEntityService(VolvoxHeliosContext context,
+            EntityChangedDispatcher<T> dispatch,
+            ICache cache)
+            : base(context, dispatch)
         {
             _cache = cache;
         }
@@ -57,14 +59,34 @@ namespace Volvox.Helios.Service.EntityService
         }
 
         /// <summary>
+        ///     Remove entities from the database and clear the values of already cached entities.
+        /// </summary>
+        /// <param name="entities">Entities to remove.</param>
+        public async override Task RemoveBulk(IEnumerable<T> entities)
+        {
+            await base.RemoveBulk(entities);
+            InvalidateForBulk(entities);
+        }
+
+        /// <summary>
         ///     Invalidate this entity by removing its value from the cache.
         /// </summary>
-        /// <param name="entity"></param>
+        /// <param name="entity">Entity to invalidate.</param>
         private void InvalidateFor(T entity)
         {
             var primaryKeys = GetPrimaryKeyValues(entity);
             var cacheKey = GetCacheKey(primaryKeys);
             _cache.WithKey(cacheKey);
+        }
+
+        /// <summary>
+        ///     Invalidate entries by removing it's value from the cache.
+        /// </summary>
+        /// <param name="entities">Entities to invalidate.</param>
+        private void InvalidateForBulk(IEnumerable<T> entities)
+        {
+            foreach (var entity in entities)
+                InvalidateFor(entity);           
         }
 
         /// <summary>
