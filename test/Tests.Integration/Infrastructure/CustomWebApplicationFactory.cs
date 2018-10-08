@@ -69,8 +69,15 @@ namespace Tests.Integration.Infrastructure
                         };
                     });
 
-                services.Remove(services.FirstOrDefault(d => d.ServiceType == typeof(IDiscordAPIClient)));
+              //  var bclients = services.Where(d => d.ServiceType == typeof(IDiscordAPIClient)).Select(d => d);
+
+               // services.Remove(services.FirstOrDefault(d => d.ServiceType == typeof(IDiscordAPIClient)));
+               // var cclients = services.Where(d => d.ServiceType == typeof(IDiscordAPIClient)).Select(d => d);
+
                 services.AddHttpClient<IDiscordAPIClient, TestDiscordApiClient>();
+
+               // var clients = services.Where(d => d.ServiceType == typeof(IDiscordAPIClient)).Select(d => d);
+                
 
                 var sp = services.BuildServiceProvider();
 
