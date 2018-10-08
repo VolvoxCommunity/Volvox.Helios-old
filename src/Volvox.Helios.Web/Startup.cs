@@ -40,11 +40,8 @@ using Hangfire.SqlServer;
 using Volvox.Helios.Core.Modules.ReminderModule;
 using Volvox.Helios.Service.BackgroundJobs;
 using Volvox.Helios.Service.Jobs;
-
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
-
 using Discord.WebSocket;
-
 using Volvox.Helios.Core.Modules.ModerationModule;
 
 

@@ -52,18 +52,19 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             if (containsProfanity && !HasBypassAuthority(author))
             {
-                await HandleViolation(message, $"Watch your language, {author.Discriminator}!");
+                await HandleViolation(message, $"Watch your language, {author.Username}!");
                 return;
             }
 
             if (containsLink && !HasBypassAuthority(author))
             {
-                await HandleViolation(message, $"You don't have permission to post links, {author.Discriminator}!");
+                await HandleViolation(message, $"You don't have permission to post links, {author.Username}!");
                 return;
             }
         }
 
         private bool HasBypassAuthority(SocketUser author) {
+            if (author.IsBot) return true;
             return false;
         }
 
