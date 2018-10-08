@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Volvox.Helios.Domain.Module.ModerationModule;
 using System.Collections.Generic;
-using System.Text;
-using Volvox.Helios.Domain.Discord;
+using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
 using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
 
@@ -14,5 +13,9 @@ namespace Volvox.Helios.Domain.ModuleSettings
         public ProfanityFilter ProfanityFilter { get; set; }
 
         public List<User> User { get; set; }
+
+        public List<Punishment> GlobalPunishments { get; set; }
+
+        public List<Role> GlobalIgnoreRoles { get; set; }
     }
 }
