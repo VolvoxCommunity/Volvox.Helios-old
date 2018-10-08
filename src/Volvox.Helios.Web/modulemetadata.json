@@ -41,6 +41,13 @@
       "Description": "Set periodic reminders that will be sent to specific channels.",
       "ReleaseState": "Canary",
       "Configurable": "true"
+    },
+    "ModerationModule": {
+      "Name": "Moderator",
+      "Version": "1.0",
+      "Description": "Automatically moderate your discord server.",
+      "ReleaseState": "Canary",
+      "Configurable": "true"
     }
   }
 }
