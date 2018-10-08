@@ -7,7 +7,7 @@ using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Domain.Module.ModerationModule
 {
-    public class User
+    public class UserWarnings
     {
         [Key]
         public int Id { get; set; }

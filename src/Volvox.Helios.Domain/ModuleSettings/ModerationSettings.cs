@@ -12,7 +12,7 @@ namespace Volvox.Helios.Domain.ModuleSettings
 
         public ProfanityFilter ProfanityFilter { get; set; }
 
-        public List<User> User { get; set; }
+        public List<UserWarnings> UserWarnings { get; set; }
 
         public List<Punishment> GlobalPunishments { get; set; }
 

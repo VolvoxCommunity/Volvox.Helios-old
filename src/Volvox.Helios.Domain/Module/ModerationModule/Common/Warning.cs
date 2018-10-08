@@ -10,7 +10,7 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.Common
         [Key]
         public int Id { get; set; }
 
-        public virtual User User { get; set; }
+        public virtual UserWarnings User { get; set; }
 
         [Required]
         public WarningType WarningType { get; set; }
