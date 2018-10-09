@@ -15,6 +15,12 @@
     <Compile Remove="Migrations\20181002022633_ReminderChangeToLongId.cs" />
     <Compile Remove="Migrations\20181002022742_ReminderChangeToLongId.cs" />
     <Compile Remove="Migrations\20181002022927_ReminderModule.cs" />
+    <Compile Remove="Migrations\20181009112205_test.cs" />
+    <Compile Remove="Migrations\20181009112237_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181009112320_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181009112917_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181009113600_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181009122726_ModerationModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.2" />

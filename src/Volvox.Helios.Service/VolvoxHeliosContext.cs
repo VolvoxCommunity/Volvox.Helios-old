@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.Module.ChatTracker;
+using Volvox.Helios.Domain.Module.ModerationModule;
+using Volvox.Helios.Domain.Module.ModerationModule.Common;
+using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
+using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
 using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Service
@@ -35,6 +39,28 @@ namespace Volvox.Helios.Service
         #region Reminder
         public DbSet<RemembotSettings> ReminderSettings { get; set; }
         public DbSet<RecurringReminderMessage> RecurringReminderMessages { get; set; }
+        #endregion
+
+        #region ModerationSettings
+        public DbSet<ModerationSettings> ModerationSettings { get; set; }
+
+        public DbSet<BannedWord> BannedWords { get; set; }
+
+        public DbSet<ProfanityFilter> ProfanityFilters { get; set; }
+
+        public DbSet<LinkFilter> LinkFilters { get; set; }
+
+        public DbSet<Punishment> Punishments { get; set; }
+
+        public DbSet<UserWarnings> UserWarnings { get; set; }
+
+        public DbSet<Warning> Warnings { get; set; }
+
+        public DbSet<WhitelistedChannel> WhitelistedChannels { get; set; }
+
+        public DbSet<WhitelistedLink> WhitelistedLinks { get; set; }
+
+        public DbSet<WhitelistedRole> WhitelistedRoles { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

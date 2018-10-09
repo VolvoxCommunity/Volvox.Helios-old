@@ -2,12 +2,15 @@
 
 namespace Volvox.Helios.Domain.Module.ModerationModule.Common
 {
-    public class Role
+    public class WhitelistedRole
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
         public string RoleName { get; set; }
+
+        [Required]
+        public WhitelistType WhitelistType { get; set; }
     }
 }

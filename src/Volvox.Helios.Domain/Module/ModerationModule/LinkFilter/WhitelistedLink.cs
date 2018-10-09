@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Volvox.Helios.Domain.Module.ModerationModule.LinkFilter
@@ -10,10 +11,10 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.LinkFilter
         [Key]
         public int Id { get; set; }
 
-        [Required]
+        [Required, ForeignKey("FilterId")]
         public virtual LinkFilter LinkFilter { get; set; }
 
-        // Id to allow link in. null == allow link everywhere
+        // Id of channel to allow link in. null == allow link everywhere
         public ulong? ChannelId { get; set; }
 
         [Required]
