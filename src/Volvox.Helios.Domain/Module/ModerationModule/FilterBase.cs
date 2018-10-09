@@ -26,6 +26,9 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.Common
         
         // Roles that ignore the filter.
         [Required]
-        public List<Role> IgnoreRoles { get; set; }
+        public List<Role> WhitelistedRoles { get; set; }
+
+        [Required]
+        public List<Channel> WhitelistedChannels { get; set; }
     }
 }

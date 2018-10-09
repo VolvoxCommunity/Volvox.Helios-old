@@ -16,6 +16,6 @@ namespace Volvox.Helios.Domain.ModuleSettings
 
         public List<Punishment> GlobalPunishments { get; set; }
 
-        public List<Role> GlobalIgnoreRoles { get; set; }
+        public List<Role> GlobalWhitelistedRoles { get; set; }
     }
 }
