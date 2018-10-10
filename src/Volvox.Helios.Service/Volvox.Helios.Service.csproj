@@ -21,6 +21,13 @@
     <Compile Remove="Migrations\20181009112917_ModerationModule.cs" />
     <Compile Remove="Migrations\20181009113600_ModerationModule.cs" />
     <Compile Remove="Migrations\20181009122726_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181009131528_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181009141745_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181009142647_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181010133121_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181010134034_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181010134237_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181010142230_ModerationModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.2" />

@@ -6,12 +6,13 @@ using System.Text;
 
 namespace Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter
 {
+    [Table("mod_banned_words")]
     public class BannedWord
     {
         [Key]
         public int Id { get; set; }
 
-        [Required, ForeignKey("FilterId")]
+        [Required, ForeignKey("GuildId")]
         public virtual ProfanityFilter ProfanityFilter { get; set; }
 
         [Required]

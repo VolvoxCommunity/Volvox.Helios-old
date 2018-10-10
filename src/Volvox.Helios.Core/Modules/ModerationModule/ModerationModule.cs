@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
@@ -46,9 +47,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         {
             var author = message.Author;
 
-            var containsProfanity = ProfanityCheck(message);
+            var containsProfanity = await ProfanityCheck(message);
 
-            var containsLink = LinkCheck(message);
+            var containsLink = await LinkCheck(message);
 
             if (containsProfanity && !HasBypassAuthority(author))
             {
@@ -68,19 +69,31 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             return false;
         }
 
-        private bool ProfanityCheck(SocketMessage message)
+        private async Task<bool> ProfanityCheck(SocketMessage message)
         {
-            return true;
+            var settings = await _settingsService.GetSettingsByGuild(472468560657121280, s => s.ProfanityFilter.BannedWords);
+
+            var bannedWords = settings.ProfanityFilter.BannedWords;
+
+            foreach (var word in bannedWords)
+            {
+                if (message.Content == word.Word)
+                    return true;
+            }
+            return false;
         }
 
-        private bool LinkCheck(SocketMessage message)
+        private async Task<bool> LinkCheck(SocketMessage message)
         {
-            return false;
+            var urlCheck = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)");
+            return urlCheck.IsMatch(message.Content);
         }
 
         private async Task HandleViolation(SocketMessage message, string warningMessage)
         {
             await message.DeleteAsync();
+
+            _settingsService.
 
             await _messageService.Post(message.Channel.Id, warningMessage);
         }

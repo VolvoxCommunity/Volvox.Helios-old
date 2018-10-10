@@ -8,6 +8,7 @@ using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Domain.Module.ModerationModule
 {
+    [Table("mod_users")]
     public class UserWarnings
     {
         [Key]

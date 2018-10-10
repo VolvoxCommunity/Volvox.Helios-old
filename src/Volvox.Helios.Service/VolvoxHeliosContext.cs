@@ -43,24 +43,6 @@ namespace Volvox.Helios.Service
 
         #region ModerationSettings
         public DbSet<ModerationSettings> ModerationSettings { get; set; }
-
-        public DbSet<BannedWord> BannedWords { get; set; }
-
-        public DbSet<ProfanityFilter> ProfanityFilters { get; set; }
-
-        public DbSet<LinkFilter> LinkFilters { get; set; }
-
-        public DbSet<Punishment> Punishments { get; set; }
-
-        public DbSet<UserWarnings> UserWarnings { get; set; }
-
-        public DbSet<Warning> Warnings { get; set; }
-
-        public DbSet<WhitelistedChannel> WhitelistedChannels { get; set; }
-
-        public DbSet<WhitelistedLink> WhitelistedLinks { get; set; }
-
-        public DbSet<WhitelistedRole> WhitelistedRoles { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
