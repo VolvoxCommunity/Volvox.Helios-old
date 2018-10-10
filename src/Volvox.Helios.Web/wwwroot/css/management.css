@@ -44,8 +44,9 @@
 }
 
 #modulebar-wrapper {
+    z-index: 999;
     position: fixed;
-    margin-left: 69px;
+    left: 69px;
     padding-left: 5px;
     padding-top: 15px;
     width: 200px;
@@ -145,12 +146,13 @@
     }
 
     #page-content-wrapper {
-        padding: 6px;
+        left: 269px;
         padding-left: 15px;
         padding-right: 15px;
         padding-bottom: 70px;
         position: fixed;
         color: #fff;
+        width: auto;
     }
 
     #wrapper.toggled #page-content-wrapper {
@@ -159,8 +161,8 @@
     }
 }
 
-#configbar {
-
+.footer {
+    z-index: 998;
 }
 
 .server-img {

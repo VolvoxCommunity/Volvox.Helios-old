@@ -1,143 +1,81 @@
 @{
     ViewData["Title"] = "Example";
+    Layout = "_ManagementLayout";
 }
 
 <div id="wrapper">
 
-    <div id="sidebar-wrapper">
-        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-    </div>
-
     <div id="page-content-wrapper">
         <div id="accordion">
-            
-            <div id="modulebar-wrapper">
-            <h5 class="text-center">Modules</h5>
-                <button class="btn btn-block btn-module" data-parent="#accordion" data-toggle="collapse" href="#StreamRole" role="button" aria-expanded="false" aria-controls="StreamRole" >Stream Role</button>
-                <button class="btn btn-block btn-module" data-parent="#accordion" data-toggle="collapse" href="#StreamAnnouncer" role="button" aria-expanded="false" aria-controls="StreamAnnouncer" >Stream Announcer</button>
-            </div>
 
             <div class="container-content">
                 <div class="accordion-group">
 
                     <div class="col-12">
-                    <div class="collapse" id="StreamAnnouncer">
-                        <!-- Stream Announcer -->
-                        <h5 class="text-center">Stream Announcer</h5>
+                        <div class="collapse" id="StreamAnnouncer">
+                            <!-- Stream Announcer -->
+                            <h5 class="text-center">Stream Announcer</h5>
 
-                        <br>
+                            <br>
 
-                        <div class="card background-dark2">
-                            <h5 class="card-header text-center color-disabled">Description</h5>
-                            <div class="card-body">
-                                <p class="card-text">
-                                    With this module you are able to announce to a defined text channel when someone on the server goes live on Twitch.
-                                </p>
+                            <div class="card background-dark2">
+                                <h5 class="card-header text-center color-disabled">Description</h5>
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        With this module you are able to announce to a defined text channel when someone on the server goes live on Twitch.
+                                    </p>
+                                </div>
                             </div>
-                        </div>
 
-                        <br>
+                            <br>
 
-                        <div class="card background-dark2">
-                            <h5 class="card-header text-center color-disabled">Example</h5>
-                            <div class="card-body">
-                                <p>Here is an example of what you would see when the Stream Announcer Module is enabled and someone starts a stream.</p>
+                            <div class="card background-dark2">
+                                <h5 class="card-header text-center color-disabled">Example</h5>
+                                <div class="card-body">
+                                    <p>Here is an example of what you would see when the Stream Announcer Module is enabled and someone starts a stream.</p>
 
-                                <img src="~/Images/Examples/StreamAnnouncer.png" width="50%" class="img-center">
+                                    <img src="~/Images/Examples/StreamAnnouncer.png" width="50%" class="img-center">
+                                </div>
                             </div>
-                        </div>
 
-                        <br>
+                            <br>
 
-                        <div class="card background-dark2">
-                            <h5 class="card-header text-center color-disabled">Configuration</h5>
-                            <div class="card-body">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                                    <label class="form-check-label" for="defaultCheck1">
-                                        Enabled
-                                    </label>
+                            <div class="card background-dark2">
+                                <h5 class="card-header text-center color-disabled">Configuration</h5>
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                                        <label class="form-check-label" for="defaultCheck1">
+                                            Enabled
+                                        </label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="exampleFormControlSelect1">Select text-channel to send the messages to:</label>
+                                        <select class="form-control" id="exampleFormControlSelect1">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                                        <label class="form-check-label" for="defaultCheck1">
+                                            Delete messages on stream conclusion
+                                        </label>
+                                    </div>
+
+                                    <button type="button" class="btn btn-info">Save</button>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="exampleFormControlSelect1">Select text-channel to send the messages to:</label>
-                                    <select class="form-control" id="exampleFormControlSelect1">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                                    <label class="form-check-label" for="defaultCheck1">
-                                        Delete messages on stream conclusion
-                                    </label>
-                                </div>
-
-                                <button type="button" class="btn btn-info">Save</button>
                             </div>
                         </div>
                     </div>
-                </div>
 
                 <br>
-                <div class="col-12">
-                    <div class="collapse" id="StreamRole">
-                    <h5 class="text-center">Stream Role</h5>
-
-                    <br>
-
-                    <div class="card background-dark2">
-                        <h5 class="card-header text-center color-disabled">Description</h5>
-                        <div class="card-body">
-                            <p class="card-text">
-                                This lets you add a role to someone who goes live on Twitch and remove it when they are done.  
-                                Take the new role and put it on the top of the list so everyone knows when someone is hosting a stream.
-                                At least now you have something else to watch on that second monitor when you are not paying attention to your own game.
-                            </p>
-                        </div>
-                    </div>
-
-                    <br>
-
-                    <div class="card background-dark2">
-                        <h5 class="card-header text-center color-disabled">Configuration</h5>
-                        <div class="card-body">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                                <label class="form-check-label" for="defaultCheck1">
-                                    Enabled
-                                </label>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="exampleFormControlSelect1">Select text-channel to send the messages to:</label>
-                                <select class="form-control" id="exampleFormControlSelect1">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                                </select>
-                            </div>
-
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                                <label class="form-check-label" for="defaultCheck1">
-                                    Delete messages on stream conclusion
-                                </label>
-                            </div>
-
-                            <button type="button" class="btn btn-info">Save</button>
-                        </div>
-                    </div>
-                    </div>
-                </div>
+ 
 
                 </div>
 
