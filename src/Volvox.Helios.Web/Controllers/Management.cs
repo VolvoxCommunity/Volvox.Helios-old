@@ -12,5 +12,11 @@ namespace Volvox.Helios.Web.Controllers
         public IActionResult StreamRole() => View();
 
         public IActionResult StreamAnnouncer() => View();
+
+        public IActionResult ChatTracker() => View();
+
+        public IActionResult Remembot() => View();
+
+        public IActionResult PollManager() => View();
     }
 }
