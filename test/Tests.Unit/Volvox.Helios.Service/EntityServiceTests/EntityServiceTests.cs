@@ -132,7 +132,6 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
             {
                 var entityService = new EntityService<Message>(context, new EntityChangedDispatcher<Message>());
 
-
                 context.Messages.Add(_testMessageEntity);
                 await context.SaveChangesAsync();
 
@@ -151,7 +150,6 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
             using (var context = GetInMemoryContext())
             {
                 var entityService = new EntityService<Message>(context, new EntityChangedDispatcher<Message>());
-
 
                 context.Messages.Add(_testMessageEntity);
                 await context.SaveChangesAsync();
