@@ -17,7 +17,7 @@ namespace Volvox.Helios.Service.Clients
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _context;
 
-        protected DiscordAPIClient(HttpClient client, IHttpContextAccessor context, IConfiguration configuration,
+        public DiscordAPIClient(HttpClient client, IHttpContextAccessor context, IConfiguration configuration,
             ICache cache)
         {
             _client = client;
