@@ -8,9 +8,9 @@ namespace Volvox.Helios.Service.Discord.Guild
 {
     public class DiscordGuildService : IDiscordGuildService
     {
-        private readonly DiscordAPIClient _client;
+        private readonly IDiscordAPIClient _client;
 
-        public DiscordGuildService(DiscordAPIClient client)
+        public DiscordGuildService(IDiscordAPIClient client)
         {
             _client = client;
         }

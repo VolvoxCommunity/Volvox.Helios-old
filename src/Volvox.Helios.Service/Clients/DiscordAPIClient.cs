@@ -9,8 +9,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Volvox.Helios.Service.Clients
 {
-    public class DiscordAPIClient
+    public class DiscordAPIClient : IDiscordAPIClient
     {
+        private const string BaseAddress = "https://discordapp.com/api/";
         private readonly ICache _cache;
         private readonly HttpClient _client;
         private readonly IConfiguration _configuration;
@@ -23,6 +24,10 @@ namespace Volvox.Helios.Service.Clients
             _context = context;
             _configuration = configuration;
             _cache = cache;
+
+            _client.BaseAddress = new Uri(BaseAddress);
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _client.DefaultRequestHeaders.UserAgent.ParseAdd("Volvox.Helios");
 
             // Set access token.
             var accessToken = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "access_token")?.Value;
