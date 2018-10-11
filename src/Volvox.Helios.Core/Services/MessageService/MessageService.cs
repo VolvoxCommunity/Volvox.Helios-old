@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Discord;
+using Discord.WebSocket;
 using Volvox.Helios.Core.Bot;
 
 namespace Volvox.Helios.Core.Services.MessageService
@@ -17,11 +18,11 @@ namespace Volvox.Helios.Core.Services.MessageService
 
         #endregion
 
-        private readonly IBot _bot;
+        private readonly DiscordSocketClient _client;
 
-        public MessageService(IBot bot)
+        public MessageService(DiscordSocketClient client)
         {
-            _bot = bot;
+            _client = client;
         }
 
         ///<inheritdoc />
@@ -78,7 +79,7 @@ namespace Volvox.Helios.Core.Services.MessageService
         /// <returns>IMessageChannel.</returns>
         private IMessageChannel GetChannel(ulong channelId)
         {
-            return _bot.Client.GetChannel(channelId) as IMessageChannel;
+            return _client.GetChannel(channelId) as IMessageChannel;
         }
     }
 }
