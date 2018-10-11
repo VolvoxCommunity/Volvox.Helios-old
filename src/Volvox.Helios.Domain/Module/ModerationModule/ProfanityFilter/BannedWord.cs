@@ -15,7 +15,7 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter
         [Required, ForeignKey("GuildId")]
         public virtual ProfanityFilter ProfanityFilter { get; set; }
 
-        [Required]
+        [Required, MaxLength(26)]
         public string Word { get; set; }
     }
 }

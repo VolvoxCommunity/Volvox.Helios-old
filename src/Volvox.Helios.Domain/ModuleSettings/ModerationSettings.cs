@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Volvox.Helios.Domain.ModuleSettings
 {
-    [Table("mod_settings")]
+    [Table("mod_ModerationSettings")]
     public class ModerationSettings : ModuleSettings
     {
         public ProfanityFilter ProfanityFilter { get; set; }

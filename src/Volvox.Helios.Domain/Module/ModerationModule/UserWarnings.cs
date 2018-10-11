@@ -14,11 +14,11 @@ namespace Volvox.Helios.Domain.Module.ModerationModule
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        public ulong UserId { get; set; }
-
         [Required, ForeignKey("GuildId")]
         public ModerationSettings ModerationSettings { get; set; }
+
+        [Required]
+        public ulong UserId { get; set; }
 
         [Required]
         public List<Warning> Warnings { get; set; }

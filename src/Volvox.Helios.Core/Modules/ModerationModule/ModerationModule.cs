@@ -8,7 +8,10 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Core.Utilities;
+using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
 using Volvox.Helios.Domain.ModuleSettings;
+using Volvox.Helios.Service;
+using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
@@ -17,15 +20,19 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
     {
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
         private readonly IMessageService _messageService;
+        private readonly IServiceScopeFactory _scopeFactory;
 
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
-            IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService, IMessageService messageService
+            IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService, IMessageService messageService,
+            IServiceScopeFactory scopeFactory
         ) : base(
             discordSettings, logger, config)
         {
             _settingsService = settingsService;
              
             _messageService = messageService;
+
+            _scopeFactory = scopeFactory;
         }
 
         public override Task Init(DiscordSocketClient client)
@@ -49,7 +56,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             var containsProfanity = await ProfanityCheck(message);
 
-            var containsLink = await LinkCheck(message);
+            var containsLink = LinkCheck(message);
 
             if (containsProfanity && !HasBypassAuthority(author))
             {
@@ -73,6 +80,16 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         {
             var settings = await _settingsService.GetSettingsByGuild(472468560657121280, s => s.ProfanityFilter.BannedWords);
 
+            var profanityFilter = settings.ProfanityFilter;
+
+            profanityFilter.BannedWords.Add(new BannedWord()
+            {
+                Word = "test",
+                ProfanityFilter = profanityFilter
+            });
+
+            await _settingsService.SaveSettings(settings);
+
             var bannedWords = settings.ProfanityFilter.BannedWords;
 
             foreach (var word in bannedWords)
@@ -81,9 +98,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                     return true;
             }
             return false;
+
+
         }
 
-        private async Task<bool> LinkCheck(SocketMessage message)
+        private bool LinkCheck(SocketMessage message)
         {
             var urlCheck = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)");
             return urlCheck.IsMatch(message.Content);
@@ -92,8 +111,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         private async Task HandleViolation(SocketMessage message, string warningMessage)
         {
             await message.DeleteAsync();
-
-            _settingsService.
 
             await _messageService.Post(message.Channel.Id, warningMessage);
         }
