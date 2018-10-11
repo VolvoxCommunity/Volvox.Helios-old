@@ -37,9 +37,9 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
         [Fact]
         public async Task Create_OneEntity()
         {
-            // Arrange
             using (var context = GetInMemoryContext())
             {
+                // Arrange
                 var entityService = new EntityService<Message>(context, new EntityChangedDispatcher<Message>());
 
                 // Act
@@ -47,43 +47,45 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
 
                 // Assert
                 Assert.Single(context.Messages);
-                Assert.Equal((ulong)123, context.Messages.Single().AuthorId);
+                Assert.Equal(_testMessageEntity.AuthorId, context.Messages.Single().AuthorId);
             }
         }
 
         [Fact]
         public async Task Find_EntityByPK()
         {
-            // Arrange
             using (var context = GetInMemoryContext())
             {
+                // Arrange
                 var entityService = new EntityService<Message>(context, new EntityChangedDispatcher<Message>());
+                const ulong id = 333;
 
-                _testMessageEntity.Id = 333;
+                _testMessageEntity.Id = id;
                 context.Messages.Add(_testMessageEntity);
                 await context.SaveChangesAsync();
 
                 // Act
-                var entity = await entityService.Find((ulong)333);
+                var entity = await entityService.Find(id);
 
                 // Assert
                 Assert.Single(context.Messages);
-                Assert.Equal((ulong)333, entity.Id);
+                Assert.Equal(id, entity.Id);
             }
         }
 
         [Fact]
         public async Task Get_OneEntityWithIncludes()
         {
-            // Arrange
             using (var context = GetInMemoryContext())
             {
+                // Arrange
                 var entityService =
                     new EntityService<RemembotSettings>(context, new EntityChangedDispatcher<RemembotSettings>());
+                const ulong guildID = 123;
 
                 context.ReminderSettings.Add(new RemembotSettings
                 {
-                    GuildId = 123,
+                    GuildId = guildID,
                     RecurringReminders = new List<RecurringReminderMessage>
                     {
                         new RecurringReminderMessage
@@ -95,11 +97,11 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
                 await context.SaveChangesAsync();
 
                 // Act
-                var entity = await entityService.Get(r => r.GuildId == 123, r => r.RecurringReminders);
+                var entity = await entityService.Get(r => r.GuildId == guildID, r => r.RecurringReminders);
 
                 // Assert
                 Assert.Single(context.RecurringReminderMessages);
-                Assert.Equal((ulong)123, entity.First().GuildId);
+                Assert.Equal(guildID, entity.First().GuildId);
                 Assert.Equal("TestMessage", entity.First().RecurringReminders.First().Message);
             }
         }
@@ -107,9 +109,9 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
         [Fact]
         public async Task GetAll()
         {
-            // Arrange
             using (var context = GetInMemoryContext())
             {
+                // Arrange
                 var entityService = new EntityService<Message>(context, new EntityChangedDispatcher<Message>());
 
                 context.Messages.Add(_testMessageEntity);
@@ -127,9 +129,9 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
         [Fact]
         public async Task Remove_OneEntity()
         {
-            // Arrange
             using (var context = GetInMemoryContext())
             {
+                // Arrange
                 var entityService = new EntityService<Message>(context, new EntityChangedDispatcher<Message>());
 
                 context.Messages.Add(_testMessageEntity);
@@ -146,21 +148,22 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
         [Fact]
         public async Task Update_OneEntity()
         {
-            // Arrange
             using (var context = GetInMemoryContext())
             {
+                // Arrange
                 var entityService = new EntityService<Message>(context, new EntityChangedDispatcher<Message>());
+                const ulong id = 999;
 
                 context.Messages.Add(_testMessageEntity);
                 await context.SaveChangesAsync();
 
                 // Act
-                _testMessageEntity.AuthorId = 999;
+                _testMessageEntity.AuthorId = id;
                 await entityService.Update(_testMessageEntity);
 
                 // Assert
                 Assert.Single(context.Messages);
-                Assert.Equal((ulong)999, context.Messages.Single().AuthorId);
+                Assert.Equal(id, context.Messages.Single().AuthorId);
             }
         }
     }
