@@ -35,7 +35,7 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
         }
 
         [Fact]
-        public async Task Create()
+        public async Task Create_OneEntity()
         {
             // Arrange
             using (var context = GetInMemoryContext())
@@ -52,7 +52,7 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
         }
 
         [Fact]
-        public async Task Find()
+        public async Task Find_EntityByPK()
         {
             // Arrange
             using (var context = GetInMemoryContext())
@@ -73,7 +73,7 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
         }
 
         [Fact]
-        public async Task Get()
+        public async Task Get_OneEntityWithIncludes()
         {
             // Arrange
             using (var context = GetInMemoryContext())
@@ -125,7 +125,7 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
         }
 
         [Fact]
-        public async Task Remove()
+        public async Task Remove_OneEntity()
         {
             // Arrange
             using (var context = GetInMemoryContext())
@@ -145,7 +145,7 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
         }
 
         [Fact]
-        public async Task Update()
+        public async Task Update_OneEntity()
         {
             // Arrange
             using (var context = GetInMemoryContext())
