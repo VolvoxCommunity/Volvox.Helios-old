@@ -1,38 +1,41 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Core.Utilities;
+using Volvox.Helios.Domain.Module.ModerationModule;
+using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
 using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
 using Volvox.Helios.Domain.ModuleSettings;
-using Volvox.Helios.Service;
-using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
+using Volvox.Helios.Domain.Module.ModerationModule.Common;
+using System;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
     public class ModerationModule : Module
     {
+        #region Private vars
+
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
+
         private readonly IMessageService _messageService;
-        private readonly IServiceScopeFactory _scopeFactory;
+
+        #endregion
 
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
-            IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService, IMessageService messageService,
-            IServiceScopeFactory scopeFactory
+            IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService, IMessageService messageService
         ) : base(
             discordSettings, logger, config)
         {
             _settingsService = settingsService;
              
             _messageService = messageService;
-
-            _scopeFactory = scopeFactory;
         }
 
         public override Task Init(DiscordSocketClient client)
@@ -52,60 +55,74 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private async Task CheckMessage(SocketMessage message)
         {
+            var user = message.Author as SocketGuildUser;
+
+            var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id,
+                s => s.ProfanityFilter.BannedWords, s => s.LinkFilter.WhitelistedLinks, s => s.Punishments, s => s.UserWarnings.Select(u => u.UserId == user.Id), s => s.WhitelistedChannels, s => s.WhitelistedRoles
+            );
+
             var author = message.Author;
 
-            var containsProfanity = await ProfanityCheck(message);
+            // If the user or channel is globally whitelisted, there is no point in checking the message contents.
+            if (HasBypassAuthority(author, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Global),
+                settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Global)))
+                return;
 
-            var containsLink = LinkCheck(message);
-
-            if (containsProfanity && !HasBypassAuthority(author))
+            if (!HasBypassAuthority(author, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Profanity), settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Profanity)) && ProfanityCheck(message, settings.ProfanityFilter))
             {
                 await HandleViolation(message, $"Watch your language, {author.Username}!");
                 return;
             }
 
-            if (containsLink && !HasBypassAuthority(author))
+            if (!HasBypassAuthority(author, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Link), settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Link)) && LinkCheck(message, settings.LinkFilter))
             {
                 await HandleViolation(message, $"You don't have permission to post links, {author.Username}!");
                 return;
             }
         }
 
-        private bool HasBypassAuthority(SocketUser author) {
+        private bool HasBypassAuthority(SocketUser author, IEnumerable<WhitelistedChannel> whitelistedChannels, IEnumerable<WhitelistedRole> whitelistedRoles) {
             if (author.IsBot) return true;
             return false;
         }
 
-        private async Task<bool> ProfanityCheck(SocketMessage message)
+        private bool ProfanityCheck(SocketMessage message, ProfanityFilter profanityFilter)
         {
-            var settings = await _settingsService.GetSettingsByGuild(472468560657121280, s => s.ProfanityFilter.BannedWords);
+            // Normalize message to lowercase and split into array of words
+            var messageWords = message.Content.ToLower().Split(" ");
 
-            var profanityFilter = settings.ProfanityFilter;
+            var bannedWords = profanityFilter.BannedWords.Select(w => w.Word);
 
-            profanityFilter.BannedWords.Add(new BannedWord()
+            foreach (var word in messageWords)
             {
-                Word = "test",
-                ProfanityFilter = profanityFilter
-            });
-
-            await _settingsService.SaveSettings(settings);
-
-            var bannedWords = settings.ProfanityFilter.BannedWords;
-
-            foreach (var word in bannedWords)
-            {
-                if (message.Content == word.Word)
-                    return true;
+                foreach (var bannedWord in bannedWords)
+                {
+                    if (word == bannedWord) return true;
+                }
             }
+
             return false;
-
-
         }
 
-        private bool LinkCheck(SocketMessage message)
+        private bool LinkCheck(SocketMessage message, LinkFilter linkFilter)
         {
+            var messageWords = message.Content.ToLower().Split(" ");
+
+            var whitelistedLinks = linkFilter.WhitelistedLinks.Select(l => l.Link);
+
             var urlCheck = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)");
-            return urlCheck.IsMatch(message.Content);
+
+            foreach (var word in messageWords)
+            {
+                if (urlCheck.IsMatch(word))
+                {
+                    foreach (var link in whitelistedLinks)
+                    {
+                        if (link == word) return true;
+                    }
+                }
+            }       
+            return false;
         }
 
         private async Task HandleViolation(SocketMessage message, string warningMessage)
