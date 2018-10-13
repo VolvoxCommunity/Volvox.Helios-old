@@ -18,6 +18,7 @@ namespace Volvox.Helios.Web
                 .UseApplicationInsights()
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration(c => c.AddJsonFile("./modulemetadata.json"))
+                .ConfigureAppConfiguration(c => c.AddJsonFile("./defaultbannedwords.json"))
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
