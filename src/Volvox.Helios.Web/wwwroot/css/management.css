@@ -6,7 +6,24 @@
 
  body {
     overflow-x: hidden;
+    background: #36393f;
 }
+
+/* Used a a replacement for  */
+
+.container-management {
+    width: 100%;
+    padding-right: 284px;
+    padding-left: 15px;
+    padding-top: 20px;
+    margin-right: auto;
+    margin-left: auto;
+    position: absolute;
+    left: 269px;
+    background: #36393f;
+    color: #fff;
+}
+
 
 /* Toggle Styles */
 

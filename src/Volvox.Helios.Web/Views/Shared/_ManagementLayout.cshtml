@@ -52,44 +52,42 @@
 
     <partial name="_CookieConsentPartial" />
 
-    <div id="wrapper">
+    <!-- We will load server icons here -->
+    <div id="sidebar-wrapper">
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+        <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
 
-        <!-- We will load server icons here -->
-        <div id="sidebar-wrapper">
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
-            <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
+    </div>
 
-        </div>
+    <!-- Load the current modules here -->
+    <div id="modulebar-wrapper">
+        <a asp-controller="Management" asp-action="StreamRole" 
+            class="btn btn-block btn-module" role="button">Stream Role</a>
 
-        <!-- Load the current modules here -->
-        <div id="modulebar-wrapper">
-            <a asp-controller="Management" asp-action="StreamRole" class="btn btn-block btn-module" role="button" aria-expanded="false" >Stream Role</a>
-            <a asp-controller="Management" asp-action="StreamAnnouncer" class="btn btn-block btn-module" role="button" aria-expanded="false">Stream Announcer</a>
-            <a asp-controller="Management" asp-action="ChatTracker" class="btn btn-block btn-module" role="button" aria-expanded="false">Chat Tracker</a>
-            <a asp-controller="Management" asp-action="Remembot" class="btn btn-block btn-module" role="button" aria-expanded="false">Remembot</a>
-            <a asp-controller="Management" asp-action="PollManager" class="btn btn-block btn-module" role="button" aria-expanded="false">Poll Manager</a>
-        </div>
+        <a asp-controller="Management" asp-action="StreamAnnouncer" class="btn btn-block btn-module" role="button" aria-expanded="false">Stream Announcer</a>
+        <a asp-controller="Management" asp-action="ChatTracker" class="btn btn-block btn-module" role="button" aria-expanded="false">Chat Tracker</a>
+        <a asp-controller="Management" asp-action="Remembot" class="btn btn-block btn-module" role="button" aria-expanded="false">Remembot</a>
+        <a asp-controller="Management" asp-action="PollManager" class="btn btn-block btn-module" role="button" aria-expanded="false">Poll Manager</a>
+    </div>
 
-        <div id="page-content-wrapper">
-            @RenderBody()
-            <br>
+    <div class="container-fluid container-management">         
+        @RenderBody()
+        <br>
 
-            <p>&copy; 2018 - Volvox.Helios</p>
-        </div>
-
+        <p>&copy; 2018 - Volvox.Helios</p>
     </div>
 
     <environment include="Development">
@@ -126,6 +124,7 @@
         $('#analyticsNavDropdown').click(() => {
             $('#analyticsDropDown').populateAnalytics();
         });
+
     </script>
 </body>
 </html>
