@@ -28,6 +28,8 @@
     <Compile Remove="Migrations\20181010134034_ModerationModule.cs" />
     <Compile Remove="Migrations\20181010134237_ModerationModule.cs" />
     <Compile Remove="Migrations\20181010142230_ModerationModule.cs" />
+    <Compile Remove="Migrations\20181014115520_ModerationModule_AddRolePunishType.cs" />
+    <Compile Remove="Migrations\20181014121544_ModerationModule_AddRolePunishType.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.2" />
