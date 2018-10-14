@@ -32,7 +32,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private readonly IServiceScopeFactory _scopeFactory;
 
-        private readonly string[] _defaultBannedWords;
+        private readonly List<string> _defaultBannedWords = new List<string>();
 
         #endregion
 
@@ -48,7 +48,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             _scopeFactory = scopeFactory;
 
-            // TODO: add default worsd to banned words private var
+            var defaultBannedWords = config.GetSection("BannedWords").GetChildren();
+
+            foreach (var word in defaultBannedWords)
+                _defaultBannedWords.Add(word.Value);
         }
 
         public override Task Init(DiscordSocketClient client)
@@ -74,38 +77,53 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 s => s.ProfanityFilter.BannedWords, s => s.LinkFilter.WhitelistedLinks, s => s.Punishments, s => s.WhitelistedChannels, s => s.WhitelistedRoles
             );
 
-            var author = message.Author;
+
+            var channelPostedId = message.Channel.Id;
+
+            var authorRoles = user.Roles;
 
             // If the user or channel is globally whitelisted, there is no point in checking the message contents.
-            if (HasBypassAuthority(author, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Global),
+            if (HasBypassAuthority(user, channelPostedId, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Global),
                 settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Global)))
                 return;
 
-            if (!HasBypassAuthority(author, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Profanity), settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Profanity)) && ProfanityCheck(message, settings.ProfanityFilter))
+            if (!HasBypassAuthority(user, channelPostedId, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Profanity),
+                settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Profanity)) && ProfanityCheck(message, settings.ProfanityFilter))
             {
                 await HandleViolation(settings, message, user, WarningType.Profanity);
                 return;
             }
 
-            if (!HasBypassAuthority(author, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Link), settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Link)) && LinkCheck(message, settings.LinkFilter))
+            if (!HasBypassAuthority(user, channelPostedId, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Link),
+                settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Link)) && LinkCheck(message, settings.LinkFilter))
             {
                 await HandleViolation(settings, message, user, WarningType.Link);
                 return;
             }
         }
 
-        private bool HasBypassAuthority(SocketUser author, IEnumerable<WhitelistedChannel> whitelistedChannels, IEnumerable<WhitelistedRole> whitelistedRoles) {
-            if (author.IsBot) return true;
+        private bool HasBypassAuthority(SocketGuildUser user, ulong postedChannelId,
+            IEnumerable<WhitelistedChannel> whitelistedChannels, IEnumerable<WhitelistedRole> whitelistedRoles) {
+            // Bots bypass check.
+            if (user.IsBot) return true;
+
+            // Check if channel id is whitelisted.
+            if (whitelistedChannels.Any(x => x.ChannelId == postedChannelId)) return true;
+
+            // Check if role is whitelisted.
+            if (user.Roles.Any(r => whitelistedRoles.Any(w => w.RoleId == r.Id))) return true;
+
             return false;
         }
 
         private bool ProfanityCheck(SocketMessage message, ProfanityFilter profanityFilter)
         {
-            // Normalize message to lowercase and split into array of words
+            // Normalize message to lowercase and split into array of words.
             var messageWords = message.Content.ToLower().Split(" ");
 
             var bannedWords = profanityFilter.BannedWords.Select(w => w.Word).ToList();
 
+            // Check for default banned words if UserDefaultList enabled.
             if (profanityFilter.UseDefaultList)
                 bannedWords.AddRange(_defaultBannedWords);
 
@@ -122,14 +140,18 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private bool LinkCheck(SocketMessage message, LinkFilter linkFilter)
         {
+            // Normalize message to lowercase and split into array of words.
             var messageWords = message.Content.ToLower().Split(" ");
 
             var whitelistedLinks = linkFilter.WhitelistedLinks.Select(l => l.Link);
 
+            // Regular expression for detecting url patterns
             var urlCheck = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)");
 
+            // Flag for tracking whether current url is whitelisted
             var isLinkLegal = false;
 
+            // Check each word for illegal link
             foreach (var word in messageWords)
             {
                 if (urlCheck.IsMatch(word))
@@ -163,18 +185,26 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 var userData = listUserData[0];
 
+                // User isn't tracked yet, so create new entry for them.
                 if (userData == null)
                 {
-                    // TODO: create user entry in db
+                    await userWarningService.Create(new UserWarnings()
+                    {
+                        ModerationSettings = moderationSettings,
+                        UserId = user.Id
+                    });
                 }
 
-                // add warning to database
+                // Add warning to database.
                 await AddWarning(scope, moderationSettings, userData, warningType);
 
+                // Get all warnings that haven't expired.
                 var userWarnings = userData.Warnings.Where(x => x.WarningExpires > DateTimeOffset.Now);
 
+                // Count warnings of violation type.
                 var specificWarningCount = userWarnings.Count(x => x.WarningType == warningType);
 
+                // Count total number of warnings.
                 var allWarningsCount = userWarnings.Count();
 
                 var punishments = new List<Punishment>();
@@ -228,6 +258,15 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private async Task ApplyPunishment(IEnumerable<Punishment> punishments) {
 
+            foreach (var punishment in punishments)
+            {
+                switch (punishment.PunishType)
+                {
+
+                }
+            }
+
+            return;
         }
     }
 }
