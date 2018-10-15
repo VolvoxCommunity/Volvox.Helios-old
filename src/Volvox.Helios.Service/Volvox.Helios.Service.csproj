@@ -30,6 +30,7 @@
     <Compile Remove="Migrations\20181010142230_ModerationModule.cs" />
     <Compile Remove="Migrations\20181014115520_ModerationModule_AddRolePunishType.cs" />
     <Compile Remove="Migrations\20181014121544_ModerationModule_AddRolePunishType.cs" />
+    <Compile Remove="Migrations\20181014174111_ModerationModule_AddedActivePunishments.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.2" />

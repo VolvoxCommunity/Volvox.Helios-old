@@ -18,6 +18,8 @@ namespace Volvox.Helios.Domain.ModuleSettings
 
         public List<Punishment> Punishments { get; set; }
 
+        public List<ActivePunishment> ActivePunishments { get; set; }
+
         public List<WhitelistedRole> WhitelistedRoles { get; set; }
 
         public List<WhitelistedChannel> WhitelistedChannels { get; set; }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Service;
@@ -10,9 +11,10 @@ using Volvox.Helios.Service;
 namespace Volvox.Helios.Service.Migrations
 {
     [DbContext(typeof(VolvoxHeliosContext))]
-    partial class VolvoxHeliosContextModelSnapshot : ModelSnapshot
+    [Migration("20181014175209_ModerationModule_AddedActivePunishments")]
+    partial class ModerationModule_AddedActivePunishments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,7 +128,7 @@ namespace Volvox.Helios.Service.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("UserId");
+                    b.Property<int?>("UserId");
 
                     b.Property<DateTimeOffset>("WarningExpires");
 
@@ -457,8 +459,7 @@ namespace Volvox.Helios.Service.Migrations
                 {
                     b.HasOne("Volvox.Helios.Domain.Module.ModerationModule.UserWarnings", "User")
                         .WithMany("Warnings")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.Module.ModerationModule.LinkFilter.LinkFilter", b =>

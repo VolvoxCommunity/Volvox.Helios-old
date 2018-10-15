@@ -12,7 +12,10 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.LinkFilter
         [Key]
         public int Id { get; set; }
 
-        [Required, ForeignKey("GuildId")]
+        [Required]
+        public virtual ulong GuildId { get; set; }
+
+        [ForeignKey("GuildId")]
         public virtual LinkFilter LinkFilter { get; set; }
 
         // Id of channel to allow link in. null == allow link everywhere

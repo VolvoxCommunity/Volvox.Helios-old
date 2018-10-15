@@ -12,6 +12,11 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.Common
         [Key]
         public int Id { get; set; }
 
+        // Id of user in userwarnings table, not their discord user id.
+        [Required]
+        public virtual int UserId { get; set; }
+
+        [ForeignKey("UserId")]
         public virtual UserWarnings User { get; set; }
 
         [Required]
