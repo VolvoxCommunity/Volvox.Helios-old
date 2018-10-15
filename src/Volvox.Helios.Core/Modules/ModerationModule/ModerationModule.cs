@@ -19,6 +19,7 @@ using Volvox.Helios.Service.EntityService;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using Discord;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
@@ -74,9 +75,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var user = message.Author as SocketGuildUser;
 
             var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id,
-                s => s.ProfanityFilter.BannedWords, s => s.LinkFilter.WhitelistedLinks, s => s.Punishments, s => s.WhitelistedChannels, s => s.WhitelistedRoles
+                s => s.ProfanityFilter.BannedWords, s => s.LinkFilter.WhitelistedLinks, s => s.Punishments, s => s.WhitelistedChannels, s => s.WhitelistedRoles  
             );
-
 
             var channelPostedId = message.Channel.Id;
 
@@ -154,6 +154,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             // Check each word for illegal link
             foreach (var word in messageWords)
             {
+                // TODO: In future version of this module, check if url entered is of the same base, and not just matches exactly.
                 if (urlCheck.IsMatch(word))
                 {
                     foreach (var link in whitelistedLinks)
@@ -176,6 +177,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         private async Task HandleViolation(ModerationSettings moderationSettings, SocketMessage message, SocketGuildUser user, WarningType warningType)
         {
             await message.DeleteAsync();
+
+            await _messageService.Post(message.Channel.Id, $"Message by <@{user.Id}> deleted\nReason: {warningType}");
 
             using (var scope = _scopeFactory.CreateScope())
             {
@@ -209,15 +212,15 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 var punishments = new List<Punishment>();
 
+                // Global punishments
                 punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == WarningType.General && x.WarningThreshold == allWarningsCount));
 
+                // Punishments for specific type. I.E. profanity violation.
                 punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
 
-                await ApplyPunishment(punishments);
+                await ApplyPunishment(scope, moderationSettings, punishments, user);
               
             }
-
-            await _messageService.Post(message.Channel.Id, $"Message by <@{user.Id}> deleted\nReason: {warningType}");
         }
  
         private async Task AddWarning(IServiceScope scope, ModerationSettings moderationSettings, UserWarnings user, WarningType warningType)
@@ -256,17 +259,76 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             return duration;
         }
 
-        private async Task ApplyPunishment(IEnumerable<Punishment> punishments) {
+        private async Task ApplyPunishment(IServiceScope scope, ModerationSettings moderationSettings, IEnumerable<Punishment> punishments, SocketGuildUser user)
+        {
+            var appliedPunishments = new List<Punishment>();
+
+            foreach (var punishment in punishments)
+            {        
+                switch (punishment.PunishType)
+                {
+                    case ( PunishType.Kick ):
+                        await AddRolePunishment(punishment, user);
+                        break;
+
+                    case ( PunishType.Ban ):
+                        await AddRolePunishment(punishment, user);
+                        break;
+
+                    case ( PunishType.AddRole ):
+                        await AddRolePunishment(punishment, user);
+                        break;
+                }
+
+                await AddActivePunishments(scope, moderationSettings, punishments, user);
+            }       
+        }
+
+        private async Task AddRolePunishment(Punishment punishment, SocketGuildUser user)
+        {
+            if (!punishment.RoleId.HasValue) return;
+
+            var guild = user.Guild;
+
+            var role = guild.GetRole(punishment.RoleId.Value);
+
+            await user.AddRoleAsync(role);
+        }
+
+        private async Task KickPunishment(Punishment punishment, SocketGuildUser user)
+        {
+            await user.KickAsync();
+        }
+
+        private async Task BanPunishment(Punishment punishment, SocketGuildUser user)
+        {
+            await user.Guild.AddBanAsync(user);
+        }
+
+        private async Task AddActivePunishments(IServiceScope scope, ModerationSettings moderationSettings, IEnumerable<Punishment> punishments, SocketGuildUser user)
+        {
+            var activePunishmentsService = scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
+
+            var activePunishments = new List<ActivePunishment>();
+
+            var modset = await _settingsService.GetSettingsByGuild(user.Guild.Id);
 
             foreach (var punishment in punishments)
             {
-                switch (punishment.PunishType)
-                {
+                // Null means apply permanently/punishment is just a kick, so no adding punishment to db.
+                if (punishment.PunishDuration == null) continue;
 
-                }
+                activePunishments.Add(new ActivePunishment
+                {
+                    GuildId = moderationSettings.GuildId,
+                    PunishmentExpires = DateTimeOffset.Now.AddMinutes(punishment.PunishDuration.Value),
+                    PunishType = punishment.PunishType,
+                    RoleId = punishment.RoleId,
+                    UserId = user.Id
+                });
             }
 
-            return;
+            await activePunishmentsService.CreateBulk(activePunishments);
         }
     }
 }
