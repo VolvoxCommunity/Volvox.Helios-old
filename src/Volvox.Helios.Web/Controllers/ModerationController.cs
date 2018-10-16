@@ -23,9 +23,9 @@ namespace Volvox.Helios.Web.Controllers
             _entityServiceProfanityFilter = entityServiceProfanityFilter;
         }
 
-        public async Task<IActionResult> Index(ulong guildId)
-        {
+        //public async Task<IActionResult> Index(ulong guildId)
+        //{
 
-        }
+        //}
     }
 }

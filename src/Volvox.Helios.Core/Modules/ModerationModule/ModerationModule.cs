@@ -180,66 +180,77 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             await _messageService.Post(message.Channel.Id, $"Message by <@{user.Id}> deleted\nReason: {warningType}");
 
+            UserWarnings userData;
+
             using (var scope = _scopeFactory.CreateScope())
             {
                 var userWarningService = scope.ServiceProvider.GetRequiredService<IEntityService<UserWarnings>>();
 
                 var listUserData = await userWarningService.Get(x => x.UserId == user.Id, u => u.Warnings);
 
-                var userData = listUserData[0];
-
                 // User isn't tracked yet, so create new entry for them.
-                if (userData == null)
+                if (listUserData.Count == 0)
                 {
-                    await userWarningService.Create(new UserWarnings()
+                    userData = new UserWarnings()
                     {
-                        ModerationSettings = moderationSettings,
+                        GuildId = moderationSettings.GuildId,
                         UserId = user.Id
-                    });
+                    };
+
+                    await userWarningService.Create(userData);
                 }
-
-                // Add warning to database.
-                await AddWarning(scope, moderationSettings, userData, warningType);
-
-                // Get all warnings that haven't expired.
-                var userWarnings = userData.Warnings.Where(x => x.WarningExpires > DateTimeOffset.Now);
-
-                // Count warnings of violation type.
-                var specificWarningCount = userWarnings.Count(x => x.WarningType == warningType);
-
-                // Count total number of warnings.
-                var allWarningsCount = userWarnings.Count();
-
-                var punishments = new List<Punishment>();
-
-                // Global punishments
-                punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == WarningType.General && x.WarningThreshold == allWarningsCount));
-
-                // Punishments for specific type. I.E. profanity violation.
-                punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
-
-                await ApplyPunishment(scope, moderationSettings, punishments, user);
-              
+                else
+                {
+                    userData = listUserData[0];
+                }
             }
+
+            // Add warning to database.
+            await AddWarning(moderationSettings, userData, warningType);
+
+            // Get all warnings that haven't expired.
+            var userWarnings = userData.Warnings.Where(x => x.WarningExpires > DateTimeOffset.Now);
+
+            // Count warnings of violation type.
+            var specificWarningCount = userWarnings.Count(x => x.WarningType == warningType);
+
+            // Count total number of warnings.
+            var allWarningsCount = userWarnings.Count();
+
+            var punishments = new List<Punishment>();
+
+            // Global punishments
+            punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == WarningType.General && x.WarningThreshold == allWarningsCount));
+
+            // Punishments for specific type. I.E. profanity violation.
+            punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
+
+            await ApplyPunishment(moderationSettings, punishments, user);
+            
         }
  
-        private async Task AddWarning(IServiceScope scope, ModerationSettings moderationSettings, UserWarnings user, WarningType warningType)
+        private async Task AddWarning(ModerationSettings moderationSettings, UserWarnings user, WarningType warningType)
         {
-            var warningService = scope.ServiceProvider.GetRequiredService<IEntityService<Warning>>();
-
-            var specificWarningDuration = GetWarningDuration(moderationSettings, warningType);
-
-            var warning = new Warning()
+            using (var scope = _scopeFactory.CreateScope())
             {
-                User = user,
-                WarningRecieved = DateTimeOffset.Now,
-                WarningExpires = DateTimeOffset.Now.AddMinutes(specificWarningDuration),
-                WarningType = warningType
-            };
+                var warningService = scope.ServiceProvider.GetRequiredService<IEntityService<Warning>>();
 
-            await warningService.Create(warning);
+                var specificWarningDuration = GetWarningDuration(moderationSettings, warningType);
 
-            return;
+                var warning = new Warning()
+                {
+                    UserId = user.Id,
+                    WarningRecieved = DateTimeOffset.Now,
+                    WarningExpires = DateTimeOffset.Now.AddMinutes(specificWarningDuration),
+                    WarningType = warningType
+                };
+
+                if (user.Warnings == null) user.Warnings = new List<Warning>();
+
+                user.Warnings.Add(warning);
+
+                await warningService.Create(warning);
+            }
         }
 
         private int GetWarningDuration(ModerationSettings moderationSettings, WarningType warningType)
@@ -259,7 +270,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             return duration;
         }
 
-        private async Task ApplyPunishment(IServiceScope scope, ModerationSettings moderationSettings, IEnumerable<Punishment> punishments, SocketGuildUser user)
+        private async Task ApplyPunishment(ModerationSettings moderationSettings, IEnumerable<Punishment> punishments, SocketGuildUser user)
         {
             var appliedPunishments = new List<Punishment>();
 
@@ -268,11 +279,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 switch (punishment.PunishType)
                 {
                     case ( PunishType.Kick ):
-                        await AddRolePunishment(punishment, user);
+                        await KickPunishment(punishment, user);
                         break;
 
                     case ( PunishType.Ban ):
-                        await AddRolePunishment(punishment, user);
+                        await BanPunishment(punishment, user);
                         break;
 
                     case ( PunishType.AddRole ):
@@ -280,7 +291,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                         break;
                 }
 
-                await AddActivePunishments(scope, moderationSettings, punishments, user);
+                await AddActivePunishments(moderationSettings, punishments, user);
             }       
         }
 
@@ -305,30 +316,32 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             await user.Guild.AddBanAsync(user);
         }
 
-        private async Task AddActivePunishments(IServiceScope scope, ModerationSettings moderationSettings, IEnumerable<Punishment> punishments, SocketGuildUser user)
+        private async Task AddActivePunishments(ModerationSettings moderationSettings, IEnumerable<Punishment> punishments, SocketGuildUser user)
         {
-            var activePunishmentsService = scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
-
-            var activePunishments = new List<ActivePunishment>();
-
-            var modset = await _settingsService.GetSettingsByGuild(user.Guild.Id);
-
-            foreach (var punishment in punishments)
+            using (var scope = _scopeFactory.CreateScope())
             {
-                // Null means apply permanently/punishment is just a kick, so no adding punishment to db.
-                if (punishment.PunishDuration == null) continue;
+                var activePunishmentsService = scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
 
-                activePunishments.Add(new ActivePunishment
+                var activePunishments = new List<ActivePunishment>();
+
+                foreach (var punishment in punishments)
                 {
-                    GuildId = moderationSettings.GuildId,
-                    PunishmentExpires = DateTimeOffset.Now.AddMinutes(punishment.PunishDuration.Value),
-                    PunishType = punishment.PunishType,
-                    RoleId = punishment.RoleId,
-                    UserId = user.Id
-                });
-            }
+                    // Null means apply permanently/punishment is just a kick, so no adding punishment to db.
+                    if (punishment.PunishDuration == null)
+                        continue;
 
-            await activePunishmentsService.CreateBulk(activePunishments);
+                    activePunishments.Add(new ActivePunishment
+                    {
+                        GuildId = moderationSettings.GuildId,
+                        PunishmentExpires = DateTimeOffset.Now.AddMinutes(punishment.PunishDuration.Value),
+                        PunishType = punishment.PunishType,
+                        RoleId = punishment.RoleId,
+                        UserId = user.Id
+                    });
+                }
+
+                await activePunishmentsService.CreateBulk(activePunishments);
+            }
         }
     }
 }
