@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -131,12 +130,12 @@ namespace Volvox.Helios.Core.Modules.Streamer
             }
 
             // Check to make sure the user is streaming and not in the streaming list.
-            if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch &&
-                !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
+            if (user.Activity.Type == ActivityType.Streaming &&
+                !_streamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
                 await AnnounceUserHandler(user, channels);
 
             // User is not streaming.
-            else if (user.Game == null || user.Game.Value.StreamType != StreamType.Twitch)
+            else
             {
                 // Get user from streaming list.
                 var userDataFromList = StreamingList[user.Guild.Id].Where(x => x.UserId == user.Id).ToList();
@@ -192,13 +191,15 @@ namespace Volvox.Helios.Core.Modules.Streamer
         private async Task<StreamAnnouncerMessage> AnnounceUser(SocketGuildUser user, StreamAnnouncerMessage m,
             ulong channelId)
         {
+            var streamingGame = (StreamingGame) user.Activity;
+
             // Build the embedded message.
             var embed = new EmbedBuilder()
                 .WithTitle($"{user.Username} is now live!")
-                .WithDescription($"{user.Game?.StreamUrl} - {user.Mention}")
+                .WithDescription($"{streamingGame.Url} - {user.Mention}")
                 .WithColor(new Color(0x4A90E2))
                 .WithThumbnailUrl(user.GetAvatarUrl())
-                .AddInlineField("Title", user.Game?.Name).Build();
+                .AddField("Title", user.Activity.Name, true).Build();
 
             // Announce the user to the channel specified in settings.
             var messageData = await user.Guild.GetTextChannel(channelId)
