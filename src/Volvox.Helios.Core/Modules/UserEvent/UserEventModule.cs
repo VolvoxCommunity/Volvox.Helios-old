@@ -22,7 +22,8 @@ namespace Volvox.Helios.Core.Modules.UserEvent
         /// <param name="config">Application configuration.</param>
         /// <param name="settingsService">Settings service.</param>
         public UserEventModule(IDiscordSettings discordSettings, ILogger<StreamerRoleModule> logger,
-            IConfiguration config, IModuleSettingsService<UserEventSettings> settingsService) : base(discordSettings, logger, config)
+            IConfiguration config, IModuleSettingsService<UserEventSettings> settingsService) : base(discordSettings,
+            logger, config)
         {
             _settingsService = settingsService;
         }
@@ -37,17 +38,14 @@ namespace Volvox.Helios.Core.Modules.UserEvent
             {
                 var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id);
 
-                if (settings.EnableUserLeftEvent)
-                {
-                    HandleUserLeftEvent(user, settings.UserLeftEventChannelId);
-                }
+                if (settings.EnableUserLeftEvent) HandleUserLeftEvent(user, settings.UserLeftEventChannelId);
             };
 
             return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Handle when a user leaves a guild.
+        ///     Handle when a user leaves a guild.
         /// </summary>
         /// <param name="user">User that left.</param>
         /// <param name="announceChannelId">Channel to announce the event to.</param>
