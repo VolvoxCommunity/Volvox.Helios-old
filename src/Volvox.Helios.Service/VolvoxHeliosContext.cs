@@ -19,11 +19,13 @@ namespace Volvox.Helios.Service
         public DbSet<StreamAnnouncerChannelSettings> StreamAnnouncerChannelSettings { get; set; }
 
         public DbSet<StreamerRoleSettings> StreamerRoleSettings { get; set; }
-        
+
         public DbSet<StreamAnnouncerMessage> StreamAnnouncerMessages { get; set;  }
-        
+
         public DbSet<PollSettings> PollSettings { get; set; }
-        
+
+        public DbSet<UserEventSettings> UserEventSettings { get; set; }
+
         #region ChatTracker
 
         public DbSet<ChatTrackerSettings> ChatTrackerSettings { get; set; }
@@ -40,7 +42,7 @@ namespace Volvox.Helios.Service
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            SetupForReminderSchema(modelBuilder);            
+            SetupForReminderSchema(modelBuilder);
         }
 
         private void SetupForReminderSchema(ModelBuilder modelBuilder)

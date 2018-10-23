@@ -41,6 +41,13 @@
       "Description": "Set periodic reminders that will be sent to specific channels.",
       "ReleaseState": "Canary",
       "Configurable": "true"
+    },
+    "UserEventModule": {
+      "Name": "UserEvent",
+      "Version": "1.0",
+      "Description": "Perform actions when a user event occurs.",
+      "ReleaseState": "Canary",
+      "Configurable": "true"
     }
   }
 }
