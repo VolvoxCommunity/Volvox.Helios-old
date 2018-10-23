@@ -73,6 +73,10 @@
     margin-top: 30px;
 }
 
+.settings-card {
+  margin-bottom: 10px;
+}
+
 /************ Toggle Switch *************/
 
 .switch {

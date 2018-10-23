@@ -7,10 +7,11 @@
 <h2>@Model.GuildName</h2>
 <hr />
 <h4>Modules</h4>
-<div class="row">
-    @foreach (var module in Model.Modules)
-    {
-        <div class="col-sm">
+
+@foreach (var module in Model.Modules)
+{
+    <div class="row settings-card">
+        <div class="col">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">
@@ -23,9 +24,11 @@
                 </div>
             </div>
         </div>
-    }
+    </div>
+}
 
-    <div class="col-sm">
+<div class="row">
+    <div class="col">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">

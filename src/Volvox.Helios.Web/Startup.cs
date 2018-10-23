@@ -43,6 +43,7 @@ using Volvox.Helios.Service.Jobs;
 
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Discord.WebSocket;
+using Volvox.Helios.Core.Modules.UserEvent;
 
 namespace Volvox.Helios.Web
 {
@@ -123,6 +124,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IModule, StreamerRoleModule>();
             services.AddSingleton<IModule, ChatTrackerModule>();
             services.AddSingleton<IModule, RemembotModule>();
+            services.AddSingleton<IModule, UserEventModule>();
 
             // Commands
             services.AddSingleton<IModule, CommandManager>();
