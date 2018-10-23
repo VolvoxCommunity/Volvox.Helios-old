@@ -65,7 +65,7 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
                         }
 
                         // Remove user from role.
-                        if (guildUser.Roles.Any(r => r == streamingRole))
+                        if (guildUser.Roles.Any(r => r.Id == streamingRole.Id))
                         {
                             await RemoveUserFromStreamingRole(guildUser, streamingRole);
                         }
