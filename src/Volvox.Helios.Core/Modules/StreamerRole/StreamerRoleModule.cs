@@ -58,10 +58,17 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
                     {
                         // Add use to role.
                         if (guildUser.Game != null && guildUser.Game.Value.StreamType == StreamType.Twitch)
+                        {
                             await AddUserToStreamingRole(guildUser, streamingRole);
+
+                            return;
+                        }
+
                         // Remove user from role.
-                        else if (guildUser.Roles.Any(r => r == streamingRole))
+                        if (guildUser.Roles.Any(r => r == streamingRole))
+                        {
                             await RemoveUserFromStreamingRole(guildUser, streamingRole);
+                        }
                     }
                 }
             };
@@ -88,6 +95,8 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
         /// <param name="streamingRole">Role to remove the user from.</param>
         private async Task RemoveUserFromStreamingRole(IGuildUser guildUser, IRole streamingRole)
         {
+            Logger.LogDebug($"StreamingRole Module: Attempting to remove {guildUser.Username} from role {streamingRole.Name}");
+
             await guildUser.RemoveRoleAsync(streamingRole);
 
             Logger.LogDebug($"StreamingRole Module: Removing {guildUser.Username} from role {streamingRole.Name}");
