@@ -20,6 +20,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Discord;
+using Volvox.Helios.Service.BackgroundJobs;
+using Hangfire;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
@@ -33,13 +35,15 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private readonly IServiceScopeFactory _scopeFactory;
 
+        private readonly IJobService _jobService;
+
         private readonly List<string> _defaultBannedWords = new List<string>();
 
         #endregion
 
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
             IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService,
-            IMessageService messageService, IServiceScopeFactory scopeFactory
+            IMessageService messageService, IServiceScopeFactory scopeFactory, IJobService jobservice
         ) : base(
             discordSettings, logger, config)
         {
@@ -49,6 +53,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             _scopeFactory = scopeFactory;
 
+            _jobService = jobservice;
+
+            //TODO: Make this better. find way if assigning directly.
             var defaultBannedWords = config.GetSection("BannedWords").GetChildren();
 
             foreach (var word in defaultBannedWords)
@@ -68,6 +75,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             };
 
             return Task.CompletedTask;
+        }
+
+        private bool logtest() {
+            
+            return true;
         }
 
         private async Task CheckMessage(SocketMessage message)
