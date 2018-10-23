@@ -41,13 +41,5 @@ namespace Volvox.Helios.Core.Services.MessageService
         /// <param name="embed">Message embed to change to.</param>
         /// <returns>User message after modification.</returns>
         Task<IUserMessage> Modify(IUserMessage message, string text, Embed embed);
-
-        /// <summary>
-        ///     Delete message.
-        /// </summary>
-        /// <param name="channelId">Channel message is located in.</param>
-        /// <param name="messageIds">Array of message ids to delete.</param>
-        /// <returns></returns>
-        Task Delete(ulong channelId, ulong[] messageIds);
     }
 }

@@ -64,14 +64,6 @@ namespace Volvox.Helios.Core.Services.MessageService
             return message;
         }
 
-        ///<inheritdoc />
-        public Task Delete(ulong channelId, ulong[] messageIds)
-        {
-            var channel = GetChannel(channelId);
-
-            return channel?.DeleteMessagesAsync(messageIds);
-        }
-
         /// <summary>
         ///     Get a channel by id.
         /// </summary>

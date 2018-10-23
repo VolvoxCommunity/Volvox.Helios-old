@@ -57,7 +57,7 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
                     else
                     {
                         // Add use to role.
-                        if (guildUser.Game != null && guildUser.Game.Value.StreamType == StreamType.Twitch)
+                        if (guildUser.Activity.Type == ActivityType.Streaming)
                         {
                             await AddUserToStreamingRole(guildUser, streamingRole);
 
