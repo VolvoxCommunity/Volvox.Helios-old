@@ -30,13 +30,15 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IModuleSettingsService<StreamerRoleSettings> _streamerRoleSettingsService;
         private readonly IModuleSettingsService<RemembotSettings> _reminderSettingsService;
         private readonly IEntityService<RecurringReminderMessage> _recurringReminderService;
+        private readonly IModuleSettingsService<UserEventSettings> _userEventSettingsService;
 
         public SettingsController(IModuleSettingsService<StreamAnnouncerSettings> streamAnnouncerSettingsService,
             IModuleSettingsService<StreamerRoleSettings> streamerRoleSettingsService,
             IEntityService<StreamAnnouncerChannelSettings> streamAnnouncerChannelSettingsService,
             IModuleSettingsService<ChatTrackerSettings> chatTrackerSettingsService,
             IModuleSettingsService<RemembotSettings> reminderSettingsService,
-            IEntityService<RecurringReminderMessage> recurringReminderService)
+            IEntityService<RecurringReminderMessage> recurringReminderService,
+            IModuleSettingsService<UserEventSettings> userEventSettingsService)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamerRoleSettingsService = streamerRoleSettingsService;
@@ -44,6 +46,7 @@ namespace Volvox.Helios.Web.Controllers
             _chatTrackerSettingsService = chatTrackerSettingsService;
             _reminderSettingsService = reminderSettingsService;
             _recurringReminderService = recurringReminderService;
+            _userEventSettingsService = userEventSettingsService;
         }
 
         public IActionResult Index(ulong guildId, [FromServices] IBot bot,
@@ -288,6 +291,54 @@ namespace Volvox.Helios.Web.Controllers
 
             return RedirectToAction("Index");
         }
+        #endregion
+
+        #region UserEvent
+
+        // GET
+        [HttpGet("UserEvent")]
+        public async Task<IActionResult> UserEventSettings(ulong guildId, [FromServices] IDiscordGuildService guildService)
+        {
+            // All channels for guild.
+            var channels = await guildService.GetChannels(guildId);
+
+            // Text channels for guild.
+            var textChannels = channels.Where(x => x.Type == 0).ToList();
+
+            var viewModel = new UserEventSettingsViewModel
+            {
+                Channels = new SelectList(textChannels, "Id", "Name"),
+                GuildId = guildId.ToString()
+            };
+
+            // Get general module settings for guild, from database.
+            var settings = await _userEventSettingsService.GetSettingsByGuild(guildId);
+
+            if (settings == null) return View(viewModel);
+
+            viewModel.Enabled = settings.Enabled;
+            viewModel.UserLeftEvent = settings.EnableUserLeftEvent;
+            viewModel.ChannelId = settings.UserLeftEventChannelId;
+
+            return View(viewModel);
+        }
+
+        // POST
+        [HttpPost("UserEvent")]
+        public async Task<IActionResult> UserEventSettings(ulong guildId, UserEventSettingsViewModel viewModel)
+        {
+            // Save settings to the database.
+            await _userEventSettingsService.SaveSettings(new UserEventSettings
+            {
+                GuildId = guildId,
+                Enabled = viewModel.Enabled,
+                EnableUserLeftEvent = viewModel.UserLeftEvent,
+                UserLeftEventChannelId = viewModel.ChannelId
+            });
+
+            return RedirectToAction("Index");
+        }
+
         #endregion
     }
 }
