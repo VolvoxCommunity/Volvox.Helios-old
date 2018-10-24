@@ -21,7 +21,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
     public class StreamAnnouncerModule : Module
     {
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly IModuleSettingsService<StreamAnnouncerSettings> _settingsService;
+        private readonly IModuleSettingsService<StreamerSettings> _settingsService;
 
         /// <summary>
         ///     Announce the user to a specified channel when streaming.
@@ -32,7 +32,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="settingsService">Settings service.</param>
         /// <param name="scopeFactory">Scope factory.</param>
         public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger,
-            IConfiguration config, IModuleSettingsService<StreamAnnouncerSettings> settingsService,
+            IConfiguration config, IModuleSettingsService<StreamerSettings> settingsService,
             IServiceScopeFactory scopeFactory
         ) : base(
             discordSettings, logger, config)
@@ -56,14 +56,14 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             {
                 var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessage>>();
 
-                var messages = await messageService.GetAll(x => x.StreamAnnouncerSettings);
+                var messages = await messageService.GetAll(x => x.StreamerSettings);
 
                 foreach (var m in messages)
                 {
-                    if (!_streamingList.ContainsKey(m.StreamAnnouncerSettings.GuildId))
-                        _streamingList.Add(m.StreamAnnouncerSettings.GuildId, new HashSet<StreamAnnouncerMessage>());
+                    if (!_streamingList.ContainsKey(m.StreamerSettings.GuildId))
+                        _streamingList.Add(m.StreamerSettings.GuildId, new HashSet<StreamAnnouncerMessage>());
 
-                    _streamingList[m.StreamAnnouncerSettings.GuildId].Add(m);
+                    _streamingList[m.StreamerSettings.GuildId].Add(m);
                 }
             }
 
@@ -82,8 +82,8 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// </summary>
         /// <param name="user">User to be evaluated/adjusted for streaming announcement.</param>
         /// <param name="channels">List of channels with module enabled</param>
-        private async Task CheckUser(SocketGuildUser user, StreamAnnouncerSettings settings,
-            List<StreamAnnouncerChannelSettings> channels)
+        private async Task CheckUser(SocketGuildUser user, StreamerSettings settings,
+            List<StreamerChannelSettings> channels)
         {
             // Add initial hash set for the guild.
             if (!_streamingList.TryGetValue(user.Guild.Id, out var set))
@@ -118,7 +118,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="user">user to be announced.</param>
         /// <param name="channels">List of channels with module enabled.</param>
         /// <returns></returns>
-        private async Task AnnounceUserHandler(SocketGuildUser user, List<StreamAnnouncerChannelSettings> channels)
+        private async Task AnnounceUserHandler(SocketGuildUser user, List<StreamerChannelSettings> channels)
         {
             var announcements = new List<Task<StreamAnnouncerMessage>>();
 
@@ -186,7 +186,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="channels">List of channels with module enabled.</param>
         /// <returns></returns>
         private async Task AnnouncedMessageHandler(SocketGuildUser user, List<StreamAnnouncerMessage> messages,
-            List<StreamAnnouncerChannelSettings> channels)
+            List<StreamerChannelSettings> channels)
         {
             var messageDeletions = new List<Task>();
 

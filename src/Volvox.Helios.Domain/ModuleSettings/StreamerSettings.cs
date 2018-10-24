@@ -4,10 +4,12 @@ using Volvox.Helios.Domain.Module;
 
 namespace Volvox.Helios.Domain.ModuleSettings
 {
-    public class StreamAnnouncerSettings : ModuleSettings
+    public class StreamerSettings : ModuleSettings
     {
-        public List<StreamAnnouncerChannelSettings> ChannelSettings { get; set; }
+        public List<StreamerChannelSettings> ChannelSettings { get; set; }
 
         public List<StreamAnnouncerMessage> StreamMessages { get; set; }
+
+        public ulong RoleId { get; set; }
     }
 }

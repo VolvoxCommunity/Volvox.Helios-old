@@ -15,7 +15,6 @@ using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
-using Volvox.Helios.Web.Models;
 using Volvox.Helios.Web.ViewModels.Poll;
 using Volvox.Helios.Web.ViewModels.Settings;
 
@@ -32,26 +31,36 @@ namespace Volvox.Helios.Web.Controllers
             var channels = await guildService.GetChannels(guildId);
 
             // Format the ulong to string.
-            return channels.FilterChannelType(0).Select(c => new {id = c.Id.ToString(), name = c.Name});
+            return channels.FilterChannelType(0).Select(c => new
+            {
+                id = c.Id.ToString(),
+                name = c.Name
+            });
         }
 
         [IsUserGuildAdminFilter]
         [HttpGet("GetChannelSettingsAnnouncer")]
-        public async Task<StreamAnnouncerChannelSettingsViewModel> GetChannelSettingsAnnouncer([FromServices] IDiscordUserGuildService userGuildService,
-            [FromServices] IModuleSettingsService<StreamAnnouncerSettings> streamAnnouncerSettingsService, ulong guildId, ulong channelId)
+        public async Task<StreamerChannelSettingsViewModel> GetChannelSettingsAnnouncer(
+            [FromServices] IDiscordUserGuildService userGuildService,
+            [FromServices] IModuleSettingsService<StreamerSettings> streamerSettingsService, ulong guildId,
+            ulong channelId)
         {
             // All channel's settings in guild.
-            var allChannelSettings = await streamAnnouncerSettingsService.GetSettingsByGuild(guildId, x => x.ChannelSettings);
+            var allChannelSettings = await streamerSettingsService.GetSettingsByGuild(guildId, x => x.ChannelSettings);
 
             if (allChannelSettings == null)
-                return new StreamAnnouncerChannelSettingsViewModel() { Enabled = false, RemoveMessages = false };
+                return new StreamerChannelSettingsViewModel
+                {
+                    Enabled = false,
+                    RemoveMessages = false
+                };
 
             // Settings for specific channel.
             var channelSettings = allChannelSettings.ChannelSettings.FirstOrDefault(x => x.ChannelId == channelId);
 
             var isEnabled = channelSettings != null;
 
-            var settings = new StreamAnnouncerChannelSettingsViewModel()
+            var settings = new StreamerChannelSettingsViewModel
             {
                 Enabled = isEnabled,
                 RemoveMessages = isEnabled && channelSettings.RemoveMessage
@@ -61,17 +70,20 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpGet("GetUserAdminGuilds")]
-        public async Task<object> GetUserAdminGuilds([FromServices] IDiscordUserGuildService userGuildService, [FromServices] IBot bot, bool inGuild = false)
+        public async Task<object> GetUserAdminGuilds([FromServices] IDiscordUserGuildService userGuildService,
+            [FromServices] IBot bot, bool inGuild = false)
         {
             var guilds = await userGuildService.GetUserGuilds();
 
-            if (inGuild)
-            {
-                guilds.RemoveAll(g => !bot.IsBotInGuild(g.Guild.Id));
-            }
+            if (inGuild) guilds.RemoveAll(g => !bot.IsBotInGuild(g.Guild.Id));
 
             // Format the ulong to string.
-            return guilds.FilterAdministrator().Select(g => new {id = g.Guild.Id.ToString(), name = g.Guild.Name, icon = g.Guild.Icon});
+            return guilds.FilterAdministrator().Select(g => new
+            {
+                id = g.Guild.Id.ToString(),
+                name = g.Guild.Name,
+                icon = g.Guild.Icon
+            });
         }
 
         [HttpGet("IsBotInGuild")]
@@ -81,7 +93,8 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpGet("GetPollTitles")]
-        public async Task<List<string>> GetPollTitles(ulong guildId, [FromServices] IEntityService<Poll> entityServicePolls)
+        public async Task<List<string>> GetPollTitles(ulong guildId,
+            [FromServices] IEntityService<Poll> entityServicePolls)
         {
             var polls = await entityServicePolls.Get(x => x.GuildId == guildId);
 
@@ -106,15 +119,13 @@ namespace Volvox.Helios.Web.Controllers
             var pollOptions = new List<OptionModel>();
 
             var discordNumbers = MessageService.DiscordNumberEmotes;
-            
+
             for (var i = 1; i < pollDetails.GetLength(0); i++)
-            {
-                pollOptions.Add(new OptionModel()
+                pollOptions.Add(new OptionModel
                 {
                     Option = pollDetails[i],
                     VoteCount = poll.Reactions[new Emoji(discordNumbers[i])].ReactionCount
                 });
-            }
 
             formattedPoll.Options = pollOptions;
 
