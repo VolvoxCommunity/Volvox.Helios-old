@@ -42,17 +42,11 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
             {
                 var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id);
                 
-                Logger.LogDebug($"StreamerRole Module: Updating {guildUser.Username} - Before Settings");
-
                 if (settings != null && settings.Enabled)
                 {
-                    Logger.LogDebug($"StreamerRole Module: Updating {guildUser.Username} - After Settings");
-                    
                     // Get the streaming role.
                     var streamingRole = guildUser.Guild.Roles.FirstOrDefault(r => r.Id == settings.RoleId);
                     
-                    Logger.LogDebug($"StreamerRole Module: Updating {guildUser.Username} - After Role");
-
                     // Remove the streaming role if it does not exist.
                     if (streamingRole == null)
                     {
@@ -62,8 +56,6 @@ namespace Volvox.Helios.Core.Modules.StreamerRole
                     }
                     else
                     {
-                        Logger.LogDebug($"StreamerRole Module: Updating {guildUser.Username} - In Check AnyRoles: {guildUser.Roles.Any(r => r.Id == streamingRole.Id).ToString()} Game: {guildUser.Game.ToString()}");
-                        
                         // Add use to role.
                         if (guildUser.Game != null && guildUser.Game.Value.StreamType == StreamType.Twitch)
                         {
