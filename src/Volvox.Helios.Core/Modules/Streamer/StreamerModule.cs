@@ -98,7 +98,6 @@ namespace Volvox.Helios.Core.Modules.Streamer
 
                 Logger.LogError("Streamer Module: Role could not be found!");
             }
-
             else
             {
                 // Add use to role.

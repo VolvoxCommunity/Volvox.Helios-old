@@ -169,7 +169,6 @@ namespace Volvox.Helios.Web.Controllers
                 saveSettingsTasks.Add(!isSettingsInDb
                     ? _streamAnnouncerChannelSettingsService.Create(settings)
                     : _streamAnnouncerChannelSettingsService.Update(settings));
-
             else
             {
                 if (isSettingsInDb)
