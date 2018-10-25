@@ -139,7 +139,7 @@ namespace Volvox.Helios.Web.Controllers
                 // Text channels in guild.
                 var textChannels = channels.Where(x => x.Type == 0).ToList();
 
-                viewModel.Channels = new SelectList(textChannels, "Id", "Name"),
+                viewModel.Channels = new SelectList(textChannels, "Id", "Name");
                 viewModel.Roles = new SelectList(roles.RemoveManaged(), "Id", "Name");
 
                 return View(viewModel);
