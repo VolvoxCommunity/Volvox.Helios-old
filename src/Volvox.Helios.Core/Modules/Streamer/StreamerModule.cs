@@ -114,7 +114,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
                     await AddUserToStreamingRole(guildUser, streamingRole);
 
                 // Remove user from role.
-                else if (guildUser.Roles.Any(r => r.Id == streamingRole.Id))
+                else
                     await RemoveUserFromStreamingRole(guildUser, streamingRole);
             }
         }
