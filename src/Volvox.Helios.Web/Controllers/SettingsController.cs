@@ -133,6 +133,13 @@ namespace Volvox.Helios.Web.Controllers
                 ModelState.AddModelError("RolePosition",
                     "The bots managed role must be positioned higher then the selected role");
 
+                // All channels in guild.
+                var channels = await guildService.GetChannels(guildId);
+
+                // Text channels in guild.
+                var textChannels = channels.Where(x => x.Type == 0).ToList();
+
+                viewModel.Channels = new SelectList(textChannels, "Id", "Name"),
                 viewModel.Roles = new SelectList(roles.RemoveManaged(), "Id", "Name");
 
                 return View(viewModel);
