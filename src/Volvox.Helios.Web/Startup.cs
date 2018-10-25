@@ -43,7 +43,7 @@ using Volvox.Helios.Service.Jobs;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Modules.ModerationModule;
-
+using Volvox.Helios.Core.Jobs;
 
 namespace Volvox.Helios.Web
 {
@@ -159,6 +159,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IJobService, JobService>();
             services.AddTransient<JobActivator, ServiceProviderJobActivator>();
             services.AddTransient<RecurringReminderMessageJob>();
+            services.AddSingleton<RemoveExpiredWarningsJob>();
 
             // MVC
             services.AddMvc(options =>

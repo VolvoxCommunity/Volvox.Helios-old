@@ -22,6 +22,7 @@ using Newtonsoft.Json.Linq;
 using Discord;
 using Volvox.Helios.Service.BackgroundJobs;
 using Hangfire;
+using Volvox.Helios.Core.Jobs;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
@@ -74,12 +75,19 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 await CheckMessage(message);
             };
 
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var warningService = scope.ServiceProvider.GetRequiredService<RemoveExpiredWarningsJob>();
+
+                _jobService.ScheduleRecurringJob(() => warningService.Run(), Cron.Minutely(), "RemoveExpiredWarnings");
+            }
+
             return Task.CompletedTask;
         }
 
-        private bool logtest() {
-            
-            return true;
+        public void Test()
+        {
+            Console.WriteLine("test");
         }
 
         private async Task CheckMessage(SocketMessage message)
