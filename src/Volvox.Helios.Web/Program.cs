@@ -16,6 +16,8 @@ namespace Volvox.Helios.Web
         {
             return WebHost.CreateDefaultBuilder(args)
                 .UseApplicationInsights()
+                .CaptureStartupErrors(true)
+                .UseSetting("detailedErrors", "true")
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration(c => c.AddJsonFile("./modulemetadata.json"))
                 .ConfigureLogging((hostingContext, logging) =>
