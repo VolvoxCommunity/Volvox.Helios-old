@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -75,13 +76,20 @@ namespace Volvox.Helios.Core.Modules.Streamer
 
                 if (settings != null && settings.Enabled)
                 {
-                    // Stream Announcer
-                    if (settings.ChannelSettings != null)
-                        await CheckUser(guildUser, settings, settings.ChannelSettings);
+                    try
+                    {
+                        // Streamer Role
+                        if (settings.StreamerRoleEnabled)
+                            await HandleStreamerRole(guildUser, settings);
 
-                    // Streamer Role
-                    if (settings.StreamerRoleEnabled)
-                        await HandleStreamerRole(guildUser, settings);
+                        // Stream Announcer
+                        if (settings.ChannelSettings != null)
+                            await CheckUser(guildUser, settings, settings.ChannelSettings);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError($"Streamer Module: Error occured '{e.Message}'");
+                    }
                 }
             };
         }
