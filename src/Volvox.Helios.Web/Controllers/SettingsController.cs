@@ -25,21 +25,18 @@ namespace Volvox.Helios.Web.Controllers
     public class SettingsController : Controller
     {
         private readonly IModuleSettingsService<ChatTrackerSettings> _chatTrackerSettingsService;
+        private readonly IEntityService<RecurringReminderMessage> _recurringReminderService;
+        private readonly IModuleSettingsService<RemembotSettings> _reminderSettingsService;
         private readonly IEntityService<StreamerChannelSettings> _streamAnnouncerChannelSettingsService;
         private readonly IModuleSettingsService<StreamerSettings> _streamAnnouncerSettingsService;
-        private readonly IModuleSettingsService<StreamerRoleSettings> _streamerRoleSettingsService;
-        private readonly IModuleSettingsService<RemembotSettings> _reminderSettingsService;
-        private readonly IEntityService<RecurringReminderMessage> _recurringReminderService;
 
         public SettingsController(IModuleSettingsService<StreamerSettings> streamAnnouncerSettingsService,
-            IModuleSettingsService<StreamerRoleSettings> streamerRoleSettingsService,
             IEntityService<StreamerChannelSettings> streamAnnouncerChannelSettingsService,
             IModuleSettingsService<ChatTrackerSettings> chatTrackerSettingsService,
             IModuleSettingsService<RemembotSettings> reminderSettingsService,
             IEntityService<RecurringReminderMessage> recurringReminderService)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
-            _streamerRoleSettingsService = streamerRoleSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
             _chatTrackerSettingsService = chatTrackerSettingsService;
             _reminderSettingsService = reminderSettingsService;
@@ -98,6 +95,8 @@ namespace Volvox.Helios.Web.Controllers
             if (settings == null) return View(viewModel);
 
             viewModel.Enabled = settings.Enabled;
+            viewModel.StreamerRoleEnabled = settings.StreamerRoleEnabled;
+            viewModel.RoleId = settings.RoleId;
 
             // Gets first text channel's settings to prepopulate view with.
             var defaultChannel = settings.ChannelSettings.FirstOrDefault(x => x.ChannelId == textChannels[0].Id);
@@ -119,7 +118,8 @@ namespace Volvox.Helios.Web.Controllers
         // POST
         [HttpPost("Streamer")]
         public async Task<IActionResult> StreamerSettings(ulong guildId,
-            StreamerSettingsViewModel viewModel, [FromServices] IBot bot, [FromServices] IDiscordGuildService guildService)
+            StreamerSettingsViewModel viewModel, [FromServices] IBot bot,
+            [FromServices] IDiscordGuildService guildService)
         {
             var botRolePosition = bot.GetBotRoleHierarchy(guildId);
 
@@ -149,6 +149,7 @@ namespace Volvox.Helios.Web.Controllers
                 {
                     GuildId = guildId,
                     Enabled = viewModel.Enabled,
+                    StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
                     RoleId = viewModel.RoleId
                 })
             };
@@ -165,11 +166,9 @@ namespace Volvox.Helios.Web.Controllers
 
             // Save specific channel settings to the database.
             if (viewModel.ChannelSettings.Enabled)
-            {
                 saveSettingsTasks.Add(!isSettingsInDb
                     ? _streamAnnouncerChannelSettingsService.Create(settings)
                     : _streamAnnouncerChannelSettingsService.Update(settings));
-            }
 
             else
             {
@@ -204,7 +203,7 @@ namespace Volvox.Helios.Web.Controllers
 
         // POST
         [HttpPost("ChatTracker")]
-        public async Task<IActionResult> ChatTrackerSettings(ulong guildId, StreamerRoleSettingsViewModel viewModel)
+        public async Task<IActionResult> ChatTrackerSettings(ulong guildId, ChatTrackerSettingsViewModel viewModel)
         {
             // Save settings to the database.
             await _chatTrackerSettingsService.SaveSettings(new ChatTrackerSettings
@@ -219,14 +218,15 @@ namespace Volvox.Helios.Web.Controllers
         #endregion
 
         #region Reminder
+
         [HttpGet("Remembot")]
         public async Task<IActionResult> RemembotSettings(ulong guildId,
-            [FromServices]IDiscordGuildService guildService)
+            [FromServices] IDiscordGuildService guildService)
         {
             var settings = await _reminderSettingsService.GetSettingsByGuild(guildId);
             var channels = await guildService.GetChannels(guildId);
             var textChannels = channels.Where(x => x.Type == 0).ToList();
-            if(settings is null)
+            if (settings is null)
             {
                 settings = new RemembotSettings
                 {
@@ -254,6 +254,7 @@ namespace Volvox.Helios.Web.Controllers
 
             return RedirectToAction("Index");
         }
+
         #endregion
     }
 }

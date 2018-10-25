@@ -23,8 +23,6 @@ using Volvox.Helios.Core.Modules.Command;
 using Volvox.Helios.Core.Modules.Command.Commands;
 using Volvox.Helios.Core.Modules.Command.Framework;
 using Volvox.Helios.Core.Modules.Common;
-using Volvox.Helios.Core.Modules.StreamAnnouncer;
-using Volvox.Helios.Core.Modules.StreamerRole;
 using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
@@ -40,9 +38,9 @@ using Hangfire.SqlServer;
 using Volvox.Helios.Core.Modules.ReminderModule;
 using Volvox.Helios.Service.BackgroundJobs;
 using Volvox.Helios.Service.Jobs;
-
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Discord.WebSocket;
+using Volvox.Helios.Core.Modules.Streamer;
 
 namespace Volvox.Helios.Web
 {
@@ -119,8 +117,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IBot, Bot>();
 
             // Modules
-            services.AddSingleton<IModule, StreamAnnouncerModule>();
-            services.AddSingleton<IModule, StreamerRoleModule>();
+            services.AddSingleton<IModule, StreamerModule>();
             services.AddSingleton<IModule, ChatTrackerModule>();
             services.AddSingleton<IModule, RemembotModule>();
 

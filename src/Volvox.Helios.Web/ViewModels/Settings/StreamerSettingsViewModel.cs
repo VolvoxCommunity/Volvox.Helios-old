@@ -21,6 +21,10 @@ namespace Volvox.Helios.Web.ViewModels.Settings
 
         public StreamerChannelSettingsViewModel ChannelSettings { get; set; }
 
+        [Required]
+        [DisplayName("Enabled")]
+        public bool StreamerRoleEnabled { get; set; }
+
         public SelectList Roles { get; set; }
 
         [Required]

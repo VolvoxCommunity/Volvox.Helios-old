@@ -10,6 +10,8 @@ namespace Volvox.Helios.Domain.ModuleSettings
 
         public List<StreamAnnouncerMessage> StreamMessages { get; set; }
 
+        public bool StreamerRoleEnabled { get; set; }
+
         public ulong RoleId { get; set; }
     }
 }

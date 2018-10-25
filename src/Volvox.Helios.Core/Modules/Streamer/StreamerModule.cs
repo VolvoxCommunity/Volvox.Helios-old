@@ -7,18 +7,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
+using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
 
-namespace Volvox.Helios.Core.Modules.StreamAnnouncer
+namespace Volvox.Helios.Core.Modules.Streamer
 {
     /// <summary>
     ///     Announce the user to a specified channel when the user starts streaming.
     /// </summary>
-    public class StreamAnnouncerModule : Module
+    public class StreamerModule : Module
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IModuleSettingsService<StreamerSettings> _settingsService;
@@ -31,7 +32,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="config">Application configuration.</param>
         /// <param name="settingsService">Settings service.</param>
         /// <param name="scopeFactory">Scope factory.</param>
-        public StreamAnnouncerModule(IDiscordSettings discordSettings, ILogger<StreamAnnouncerModule> logger,
+        public StreamerModule(IDiscordSettings discordSettings, ILogger<StreamerModule> logger,
             IConfiguration config, IModuleSettingsService<StreamerSettings> settingsService,
             IServiceScopeFactory scopeFactory
         ) : base(
@@ -42,7 +43,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             _scopeFactory = scopeFactory;
         }
 
-        private IDictionary<ulong, HashSet<StreamAnnouncerMessage>> _streamingList { get; } =
+        private IDictionary<ulong, HashSet<StreamAnnouncerMessage>> StreamingList { get; } =
             new Dictionary<ulong, HashSet<StreamAnnouncerMessage>>();
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="client">Client for the module to be registered to.</param>
         public override async Task Init(DiscordSocketClient client)
         {
-            // Populate streaming list from database. This is incase the bot restarts, the messages won't be lost.
+            // Populate streaming list from database. This is in case the bot restarts, the messages won't be lost.
             using (var scope = _scopeFactory.CreateScope())
             {
                 var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessage>>();
@@ -60,10 +61,10 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
 
                 foreach (var m in messages)
                 {
-                    if (!_streamingList.ContainsKey(m.StreamerSettings.GuildId))
-                        _streamingList.Add(m.StreamerSettings.GuildId, new HashSet<StreamAnnouncerMessage>());
+                    if (!StreamingList.ContainsKey(m.StreamerSettings.GuildId))
+                        StreamingList.Add(m.StreamerSettings.GuildId, new HashSet<StreamAnnouncerMessage>());
 
-                    _streamingList[m.StreamerSettings.GuildId].Add(m);
+                    StreamingList[m.StreamerSettings.GuildId].Add(m);
                 }
             }
 
@@ -72,9 +73,42 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             {
                 var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id, x => x.ChannelSettings);
 
-                if (settings != null && settings.Enabled && settings.ChannelSettings != null)
-                    await CheckUser(guildUser, settings, settings.ChannelSettings);
+                if (settings != null && settings.Enabled)
+                {
+                    // Stream Announcer
+                    if (settings.ChannelSettings != null)
+                        await CheckUser(guildUser, settings, settings.ChannelSettings);
+
+                    // Streamer Role
+                    if (settings.StreamerRoleEnabled)
+                        await HandleStreamerRole(guildUser, settings);
+                }
             };
+        }
+
+        private async Task HandleStreamerRole(SocketGuildUser guildUser, StreamerSettings settings)
+        {
+            // Get the streaming role.
+            var streamingRole = guildUser.Guild.Roles.FirstOrDefault(r => r.Id == settings.RoleId);
+
+            // Remove the streaming role if it does not exist.
+            if (streamingRole == null)
+            {
+                await _settingsService.RemoveSetting(settings);
+
+                Logger.LogError("Streamer Module: Role could not be found!");
+            }
+
+            else
+            {
+                // Add use to role.
+                if (guildUser.Game != null && guildUser.Game.Value.StreamType == StreamType.Twitch)
+                    await AddUserToStreamingRole(guildUser, streamingRole);
+
+                // Remove user from role.
+                else if (guildUser.Roles.Any(r => r.Id == streamingRole.Id))
+                    await RemoveUserFromStreamingRole(guildUser, streamingRole);
+            }
         }
 
         /// <summary>
@@ -86,29 +120,29 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             List<StreamerChannelSettings> channels)
         {
             // Add initial hash set for the guild.
-            if (!_streamingList.TryGetValue(user.Guild.Id, out var set))
+            if (!StreamingList.TryGetValue(user.Guild.Id, out var set))
             {
                 set = new HashSet<StreamAnnouncerMessage>();
-                _streamingList[user.Guild.Id] = set;
+                StreamingList[user.Guild.Id] = set;
             }
 
             // Check to make sure the user is streaming and not in the streaming list.
             if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch &&
-                !_streamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
+                !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
                 await AnnounceUserHandler(user, channels);
 
             // User is not streaming.
             else if (user.Game == null || user.Game.Value.StreamType != StreamType.Twitch)
             {
                 // Get user from streaming list.
-                var userDataFromList = _streamingList[user.Guild.Id].Where(x => x.UserId == user.Id).ToList();
+                var userDataFromList = StreamingList[user.Guild.Id].Where(x => x.UserId == user.Id).ToList();
 
                 // Handle announced streaming messages.
                 await AnnouncedMessageHandler(user, userDataFromList, channels);
 
                 // Remove messages from hashset.
                 foreach (var m in userDataFromList)
-                    _streamingList[user.Guild.Id].Remove(m);
+                    StreamingList[user.Guild.Id].Remove(m);
             }
         }
 
@@ -126,8 +160,11 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             foreach (var c in channels)
             {
                 var message = new StreamAnnouncerMessage
-                    {UserId = user.Id, ChannelId = c.ChannelId};
-                _streamingList[user.Guild.Id].Add(message);
+                {
+                    UserId = user.Id,
+                    ChannelId = c.ChannelId
+                };
+                StreamingList[user.Guild.Id].Add(message);
                 announcements.Add(AnnounceUser(user, message, c.ChannelId));
             }
 
@@ -171,7 +208,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
             // Sets navigation property/foreign key.
             m.GuildId = user.Guild.Id;
 
-            Logger.LogDebug($"StreamAnnouncer Module: Announcing user {user.Username}" +
+            Logger.LogDebug($"Streamer Module: Announcing user {user.Username}" +
                             $" (ID: {m.UserId}) to channel {channelId}. " +
                             $" (message ID: {messageId}).");
 
@@ -219,7 +256,7 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
         /// <param name="m">Message to delete </param>
         private async Task DeleteMessageAsync(SocketGuildUser user, StreamAnnouncerMessage m)
         {
-            Logger.LogDebug($"StreamAnnouncer Module: Deleting streaming message {m.MessageId} " +
+            Logger.LogDebug($"Streamer Module: Deleting streaming message {m.MessageId} " +
                             $"from {user.Username} (ID: {m.UserId}), " +
                             $"on channel {m.ChannelId}.");
 
@@ -228,6 +265,30 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
 
             // Delete message.
             await user.Guild.GetTextChannel(m.ChannelId).DeleteMessagesAsync(messageIds);
+        }
+
+        /// <summary>
+        ///     Add the specified user to the specified streaming role.
+        /// </summary>
+        /// <param name="guildUser">User to add to role.</param>
+        /// <param name="streamingRole">Role to add the user to.</param>
+        private async Task AddUserToStreamingRole(IGuildUser guildUser, IRole streamingRole)
+        {
+            await guildUser.AddRoleAsync(streamingRole);
+
+            Logger.LogDebug($"Streamer Module: Adding {guildUser.Username} to role {streamingRole.Name}");
+        }
+
+        /// <summary>
+        ///     Remove the specified user from the specified streaming role.
+        /// </summary>
+        /// <param name="guildUser">User to remove the role from.</param>
+        /// <param name="streamingRole">Role to remove the user from.</param>
+        private async Task RemoveUserFromStreamingRole(IGuildUser guildUser, IRole streamingRole)
+        {
+            await guildUser.RemoveRoleAsync(streamingRole);
+
+            Logger.LogDebug($"Streamer Module: Removing {guildUser.Username} from role {streamingRole.Name}");
         }
     }
 }
