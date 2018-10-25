@@ -11,6 +11,7 @@ using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.Module;
+using Volvox.Helios.Domain.Module.ChatTracker;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
@@ -267,11 +268,10 @@ namespace Volvox.Helios.Core.Modules.Streamer
                             $"from {user.Username} (ID: {m.UserId}), " +
                             $"on channel {m.ChannelId}.");
 
-            // Convert to array to work with DeleteMessagesAsync.
-            var messageIds = new[] {m.MessageId};
-
             // Delete message.
-            await user.Guild.GetTextChannel(m.ChannelId).DeleteMessagesAsync(messageIds);
+            var message = await user.Guild.GetTextChannel(m.ChannelId).GetMessageAsync(m.MessageId);
+
+            await message.DeleteAsync();
         }
 
         /// <summary>
