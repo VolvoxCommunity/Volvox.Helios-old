@@ -13,12 +13,12 @@
     <PackageReference Include="FluentCache" Version="4.0.0.2" />
     <PackageReference Include="FluentCache.Microsoft.Extensions.Caching.Abstractions" Version="4.0.0.2" />
     <PackageReference Include="Hangfire" Version="1.6.20" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.4.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
