@@ -11,11 +11,11 @@ namespace Volvox.Helios.Service.Clients
 {
     public class DiscordAPIClient : IDiscordAPIClient
     {
+        private const string BaseAddress = "https://discordapp.com/api/";
         private readonly ICache _cache;
         private readonly HttpClient _client;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _context;
-        private readonly string _baseAddress = "https://discordapp.com/api/";
 
         public DiscordAPIClient(HttpClient client, IHttpContextAccessor context, IConfiguration configuration,
             ICache cache)
@@ -25,7 +25,7 @@ namespace Volvox.Helios.Service.Clients
             _configuration = configuration;
             _cache = cache;
 
-            _client.BaseAddress = new Uri(_baseAddress);
+            _client.BaseAddress = new Uri(BaseAddress);
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client.DefaultRequestHeaders.UserAgent.ParseAdd("Volvox.Helios");
 
@@ -72,6 +72,18 @@ namespace Volvox.Helios.Service.Clients
             SetBotToken();
 
             return await _client.GetStringAsync($"guilds/{guildId}/roles");
+        }
+
+        /// <summary>
+        ///     Get a specific user.
+        /// </summary>
+        /// <param name="userId">Id of the user to get.</param>
+        /// <returns>JSON of the User object.</returns>
+        public async Task<string> GetUser(ulong userId)
+        {
+            SetBotToken();
+
+            return await _client.GetStringAsync($"users/{userId}");
         }
 
         /// <summary>

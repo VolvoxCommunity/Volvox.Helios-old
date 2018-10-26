@@ -24,16 +24,26 @@ namespace Volvox.Helios.Web.Controllers
     [IsUserGuildAdminFilter]
     public class SettingsController : Controller
     {
+        private readonly IModuleSettingsService<ChatTrackerSettings> _chatTrackerSettingsService;
+        private readonly IEntityService<StreamAnnouncerChannelSettings> _streamAnnouncerChannelSettingsService;
         private readonly IModuleSettingsService<StreamAnnouncerSettings> _streamAnnouncerSettingsService;
         private readonly IModuleSettingsService<StreamerRoleSettings> _streamerRoleSettingsService;
-        private readonly IEntityService<StreamAnnouncerChannelSettings> _streamAnnouncerChannelSettingsService;
+        private readonly IModuleSettingsService<RemembotSettings> _reminderSettingsService;
+        private readonly IEntityService<RecurringReminderMessage> _recurringReminderService;
 
         public SettingsController(IModuleSettingsService<StreamAnnouncerSettings> streamAnnouncerSettingsService,
-            IModuleSettingsService<StreamerRoleSettings> streamerRoleSettingsService, IEntityService<StreamAnnouncerChannelSettings> streamAnnouncerChannelSettingsService)
-        {    
+            IModuleSettingsService<StreamerRoleSettings> streamerRoleSettingsService,
+            IEntityService<StreamAnnouncerChannelSettings> streamAnnouncerChannelSettingsService,
+            IModuleSettingsService<ChatTrackerSettings> chatTrackerSettingsService,
+            IModuleSettingsService<RemembotSettings> reminderSettingsService,
+            IEntityService<RecurringReminderMessage> recurringReminderService)
+        {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamerRoleSettingsService = streamerRoleSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
+            _chatTrackerSettingsService = chatTrackerSettingsService;
+            _reminderSettingsService = reminderSettingsService;
+            _recurringReminderService = recurringReminderService;
         }
 
         public IActionResult Index(ulong guildId, [FromServices] IBot bot,
@@ -101,48 +111,44 @@ namespace Volvox.Helios.Web.Controllers
 
         // POST
         [HttpPost("StreamAnnouncer")]
-        public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId, StreamAnnouncerSettingsViewModel viewModel)
-        {         
+        public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId,
+            StreamAnnouncerSettingsViewModel viewModel)
+        {
             var settings = await _streamAnnouncerChannelSettingsService.Find(viewModel.ChannelId);
 
             // Remember if there were settings in db, as settings will be populated later if they aren't.
             var isSettingsInDb = settings != null;
 
-            var saveSettingsTasks = new List<Task>();
+            var saveSettingsTasks = new List<Task>
+            {
+                _streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings
+                {
+                    GuildId = guildId,
+                    Enabled = viewModel.Enabled
+                })
+            };
 
             // Save general module settings to the database
-            saveSettingsTasks.Add(_streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings
-            {
-                GuildId = guildId,
-                Enabled = viewModel.Enabled,
-            }));
 
             if (!isSettingsInDb)
-            {
-                settings = new StreamAnnouncerChannelSettings()
+                settings = new StreamAnnouncerChannelSettings
                 {
                     GuildId = guildId,
                     ChannelId = viewModel.ChannelId
                 };
-            }
 
             settings.RemoveMessage = viewModel.ChannelSettings.RemoveMessages;
 
             // Save specific channel settings to the database.
             if (viewModel.ChannelSettings.Enabled)
             {
-                if (!isSettingsInDb)
-                {
-                    saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Create(settings));
-                }
-                else
-                {
-                    saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Update(settings));
-                }
+                saveSettingsTasks.Add(!isSettingsInDb
+                    ? _streamAnnouncerChannelSettingsService.Create(settings)
+                    : _streamAnnouncerChannelSettingsService.Update(settings));
             }
             else
             {
-                if(isSettingsInDb)
+                if (isSettingsInDb)
                     saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Remove(settings));
             }
 
@@ -179,7 +185,8 @@ namespace Volvox.Helios.Web.Controllers
 
         // POST
         [HttpPost("StreamerRole")]
-        public async Task<IActionResult> StreamerRoleSettings(ulong guildId, StreamerRoleSettingsViewModel viewModel, [FromServices] IBot bot, [FromServices] IDiscordGuildService guildService)
+        public async Task<IActionResult> StreamerRoleSettings(ulong guildId, StreamerRoleSettingsViewModel viewModel,
+            [FromServices] IBot bot, [FromServices] IDiscordGuildService guildService)
         {
             var botRolePosition = bot.GetBotRoleHierarchy(guildId);
 
@@ -190,7 +197,8 @@ namespace Volvox.Helios.Web.Controllers
             // Discord bots cannot assign to roles that are higher then them in the hierarchy.
             if (selectedRolePosition > botRolePosition)
             {
-                ModelState.AddModelError("RolePosition", "The bots managed role must be positioned higher then the selected role");
+                ModelState.AddModelError("RolePosition",
+                    "The bots managed role must be positioned higher then the selected role");
 
                 viewModel.Roles = new SelectList(roles.RemoveManaged(), "Id", "Name");
 
@@ -208,6 +216,78 @@ namespace Volvox.Helios.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        #endregion
+
+        #region ChatTracker
+
+        // GET
+        [HttpGet("ChatTracker")]
+        public async Task<IActionResult> ChatTrackerSettings(ulong guildId)
+        {
+            var viewModel = new ChatTrackerSettingsViewModel();
+
+            var settings = await _chatTrackerSettingsService.GetSettingsByGuild(guildId);
+
+            if (settings == null)
+                return View(viewModel);
+
+            viewModel.Enabled = settings.Enabled;
+
+            return View(viewModel);
+        }
+
+        // POST
+        [HttpPost("ChatTracker")]
+        public async Task<IActionResult> ChatTrackerSettings(ulong guildId, StreamerRoleSettingsViewModel viewModel)
+        {
+            // Save settings to the database.
+            await _chatTrackerSettingsService.SaveSettings(new ChatTrackerSettings
+            {
+                GuildId = guildId,
+                Enabled = viewModel.Enabled
+            });
+
+            return RedirectToAction("Index");
+        }
+
+        #endregion
+
+        #region Reminder
+        [HttpGet("Remembot")]
+        public async Task<IActionResult> RemembotSettings(ulong guildId,
+            [FromServices]IDiscordGuildService guildService)
+        {
+            var settings = await _reminderSettingsService.GetSettingsByGuild(guildId);
+            var channels = await guildService.GetChannels(guildId);
+            var textChannels = channels.Where(x => x.Type == 0).ToList();
+            if(settings is null)
+            {
+                settings = new RemembotSettings
+                {
+                    Enabled = false,
+                    GuildId = guildId
+                };
+
+                await _reminderSettingsService.SaveSettings(settings);
+            }
+
+            var reminders = await _recurringReminderService.Get(x => x.GuildId == guildId);
+            settings.RecurringReminders = reminders;
+            var viewModel = ReminderSettingsViewModel.FromData(settings, channels);
+            return View(viewModel);
+        }
+
+        [HttpPost("Remembot")]
+        public async Task<IActionResult> RemembotSettings(ulong guildId, ReminderSettingsViewModel reminderSettings)
+        {
+            await _reminderSettingsService.SaveSettings(new RemembotSettings
+            {
+                Enabled = reminderSettings.Enabled,
+                GuildId = guildId
+            });
+
+            return RedirectToAction("Index");
+        }
         #endregion
     }
 }

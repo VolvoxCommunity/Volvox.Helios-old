@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Volvox.Helios.Domain.Discord;
 using Volvox.Helios.Domain.JsonConverters;
 using Volvox.Helios.Service.Clients;
 
-namespace Volvox.Helios.Service.Discord.User
+namespace Volvox.Helios.Service.Discord.UserGuild
 {
     public class DiscordUserGuildService : IDiscordUserGuildService
     {
@@ -19,14 +16,15 @@ namespace Volvox.Helios.Service.Discord.User
         }
 
         /// <summary>
-        /// Get all of the logged in users guilds.
+        ///     Get all of the logged in users guilds.
         /// </summary>
         /// <returns>List of all of the logged in users guilds.</returns>
-        public async Task<List<UserGuild>> GetUserGuilds()
+        public async Task<List<Domain.Discord.UserGuild>> GetUserGuilds()
         {
             var guildsResponse = await _client.GetUserGuilds();
 
-            return JsonConvert.DeserializeObject<List<UserGuild>>(guildsResponse, new UserGuildJsonConverter());
+            return JsonConvert.DeserializeObject<List<Domain.Discord.UserGuild>>(guildsResponse,
+                new UserGuildJsonConverter());
         }
     }
 }
