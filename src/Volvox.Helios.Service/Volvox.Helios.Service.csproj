@@ -31,6 +31,9 @@
     <Compile Remove="Migrations\20181014115520_ModerationModule_AddRolePunishType.cs" />
     <Compile Remove="Migrations\20181014121544_ModerationModule_AddRolePunishType.cs" />
     <Compile Remove="Migrations\20181014174111_ModerationModule_AddedActivePunishments.cs" />
+    <Compile Remove="Migrations\20181028184227_replaced-punish-type-with-nav-prop.cs" />
+    <Compile Remove="Migrations\20181028185613_replaced-punish-type-with-nav-prop.cs" />
+    <Compile Remove="Migrations\20181028190007_replaced-punish-type-with-nav-prop.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.2" />
