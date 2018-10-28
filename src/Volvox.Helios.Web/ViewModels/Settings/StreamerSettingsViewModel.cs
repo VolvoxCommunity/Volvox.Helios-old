@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Volvox.Helios.Web.Models;
 
 namespace Volvox.Helios.Web.ViewModels.Settings
 {
-    public class StreamAnnouncerSettingsViewModel
+    public class StreamerSettingsViewModel
     {
         public SelectList Channels { get; set; }
 
@@ -20,6 +19,16 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         [DefaultValue(true)]
         public bool Enabled { get; set; }
 
-        public StreamAnnouncerChannelSettingsViewModel ChannelSettings { get; set; }
+        public StreamerChannelSettingsViewModel ChannelSettings { get; set; }
+
+        [Required]
+        [DisplayName("Enabled")]
+        public bool StreamerRoleEnabled { get; set; }
+
+        public SelectList Roles { get; set; }
+
+        [Required]
+        [DisplayName("Role")]
+        public ulong RoleId { get; set; }
     }
 }

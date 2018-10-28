@@ -50,7 +50,8 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
                         Id = message.Id,
                         AuthorId = message.Author.Id,
                         GuildId = guildChannel.GuildId,
-                        ChannelId = guildChannel.Id
+                        ChannelId = guildChannel.Id,
+                        Timestamp = message.Timestamp
                     });
             }
         }

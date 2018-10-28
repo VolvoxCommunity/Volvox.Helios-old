@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Volvox.Helios.Web.ViewModels.Settings
 {
-    public class StreamAnnouncerChannelSettingsViewModel
+    public class StreamerChannelSettingsViewModel
     {
         [Required]
         [DisplayName("Enable channel")]
