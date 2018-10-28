@@ -160,6 +160,7 @@ namespace Volvox.Helios.Web
             services.AddTransient<JobActivator, ServiceProviderJobActivator>();
             services.AddTransient<RecurringReminderMessageJob>();
             services.AddSingleton<RemoveExpiredWarningsJob>();
+            services.AddSingleton<RemovePunishmentJob>();
 
             // MVC
             services.AddMvc(options =>
