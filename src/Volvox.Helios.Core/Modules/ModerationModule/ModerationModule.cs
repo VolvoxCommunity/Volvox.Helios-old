@@ -28,6 +28,20 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 {
     public class ModerationModule : Module
     {
+        // TODO : Add reasons to punishments. defaut can be "no reason provided" or something
+
+        // TODO : if the addition of list<activepunishment> in userwarning causes issues, just undo it (i.e. just link the activepunsihemnt to the moderationsettings, not to a userwarnings.)
+
+        // TODO : MAKE SURE TO CHECK THE BOT HAS HIGH ENOUGH AUTHORITY TO DO WHAT IT WANTS TO DO. OTHERWISE WILL GET 403 ##########################
+
+        // TODO : Potential issue: if a user gets a punishent applied, then a warning is expired, then they get the same punishment again, that could cause errors such as 
+
+        // TODO : Potential issue: multiple punishments could cause things like trying to apply a roel to someone who was just banned. check for this.
+
+        // TODO : extract banning and stuff into services
+
+        // TODO : CREATE A Method to remove an entry from cache, use this for when settings are changed by the user so the module refetches the up to date data
+
         #region Private vars
 
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
@@ -44,7 +58,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
             IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService,
-            IMessageService messageService, IServiceScopeFactory scopeFactory, IJobService jobservice
+            IMessageService messageService, IServiceScopeFactory scopeFactory, IJobService jobservice,
+             DiscordSocketClient client
         ) : base(
             discordSettings, logger, config)
         {
@@ -92,11 +107,19 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private async Task CheckMessage(SocketMessage message)
         {
+            // message can be null sometimes when dealing with deleted messages
+            if (message is null)
+                return;
+
             var user = message.Author as SocketGuildUser;
 
             var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id,
                 s => s.ProfanityFilter.BannedWords, s => s.LinkFilter.WhitelistedLinks, s => s.Punishments, s => s.WhitelistedChannels, s => s.WhitelistedRoles  
             );
+
+            // settings will be null if users haven't done anything with the moderation module. 
+            if (settings is null)
+                return;
 
             var channelPostedId = message.Channel.Id;
 
@@ -206,7 +229,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             {
                 var userWarningService = scope.ServiceProvider.GetRequiredService<IEntityService<UserWarnings>>();
 
-                var listUserData = await userWarningService.Get(x => x.UserId == user.Id, u => u.Warnings);
+                var listUserData = await userWarningService.Get(u => u.UserId == user.Id, u => u.Warnings, u => u.ActivePunishments);
 
                 // User isn't tracked yet, so create new entry for them.
                 if (listUserData.Count == 0)
@@ -214,7 +237,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                     userData = new UserWarnings()
                     {
                         GuildId = moderationSettings.GuildId,
-                        UserId = user.Id
+                        UserId = user.Id,
+                        ActivePunishments = new List<ActivePunishment>(),
+                        Warnings = new List<Warning>()
                     };
 
                     await userWarningService.Create(userData);
@@ -245,7 +270,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             // Punishments for specific type. I.E. profanity violation.
             punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
 
-            await ApplyPunishment(moderationSettings, punishments, user);
+            await ApplyPunishment(moderationSettings, punishments, user, userData);
             
         }
  
@@ -290,12 +315,16 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             return duration;
         }
 
-        private async Task ApplyPunishment(ModerationSettings moderationSettings, IEnumerable<Punishment> punishments, SocketGuildUser user)
+        private async Task ApplyPunishment(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
         {
             var appliedPunishments = new List<Punishment>();
 
             foreach (var punishment in punishments)
-            {        
+            {
+                // Check to make sure user doesn't already have this punishment. This could cause issues if the same punishment is applied twice.
+                if (IsPunishmentAlreadyActive(punishment, userData))
+                    return;
+
                 switch (punishment.PunishType)
                 {
                     case ( PunishType.Kick ):
@@ -311,7 +340,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                         break;
                 }
 
-                await AddActivePunishments(moderationSettings, punishments, user);
+                await AddActivePunishments(moderationSettings, punishments, user, userData);
             }       
         }
 
@@ -336,32 +365,49 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             await user.Guild.AddBanAsync(user);
         }
 
-        private async Task AddActivePunishments(ModerationSettings moderationSettings, IEnumerable<Punishment> punishments, SocketGuildUser user)
+        private async Task AddActivePunishments(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
                 var activePunishmentsService = scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
 
+                var userWarningsService = scope.ServiceProvider.GetRequiredService<IEntityService<UserWarnings>>();
+
+                // TODO: null check
+                var userDbEntry = await userWarningsService.Find(userData.Id);
+
                 var activePunishments = new List<ActivePunishment>();
 
                 foreach (var punishment in punishments)
                 {
-                    // Null means apply permanently/punishment is just a kick, so no adding punishment to db.
+                    // Null means apply permanently/punishment is just a kick, so no point in adding punishment to db.
                     if (punishment.PunishDuration == null)
                         continue;
 
                     activePunishments.Add(new ActivePunishment
                     {
-                        GuildId = moderationSettings.GuildId,
                         PunishmentExpires = DateTimeOffset.Now.AddMinutes(punishment.PunishDuration.Value),
                         PunishType = punishment.PunishType,
+                        PunishmentId = punishment.Id,
                         RoleId = punishment.RoleId,
-                        UserId = user.Id
+                        User = userDbEntry
                     });
                 }
 
+                var x = scope.ServiceProvider.GetRequiredService<RemovePunishmentJob>();
+
+                await x.SchedulePunishmentRemovals(activePunishments);
+
                 await activePunishmentsService.CreateBulk(activePunishments);
             }
+        }
+
+        private bool IsPunishmentAlreadyActive(Punishment punishment, UserWarnings userData)
+        {
+            var currentlyActivePunishments = userData.ActivePunishments;
+
+            // user already has punishment.
+            return ( currentlyActivePunishments.Any(x => x.PunishmentId == punishment.Id) );
         }
     }
 }
