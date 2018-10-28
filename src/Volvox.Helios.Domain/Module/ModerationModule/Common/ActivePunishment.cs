@@ -14,13 +14,14 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.Common
         public int Id { get; set; }
 
         [Required]
-        public virtual ulong GuildId { get; set; }
+        public int UserId { get; set; }
 
-        [ForeignKey("GuildId")]
-        public virtual ModerationSettings Moderationsettings { get; set; }
+        [ForeignKey("UserId")]
+        public virtual UserWarnings User { get; set; }
 
+        // ID of punishment in punishments table. This is used to check if a user already has a certain punishment applied.
         [Required]
-        public ulong UserId { get; set; }
+        public int PunishmentId { get; set; }
 
         public ulong? RoleId { get; set; }
 

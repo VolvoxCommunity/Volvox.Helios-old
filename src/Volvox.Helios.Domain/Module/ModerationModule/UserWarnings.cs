@@ -25,5 +25,8 @@ namespace Volvox.Helios.Domain.Module.ModerationModule
 
         [Required]
         public List<Warning> Warnings { get; set; }
+
+        [Required]
+        public List<ActivePunishment> ActivePunishments { get; set; }
     }
 }

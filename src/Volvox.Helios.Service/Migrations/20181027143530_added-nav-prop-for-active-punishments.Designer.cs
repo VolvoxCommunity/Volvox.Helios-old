@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Service;
@@ -10,9 +11,10 @@ using Volvox.Helios.Service;
 namespace Volvox.Helios.Service.Migrations
 {
     [DbContext(typeof(VolvoxHeliosContext))]
-    partial class VolvoxHeliosContextModelSnapshot : ModelSnapshot
+    [Migration("20181027143530_added-nav-prop-for-active-punishments")]
+    partial class addednavpropforactivepunishments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,11 +75,12 @@ namespace Volvox.Helios.Service.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<decimal?>("ModerationSettingsGuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
                     b.Property<int>("PunishType");
 
                     b.Property<DateTimeOffset>("PunishmentExpires");
-
-                    b.Property<int>("PunishmentId");
 
                     b.Property<decimal?>("RoleId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
@@ -85,6 +88,8 @@ namespace Volvox.Helios.Service.Migrations
                     b.Property<int>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ModerationSettingsGuildId");
 
                     b.HasIndex("UserId");
 
@@ -437,6 +442,10 @@ namespace Volvox.Helios.Service.Migrations
 
             modelBuilder.Entity("Volvox.Helios.Domain.Module.ModerationModule.Common.ActivePunishment", b =>
                 {
+                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.ModerationSettings")
+                        .WithMany("ActivePunishments")
+                        .HasForeignKey("ModerationSettingsGuildId");
+
                     b.HasOne("Volvox.Helios.Domain.Module.ModerationModule.UserWarnings", "User")
                         .WithMany("ActivePunishments")
                         .HasForeignKey("UserId")
