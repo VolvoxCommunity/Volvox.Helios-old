@@ -8,10 +8,10 @@ namespace Volvox.Helios.Core.Services.MessageService
         /// <summary>
         ///     Fetch a message by its Id.
         /// </summary>
-        /// <param name="messageId">Id of message to fetch.</param>
         /// <param name="channelId">Id of channel message is in.</param>
+        /// <param name="messageId">Id of message to fetch.</param>
         /// <returns></returns>
-        Task<IUserMessage> GetMessage(ulong messageId, ulong channelId);
+        Task<IUserMessage> GetMessage(ulong channelId, ulong messageId);
 
         /// <summary>
         ///     Post message to channel.
