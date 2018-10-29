@@ -30,7 +30,6 @@ namespace Volvox.Helios.Core.Bot
             Logger = logger;
             Client = client;
 
-            // TODO: Convert logging to module
             Client.Log += Log;
 
             // Log when the bot is disconnected.

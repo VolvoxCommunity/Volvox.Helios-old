@@ -11,7 +11,6 @@ using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.Module;
-using Volvox.Helios.Domain.Module.ChatTracker;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
@@ -76,7 +75,6 @@ namespace Volvox.Helios.Core.Modules.Streamer
                 var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id, x => x.ChannelSettings);
 
                 if (settings != null && settings.Enabled)
-                {
                     try
                     {
                         // Streamer Role
@@ -85,13 +83,12 @@ namespace Volvox.Helios.Core.Modules.Streamer
 
                         // Stream Announcer
                         if (settings.ChannelSettings != null)
-                            await CheckUser(guildUser, settings, settings.ChannelSettings);
+                            await CheckUser(guildUser, settings.ChannelSettings);
                     }
                     catch (Exception e)
                     {
                         Logger.LogError($"Streamer Module: Error occured '{e.Message}'");
                     }
-                }
             };
         }
 
@@ -124,8 +121,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
         /// </summary>
         /// <param name="user">User to be evaluated/adjusted for streaming announcement.</param>
         /// <param name="channels">List of channels with module enabled</param>
-        private async Task CheckUser(SocketGuildUser user, StreamerSettings settings,
-            List<StreamerChannelSettings> channels)
+        private async Task CheckUser(SocketGuildUser user, List<StreamerChannelSettings> channels)
         {
             // Add initial hash set for the guild.
             if (!StreamingList.TryGetValue(user.Guild.Id, out var set))
