@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -106,7 +107,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
             else
             {
                 // Add use to role.
-                if (guildUser.Game != null && guildUser.Game.Value.StreamType == StreamType.Twitch)
+                if (guildUser.Activity.Type == ActivityType.Streaming)
                     await AddUserToStreamingRole(guildUser, streamingRole);
 
                 // Remove user from role.
@@ -130,8 +131,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
             }
 
             // Check to make sure the user is streaming and not in the streaming list.
-            if (user.Activity.Type == ActivityType.Streaming &&
-                !_streamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
+            if (user.Activity.Type == ActivityType.Streaming && !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
                 await AnnounceUserHandler(user, channels);
 
             // User is not streaming.
@@ -167,6 +167,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
                     UserId = user.Id,
                     ChannelId = c.ChannelId
                 };
+
                 StreamingList[user.Guild.Id].Add(message);
                 announcements.Add(AnnounceUser(user, message, c.ChannelId));
             }
