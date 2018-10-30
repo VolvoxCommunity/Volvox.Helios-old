@@ -107,7 +107,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
             else
             {
                 // Add use to role.
-                if (guildUser.Game != null && guildUser.Game.Value.StreamType == StreamType.Twitch)
+                if (guildUser.Activity != null && guildUser.Activity.Type == ActivityType.Streaming)
                     await AddUserToStreamingRole(guildUser, streamingRole);
 
                 // Remove user from role.
@@ -131,12 +131,12 @@ namespace Volvox.Helios.Core.Modules.Streamer
             }
 
             // Check to make sure the user is streaming and not in the streaming list.
-            if (user.Game != null && user.Game.Value.StreamType == StreamType.Twitch &&
+            if (user.Activity != null && user.Activity.Type == ActivityType.Streaming &&
                 !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
                 await AnnounceUserHandler(user, channels);
 
             // User is not streaming.
-            else if (user.Game == null || user.Game.Value.StreamType != StreamType.Twitch)
+            else
             {
                 // Get user from streaming list.
                 var userDataFromList = StreamingList[user.Guild.Id].Where(x => x.UserId == user.Id).ToList();
@@ -168,6 +168,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
                     UserId = user.Id,
                     ChannelId = c.ChannelId
                 };
+
                 StreamingList[user.Guild.Id].Add(message);
                 announcements.Add(AnnounceUser(user, message, c.ChannelId));
             }
@@ -192,13 +193,15 @@ namespace Volvox.Helios.Core.Modules.Streamer
         private async Task<StreamAnnouncerMessage> AnnounceUser(SocketGuildUser user, StreamAnnouncerMessage m,
             ulong channelId)
         {
+            var streamingGame = (StreamingGame)user.Activity;
+
             // Build the embedded message.
             var embed = new EmbedBuilder()
                 .WithTitle($"{user.Username} is now live!")
-                .WithDescription($"{user.Game?.StreamUrl} - {user.Mention}")
+                .WithDescription($"{streamingGame.Url} - {user.Mention}")
                 .WithColor(new Color(0x4A90E2))
                 .WithThumbnailUrl(user.GetAvatarUrl())
-                .AddInlineField("Title", user.Game?.Name).Build();
+                .AddField("Title", user.Activity.Name, true).Build();
 
             // Announce the user to the channel specified in settings.
             var messageData = await user.Guild.GetTextChannel(channelId)
