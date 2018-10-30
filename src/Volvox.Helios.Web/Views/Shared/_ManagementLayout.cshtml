@@ -51,8 +51,8 @@
     </nav>
 
     <partial name="_CookieConsentPartial" />
-
-    <!-- We will load server icons here -->
+    
+    <!-- We will load server icons here
     <div id="sidebar-wrapper">
         <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
         <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
@@ -71,19 +71,62 @@
         <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="64" class="rounded-circle server-img" >
 
     </div>
+    -->
 
     <!-- Load the current modules here -->
     <div id="modulebar-wrapper">
-        <a asp-controller="Management" asp-action="StreamRole" 
-            class="btn btn-block btn-module" role="button">Stream Role</a>
 
-        <a asp-controller="Management" asp-action="StreamAnnouncer" class="btn btn-block btn-module" role="button" aria-expanded="false">Stream Announcer</a>
-        <a asp-controller="Management" asp-action="ChatTracker" class="btn btn-block btn-module" role="button" aria-expanded="false">Chat Tracker</a>
-        <a asp-controller="Management" asp-action="Remembot" class="btn btn-block btn-module" role="button" aria-expanded="false">Remembot</a>
-        <a asp-controller="Management" asp-action="PollManager" class="btn btn-block btn-module" role="button" aria-expanded="false">Poll Manager</a>
+
+        <a class="collapsed btn btn-block btn-module" role="button" data-toggle="collapse" href="#collapseListGroup1" aria-expanded="false" aria-controls="collapseListGroup1">
+            Available Servers
+        </a>
+        <div id="collapseListGroup1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseListGroupHeading1">
+            <button type="button" class="btn btn-block btn-module">
+                <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="32" class="rounded-circle">
+                <a href="$LoadServer01">Server01</a>
+            </button>
+            <button type="button" class="btn btn-block btn-module">
+                <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="32" class="rounded-circle">
+                <a href="$LoadServer01">Server02</a>
+            </button>
+            <button type="button" class="btn btn-block btn-module">
+                <img src="~/images/corgi_vector_128.png" alt="Placeholder" width="32" class="rounded-circle">
+                <a href="$LoadServer01">Server03</a>
+            </button>
+        </div>
+
+        <!--
+        <div class="panel-group" role="tablist">
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="collapseListGroupHeading1">
+                    <h4 class="panel-title">
+                        <a class="collapsed" data-toggle="collapse" href="#collapseListGroup1" aria-expanded="false" aria-controls="collapseListGroup1">
+                            Available Servers
+                        </a>
+                    </h4>
+                </div>
+
+            </div>
+        </div>
+            -->
+
+        <a asp-controller="Management" asp-action="StreamRole" class="btn btn-block btn-module" role="button">Stream Role</a>
+        <a asp-controller="Management" asp-action="StreamAnnouncer" class="btn btn-block btn-module" role="button">Stream Announcer</a>
+        <a asp-controller="Management" asp-action="ChatTracker" class="btn btn-block btn-module" role="button">Chat Tracker</a>
+        <a asp-controller="Management" asp-action="Remembot" class="btn btn-block btn-module" role="button">Remembot</a>
+        <a asp-controller="Management" asp-action="PollManager" class="btn btn-block btn-module" role="button">Poll Manager</a>
+
     </div>
 
-    <div class="container-fluid container-management">         
+    <div class="container-fluid container-management">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb background-dark2">
+                <li class="breadcrumb-item"><a href="#">Server: Corgi Bar and Lounge</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Library</li>
+            </ol>
+        </nav>
+
         @RenderBody()
         <br>
 
