@@ -18,7 +18,7 @@ using Volvox.Helios.Service.ModuleSettings;
 namespace Volvox.Helios.Core.Modules.Streamer
 {
     /// <summary>
-    ///     Announce the user to a specified channel when the user starts streaming.
+    ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the user.
     /// </summary>
     public class StreamerModule : Module
     {
@@ -26,7 +26,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
         private readonly IModuleSettingsService<StreamerSettings> _settingsService;
 
         /// <summary>
-        ///     Announce the user to a specified channel when streaming.
+        ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the user.
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
@@ -131,10 +131,16 @@ namespace Volvox.Helios.Core.Modules.Streamer
             }
 
             // Check to make sure the user is streaming and not in the streaming list.
-            if (user.Activity != null && user.Activity.Type == ActivityType.Streaming &&
-                !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
-                await AnnounceUserHandler(user, channels);
+            if (user.Activity != null && user.Activity.Type == ActivityType.Streaming)
+            {
+                // If the user is not in the streaming list, they just started streaming. So, handle announcement.
+                if (!StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
+                    await AnnounceUserHandler(user, channels);
 
+                // Else, the user is already streaming and already has an announcement message.
+                // This happens when GuildMemberUpdated is triggered by something other than the user stopping their stream. 
+                // So, do nothing.
+            }
             // User is not streaming.
             else
             {
@@ -215,9 +221,9 @@ namespace Volvox.Helios.Core.Modules.Streamer
             // Sets navigation property/foreign key.
             m.GuildId = user.Guild.Id;
 
-            Logger.LogDebug($"Streamer Module: Announcing user {user.Username}" +
-                            $" (ID: {m.UserId}) to channel {channelId}. " +
-                            $" (message ID: {messageId}).");
+            Logger.LogDebug($"Streamer Module: Announcing user {user.Username}. Guild ID: {m.GuildId}, " +
+                $"Channel ID: {m.ChannelId}, User ID: {m.UserId}, Message ID: {m.MessageId}.");
+
 
             return m;
         }
@@ -263,9 +269,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
         /// <param name="m">Message to delete </param>
         private async Task DeleteMessageAsync(SocketGuildUser user, StreamAnnouncerMessage m)
         {
-            Logger.LogDebug($"Streamer Module: Deleting streaming message {m.MessageId} " +
-                            $"from {user.Username} (ID: {m.UserId}), " +
-                            $"on channel {m.ChannelId}.");
+            Logger.LogDebug($"Streamer Module: Deleting streaming message from {user.Username}. Guild ID: {m.GuildId}, " +
+                $"Channel ID: {m.ChannelId}, User ID: {m.UserId}, Message ID: {m.MessageId}.");
 
             // Delete message.
             var message = await user.Guild.GetTextChannel(m.ChannelId).GetMessageAsync(m.MessageId);
@@ -282,7 +287,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
         {
             await guildUser.AddRoleAsync(streamingRole);
 
-            Logger.LogDebug($"Streamer Module: Adding {guildUser.Username} to role {streamingRole.Name}");
+            Logger.LogDebug($"Streamer Module: Adding {guildUser.Username} to role {streamingRole.Name}. " +
+                $"Guild ID: {guildUser.GuildId}, User ID: {guildUser.Id}.");
         }
 
         /// <summary>
@@ -294,7 +300,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
         {
             await guildUser.RemoveRoleAsync(streamingRole);
 
-            Logger.LogDebug($"Streamer Module: Removing {guildUser.Username} from role {streamingRole.Name}");
+            Logger.LogDebug($"Streamer Module: Removing {guildUser.Username} from role {streamingRole.Name}. " +
+                $"Guild ID: {guildUser.GuildId}, User ID: {guildUser.Id}.");
         }
     }
 }
