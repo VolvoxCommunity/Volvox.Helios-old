@@ -223,9 +223,9 @@ namespace Volvox.Helios.Core.Modules.Streamer
             // Sets navigation property/foreign key.
             m.GuildId = user.Guild.Id;
 
-            Logger.LogDebug($"Streamer Module: Announcing user {user.Username}" +
-                            $" (ID: {m.UserId}) to channel {channelId}. " +
-                            $" (message ID: {messageId}).");
+            Logger.LogDebug($"Streamer Module: Announcing user {user.Username}. Guild ID: {m.GuildId}, " +
+                $"Channel ID: {m.ChannelId}, User ID: {m.UserId}, Message ID: {m.MessageId}.");
+
 
             return m;
         }
@@ -271,9 +271,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
         /// <param name="m">Message to delete </param>
         private async Task DeleteMessageAsync(SocketGuildUser user, StreamAnnouncerMessage m)
         {
-            Logger.LogDebug($"Streamer Module: Deleting streaming message {m.MessageId} " +
-                            $"from {user.Username} (ID: {m.UserId}), " +
-                            $"on channel {m.ChannelId}.");
+            Logger.LogDebug($"Streamer Module: Deleting streaming message from {user.Username}. Guild ID: {m.GuildId}, " +
+                $"Channel ID: {m.ChannelId}, User ID: {m.UserId}, Message ID: {m.MessageId}.");
 
             // Delete message.
             var message = await user.Guild.GetTextChannel(m.ChannelId).GetMessageAsync(m.MessageId);
@@ -290,7 +289,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
         {
             await guildUser.AddRoleAsync(streamingRole);
 
-            Logger.LogDebug($"Streamer Module: Adding {guildUser.Username} to role {streamingRole.Name}");
+            Logger.LogDebug($"Streamer Module: Adding {guildUser.Username} to role {streamingRole.Name}. " +
+                $"Guild ID: {guildUser.GuildId}, User ID: {guildUser.Id}.");
         }
 
         /// <summary>
@@ -302,7 +302,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
         {
             await guildUser.RemoveRoleAsync(streamingRole);
 
-            Logger.LogDebug($"Streamer Module: Removing {guildUser.Username} from role {streamingRole.Name}");
+            Logger.LogDebug($"Streamer Module: Removing {guildUser.Username} from role {streamingRole.Name}, " +
+                $"Guild ID: {guildUser.GuildId}, User ID: {guildUser.Id}.");
         }
     }
 }
