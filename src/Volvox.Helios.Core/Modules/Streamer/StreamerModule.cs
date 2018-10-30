@@ -18,8 +18,7 @@ using Volvox.Helios.Service.ModuleSettings;
 namespace Volvox.Helios.Core.Modules.Streamer
 {
     /// <summary>
-    ///     Announce the user to a specified channel when the user starts streaming and
-    ///     assign specificed Streaming role to the user.
+    ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the user.
     /// </summary>
     public class StreamerModule : Module
     {
@@ -27,8 +26,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
         private readonly IModuleSettingsService<StreamerSettings> _settingsService;
 
         /// <summary>
-        ///     Announce the user to a specified channel when the user starts streaming and
-        ///     assign specificed Streaming role to the user.
+        ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the user.
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
@@ -135,11 +133,11 @@ namespace Volvox.Helios.Core.Modules.Streamer
             // Check to make sure the user is streaming and not in the streaming list.
             if (user.Activity != null && user.Activity.Type == ActivityType.Streaming)
             {
-                // User just started streaming as they are not in list, so post streaing message.
+                // If the user is not in the streaming list, they just started streaming. So, handle announcement.
                 if (!StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
                     await AnnounceUserHandler(user, channels);
 
-                // else, user is already in streaming list, therefore they are already streaming and already have an announcement message.
+                // Else, the user is already streaming and already have an announcement message.
                 // This happens when GuildMemberUpdated is triggered by something other than them stopping streaming.
                 // So, do nothing.
             }
@@ -302,7 +300,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
         {
             await guildUser.RemoveRoleAsync(streamingRole);
 
-            Logger.LogDebug($"Streamer Module: Removing {guildUser.Username} from role {streamingRole.Name}, " +
+            Logger.LogDebug($"Streamer Module: Removing {guildUser.Username} from role {streamingRole.Name}. " +
                 $"Guild ID: {guildUser.GuildId}, User ID: {guildUser.Id}.");
         }
     }
