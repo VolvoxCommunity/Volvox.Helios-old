@@ -34,8 +34,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : MAKE SURE TO CHECK THE BOT HAS HIGH ENOUGH AUTHORITY TO DO WHAT IT WANTS TO DO. OTHERWISE WILL GET 403 ##########################
 
-        // TODO : Potential issue: if a user gets a punishent applied, then a warning is expired, then they get the same punishment again, that could cause errors such as 
-
         // TODO : Potential issue: multiple punishments could cause things like trying to apply a roel to someone who was just banned. check for this.
 
         // TODO : extract banning and stuff into services
