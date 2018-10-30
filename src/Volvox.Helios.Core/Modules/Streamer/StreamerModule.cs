@@ -18,7 +18,8 @@ using Volvox.Helios.Service.ModuleSettings;
 namespace Volvox.Helios.Core.Modules.Streamer
 {
     /// <summary>
-    ///     Announce the user to a specified channel when the user starts streaming.
+    ///     Announce the user to a specified channel when the user starts streaming and
+    ///     assign specificed Streaming role to the user.
     /// </summary>
     public class StreamerModule : Module
     {
@@ -26,7 +27,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
         private readonly IModuleSettingsService<StreamerSettings> _settingsService;
 
         /// <summary>
-        ///     Announce the user to a specified channel when streaming.
+        ///     Announce the user to a specified channel when the user starts streaming and
+        ///     assign specificed Streaming role to the user.
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
