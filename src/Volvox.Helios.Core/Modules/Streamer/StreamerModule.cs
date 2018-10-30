@@ -137,8 +137,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
                 if (!StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
                     await AnnounceUserHandler(user, channels);
 
-                // Else, the user is already streaming and already have an announcement message.
-                // This happens when GuildMemberUpdated is triggered by something other than them stopping streaming.
+                // Else, the user is already streaming and already has an announcement message.
+                // This happens when GuildMemberUpdated is triggered by something other than the user stopping their stream. 
                 // So, do nothing.
             }
             // User is not streaming.
