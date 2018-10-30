@@ -18,7 +18,8 @@ using Volvox.Helios.Service.ModuleSettings;
 namespace Volvox.Helios.Core.Modules.Streamer
 {
     /// <summary>
-    ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the user.
+    ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the
+    ///     user.
     /// </summary>
     public class StreamerModule : Module
     {
@@ -26,7 +27,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
         private readonly IModuleSettingsService<StreamerSettings> _settingsService;
 
         /// <summary>
-        ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the user.
+        ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the
+        ///     user.
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
         /// <param name="logger">Logger.</param>
@@ -87,7 +89,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError($"Streamer Module: Error occured '{e.Message}'");
+                        Logger.LogError($"Streamer Module: Error occurred '{e.Message}'");
                     }
             };
         }
@@ -164,28 +166,37 @@ namespace Volvox.Helios.Core.Modules.Streamer
         /// <returns></returns>
         private async Task AnnounceUserHandler(SocketGuildUser user, List<StreamerChannelSettings> channels)
         {
-            var announcements = new List<Task<StreamAnnouncerMessage>>();
-
-            // Announce to all enabled channels in guild and store message in list.
-            foreach (var c in channels)
+            try
             {
-                var message = new StreamAnnouncerMessage
+                var announcements = new List<Task<StreamAnnouncerMessage>>();
+
+                // Announce to all enabled channels in guild and store message in list.
+                foreach (var c in channels)
                 {
-                    UserId = user.Id,
-                    ChannelId = c.ChannelId
-                };
+                    var message = new StreamAnnouncerMessage
+                    {
+                        UserId = user.Id,
+                        ChannelId = c.ChannelId
+                    };
 
-                StreamingList[user.Guild.Id].Add(message);
-                announcements.Add(AnnounceUser(user, message, c.ChannelId));
+                    StreamingList[user.Guild.Id].Add(message);
+                    announcements.Add(AnnounceUser(user, message, c.ChannelId));
+                }
+
+                var messages = await Task.WhenAll(announcements);
+
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var messageService =
+                        scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessage>>();
+
+                    await messageService.CreateBulk(messages);
+                }
             }
-
-            var messages = await Task.WhenAll(announcements);
-
-            using (var scope = _scopeFactory.CreateScope())
+            catch (Exception e)
             {
-                var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessage>>();
-
-                await messageService.CreateBulk(messages);
+                Logger.LogError(
+                    $"Streamer Module[AnnounceUserHandler]: Error occurred '{e.Message}'. Guild ID: {user.Guild.Id}, Channels: {channels}, User ID: {user.Id}.");
             }
         }
 
@@ -222,8 +233,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
             m.GuildId = user.Guild.Id;
 
             Logger.LogDebug($"Streamer Module: Announcing user {user.Username}. Guild ID: {m.GuildId}, " +
-                $"Channel ID: {m.ChannelId}, User ID: {m.UserId}, Message ID: {m.MessageId}.");
-
+                            $"Channel ID: {m.ChannelId}, User ID: {m.UserId}, Message ID: {m.MessageId}.");
 
             return m;
         }
@@ -238,27 +248,36 @@ namespace Volvox.Helios.Core.Modules.Streamer
         private async Task AnnouncedMessageHandler(SocketGuildUser user, List<StreamAnnouncerMessage> messages,
             List<StreamerChannelSettings> channels)
         {
-            var messageDeletions = new List<Task>();
-
-            // Delete message from channels where RemoveMessages is true.
-            foreach (var m in messages)
+            try
             {
-                var channel = channels.FirstOrDefault(x => x.ChannelId == m.ChannelId);
+                var messageDeletions = new List<Task>();
 
-                if (channel != null && ( !channel.RemoveMessage || channel.ChannelId == 0 ))
-                    continue;
+                // Delete message from channels where RemoveMessages is true.
+                foreach (var m in messages)
+                {
+                    var channel = channels.FirstOrDefault(x => x.ChannelId == m.ChannelId);
 
-                messageDeletions.Add(DeleteMessageAsync(user, m));
+                    if (channel != null && ( !channel.RemoveMessage || channel.ChannelId == 0 ))
+                        continue;
+
+                    messageDeletions.Add(DeleteMessageAsync(user, m));
+                }
+
+                await Task.WhenAll(messageDeletions);
+
+                // Remove streaming messages from database.
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var messageService =
+                        scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessage>>();
+
+                    await messageService.RemoveBulk(messages);
+                }
             }
-
-            await Task.WhenAll(messageDeletions);
-
-            // Remove streaming messages from database.
-            using (var scope = _scopeFactory.CreateScope())
+            catch (Exception e)
             {
-                var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<StreamAnnouncerMessage>>();
-
-                await messageService.RemoveBulk(messages);
+                Logger.LogError(
+                    $"Streamer Module[AnnouncedMessageHandler]: Error occurred '{e.Message}'. Guild ID: {user.Guild.Id}, Channels: {channels}, User ID: {user.Id}, Messages: {messages}.");
             }
         }
 
@@ -269,7 +288,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
         /// <param name="m">Message to delete </param>
         private async Task DeleteMessageAsync(SocketGuildUser user, StreamAnnouncerMessage m)
         {
-            Logger.LogDebug($"Streamer Module: Deleting streaming message from {user.Username}. Guild ID: {m.GuildId}, " +
+            Logger.LogDebug(
+                $"Streamer Module: Deleting streaming message from {user.Username}. Guild ID: {m.GuildId}, " +
                 $"Channel ID: {m.ChannelId}, User ID: {m.UserId}, Message ID: {m.MessageId}.");
 
             // Delete message.
@@ -288,7 +308,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
             await guildUser.AddRoleAsync(streamingRole);
 
             Logger.LogDebug($"Streamer Module: Adding {guildUser.Username} to role {streamingRole.Name}. " +
-                $"Guild ID: {guildUser.GuildId}, User ID: {guildUser.Id}.");
+                            $"Guild ID: {guildUser.GuildId}, User ID: {guildUser.Id}.");
         }
 
         /// <summary>
@@ -301,7 +321,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
             await guildUser.RemoveRoleAsync(streamingRole);
 
             Logger.LogDebug($"Streamer Module: Removing {guildUser.Username} from role {streamingRole.Name}. " +
-                $"Guild ID: {guildUser.GuildId}, User ID: {guildUser.Id}.");
+                            $"Guild ID: {guildUser.GuildId}, User ID: {guildUser.Id}.");
         }
     }
 }
