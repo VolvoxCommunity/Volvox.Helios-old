@@ -107,7 +107,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
             else
             {
                 // Add use to role.
-                if (guildUser.Activity.Type == ActivityType.Streaming)
+                if (guildUser.Activity != null && guildUser.Activity.Type == ActivityType.Streaming)
                     await AddUserToStreamingRole(guildUser, streamingRole);
 
                 // Remove user from role.
@@ -131,7 +131,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
             }
 
             // Check to make sure the user is streaming and not in the streaming list.
-            if (user.Activity.Type == ActivityType.Streaming && !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
+            if (user.Activity != null && user.Activity.Type == ActivityType.Streaming &&
+                !StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
                 await AnnounceUserHandler(user, channels);
 
             // User is not streaming.
@@ -192,7 +193,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
         private async Task<StreamAnnouncerMessage> AnnounceUser(SocketGuildUser user, StreamAnnouncerMessage m,
             ulong channelId)
         {
-            var streamingGame = (StreamingGame) user.Activity;
+            var streamingGame = (StreamingGame)user.Activity;
 
             // Build the embedded message.
             var embed = new EmbedBuilder()
