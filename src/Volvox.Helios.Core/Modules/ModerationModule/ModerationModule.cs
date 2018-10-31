@@ -98,11 +98,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             return Task.CompletedTask;
         }
 
-        public void Test()
-        {
-            Console.WriteLine("test");
-        }
-
         private async Task CheckMessage(SocketMessage message)
         {
             // message can be null sometimes when dealing with deleted messages
@@ -115,8 +110,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 s => s.ProfanityFilter.BannedWords, s => s.LinkFilter.WhitelistedLinks, s => s.Punishments, s => s.WhitelistedChannels, s => s.WhitelistedRoles  
             );
 
-            // settings will be null if users haven't done anything with the moderation module. 
-            if (settings is null)
+            // settings will be null if users haven't done anything with the moderation module.
+            // if settings are null, or settings isn't enabled, the module isn't enabled. Do nothing.
+            if (settings is null || !settings.Enabled)
                 return;
 
             var channelPostedId = message.Channel.Id;
@@ -128,19 +124,33 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Global)))
                 return;
 
-            if (!HasBypassAuthority(user, channelPostedId, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Profanity),
-                settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Profanity)) && ProfanityCheck(message, settings.ProfanityFilter))
+            // do nothing if the filter is doesn't exist for a the guild or it's disabled.
+            if (( settings.ProfanityFilter != null ) && ( settings.ProfanityFilter.Enabled ))
             {
-                await HandleViolation(settings, message, user, WarningType.Profanity);
-                return;
+                var whitelistedChannels = settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Profanity);
+
+                var whitelistedRoles = settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Profanity);
+
+                if (!HasBypassAuthority(user, channelPostedId, whitelistedChannels, whitelistedRoles) && ProfanityCheck(message, settings.ProfanityFilter))
+                {
+                    await HandleViolation(settings, message, user, WarningType.Profanity);
+                    return;
+                }
             }
 
-            if (!HasBypassAuthority(user, channelPostedId, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Link),
-                settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Link)) && LinkCheck(message, settings.LinkFilter))
+            // do nothing if the filter is doesn't exist for a the guild or it's disabled.
+            if ((settings.LinkFilter != null) && (settings.LinkFilter.Enabled))
             {
-                await HandleViolation(settings, message, user, WarningType.Link);
-                return;
-            }
+                var whitelistedChannels = settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Link);
+
+                var whitelistedRoles = settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Link);
+
+                if (!HasBypassAuthority(user, channelPostedId, whitelistedChannels, whitelistedRoles) && LinkCheck(message, settings.LinkFilter))
+                {
+                    await HandleViolation(settings, message, user, WarningType.Link);
+                    return;
+                }
+            }      
         }
 
         private bool HasBypassAuthority(SocketGuildUser user, ulong postedChannelId,
@@ -151,7 +161,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             // Check if channel id is whitelisted.
             if (whitelistedChannels.Any(x => x.ChannelId == postedChannelId)) return true;
 
-            // Check if role is whitelisted.
+            // Check for whitelisted role.
             if (user.Roles.Any(r => whitelistedRoles.Any(w => w.RoleId == r.Id))) return true;
 
             return false;
@@ -349,6 +359,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var guild = user.Guild;
 
             var role = guild.GetRole(punishment.RoleId.Value);
+
+            if (guild is null || role is null)
+                return;
+
+            // TODO : Check role hierarchy here.
 
             await user.AddRoleAsync(role);
         }
