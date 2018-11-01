@@ -48,7 +48,9 @@ namespace Volvox.Helios.Core.Jobs
                 // TODO: null checks in methods
                 foreach (var punishment in punishments)
                 {
-                    _jobService.ScheduleJob(() => RemovePunishmentDiscord(punishment), punishment.PunishmentExpires);
+                    // No point scheduling a removal for a punishment that is permanent.
+                    if (punishment.PunishmentExpires != DateTimeOffset.MaxValue)
+                        _jobService.ScheduleJob(() => RemovePunishmentDiscord(punishment), punishment.PunishmentExpires);
                 } 
             }
         }
