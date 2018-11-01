@@ -40,6 +40,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : CREATE A Method to remove an entry from cache, use this for when settings are changed by the user so the module refetches the up to date data
 
+        // TODO : MAKE SURE EXPIRE PERIOD DOESNT EXCEDE MAX DATETIME
+
+        // NEXT TODO : MAKE SURE USERS ARE IN GUILD BEFORE APPLYING ANY PUNISHMENT
+
         #region Private vars
 
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
@@ -278,7 +282,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             // Punishments for specific type. I.E. profanity violation.
             punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
 
-            await ApplyPunishment(moderationSettings, punishments, user, userData);
+            await ApplyPunishments(moderationSettings, punishments, user, userData);
             
         }
  
@@ -290,11 +294,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 var specificWarningDuration = GetWarningDuration(moderationSettings, warningType);
 
+                var expireDate = DateTimeOffset.Now.AddMinutes(specificWarningDuration);
+
+                // 0 means punishment lasts forever.
+                if (specificWarningDuration == 0)
+                    expireDate = DateTimeOffset.MaxValue;
+
                 var warning = new Warning()
                 {
                     UserId = user.Id,
                     WarningRecieved = DateTimeOffset.Now,
-                    WarningExpires = DateTimeOffset.Now.AddMinutes(specificWarningDuration),
+                    WarningExpires = expireDate,
                     WarningType = warningType
                 };
 
@@ -323,24 +333,29 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             return duration;
         }
 
-        private async Task ApplyPunishment(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
+        private async Task ApplyPunishments(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
         {
-            var appliedPunishments = new List<Punishment>();
-
+            var userHasBeenRemoved = false;
             foreach (var punishment in punishments)
             {
+                // If a user has been kicked/banned or otherwise removed from the guild, you can't add any other punishments. So return from this method.
+                if (userHasBeenRemoved)
+                    return;
+
                 // Check to make sure user doesn't already have this punishment. This could cause issues if the same punishment is applied twice.
                 if (IsPunishmentAlreadyActive(punishment, userData))
-                    return;
+                    continue;
 
                 switch (punishment.PunishType)
                 {
                     case ( PunishType.Kick ):
                         await KickPunishment(punishment, user);
+                        userHasBeenRemoved = true;
                         break;
 
                     case ( PunishType.Ban ):
                         await BanPunishment(punishment, user);
+                        userHasBeenRemoved = true;
                         break;
 
                     case ( PunishType.AddRole ):
@@ -386,30 +401,33 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 var userWarningsService = scope.ServiceProvider.GetRequiredService<IEntityService<UserWarnings>>();
 
-                // TODO: null check
-                var userDbEntry = await userWarningsService.Find(userData.Id);
-
                 var activePunishments = new List<ActivePunishment>();
 
                 foreach (var punishment in punishments)
                 {
                     // Null means apply permanently/punishment is just a kick, so no point in adding punishment to db.
-                    if (punishment.PunishDuration == null)
+                    if (punishment.PunishType == PunishType.Kick)
                         continue;
+
+                    var expireDate = DateTimeOffset.Now.AddMinutes(punishment.PunishDuration.Value);
+
+                    // value of 0 means no expiration.
+                    if (punishment.PunishDuration == 0)
+                        expireDate = DateTimeOffset.MaxValue;
 
                     activePunishments.Add(new ActivePunishment
                     {
-                        PunishmentExpires = DateTimeOffset.Now.AddMinutes(punishment.PunishDuration.Value),
+                        PunishmentExpires = expireDate,
                         PunishType = punishment.PunishType,
                         PunishmentId = punishment.Id,
                         RoleId = punishment.RoleId,
-                        User = userDbEntry
+                        User = userData
                     });
                 }
 
-                var x = scope.ServiceProvider.GetRequiredService<RemovePunishmentJob>();
+                var removePunishmentService = scope.ServiceProvider.GetRequiredService<RemovePunishmentJob>();
 
-                await x.SchedulePunishmentRemovals(activePunishments);
+                await removePunishmentService.SchedulePunishmentRemovals(activePunishments);
 
                 await activePunishmentsService.CreateBulk(activePunishments);
             }
