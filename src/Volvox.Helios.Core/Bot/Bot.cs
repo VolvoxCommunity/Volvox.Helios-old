@@ -50,7 +50,9 @@ namespace Volvox.Helios.Core.Bot
                 {
                     for (;;)
                     {
-                        await Client.SetGameAsync($"volvox.tech | with {Client.Guilds.Count} servers");
+                        var memberCount = Client.Guilds.Sum(guild => guild.MemberCount);
+
+                        await Client.SetGameAsync($"volvox.tech | with {Client.Guilds.Count} servers & {memberCount} members");
                         await Task.Delay(TimeSpan.FromMinutes(15));
                     }
                 });
