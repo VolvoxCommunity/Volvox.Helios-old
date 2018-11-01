@@ -18,6 +18,9 @@ namespace Volvox.Helios.Core.Bot
     /// </summary>
     public class Bot : IBot
     {
+        private const long VolvoxGuildId = 468467000344313866;
+        private const long VolvoxGuildLogsChannelId = 507373438051287050;
+
         /// <summary>
         ///     Discord bot.
         /// </summary>
@@ -47,12 +50,28 @@ namespace Volvox.Helios.Core.Bot
                 {
                     for (;;)
                     {
-                        await Client.SetGameAsync($"volvox.tech | with {Client.Guilds.Count} servers");
+                        var memberCount = Client.Guilds.Sum(guild => guild.MemberCount);
+
+                        await Client.SetGameAsync($"volvox.tech | with {Client.Guilds.Count} servers & {memberCount} members");
                         await Task.Delay(TimeSpan.FromMinutes(15));
                     }
                 });
 
                 return Task.CompletedTask;
+            };
+
+            // Announce to Volvox when the bot joins a guild.
+            Client.JoinedGuild += async guild =>
+            {
+                await Client.GetGuild(VolvoxGuildId).GetTextChannel(VolvoxGuildLogsChannelId)
+                    .SendMessageAsync($"Joined Guild: {guild.Name} [{guild.MemberCount} Members]");
+            };
+
+            // Announce to Volvox when the bot leaves a guild.
+            Client.LeftGuild += async guild =>
+            {
+                await Client.GetGuild(VolvoxGuildId).GetTextChannel(VolvoxGuildLogsChannelId)
+                    .SendMessageAsync($"Left Guild: {guild.Name} [{guild.MemberCount} Members]");
             };
 
             // Add reliability service.
