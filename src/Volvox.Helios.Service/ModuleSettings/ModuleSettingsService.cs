@@ -78,6 +78,12 @@ namespace Volvox.Helios.Service.ModuleSettings
         }
 
         /// <inheritdoc />
+        public void ClearCacheByGuild(ulong guildId)
+        {
+            _cache.WithKey(GetCacheKey(guildId)).ClearValue();
+        }
+
+        /// <inheritdoc />
         public async Task RemoveSetting(T settings)
         {
             // Create a new scope to get the db context.

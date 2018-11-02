@@ -27,6 +27,13 @@ namespace Volvox.Helios.Service.ModuleSettings
         Task<T> GetSettingsByGuild(ulong guildId, params Expression<Func<T, object>>[] includes);
 
         /// <summary>
+        ///     Clear cache of guild by guild id.
+        /// </summary>
+        /// <param name="guildId">Id of guild</param>
+        /// <returns></returns>
+        void ClearCacheByGuild(ulong guildId);
+
+        /// <summary>
         ///     Remove the specified setting record.
         /// </summary>
         /// <param name="settings">Module settings to remove.</param>
