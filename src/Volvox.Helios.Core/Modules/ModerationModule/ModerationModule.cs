@@ -44,6 +44,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // NEXT TODO : MAKE SURE USERS ARE IN GUILD BEFORE APPLYING ANY PUNISHMENT
 
+        // TODO : Add method in entity service to find the first option with an includes. currently GET finds all, we just need the first in some cases.
+
+        // TODO : Uncomment out the auth checks in moderation controller.
+
         #region Private vars
 
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
