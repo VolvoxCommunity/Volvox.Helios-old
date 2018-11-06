@@ -23,6 +23,7 @@ using Discord;
 using Volvox.Helios.Service.BackgroundJobs;
 using Hangfire;
 using Volvox.Helios.Core.Jobs;
+using Volvox.Helios.Core.Bot;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
@@ -37,8 +38,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         // TODO : Potential issue: multiple punishments could cause things like trying to apply a roel to someone who was just banned. check for this.
 
         // TODO : extract banning and stuff into services
-
-        // TODO : CREATE A Method to remove an entry from cache, use this for when settings are changed by the user so the module refetches the up to date data
 
         // TODO : MAKE SURE EXPIRE PERIOD DOESNT EXCEDE MAX DATETIME
 
@@ -58,14 +57,15 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private readonly IJobService _jobService;
 
+        private DiscordSocketClient _client;
+
         private readonly List<string> _defaultBannedWords = new List<string>();
 
         #endregion
 
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
             IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService,
-            IMessageService messageService, IServiceScopeFactory scopeFactory, IJobService jobservice,
-             DiscordSocketClient client
+            IMessageService messageService, IServiceScopeFactory scopeFactory, IJobService jobservice
         ) : base(
             discordSettings, logger, config)
         {
@@ -77,11 +77,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             _jobService = jobservice;
 
-            //TODO: Make this better. find way if assigning directly.
-            var defaultBannedWords = config.GetSection("BannedWords").GetChildren();
+            var defaultBannedWords = config.GetSection("BannedWords").GetChildren().Select(x => x.Value);
 
-            foreach (var word in defaultBannedWords)
-                _defaultBannedWords.Add(word.Value);
+            if (defaultBannedWords != null)
+            {
+                _defaultBannedWords.AddRange(defaultBannedWords);
+            }
         }
 
         public override Task Init(DiscordSocketClient client)
@@ -114,12 +115,13 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             var user = message.Author as SocketGuildUser;
 
+            // Get all relevant data from database using navigation properties.
             var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id,
                 s => s.ProfanityFilter.BannedWords, s => s.LinkFilter.WhitelistedLinks, s => s.Punishments, s => s.WhitelistedChannels, s => s.WhitelistedRoles  
             );
 
             // settings will be null if users haven't done anything with the moderation module.
-            // if settings are null, or settings isn't enabled, the module isn't enabled. Do nothing.
+            // if settings are null, or settings isn't enabled, then the module isn't enabled. Do nothing.
             if (settings is null || !settings.Enabled)
                 return;
 
@@ -267,7 +269,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             }
 
             // Add warning to database.
-            await AddWarning(moderationSettings, userData, warningType);
+            await AddWarning(moderationSettings, user, userData, warningType);
 
             // Get all warnings that haven't expired.
             var userWarnings = userData.Warnings.Where(x => x.WarningExpires > DateTimeOffset.Now);
@@ -290,7 +292,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             
         }
  
-        private async Task AddWarning(ModerationSettings moderationSettings, UserWarnings user, WarningType warningType)
+        private async Task AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, UserWarnings userData, WarningType warningType)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
@@ -306,17 +308,20 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 var warning = new Warning()
                 {
-                    UserId = user.Id,
+                    UserId = userData.Id,
                     WarningRecieved = DateTimeOffset.Now,
                     WarningExpires = expireDate,
                     WarningType = warningType
                 };
 
-                if (user.Warnings == null) user.Warnings = new List<Warning>();
+                if (userData.Warnings == null) userData.Warnings = new List<Warning>();
 
-                user.Warnings.Add(warning);
+                userData.Warnings.Add(warning);
 
                 await warningService.Create(warning);
+
+                Logger.LogInformation($"Moderation Module: User {user.Username} warned. Added warning to database. " +
+                    $"Guild Id: {user.Guild.Id}, User Id: {user.Id}");
             }
         }
 
@@ -340,6 +345,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         private async Task ApplyPunishments(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
         {
             var userHasBeenRemoved = false;
+
             foreach (var punishment in punishments)
             {
                 // If a user has been kicked/banned or otherwise removed from the guild, you can't add any other punishments. So return from this method.
@@ -382,19 +388,55 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             if (guild is null || role is null)
                 return;
 
-            // TODO : Check role hierarchy here.
+            var hierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy;
+
+            // TODO: log issue here
+            if (hierarchy is null)
+                return;
+
+            // Trying to assign a role higher than the bods hierarchy will throw an error.
+            if (role.Position > hierarchy)
+            {
+                Logger.LogInformation($"Moderation Module: Couldn't apply role to use as bot doesn't have appropriate permissions. " +
+                    $"Guild Id:{user.Guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}.");
+
+                await _messageService.Post(user.Guild.Id, $"Couldn't add role '{role.Name}' as bot has insufficient permissions. " +
+                    $"Check your role hierarchy and make sure the bot is higher than the role you wish to apply.");
+            }
 
             await user.AddRoleAsync(role);
+
+            var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
+
+            // TODO : why is this throwing error? no object reference set. figure out what is happening.
+            await _messageService.Post(user.Guild.Id, $"Adding role '{role.Name}' to user {user.Username}." +
+                $"\nReason: {punishment.WarningType}." +
+                $"Expires: {expireTime}");
         }
 
         private async Task KickPunishment(Punishment punishment, SocketGuildUser user)
-        {
+        {          
+            Logger.LogInformation($"Moderation Module: Kicking user {user.Username} because of custom punishment set by guild admin. " +
+                    $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
+
             await user.KickAsync();
+
+            await _messageService.Post(user.Guild.Id, $"Kicking user {user.Username}." +
+                $"\nReason: {punishment.WarningType}");
         }
 
         private async Task BanPunishment(Punishment punishment, SocketGuildUser user)
-        {
+        {           
+            Logger.LogInformation($"Moderation Module: Banning user {user.Username} because of custom punishment set by guild admin. " +
+                    $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
+
             await user.Guild.AddBanAsync(user);
+
+            var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
+
+            await _messageService.Post(user.Guild.Id, $"Banning user {user.Username}." +
+                $"\nReason: {punishment.WarningType}." +
+                $"Expires: {expireTime}");
         }
 
         private async Task AddActivePunishments(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
@@ -441,7 +483,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         {
             var currentlyActivePunishments = userData.ActivePunishments;
 
-            // user already has punishment.
+            // bool indicating whether user already has punishment.
             return ( currentlyActivePunishments.Any(x => x.PunishmentId == punishment.Id) );
         }
     }
