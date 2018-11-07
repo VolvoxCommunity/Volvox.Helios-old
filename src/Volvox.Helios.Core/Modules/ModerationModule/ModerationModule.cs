@@ -86,7 +86,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         }
 
         public override Task Init(DiscordSocketClient client)
-        {    
+        {
+            _client = client;
+
             client.MessageReceived += async message =>
             {
                 await CheckMessage(message);
@@ -288,7 +290,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             // Punishments for specific type. I.E. profanity violation.
             punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
 
-            await ApplyPunishments(moderationSettings, punishments, user, userData);
+            await ApplyPunishments(moderationSettings, message.Channel.Id, punishments, user, userData);
             
         }
  
@@ -342,7 +344,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             return duration;
         }
 
-        private async Task ApplyPunishments(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
+        private async Task ApplyPunishments(ModerationSettings moderationSettings, ulong channelId, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
         {
             var userHasBeenRemoved = false;
 
@@ -359,17 +361,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 switch (punishment.PunishType)
                 {
                     case ( PunishType.Kick ):
-                        await KickPunishment(punishment, user);
+                        await KickPunishment(punishment, channelId, user);
                         userHasBeenRemoved = true;
                         break;
 
                     case ( PunishType.Ban ):
-                        await BanPunishment(punishment, user);
+                        await BanPunishment(punishment, channelId, user);
                         userHasBeenRemoved = true;
                         break;
 
                     case ( PunishType.AddRole ):
-                        await AddRolePunishment(punishment, user);
+                        await AddRolePunishment(punishment, channelId, user);
                         break;
                 }
 
@@ -377,7 +379,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             }       
         }
 
-        private async Task AddRolePunishment(Punishment punishment, SocketGuildUser user)
+        private async Task AddRolePunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
         {
             if (!punishment.RoleId.HasValue) return;
 
@@ -388,19 +390,15 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             if (guild is null || role is null)
                 return;
 
-            var hierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy;
+            var hierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
 
-            // TODO: log issue here
-            if (hierarchy is null)
-                return;
-
-            // Trying to assign a role higher than the bods hierarchy will throw an error.
+            // Trying to assign a role higher than the bots hierarchy will throw an error.
             if (role.Position > hierarchy)
             {
                 Logger.LogInformation($"Moderation Module: Couldn't apply role to use as bot doesn't have appropriate permissions. " +
                     $"Guild Id:{user.Guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}.");
 
-                await _messageService.Post(user.Guild.Id, $"Couldn't add role '{role.Name}' as bot has insufficient permissions. " +
+                await _messageService.Post(channelId, $"Couldn't add role '{role.Name}' as bot has insufficient permissions. " +
                     $"Check your role hierarchy and make sure the bot is higher than the role you wish to apply.");
             }
 
@@ -408,13 +406,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
 
-            // TODO : why is this throwing error? no object reference set. figure out what is happening.
-            await _messageService.Post(user.Guild.Id, $"Adding role '{role.Name}' to user {user.Username}." +
-                $"\nReason: {punishment.WarningType}." +
-                $"Expires: {expireTime}");
+            await _messageService.Post(channelId, $"Adding role '{role.Name}' to user {user.Username}." +
+                $"\nReason: {punishment.WarningType}\n" +
+                $"Expires (minutes): {expireTime}");
         }
 
-        private async Task KickPunishment(Punishment punishment, SocketGuildUser user)
+        private async Task KickPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
         {          
             Logger.LogInformation($"Moderation Module: Kicking user {user.Username} because of custom punishment set by guild admin. " +
                     $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
@@ -425,7 +422,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 $"\nReason: {punishment.WarningType}");
         }
 
-        private async Task BanPunishment(Punishment punishment, SocketGuildUser user)
+        private async Task BanPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
         {           
             Logger.LogInformation($"Moderation Module: Banning user {user.Username} because of custom punishment set by guild admin. " +
                     $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
@@ -435,7 +432,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
 
             await _messageService.Post(user.Guild.Id, $"Banning user {user.Username}." +
-                $"\nReason: {punishment.WarningType}." +
+                $"\nReason: {punishment.WarningType}" +
                 $"Expires: {expireTime}");
         }
 
@@ -457,6 +454,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                     var expireDate = DateTimeOffset.Now.AddMinutes(punishment.PunishDuration.Value);
 
+                    // Using userData causes looping references error as it's populated. userDbEntry is just for reference/navigation property.
+                    var userDbEntry = await userWarningsService.Find(userData.Id);
+
                     // value of 0 means no expiration.
                     if (punishment.PunishDuration == 0)
                         expireDate = DateTimeOffset.MaxValue;
@@ -467,7 +467,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                         PunishType = punishment.PunishType,
                         PunishmentId = punishment.Id,
                         RoleId = punishment.RoleId,
-                        User = userData
+                        User = userDbEntry
                     });
                 }
 
