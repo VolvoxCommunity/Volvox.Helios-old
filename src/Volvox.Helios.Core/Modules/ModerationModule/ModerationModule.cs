@@ -393,22 +393,24 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var hierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
 
             // Trying to assign a role higher than the bots hierarchy will throw an error.
-            if (role.Position > hierarchy)
+            if (role.Position < hierarchy)
+            {
+                await user.AddRoleAsync(role);
+
+                var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
+
+                await _messageService.Post(channelId, $"Adding role '{role.Name}' to user {user.Username}." +
+                    $"\nReason: {punishment.WarningType}\n" +
+                    $"Expires (minutes): {expireTime}");
+            }
+            else
             {
                 Logger.LogInformation($"Moderation Module: Couldn't apply role to use as bot doesn't have appropriate permissions. " +
                     $"Guild Id:{user.Guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}.");
 
                 await _messageService.Post(channelId, $"Couldn't add role '{role.Name}' as bot has insufficient permissions. " +
                     $"Check your role hierarchy and make sure the bot is higher than the role you wish to apply.");
-            }
-
-            await user.AddRoleAsync(role);
-
-            var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
-
-            await _messageService.Post(channelId, $"Adding role '{role.Name}' to user {user.Username}." +
-                $"\nReason: {punishment.WarningType}\n" +
-                $"Expires (minutes): {expireTime}");
+            }         
         }
 
         private async Task KickPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
