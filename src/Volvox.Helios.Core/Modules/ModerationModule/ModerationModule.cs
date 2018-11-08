@@ -17,13 +17,9 @@ using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using System;
 using Volvox.Helios.Service.EntityService;
 using Microsoft.Extensions.DependencyInjection;
-using System.IO;
-using Newtonsoft.Json.Linq;
-using Discord;
 using Volvox.Helios.Service.BackgroundJobs;
 using Hangfire;
 using Volvox.Helios.Core.Jobs;
-using Volvox.Helios.Core.Bot;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
@@ -46,6 +42,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         // TODO : Add method in entity service to find the first option with an includes. currently GET finds all, we just need the first in some cases.
 
         // TODO : Uncomment out the auth checks in moderation controller.
+
+        // TODO : Check bot has permission to kick/ban before trying.
+
+        // TODO : Remove active punishment from db after punishment is removed.
 
         #region Private vars
 
@@ -136,7 +136,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Global)))
                 return;
 
-            // do nothing if the filter is doesn't exist for a the guild or it's disabled.
+            // do nothing if the filter doesn't exist for the guild or it's disabled.
             if (( settings.ProfanityFilter != null ) && ( settings.ProfanityFilter.Enabled ))
             {
                 var whitelistedChannels = settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Profanity);
@@ -150,7 +150,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 }
             }
 
-            // do nothing if the filter is doesn't exist for a the guild or it's disabled.
+            // do nothing if the filter doesn't exist for a the guild or it's disabled.
             if ((settings.LinkFilter != null) && (settings.LinkFilter.Enabled))
             {
                 var whitelistedChannels = settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Link);
@@ -456,7 +456,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                     var expireDate = DateTimeOffset.Now.AddMinutes(punishment.PunishDuration.Value);
 
-                    // Using userData causes looping references error as it's populated. userDbEntry is just for reference/navigation property.
+                    // Refetching prevents self referencing loop AND ensures the entity is tracked, therefore stopping ef core from trying to re-add it.
                     var userDbEntry = await userWarningsService.Find(userData.Id);
 
                     // value of 0 means no expiration.
@@ -475,9 +475,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 var removePunishmentService = scope.ServiceProvider.GetRequiredService<RemovePunishmentJob>();
 
-                await removePunishmentService.SchedulePunishmentRemovals(activePunishments);
-
                 await activePunishmentsService.CreateBulk(activePunishments);
+
+                await removePunishmentService.SchedulePunishmentRemovals(activePunishments);
             }
         }
 

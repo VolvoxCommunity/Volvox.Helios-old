@@ -67,6 +67,8 @@ namespace Volvox.Helios.Core.Jobs
                     await RemoveRole(punishment);
                     break;
             }
+
+            await RemoveActivePunishmentFromDb(punishment);
         }
 
         private async Task Unban(ActivePunishment punishment)
@@ -87,6 +89,16 @@ namespace Volvox.Helios.Core.Jobs
             var role = guild.GetRole(punishment.RoleId.Value);
 
             await user.RemoveRoleAsync(role);
+        }
+
+        private async Task RemoveActivePunishmentFromDb(ActivePunishment punishment)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var activePunishmentService = scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
+
+                await activePunishmentService.Remove(punishment);
+            }
         }
     }
 }
