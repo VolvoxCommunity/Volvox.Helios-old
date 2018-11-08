@@ -44,6 +44,7 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Modules.ModerationModule;
 using Volvox.Helios.Core.Jobs;
+using Newtonsoft.Json;
 
 namespace Volvox.Helios.Web
 {
@@ -167,8 +168,14 @@ namespace Volvox.Helios.Web
             {
                 options.Filters.Add(new ModelStateValidationFilter());
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-            })
+            })       
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            // Ignore self-ref loop to prevent error when serializing entities with navigation properties when using hangfire.
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
 
             // Entity Framework
             services.AddDbContext<VolvoxHeliosContext>(options =>
