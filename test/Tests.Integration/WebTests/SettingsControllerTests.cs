@@ -38,7 +38,7 @@ namespace Tests.Integration.WebTests
 
             var testGuildId = guilds.Where(g => g.Name.Equals(testServerName)).Select(g => g.Id).FirstOrDefault();
 
-            var response = await client.GetAsync($"{url}/{testGuildId}");
+            var response = await client.GetAsync($"{url}/{TestData.AdminTestGuildId}");
 
             var content = await response.Content.ReadAsStringAsync();
 
