@@ -27,8 +27,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
     {
         // TODO : Add reasons to punishments. defaut can be "no reason provided" or something
 
-        // TODO : if the addition of list<activepunishment> in userwarning causes issues, just undo it (i.e. just link the activepunsihemnt to the moderationsettings, not to a userwarnings.)
-
         // TODO : MAKE SURE TO CHECK THE BOT HAS HIGH ENOUGH AUTHORITY TO DO WHAT IT WANTS TO DO. OTHERWISE WILL GET 403 ##########################
 
         // TODO : Potential issue: multiple punishments could cause things like trying to apply a roel to someone who was just banned. check for this.
@@ -45,7 +43,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Check bot has permission to kick/ban before trying.
 
-        // TODO : Remove active punishment from db after punishment is removed.
+        // TODO : Test when there are multiple punishments being applied to a user.
+
+        // TODO : Check for nulls in hangfire methods to ensure no crashes.
 
         #region Private vars
 
@@ -358,37 +358,50 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 if (IsPunishmentAlreadyActive(punishment, userData))
                     continue;
 
+                var wasSuccessful = true;
+
                 switch (punishment.PunishType)
                 {
                     case ( PunishType.Kick ):
-                        await KickPunishment(punishment, channelId, user);
-                        userHasBeenRemoved = true;
+                        if (await KickPunishment(punishment, channelId, user))            
+                            userHasBeenRemoved = true;
+                        else
+                            wasSuccessful = false;
                         break;
 
                     case ( PunishType.Ban ):
-                        await BanPunishment(punishment, channelId, user);
-                        userHasBeenRemoved = true;
+                        if (await BanPunishment(punishment, channelId, user))
+                            userHasBeenRemoved = true;
+                        else
+                            wasSuccessful = false;
                         break;
 
                     case ( PunishType.AddRole ):
-                        await AddRolePunishment(punishment, channelId, user);
+                        if (await AddRolePunishment(punishment, channelId, user))
+                        {}
+                        else
+                            wasSuccessful = false;
                         break;
                 }
 
-                await AddActivePunishments(moderationSettings, punishments, user, userData);
+                if (wasSuccessful)
+                    await AddActivePunishments(moderationSettings, punishments, user, userData);
+
+                wasSuccessful = true;
             }       
         }
 
-        private async Task AddRolePunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
+        private async Task<bool> AddRolePunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
         {
-            if (!punishment.RoleId.HasValue) return;
+            if (!punishment.RoleId.HasValue)
+                return false;
 
             var guild = user.Guild;
 
             var role = guild.GetRole(punishment.RoleId.Value);
 
             if (guild is null || role is null)
-                return;
+                return false;
 
             var hierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
 
@@ -410,10 +423,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 await _messageService.Post(channelId, $"Couldn't add role '{role.Name}' as bot has insufficient permissions. " +
                     $"Check your role hierarchy and make sure the bot is higher than the role you wish to apply.");
-            }         
+
+                return false;
+            }
+
+            return true;
         }
 
-        private async Task KickPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
+        private async Task<bool> KickPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
         {          
             Logger.LogInformation($"Moderation Module: Kicking user {user.Username} because of custom punishment set by guild admin. " +
                     $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
@@ -422,9 +439,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             await _messageService.Post(user.Guild.Id, $"Kicking user {user.Username}." +
                 $"\nReason: {punishment.WarningType}");
+
+            return true;
         }
 
-        private async Task BanPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
+        private async Task<bool> BanPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
         {           
             Logger.LogInformation($"Moderation Module: Banning user {user.Username} because of custom punishment set by guild admin. " +
                     $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
@@ -436,6 +455,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             await _messageService.Post(user.Guild.Id, $"Banning user {user.Username}." +
                 $"\nReason: {punishment.WarningType}" +
                 $"Expires: {expireTime}");
+
+            return true;
         }
 
         private async Task AddActivePunishments(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
