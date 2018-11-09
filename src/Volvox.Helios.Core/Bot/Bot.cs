@@ -54,7 +54,7 @@ namespace Volvox.Helios.Core.Bot
                         var version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
 
                         await Client.SetGameAsync(
-                            $"volvox.tech | {Client.Guilds.Count} servers | {memberCount} members | v{version.Major}.{version.Minor}.{version.Revision}");
+                            $"volvox.tech | {Client.Guilds.Count} servers | {memberCount} members | v{version.Major}.{version.Minor}.{version.Build}");
                         await Task.Delay(TimeSpan.FromMinutes(15));
                     }
                 });
