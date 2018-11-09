@@ -47,6 +47,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Check for nulls in hangfire methods to ensure no crashes.
 
+        // TODO : Check role hierarchy inside hangfire job, incase it changes between role adding and role removing.
+
         #region Private vars
 
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
@@ -348,6 +350,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         {
             var userHasBeenRemoved = false;
 
+            // List of punishments to add to database as active punishments.
+            var activePunishments = new List<Punishment>();
+
             foreach (var punishment in punishments)
             {
                 // If a user has been kicked/banned or otherwise removed from the guild, you can't add any other punishments. So return from this method.
@@ -384,11 +389,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                         break;
                 }
 
+                // Punishment applied successfully, add to list to add to db.
                 if (wasSuccessful)
-                    await AddActivePunishments(moderationSettings, punishments, user, userData);
+                    activePunishments.Add(punishment);
 
                 wasSuccessful = true;
-            }       
+            }
+
+            await AddActivePunishments(moderationSettings, activePunishments, user, userData);
         }
 
         private async Task<bool> AddRolePunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
