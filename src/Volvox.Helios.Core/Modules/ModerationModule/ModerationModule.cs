@@ -89,6 +89,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         public override Task Init(DiscordSocketClient client)
         {
+            // As client is passed into init, no point in assigning client in constructor.
             _client = client;
 
             client.MessageReceived += async message =>
@@ -113,7 +114,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private async Task CheckMessage(SocketMessage message)
         {
-            // message can be null sometimes when dealing with deleted messages
+            // Message can be null sometimes when dealing with deleted messages
             if (message is null)
                 return;
 
@@ -124,21 +125,19 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 s => s.ProfanityFilter.BannedWords, s => s.LinkFilter.WhitelistedLinks, s => s.Punishments, s => s.WhitelistedChannels, s => s.WhitelistedRoles  
             );
 
-            // settings will be null if users haven't done anything with the moderation module.
-            // if settings are null, or settings isn't enabled, then the module isn't enabled. Do nothing.
+            // Settings will be null if users haven't done anything with the moderation module.
+            // If settings are null, or settings isn't enabled, then the module isn't enabled. Do nothing.
             if (settings is null || !settings.Enabled)
                 return;
 
             var channelPostedId = message.Channel.Id;
-
-            var authorRoles = user.Roles;
 
             // If the user or channel is globally whitelisted, there is no point in checking the message contents.
             if (HasBypassAuthority(user, channelPostedId, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Global),
                 settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Global)))
                 return;
 
-            // do nothing if the filter doesn't exist for the guild or it's disabled.
+            // Do nothing if the filter doesn't exist for the guild or it's disabled.
             if (( settings.ProfanityFilter != null ) && ( settings.ProfanityFilter.Enabled ))
             {
                 var whitelistedChannels = settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Profanity);
@@ -168,7 +167,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         }
 
         private bool HasBypassAuthority(SocketGuildUser user, ulong postedChannelId,
-            IEnumerable<WhitelistedChannel> whitelistedChannels, IEnumerable<WhitelistedRole> whitelistedRoles) {
+            IEnumerable<WhitelistedChannel> whitelistedChannels, IEnumerable<WhitelistedRole> whitelistedRoles)
+        {
             // Bots bypass check.
             if (user.IsBot) return true;
 
@@ -201,6 +201,35 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             }
 
             return false;
+        }
+
+        private string ConvertClbuttic(string word)
+        {
+            return word.Replace("[a]", "[a A @]")
+                .Replace("[b]", "[b B I3 l3 i3]")
+                .Replace("[c]", "(?:[c C \\(]|[k K])")
+                .Replace("[d]", "[d D]")
+                .Replace("[e]", "[e E 3]")
+                .Replace("[f]", "(?:[f F]|[ph pH Ph PH])")
+                .Replace("[g]", "[g G 6]")
+                .Replace("[h]", "[h H]")
+                .Replace("[i]", "[i I l ! 1]")
+                .Replace("[j]", "[j J]")
+                .Replace("[k]", "(?:[c C \\(]|[k K])")
+                .Replace("[l]", "[l L 1 ! i]")
+                .Replace("[m]", "[m M]")
+                .Replace("[n]", "[n N]")
+                .Replace("[o]", "[o O 0]")
+                .Replace("[p]", "[p P]")
+                .Replace("[q]", "[q Q 9]")
+                .Replace("[r]", "[r R]")
+                .Replace("[s]", "[s S $ 5]")
+                .Replace("[t]", "[t T 7]")
+                .Replace("[u]", "[u U v V]")
+                .Replace("[v]", "[v V u U]")
+                .Replace("[w]", "[w W vv VV]")
+                .Replace("[x]", "[x X]")
+                .Replace("[y]", "[y Y]");
         }
 
         private bool LinkCheck(SocketMessage message, LinkFilter linkFilter)
@@ -293,7 +322,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
 
             await ApplyPunishments(moderationSettings, message.Channel.Id, punishments, user, userData);
-            
         }
  
         private async Task AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, UserWarnings userData, WarningType warningType)
@@ -365,6 +393,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 var wasSuccessful = true;
 
+                // For each punishment, check if applying them has been successful. If successful, add this to active punishments db, if not, don't add it.
+                // If a punishment removes the user from the guild, no more punisments can be applied to them, so don't attempt any more.
                 switch (punishment.PunishType)
                 {
                     case ( PunishType.Kick ):
