@@ -29,25 +29,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : MAKE SURE TO CHECK THE BOT HAS HIGH ENOUGH AUTHORITY TO DO WHAT IT WANTS TO DO. OTHERWISE WILL GET 403 ##########################
 
-        // TODO : Potential issue: multiple punishments could cause things like trying to apply a roel to someone who was just banned. check for this.
-
         // TODO : extract banning and stuff into services
 
         // TODO : MAKE SURE EXPIRE PERIOD DOESNT EXCEDE MAX DATETIME
 
-        // NEXT TODO : MAKE SURE USERS ARE IN GUILD BEFORE APPLYING ANY PUNISHMENT
+        // TODO : MAKE SURE USERS ARE IN GUILD BEFORE APPLYING ANY PUNISHMENT
 
         // TODO : Add method in entity service to find the first option with an includes. currently GET finds all, we just need the first in some cases.
 
         // TODO : Uncomment out the auth checks in moderation controller.
 
         // TODO : Check bot has permission to kick/ban before trying.
-
-        // TODO : Test when there are multiple punishments being applied to a user.
-
-        // TODO : Check for nulls in hangfire methods to ensure no crashes.
-
-        // TODO : Check role hierarchy inside hangfire job, incase it changes between role adding and role removing.
 
         #region Private vars
 
@@ -151,7 +143,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 }
             }
 
-            // do nothing if the filter doesn't exist for a the guild or it's disabled.
+            // Do nothing if the filter doesn't exist for a the guild or it's disabled.
             if ((settings.LinkFilter != null) && (settings.LinkFilter.Enabled))
             {
                 var whitelistedChannels = settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Link);
@@ -450,13 +442,13 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
 
-                await _messageService.Post(channelId, $"Adding role '{role.Name}' to user {user.Username}." +
+                await _messageService.Post(channelId, $"Adding role '{role.Name}' to user {user.Username}" +
                     $"\nReason: {punishment.WarningType}\n" +
                     $"Expires (minutes): {expireTime}");
             }
             else
             {
-                Logger.LogInformation($"Moderation Module: Couldn't apply role to use as bot doesn't have appropriate permissions. " +
+                Logger.LogInformation($"Moderation Module: Couldn't apply role '{role.Name}' to user '{user.Username}' as bot doesn't have appropriate permissions. " +
                     $"Guild Id:{user.Guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}.");
 
                 await _messageService.Post(channelId, $"Couldn't add role '{role.Name}' as bot has insufficient permissions. " +
@@ -470,12 +462,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private async Task<bool> KickPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
         {          
-            Logger.LogInformation($"Moderation Module: Kicking user {user.Username} because of custom punishment set by guild admin. " +
+            Logger.LogInformation($"Moderation Module: Kicking user {user.Username}." +
                     $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
 
             await user.KickAsync();
 
-            await _messageService.Post(user.Guild.Id, $"Kicking user {user.Username}." +
+            await _messageService.Post(user.Guild.Id, $"Kicking user {user.Username}" +
                 $"\nReason: {punishment.WarningType}");
 
             return true;
@@ -483,14 +475,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private async Task<bool> BanPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
         {           
-            Logger.LogInformation($"Moderation Module: Banning user {user.Username} because of custom punishment set by guild admin. " +
+            Logger.LogInformation($"Moderation Module: Banning user {user.Username}. " +
                     $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
 
             await user.Guild.AddBanAsync(user);
 
             var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
 
-            await _messageService.Post(user.Guild.Id, $"Banning user {user.Username}." +
+            await _messageService.Post(user.Guild.Id, $"Banning user {user.Username}" +
                 $"\nReason: {punishment.WarningType}" +
                 $"Expires: {expireTime}");
 

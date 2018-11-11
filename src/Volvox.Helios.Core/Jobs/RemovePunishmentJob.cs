@@ -13,6 +13,7 @@ using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.BackgroundJobs;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
+using Volvox.Helios.Core.Services.MessageService;
 
 namespace Volvox.Helios.Core.Jobs
 {
@@ -29,8 +30,7 @@ namespace Volvox.Helios.Core.Jobs
         public RemovePunishmentJob(IJobService jobService,
             IServiceScopeFactory scopeFactory,
             IBot bot, IModuleSettingsService<ModerationSettings> moderationSettings,
-            DiscordSocketClient client,
-            ILogger<IModule> logger)
+            DiscordSocketClient client, ILogger<IModule> logger)
         {
             _jobService = jobService;
             _scopeFactory = scopeFactory;
@@ -51,7 +51,7 @@ namespace Volvox.Helios.Core.Jobs
                     // No point scheduling a removal for a punishment that is permanent.
                     if (punishment.PunishmentExpires != DateTimeOffset.MaxValue)
                         _jobService.ScheduleJob(() => RemovePunishmentDiscord(punishment), punishment.PunishmentExpires);
-                } 
+                }
             }
         }
 
@@ -77,18 +77,30 @@ namespace Volvox.Helios.Core.Jobs
 
             var userId = punishment.User.UserId;
 
-            await guild.RemoveBanAsync(userId);  
+            await guild.RemoveBanAsync(userId);
         }
 
         private async Task RemoveRole(ActivePunishment punishment)
         {
             var guild = _client.GetGuild(punishment.User.GuildId);
 
+            var role = guild?.GetRole(punishment.RoleId.Value);
+
             var user = guild.Users.FirstOrDefault(x => x.Id == punishment.User.UserId);
 
-            var role = guild.GetRole(punishment.RoleId.Value);
+            // If role hierarchy has changed since punishment was applied and now the bot doesn't have sufficient privilages, do nothing.
+            if (role != null && HasSufficientPrivilages(role, guild))
+            {
+                await user.RemoveRoleAsync(role);
 
-            await user.RemoveRoleAsync(role);
+                _logger.LogInformation($"Moderation Module: Removing role '{role.Name}' from {user.Username}."  +
+                    $"Guild Id:{user.Guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}.");
+            }
+            else
+            {
+                _logger.LogInformation($"Moderation Module: Couldn't apply role '{role.Name}' to user {user.Username} as bot doesn't have appropriate permissions. " +
+                   $"Guild Id:{guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}");
+            }
         }
 
         private async Task RemoveActivePunishmentFromDb(ActivePunishment punishment)
@@ -99,6 +111,13 @@ namespace Volvox.Helios.Core.Jobs
 
                 await activePunishmentService.Remove(punishment);
             }
+        }
+
+        private bool HasSufficientPrivilages(SocketRole role, SocketGuild guild)
+        {
+            var hierarchy = guild.CurrentUser.Hierarchy;
+
+            return hierarchy > role.Position;
         }
     }
 }
