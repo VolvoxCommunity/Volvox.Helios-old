@@ -22,7 +22,8 @@ namespace Volvox.Helios.Web
                 {
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddDebug();
-                });
+                })
+                .UseSetting("https_port", "443");
         }
     }
 }
