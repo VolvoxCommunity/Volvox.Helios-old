@@ -182,7 +182,7 @@ namespace Volvox.Helios.Web
                 {
                     options.ForwardedHeaders =
                         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-                    options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse("::ffff:100.64.0.0"), 106));
+                    options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse("::ffff:172.31.0.0"), 116));
                 });
 
                 services.AddHttpsRedirection(options =>
