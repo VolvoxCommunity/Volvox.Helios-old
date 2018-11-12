@@ -205,7 +205,6 @@ namespace Volvox.Helios.Web
             // Update the database.
             context.Database.Migrate();
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
