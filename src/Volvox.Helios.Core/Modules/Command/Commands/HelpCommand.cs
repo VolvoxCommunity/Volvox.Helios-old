@@ -17,7 +17,7 @@ namespace Volvox.Helios.Core.Modules.Command.Commands
 
         public async Task Execute(CommandContext context)
         {
-            await context.Channel.SendMessageAsync("Visit http://www.volvox.tech to manage the bot.");
+            await context.Channel.SendMessageAsync("Visit https://www.volvox.tech to manage the bot.");
         }
     }
 }
