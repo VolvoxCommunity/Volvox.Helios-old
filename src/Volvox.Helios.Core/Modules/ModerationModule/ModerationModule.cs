@@ -442,7 +442,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
 
-                await _messageService.Post(channelId, $"Adding role '{role.Name}' to user {user.Username}" +
+                await _messageService.Post(channelId, $"Adding role '{role.Name}' to user <@{user.Id}>" +
                     $"\nReason: {punishment.WarningType}\n" +
                     $"Expires (minutes): {expireTime}");
             }
@@ -451,7 +451,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 Logger.LogInformation($"Moderation Module: Couldn't apply role '{role.Name}' to user '{user.Username}' as bot doesn't have appropriate permissions. " +
                     $"Guild Id:{user.Guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}.");
 
-                await _messageService.Post(channelId, $"Couldn't add role '{role.Name}' as bot has insufficient permissions. " +
+                await _messageService.Post(channelId, $"Couldn't add role '{role.Name}' to user <@{user.Id}> as bot has insufficient permissions. " +
                     $"Check your role hierarchy and make sure the bot is higher than the role you wish to apply.");
 
                 return false;
@@ -461,32 +461,60 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         }
 
         private async Task<bool> KickPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
-        {          
-            Logger.LogInformation($"Moderation Module: Kicking user {user.Username}." +
-                    $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
+        {                
+            var botHierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
 
-            await user.KickAsync();
+            if (botHierarchy > user.Hierarchy)
+            {
+                await user.KickAsync();
 
-            await _messageService.Post(user.Guild.Id, $"Kicking user {user.Username}" +
-                $"\nReason: {punishment.WarningType}");
+                Logger.LogInformation($"Moderation Module: Kicking user '{user.Username}'." +
+                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
 
-            return true;
+                await _messageService.Post(channelId, $"Kicking user <@{user.Id}>" +
+                    $"\nReason: {punishment.WarningType}");
+
+                return true;
+            }
+            else
+            {
+                Logger.LogInformation($"Moderation Module: Failed to kick user '{user.Username}' as bot has insufficient permissions." +
+                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
+
+                await _messageService.Post(channelId, $"Failed to kick user <@{user.Id}> as bot has insufficient permissions.");
+
+                return false;
+            }
         }
 
         private async Task<bool> BanPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
-        {           
-            Logger.LogInformation($"Moderation Module: Banning user {user.Username}. " +
-                    $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
+        {
+            var botHierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
 
-            await user.Guild.AddBanAsync(user);
+            if (botHierarchy > user.Hierarchy)
+            {
+                await user.Guild.AddBanAsync(user);
 
-            var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
+                Logger.LogInformation($"Moderation Module: Banning user '{user.Username}'." +
+                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
 
-            await _messageService.Post(user.Guild.Id, $"Banning user {user.Username}" +
-                $"\nReason: {punishment.WarningType}" +
-                $"Expires: {expireTime}");
+                var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
 
-            return true;
+                await _messageService.Post(channelId, $"Banning user <@{user.Id}>" +
+                    $"\nReason: {punishment.WarningType}" +
+                    $"Expires: {expireTime}");
+
+                return true;
+            }
+            else
+            {
+                Logger.LogInformation($"Moderation Module: Failed to ban user '{user.Username}' as bot has insufficient permissions." +
+                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
+
+                await _messageService.Post(channelId, $"Failed to ban user <@{user.Id}> as bot has insufficient permissions.");
+
+                return false;
+            }  
         }
 
         private async Task AddActivePunishments(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
