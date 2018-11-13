@@ -175,22 +175,6 @@ namespace Volvox.Helios.Web
                     PrepareSchemaIfNecessary = true
                 });
             });
-
-            if (!_env.IsDevelopment())
-            {
-                services.Configure<ForwardedHeadersOptions>(options =>
-                {
-                    options.ForwardedHeaders =
-                        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-                    options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse("::ffff:172.31.0.0"), 116));
-                });
-
-                services.AddHttpsRedirection(options =>
-                {
-                    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                    options.HttpsPort = 443;
-                });
-            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -204,7 +188,6 @@ namespace Volvox.Helios.Web
             }
             else
             {
-                app.UseForwardedHeaders();
                 app.UseExceptionHandler("/Error/Error");
                 app.UseStatusCodePagesWithReExecute("/Error/Errors/{0}");
                 app.UseHsts();
