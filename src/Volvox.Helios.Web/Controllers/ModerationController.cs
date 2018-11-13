@@ -95,7 +95,7 @@ namespace Volvox.Helios.Web.Controllers
                 {
                     // TODO : null checks and check id is valid ulong
                     var role = new WhitelistedRole()
-                    { 
+                    {
                         GuildId = vm.GuildId,
                         RoleId = roleId,
                         WhitelistType = WhitelistType.Global
@@ -117,79 +117,11 @@ namespace Volvox.Helios.Web.Controllers
         {
             var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId);
 
-            #region whitelisted channels link
-
-            var currentWhitelistedChannels = currentSettings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Link);
-
-            var channelsToRemove = new List<WhitelistedChannel>();
-
-            var channelsToAdd = new List<WhitelistedChannel>();
-
-            foreach (var channelId in vm.WhitelistedChannels)
-            {
-                if (!currentWhitelistedChannels.Any(c => c.ChannelId == channelId))
-                {
-                    channelsToAdd.Add(new WhitelistedChannel
-                    {
-                        ChannelId = channelId,
-                        GuildId = guildId,
-                        Moderationsettings = currentSettings,
-                        WhitelistType = WhitelistType.Link
-                    });
-                }
-            }
-
-            foreach (var channel in currentWhitelistedChannels)
-            {
-                if (!vm.WhitelistedChannels.Any(c => c == channel.ChannelId))
-                {
-                    channelsToRemove.Add(channel);
-                }
-            }
-
-            await _entityServiceWhitelistedChannels.CreateBulk(channelsToAdd);
-
-            await _entityServiceWhitelistedChannels.RemoveBulk(channelsToRemove);
-
-            #endregion
-
-            #region whitelisted roles link
-
-            var currentWhitelistedRoles = currentSettings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Link);
-
-            var rolesToRemove = new List<WhitelistedRole>();
-
-            var rolesToAdd = new List<WhitelistedRole>();
-
-            foreach (var roleId in vm.WhitelistedRoles)
-            {
-                if (!currentWhitelistedRoles.Any(c => c.RoleId == roleId))
-                {
-                    rolesToAdd.Add(new WhitelistedRole
-                    {
-                        GuildId = guildId,
-                        RoleId = roleId,
-                        Moderationsettings = currentSettings,
-                        WhitelistType = WhitelistType.Link
-                    });
-                }
-            }
-
-            foreach (var role in currentWhitelistedRoles)
-            {
-                if (!vm.WhitelistedRoles.Any(r => r == role.RoleId))
-                {
-                    rolesToRemove.Add(role);
-                }
-            }
-
-            await _entityServiceWhitelistedRoles.CreateBulk(rolesToAdd);
-
-            await _entityServiceWhitelistedRoles.RemoveBulk(rolesToRemove);
-
-            #endregion
+            #region general filter settings link
 
             var filter = currentSettings.LinkFilter;
+
+            // TODO : null check. if null, create as necessary.
 
             filter.Enabled = vm.Enabled;
 
@@ -197,14 +129,165 @@ namespace Volvox.Helios.Web.Controllers
 
             await _entityServiceLinkFilter.Update(filter);
 
+            #endregion
+
+            #region whitelisted channels link
+
+            var newChannelState = GetNewChannelState(currentSettings, WhitelistType.Link, vm.WhitelistedChannels);
+
+            await _entityServiceWhitelistedChannels.CreateBulk(newChannelState.ChannelsToAdd);
+
+            await _entityServiceWhitelistedChannels.RemoveBulk(newChannelState.ChannelsToRemove);
+
+            #endregion
+
+            #region whitelisted roles link
+
+            var newRolesState = GetNewRolesState(currentSettings, WhitelistType.Link, vm.WhitelistedRoles);
+
+            await _entityServiceWhitelistedRoles.CreateBulk(newRolesState.RolesToAdd);
+
+            await _entityServiceWhitelistedRoles.RemoveBulk(newRolesState.RolesToRemove);
+
+            #endregion
+
             // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
             _moderationSettings.ClearCacheByGuild(vm.GuildId);
+
+            return View(vm);
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateProfanityFilter(ulong guildId, ModerationProfanity vm)
         {
+            var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId);
 
+            #region general filter settings profanity
+
+            var filter = currentSettings.ProfanityFilter;
+
+            // TODO : null check. if null, create as necessary.
+
+            filter.Enabled = vm.Enabled;
+
+            filter.WarningExpirePeriod = vm.WarningExpirePeriod;
+
+            await _entityServiceProfanityFilter.Update(filter);
+
+            #endregion
+
+            #region whitelisted channels profanity
+
+            var newChannelState = GetNewChannelState(currentSettings, WhitelistType.Profanity, vm.WhitelistedChannels);
+
+            await _entityServiceWhitelistedChannels.CreateBulk(newChannelState.ChannelsToAdd);
+
+            await _entityServiceWhitelistedChannels.RemoveBulk(newChannelState.ChannelsToRemove);
+
+            #endregion
+
+            #region whitelisted roles profanity
+
+            var newRolesState = GetNewRolesState(currentSettings, WhitelistType.Profanity, vm.WhitelistedRoles);
+            
+            await _entityServiceWhitelistedRoles.CreateBulk(newRolesState.RolesToAdd);
+
+            await _entityServiceWhitelistedRoles.RemoveBulk(newRolesState.RolesToRemove);
+
+            #endregion
+
+            // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
+            _moderationSettings.ClearCacheByGuild(vm.GuildId);
+
+            return View(vm);
         }
+
+        private NewChannelsState GetNewChannelState(ModerationSettings currentSettings, WhitelistType type, List<ulong> channelIds)
+        {
+            var currentWhitelistedChannels = currentSettings.WhitelistedChannels.Where(c => c.WhitelistType == type);
+
+            var channelsToAdd = new List<WhitelistedChannel>();
+
+            var channelsToRemove = new List<WhitelistedChannel>();
+
+            foreach (var channelId in channelIds)
+            {
+                if (!currentWhitelistedChannels.Any(c => c.ChannelId == channelId))
+                {
+                    channelsToAdd.Add(new WhitelistedChannel
+                    {
+                        ChannelId = channelId,
+                        GuildId = currentSettings.GuildId,
+                        Moderationsettings = currentSettings,
+                        WhitelistType = type
+                    });
+                }
+            }
+
+            foreach (var channel in currentWhitelistedChannels)
+            {
+                if (!channelIds.Any(c => c == channel.ChannelId))
+                {
+                    channelsToRemove.Add(channel);
+                }
+            }
+
+            return new NewChannelsState
+            {
+                ChannelsToAdd = channelsToAdd,
+                ChannelsToRemove = channelsToRemove
+            };
+        }
+
+        private NewRolesState GetNewRolesState(ModerationSettings currentSettings, WhitelistType type, List<ulong> roleIds)
+        {
+            var currentWhitelistedRoles = currentSettings.WhitelistedRoles.Where(r => r.WhitelistType == type);
+
+            var rolesToRemove = new List<WhitelistedRole>();
+
+            var rolesToAdd = new List<WhitelistedRole>();
+
+            foreach (var roleId in roleIds)
+            {
+                if (!currentWhitelistedRoles.Any(c => c.RoleId == roleId))
+                {
+                    rolesToAdd.Add(new WhitelistedRole
+                    {
+                        GuildId = currentSettings.GuildId,
+                        RoleId = roleId,
+                        Moderationsettings = currentSettings,
+                        WhitelistType = type
+                    });
+                }
+            }
+
+            foreach (var role in currentWhitelistedRoles)
+            {
+                if (!roleIds.Any(r => r == role.RoleId))
+                {
+                    rolesToRemove.Add(role);
+                }
+            }
+
+            return new NewRolesState
+            {
+                RolesToAdd = rolesToAdd,
+                RolesToRemove = rolesToRemove
+            };
+        }
+    }
+
+    class NewChannelsState
+    {
+        public List<WhitelistedChannel> ChannelsToAdd { get; set; }
+
+        public List<WhitelistedChannel> ChannelsToRemove { get; set; }
+    }
+
+    class NewRolesState
+    {
+        public List<WhitelistedRole> RolesToAdd { get; set; }
+
+        public List<WhitelistedRole> RolesToRemove { get; set; }
     }
 }
