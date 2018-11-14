@@ -11,6 +11,11 @@ using Volvox.Helios.Domain.Module.ModerationModule;
 using System.Collections.Generic;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
+using Volvox.Helios.Web.ViewModels.Moderation;
+using Volvox.Helios.Service.Discord.Guild;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Volvox.Helios.Domain.Discord;
+using Discord;
 
 namespace Volvox.Helios.Web.Controllers
 {
@@ -112,8 +117,31 @@ namespace Volvox.Helios.Web.Controllers
             return View();
         }
 
+
+        [HttpGet("linkfilter")]
+        public async Task<IActionResult> LinkFilter(ulong guildId, [FromServices] IDiscordGuildService guildService)
+        {
+            var settings = await _moderationSettings.GetSettingsByGuild(guildId, s => s.LinkFilter.WhitelistedLinks);
+
+            var guildChannels = await guildService.GetChannels(guildId);
+
+            var textChannels = guildChannels.Where(c => c.Type == (int)ChannelType.Text);
+
+            var roles = await guildService.GetRoles(guildId);
+
+            var vm = new LinkFilterViewModel
+            {
+                Enabled = settings.LinkFilter.Enabled,
+                WhitelistedChannels = new MultiSelectList(textChannels, "Id", "Name"),
+                WhitelistedRoles = new MultiSelectList(roles, "Id", "Name"),
+                WhitelistedLinks = new List<string>() { "test1", "test2", "test3" }
+            };
+
+            return View(vm);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> UpdateLinkFilter(ulong guildId, ModerationLink vm)
+        public async Task<IActionResult> LinkFilter(ulong guildId, ModerationLink vm)
         {
             var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId);
 
