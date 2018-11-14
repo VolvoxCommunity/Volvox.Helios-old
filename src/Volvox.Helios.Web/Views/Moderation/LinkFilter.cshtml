@@ -1,0 +1,53 @@
+﻿@model Volvox.Helios.Web.ViewModels.Moderation.LinkFilterViewModel
+@{
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>LinkFilter</title>
+</head>
+<body>
+    <div class="row">
+        <div class="col-md-12">
+            <form method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="WhitelistedChannels"></label>
+                    <select data-placeholder="Choose channels..." asp-for="WhitelistedChannels" asp-items="Model.WhitelistedChannels" id="channels" class="chosen-select form-control" multiple></select>
+                    <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="WhitelistedRoles"></label>
+                    <select data-placeholder="Choose roles..." asp-for="WhitelistedRoles" asp-items="Model.WhitelistedRoles" id="roles" class="chosen-select form-control" multiple></select>
+                    <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
+                </div>
+
+                <div class="form-check form-group">
+                    <input asp-for="Enabled" form-check-input" />
+                    <label asp-for="Enabled" class="form-check-label"></label>
+                    <span asp-validation-for="Enabled" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-success" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        <script>
+            $(document).ready(function () {
+                $('.chosen-select').chosen();
+            });
+        </script>
+        }
+
+    </body>
+</html>
