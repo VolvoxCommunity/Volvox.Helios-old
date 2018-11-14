@@ -11,7 +11,7 @@ namespace Volvox.Helios.Web.Models.Moderation
 
         public bool Enabled { get; set; }
 
-        public List<ulong> WhitelistedLinks { get; set; }
+        public List<string> WhitelistedLinks { get; set; }
 
         public List<ulong> WhitelistedChannels { get; set; }
 
