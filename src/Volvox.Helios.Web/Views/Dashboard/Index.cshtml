@@ -3,12 +3,7 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="row">
-    <div class="col-12">
-        <h1 class="text-center">Dashboard</h1>
-    </div>
-</div>
-<hr/>
+<partial name="./Partials/_DashboardHeader" />
 
 @foreach (var guild in Model.UserGuilds)
 {
