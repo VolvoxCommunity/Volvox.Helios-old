@@ -86,7 +86,7 @@ namespace Volvox.Helios.Core.Jobs
 
             var role = guild?.GetRole(punishment.RoleId.Value);
 
-            var user = guild.Users.FirstOrDefault(x => x.Id == punishment.User.UserId);
+            var user = guild?.Users.FirstOrDefault(x => x.Id == punishment.User.UserId);
 
             // If role hierarchy has changed since punishment was applied and now the bot doesn't have sufficient privilages, do nothing.
             if (role != null && HasSufficientPrivilages(role, guild))
@@ -98,8 +98,15 @@ namespace Volvox.Helios.Core.Jobs
             }
             else
             {
-                _logger.LogInformation($"Moderation Module: Couldn't apply role '{role.Name}' to user {user.Username} as bot doesn't have appropriate permissions. " +
-                   $"Guild Id:{guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}");
+                if (user != null && guild != null)
+                {
+                    _logger.LogInformation($"Moderation Module: Couldn't apply role '{role.Name}' to user {user.Username} as bot doesn't have appropriate permissions. " +
+                       $"Guild Id:{guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}");
+                }
+                else
+                {
+                    _logger.LogError("Moderation Module: Something wen't wrong when trying to remove role in the punishment removal job. User or guild were unexpectedly null.");
+                }
             }
         }
 
