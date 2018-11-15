@@ -1,4 +1,4 @@
-﻿@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,7 +54,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 - Volvox.Helios</p>
+            <p>&copy; 2018 - Volvox.Helios | v@(Assembly.GetEntryAssembly().GetName().Version.Major).@(Assembly.GetEntryAssembly().GetName().Version.Minor).@(Assembly.GetEntryAssembly().GetName().Version.Build)</p>
         </footer>
     </main>
 
