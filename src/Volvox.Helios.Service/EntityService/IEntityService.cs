@@ -24,8 +24,16 @@ namespace Volvox.Helios.Service.EntityService
         /// </summary>
         /// <param name="filter">Filter to use to get the entities.</param>
         /// <param name="includes">Properties to eagerly load.</param>
-        /// <returns>List of entities that match the filer.</returns>
+        /// <returns>List of entities that match the filter.</returns>
         Task<List<T>> Get(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes);
+
+        /// <summary>
+        ///     Get first entity that matches the filter.
+        /// </summary>
+        /// <param name="filter">Filter to use to get the entity.</param>
+        /// <param name="includes">Properties to eagerly load.</param>
+        /// <returns>Entity that matches the filter.</returns>
+        Task<T> GetFirst(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes);
 
         /// <summary>
         ///     Get all entities from the database.

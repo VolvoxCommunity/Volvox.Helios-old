@@ -33,6 +33,13 @@ namespace Volvox.Helios.Service.EntityService
             return Context.FindAsync<T>(keys);
         }
 
+        public virtual Task<T> GetFirst(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
+        {
+            var query = GetIncludesQuery(includes);
+
+            return query.FirstOrDefaultAsync(filter);
+        }
+
         /// <inheritdoc />
         public virtual Task<List<T>> Get(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
         {
