@@ -41,6 +41,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Check bot has permission to kick/ban before trying.
 
+        // TODO : check to see if user has role, if they do, don't add thepunishment as this could cause issues.
+
         #region Private vars
 
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
