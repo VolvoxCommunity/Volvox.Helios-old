@@ -17,13 +17,13 @@
 
                 <div class="form-group">
                     <label asp-for="WhitelistedChannels"></label>
-                    <select data-placeholder="Choose channels..." asp-for="WhitelistedChannels" asp-items="Model.WhitelistedChannels" id="channels" class="chosen-select form-control" multiple></select>
+                    <select data-placeholder="Choose channels..." asp-for="SelectedChannels" asp-items="Model.WhitelistedChannels" class="chosen-select form-control" multiple></select>
                     <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
                     <label asp-for="WhitelistedRoles"></label>
-                    <select data-placeholder="Choose roles..." asp-for="WhitelistedRoles" asp-items="Model.WhitelistedRoles" id="roles" class="chosen-select form-control" multiple></select>
+                    <select data-placeholder="Choose roles..." asp-for="SelectedRoles" asp-items="Model.WhitelistedRoles" class="chosen-select form-control" multiple></select>
                     <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
                 </div>
 

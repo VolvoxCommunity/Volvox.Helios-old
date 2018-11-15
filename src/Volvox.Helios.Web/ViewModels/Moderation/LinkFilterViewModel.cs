@@ -14,9 +14,16 @@ namespace Volvox.Helios.Web.ViewModels.Moderation
         [DisplayName("Whitelisted Channels")]
         public MultiSelectList WhitelistedChannels { get; set; }
 
+        public List<ulong> SelectedChannels { get; set; }
+
         [DisplayName("Whitelisted Roles")]
         public MultiSelectList WhitelistedRoles { get; set; }
 
+        public List<ulong> SelectedRoles { get; set; }
+
         public List<string> WhitelistedLinks { get; set; }
+
+        [DisplayName("Warning expire period (minutes)")]
+        public short WarningExpirePeriod { get; set; }
     }
 }

@@ -5,8 +5,6 @@ using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
 using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
-using Volvox.Helios.Web.Filters;
-using Volvox.Helios.Web.Models.Moderation;
 using Volvox.Helios.Domain.Module.ModerationModule;
 using System.Collections.Generic;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
@@ -19,6 +17,10 @@ using Discord;
 
 namespace Volvox.Helios.Web.Controllers
 {
+    // TODO : ensure channel exists before adding to whitelist. same for role.
+
+    // TODO : NULL CHECKS
+
     //[Authorize]
     [Route("/moderator/{guildId}")]
     //[IsUserGuildAdminFilter]
@@ -51,6 +53,11 @@ namespace Volvox.Helios.Web.Controllers
             _entityServiceWhitelistedRoles = entityServiceWhitelistedRoles;
         }
 
+        private void ClearCacheById(ulong id)
+        {
+            _moderationSettings.ClearCacheByGuild(id);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Index(ulong guildId)
         {
@@ -68,60 +75,62 @@ namespace Volvox.Helios.Web.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Index(ModerationGlobal vm)
-        {
-            var settings = await _moderationSettings.GetSettingsByGuild(vm.GuildId, s => s.WhitelistedRoles, s => s.WhitelistedChannels);
+        //[HttpPost]
+        //public async Task<IActionResult> Index(ModerationGlobal vm)
+        //{
+        //    var settings = await _moderationSettings.GetSettingsByGuild(vm.GuildId, s => s.WhitelistedRoles, s => s.WhitelistedChannels);
 
-            var newWhitelistedChannels = new List<WhitelistedChannel>();
+        //    var newWhitelistedChannels = new List<WhitelistedChannel>();
 
-            foreach (var channelId in vm.WhitelistedChannelIds)
-            {
-                // Channel isn't already in database, so add it. Otherwise, skip it.
-                if (!settings.WhitelistedChannels.Any(c => c.ChannelId == channelId))
-                {
-                    // TODO : null checks and check id is valid ulong
-                    var channel = new WhitelistedChannel() {
-                        ChannelId = channelId,
-                        GuildId = vm.GuildId,
-                        WhitelistType = WhitelistType.Global
-                    };
+        //    foreach (var channelId in vm.WhitelistedChannelIds)
+        //    {
+        //        // Channel isn't already in database, so add it. Otherwise, skip it.
+        //        if (!settings.WhitelistedChannels.Any(c => c.ChannelId == channelId))
+        //        {
+        //            // TODO : null checks and check id is valid ulong
+        //            var channel = new WhitelistedChannel() {
+        //                ChannelId = channelId,
+        //                GuildId = vm.GuildId,
+        //                WhitelistType = WhitelistType.Global
+        //            };
 
-                    newWhitelistedChannels.Add(channel);
-                }
-            }
+        //            newWhitelistedChannels.Add(channel);
+        //        }
+        //    }
 
-            var newWhitelistedRoles = new List<WhitelistedRole>();
+        //    var newWhitelistedRoles = new List<WhitelistedRole>();
 
-            foreach (var roleId in vm.WhitelistedRoleIds)
-            {
-                // Role isn't already in database, so add it. Otherwise, skip it.
-                if (!settings.WhitelistedChannels.Any(c => c.ChannelId == roleId))
-                {
-                    // TODO : null checks and check id is valid ulong
-                    var role = new WhitelistedRole()
-                    {
-                        GuildId = vm.GuildId,
-                        RoleId = roleId,
-                        WhitelistType = WhitelistType.Global
-                    };
+        //    foreach (var roleId in vm.WhitelistedRoleIds)
+        //    {
+        //        // Role isn't already in database, so add it. Otherwise, skip it.
+        //        if (!settings.WhitelistedChannels.Any(c => c.ChannelId == roleId))
+        //        {
+        //            // TODO : null checks and check id is valid ulong
+        //            var role = new WhitelistedRole()
+        //            {
+        //                GuildId = vm.GuildId,
+        //                RoleId = roleId,
+        //                WhitelistType = WhitelistType.Global
+        //            };
 
-                    newWhitelistedRoles.Add(role);
-                }
-            }
-            await _moderationSettings.SaveSettings(settings);
+        //            newWhitelistedRoles.Add(role);
+        //        }
+        //    }
+        //    await _moderationSettings.SaveSettings(settings);
 
-            // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
-            _moderationSettings.ClearCacheByGuild(vm.GuildId);
+        //    // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
+        //    _moderationSettings.ClearCacheByGuild(vm.GuildId);
 
-            return View();
-        }
+        //    return View();
+        //}
 
 
         [HttpGet("linkfilter")]
         public async Task<IActionResult> LinkFilter(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
-            var settings = await _moderationSettings.GetSettingsByGuild(guildId, s => s.LinkFilter.WhitelistedLinks);
+            ClearCacheById(guildId);
+
+            var settings = await _moderationSettings.GetSettingsByGuild(guildId, s=> s.WhitelistedChannels, s => s.WhitelistedRoles, s => s.LinkFilter.WhitelistedLinks);
 
             var guildChannels = await guildService.GetChannels(guildId);
 
@@ -129,25 +138,33 @@ namespace Volvox.Helios.Web.Controllers
 
             var roles = await guildService.GetRoles(guildId);
 
+            var alreadyWhitelistedRoles = settings.WhitelistedRoles.Select(r => r.RoleId).ToArray();
+
+            var alreadyWhitelistedChannels = settings.WhitelistedChannels.Select(c => c.ChannelId).ToArray();
+
             var vm = new LinkFilterViewModel
             {
                 Enabled = settings.LinkFilter.Enabled,
-                WhitelistedChannels = new MultiSelectList(textChannels, "Id", "Name"),
-                WhitelistedRoles = new MultiSelectList(roles, "Id", "Name"),
+                WhitelistedChannels = new MultiSelectList(textChannels, "Id", "Name", alreadyWhitelistedChannels),
+                WhitelistedRoles = new MultiSelectList(roles, "Id", "Name", alreadyWhitelistedRoles),
                 WhitelistedLinks = new List<string>() { "test1", "test2", "test3" }
             };
+
+            ClearCacheById(guildId);
 
             return View(vm);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> LinkFilter(ulong guildId, ModerationLink vm)
+        [HttpPost("linkfilter")]
+        public async Task<IActionResult> LinkFilter(ulong guildId, LinkFilterViewModel vm)
         {
-            var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId);
+            ClearCacheById(guildId);
+
+            var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId, x => x.WhitelistedChannels, x => x.WhitelistedRoles);
 
             #region general filter settings link
 
-            var filter = currentSettings.LinkFilter;
+            var filter = await _entityServiceLinkFilter.GetFirst(f => f.GuildId == guildId);
 
             // TODO : null check. if null, create as necessary.
 
@@ -161,7 +178,7 @@ namespace Volvox.Helios.Web.Controllers
 
             #region whitelisted channels link
 
-            var newChannelState = GetNewChannelState(currentSettings, WhitelistType.Link, vm.WhitelistedChannels);
+            var newChannelState = GetNewChannelState(currentSettings, WhitelistType.Link, vm.SelectedChannels);
 
             await _entityServiceWhitelistedChannels.CreateBulk(newChannelState.ChannelsToAdd);
 
@@ -171,7 +188,7 @@ namespace Volvox.Helios.Web.Controllers
 
             #region whitelisted roles link
 
-            var newRolesState = GetNewRolesState(currentSettings, WhitelistType.Link, vm.WhitelistedRoles);
+            var newRolesState = GetNewRolesState(currentSettings, WhitelistType.Link, vm.SelectedRoles);
 
             await _entityServiceWhitelistedRoles.CreateBulk(newRolesState.RolesToAdd);
 
@@ -180,55 +197,57 @@ namespace Volvox.Helios.Web.Controllers
             #endregion
 
             // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
-            _moderationSettings.ClearCacheByGuild(vm.GuildId);
+            ClearCacheById(guildId);
 
-            return View(vm);
+            return RedirectToAction("linkfilter");
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateProfanityFilter(ulong guildId, ModerationProfanity vm)
-        {
-            var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId);
+        //public async Task<IActionResult> UpdateProfanityFilter(ulong guildId, ModerationProfanity vm)
+        //{
+        //    ClearCacheById(guildId);
 
-            #region general filter settings profanity
+        //    var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId, x => x.ProfanityFilter.BannedWords);
 
-            var filter = currentSettings.ProfanityFilter;
+        //    #region general filter settings profanity
 
-            // TODO : null check. if null, create as necessary.
+        //    var filter = currentSettings.ProfanityFilter;
 
-            filter.Enabled = vm.Enabled;
+        //    // TODO : null check. if null, create as necessary.
 
-            filter.WarningExpirePeriod = vm.WarningExpirePeriod;
+        //    filter.Enabled = vm.Enabled;
 
-            await _entityServiceProfanityFilter.Update(filter);
+        //    filter.WarningExpirePeriod = vm.WarningExpirePeriod;
 
-            #endregion
+        //    await _entityServiceProfanityFilter.Update(filter);
 
-            #region whitelisted channels profanity
+        //    #endregion
 
-            var newChannelState = GetNewChannelState(currentSettings, WhitelistType.Profanity, vm.WhitelistedChannels);
+        //    #region whitelisted channels profanity
 
-            await _entityServiceWhitelistedChannels.CreateBulk(newChannelState.ChannelsToAdd);
+        //    var newChannelState = GetNewChannelState(currentSettings, WhitelistType.Profanity, vm.WhitelistedChannels);
 
-            await _entityServiceWhitelistedChannels.RemoveBulk(newChannelState.ChannelsToRemove);
+        //    await _entityServiceWhitelistedChannels.CreateBulk(newChannelState.ChannelsToAdd);
 
-            #endregion
+        //    await _entityServiceWhitelistedChannels.RemoveBulk(newChannelState.ChannelsToRemove);
 
-            #region whitelisted roles profanity
+        //    #endregion
 
-            var newRolesState = GetNewRolesState(currentSettings, WhitelistType.Profanity, vm.WhitelistedRoles);
+        //    #region whitelisted roles profanity
+
+        //    var newRolesState = GetNewRolesState(currentSettings, WhitelistType.Profanity, vm.WhitelistedRoles);
             
-            await _entityServiceWhitelistedRoles.CreateBulk(newRolesState.RolesToAdd);
+        //    await _entityServiceWhitelistedRoles.CreateBulk(newRolesState.RolesToAdd);
 
-            await _entityServiceWhitelistedRoles.RemoveBulk(newRolesState.RolesToRemove);
+        //    await _entityServiceWhitelistedRoles.RemoveBulk(newRolesState.RolesToRemove);
 
-            #endregion
+        //    #endregion
 
-            // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
-            _moderationSettings.ClearCacheByGuild(vm.GuildId);
+        //    // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
+        //    ClearCacheById(guildId);
 
-            return View(vm);
-        }
+        //    return View(vm);
+        //}
 
         private NewChannelsState GetNewChannelState(ModerationSettings currentSettings, WhitelistType type, List<ulong> channelIds)
         {
@@ -246,7 +265,6 @@ namespace Volvox.Helios.Web.Controllers
                     {
                         ChannelId = channelId,
                         GuildId = currentSettings.GuildId,
-                        Moderationsettings = currentSettings,
                         WhitelistType = type
                     });
                 }
@@ -283,7 +301,6 @@ namespace Volvox.Helios.Web.Controllers
                     {
                         GuildId = currentSettings.GuildId,
                         RoleId = roleId,
-                        Moderationsettings = currentSettings,
                         WhitelistType = type
                     });
                 }
