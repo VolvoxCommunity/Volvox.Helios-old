@@ -34,6 +34,9 @@ namespace Volvox.Helios.Domain.JsonConverters
                 serializer.Populate(userGuild.CreateReader(), newUserGuild);
                 serializer.Populate(userGuild.CreateReader(), newUserGuild.Guild);
 
+                // Assign the guild image URL relative to Discord
+                newUserGuild.Guild.ImageUrl = $"https://cdn.discordapp.com/icons/{newUserGuild.Guild.Id}/{newUserGuild.Guild.Icon}.png";
+
                 userGuilds.Add(newUserGuild);
             }
 

@@ -30,6 +30,10 @@
     }
 }
 
+.home-page-cards {
+  margin-top: 30px;
+}
+
 /**************** Margins ****************/
 .vertical-margin-large {
     margin: 40px 0;
@@ -68,10 +72,6 @@
 }
 
 /*****************************************/
-
-.home-page-cards {
-    margin-top: 30px;
-}
 
 /************ Toggle Switch *************/
 
@@ -139,6 +139,15 @@ input:checked + .slider:before {
 .dropdown-item-container {
   padding-left: 0.6rem;
   padding-right: 0.6rem;
+}
+
+/*****************************************/
+
+/*************** Dashboard ***************/
+
+.dashboard-guild-image {
+  height: 64px;
+  width: 64px;
 }
 
 /*****************************************/

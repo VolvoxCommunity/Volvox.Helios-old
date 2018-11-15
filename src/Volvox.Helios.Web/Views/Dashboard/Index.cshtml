@@ -1,0 +1,30 @@
+﻿@model Volvox.Helios.Web.ViewModels.Dashboard.DashboardIndexViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center">Dashboard</h1>
+    </div>
+</div>
+<hr/>
+
+@foreach (var guild in Model.UserGuilds)
+{
+    <div class="row home-page-cards">
+        <div class="col-sm">
+            <div class="card">
+                <div class="card-img-top d-flex align-items-center bg-light">
+                    <div>
+                        <img class="card-img-top" style="width: 64px;" src="@guild.Guild.ImageUrl">
+                    </div>
+                    <h5 class="col m-0 card-title">@guild.Guild.Name</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">@guild.Guild.Id</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
