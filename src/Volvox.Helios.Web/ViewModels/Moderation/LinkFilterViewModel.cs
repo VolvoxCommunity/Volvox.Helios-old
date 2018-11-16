@@ -27,7 +27,7 @@ namespace Volvox.Helios.Web.ViewModels.Moderation
         [DisplayName("Add New")]
         public HashSet<string> SelectedLinks { get; set; }
 
-        [DisplayName("Warning expire period in minutes (0 = warnings don't expire.)")]
-        public short WarningExpirePeriod { get; set; }
+        [DisplayName("Warning expire period in minutes (0 = warnings don't expire).")]
+        public int WarningExpirePeriod { get; set; }
     }
 }
