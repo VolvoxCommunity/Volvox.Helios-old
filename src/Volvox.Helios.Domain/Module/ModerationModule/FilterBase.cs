@@ -19,6 +19,6 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.Common
 
         // Length of time a warning has until it expires.
         [Required]
-        public short WarningExpirePeriod { get; set; }
+        public int WarningExpirePeriod { get; set; }
     }
 }

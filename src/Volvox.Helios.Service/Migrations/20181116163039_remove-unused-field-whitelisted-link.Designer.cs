@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Service;
@@ -10,9 +11,10 @@ using Volvox.Helios.Service;
 namespace Volvox.Helios.Service.Migrations
 {
     [DbContext(typeof(VolvoxHeliosContext))]
-    partial class VolvoxHeliosContextModelSnapshot : ModelSnapshot
+    [Migration("20181116163039_remove-unused-field-whitelisted-link")]
+    partial class removeunusedfieldwhitelistedlink
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,7 +148,7 @@ namespace Volvox.Helios.Service.Migrations
 
                     b.Property<bool>("Enabled");
 
-                    b.Property<int>("WarningExpirePeriod");
+                    b.Property<short>("WarningExpirePeriod");
 
                     b.HasKey("GuildId");
 
@@ -201,7 +203,7 @@ namespace Volvox.Helios.Service.Migrations
 
                     b.Property<bool>("UseDefaultList");
 
-                    b.Property<int>("WarningExpirePeriod");
+                    b.Property<short>("WarningExpirePeriod");
 
                     b.HasKey("GuildId");
 
