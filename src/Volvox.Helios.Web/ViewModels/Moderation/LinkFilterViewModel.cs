@@ -21,9 +21,13 @@ namespace Volvox.Helios.Web.ViewModels.Moderation
 
         public List<ulong> SelectedRoles { get; set; }
 
-        public List<string> WhitelistedLinks { get; set; }
+        [DisplayName("Whitelisted Links")]
+        public MultiSelectList WhitelistedLinks { get; set; }
 
-        [DisplayName("Warning expire period (minutes)")]
+        [DisplayName("Add New")]
+        public HashSet<string> SelectedLinks { get; set; }
+
+        [DisplayName("Warning expire period in minutes (0 = warnings don't expire.)")]
         public short WarningExpirePeriod { get; set; }
     }
 }

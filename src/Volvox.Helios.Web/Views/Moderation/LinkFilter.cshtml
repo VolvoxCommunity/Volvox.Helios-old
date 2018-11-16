@@ -2,52 +2,98 @@
 @{
 }
 
-<!DOCTYPE html>
+<h2>Link Filter Settings</h2>
+<hr />
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>LinkFilter</title>
-</head>
-<body>
-    <div class="row">
-        <div class="col-md-12">
-            <form method="post">
-                <div asp-validation-summary="All" class="text-danger"></div>
+<div class="row">
+    <div class="col-md-12">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
 
+            <div style="display:flex;" class="form-group">
+                <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
+                <label class="switch" />
+                <input asp-for="Enabled" type="checkbox" />
+                <div class="slider round"></div>
+                <span asp-validation-for="Enabled" class="text-danger"></span>
+            </div>
+
+
+            <div class="settings-group">
+                <div class="form-group">
+                    <label asp-for="WarningExpirePeriod"></label>
+                    <input type="number" min="0" step="1" max="2147483647" class="form-control"/>
+                </div>
+            </div>
+
+
+            <div class="settings-group">
                 <div class="form-group">
                     <label asp-for="WhitelistedChannels"></label>
                     <select data-placeholder="Choose channels..." asp-for="SelectedChannels" asp-items="Model.WhitelistedChannels" class="chosen-select form-control" multiple></select>
                     <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
                 </div>
+            </div>
 
+
+            <div class="settings-group">
                 <div class="form-group">
                     <label asp-for="WhitelistedRoles"></label>
                     <select data-placeholder="Choose roles..." asp-for="SelectedRoles" asp-items="Model.WhitelistedRoles" class="chosen-select form-control" multiple></select>
                     <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
                 </div>
+            </div>
 
-                <div class="form-check form-group">
-                    <input asp-for="Enabled" form-check-input" />
-                    <label asp-for="Enabled" class="form-check-label"></label>
-                    <span asp-validation-for="Enabled" class="text-danger"></span>
+            <div class="settings-group">
+                <div class="form-group">
+                    <label asp-for="WhitelistedLinks"></label>
+                    <select data-placeholder="Choose roles..." asp-for="SelectedLinks" asp-items="Model.WhitelistedLinks" class="chosen-select form-control" multiple></select>
+                    <span asp-validation-for="WhitelistedLinks" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-success" />
+                    <label asp-for="SelectedLinks" class="form-check-label"></label>
+                    <div class="row">
+                        <div class="col-10">
+                            <input id="AddLinkBox" class="form-control" />
+                        </div>
+
+                        <div class="col-2" style="text-align: right;">
+                            <button id="AddLinkBtn" class="btn btn-success" style="width:100%;"> <i class="fas fa-plus"></i> </button>
+                        </div>
+                    </div>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-success" />
+            </div>
+        </form>
     </div>
+</div>
 
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-        <script>
-            $(document).ready(function () {
-                $('.chosen-select').chosen();
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $('.chosen-select').chosen();
+
+            $("#AddLinkBtn").on("click", function (e) {
+
+                e.preventDefault();
+
+                const link = $("#AddLinkBox").val();
+
+                if (link.length == 0) return;
+
+                $("#SelectedLinks").append('<option selected>' + link + '</option>');
+
+                $('.chosen-select').trigger("chosen:updated");
+
+                $("#AddLinkBox").val("");
             });
-        </script>
-        }
+        });
+    </script>
+}
 
-    </body>
-</html>
+

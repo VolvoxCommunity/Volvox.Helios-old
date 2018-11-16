@@ -36,11 +36,14 @@ namespace Volvox.Helios.Web.Controllers
 
         IEntityService<WhitelistedRole> _entityServiceWhitelistedRoles;
 
+        IEntityService<WhitelistedLink> _entityServiceWhitelistedLinks;
+
         public ModerationController(IModuleSettingsService<ModerationSettings> moderationSettings,
             IEntityService<ProfanityFilter> entityServiceProfanityFilter,
             IEntityService<LinkFilter> entityServiceLinkFilter,
             IEntityService<WhitelistedChannel> entityServiceWhitelistedChannels,
-            IEntityService<WhitelistedRole> entityServiceWhitelistedRoles)
+            IEntityService<WhitelistedRole> entityServiceWhitelistedRoles,
+            IEntityService<WhitelistedLink> entityServiceWhitelistedLinks)
         {
             _moderationSettings = moderationSettings;
 
@@ -51,6 +54,8 @@ namespace Volvox.Helios.Web.Controllers
             _entityServiceWhitelistedChannels = entityServiceWhitelistedChannels;
 
             _entityServiceWhitelistedRoles = entityServiceWhitelistedRoles;
+
+            _entityServiceWhitelistedLinks = entityServiceWhitelistedLinks;
         }
 
         private void ClearCacheById(ulong id)
@@ -130,7 +135,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             ClearCacheById(guildId);
 
-            var settings = await _moderationSettings.GetSettingsByGuild(guildId, s=> s.WhitelistedChannels, s => s.WhitelistedRoles, s => s.LinkFilter.WhitelistedLinks);
+            var settings = await _moderationSettings.GetSettingsByGuild(guildId, s => s.WhitelistedChannels, s => s.WhitelistedRoles, s => s.LinkFilter.WhitelistedLinks);
 
             var guildChannels = await guildService.GetChannels(guildId);
 
@@ -142,12 +147,14 @@ namespace Volvox.Helios.Web.Controllers
 
             var alreadyWhitelistedChannels = settings.WhitelistedChannels.Select(c => c.ChannelId).ToArray();
 
+            var links = settings.LinkFilter.WhitelistedLinks.Select(l => l.Link);
+
             var vm = new LinkFilterViewModel
             {
                 Enabled = settings.LinkFilter.Enabled,
                 WhitelistedChannels = new MultiSelectList(textChannels, "Id", "Name", alreadyWhitelistedChannels),
                 WhitelistedRoles = new MultiSelectList(roles, "Id", "Name", alreadyWhitelistedRoles),
-                WhitelistedLinks = new List<string>() { "test1", "test2", "test3" }
+                WhitelistedLinks = new MultiSelectList(links, links)
             };
 
             ClearCacheById(guildId);
@@ -160,7 +167,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             ClearCacheById(guildId);
 
-            var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId, x => x.WhitelistedChannels, x => x.WhitelistedRoles);
+            var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId, x => x.LinkFilter.WhitelistedLinks, x => x.WhitelistedChannels, x => x.WhitelistedRoles);
 
             #region general filter settings link
 
@@ -195,6 +202,16 @@ namespace Volvox.Helios.Web.Controllers
             await _entityServiceWhitelistedRoles.RemoveBulk(newRolesState.RolesToRemove);
 
             #endregion
+
+            #region whitelisted links
+
+            var newLinkState = GetNewLinksState(currentSettings, vm.SelectedLinks);
+
+            await _entityServiceWhitelistedLinks.CreateBulk(newLinkState.LinksToAdd);
+
+            await _entityServiceWhitelistedLinks.RemoveBulk(newLinkState.LinksToRemove);
+
+            #endregion  
 
             // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
             ClearCacheById(guildId);
@@ -236,7 +253,7 @@ namespace Volvox.Helios.Web.Controllers
         //    #region whitelisted roles profanity
 
         //    var newRolesState = GetNewRolesState(currentSettings, WhitelistType.Profanity, vm.WhitelistedRoles);
-            
+
         //    await _entityServiceWhitelistedRoles.CreateBulk(newRolesState.RolesToAdd);
 
         //    await _entityServiceWhitelistedRoles.RemoveBulk(newRolesState.RolesToRemove);
@@ -320,6 +337,39 @@ namespace Volvox.Helios.Web.Controllers
                 RolesToRemove = rolesToRemove
             };
         }
+
+        private NewWhitelistedLinksState GetNewLinksState(ModerationSettings currentSettings, HashSet<string> links)
+        {
+            var linksToAdd = new List<WhitelistedLink>();
+
+            var linksToRemove = new List<WhitelistedLink>();
+
+            foreach (var link in links)
+            {
+                if (!currentSettings.LinkFilter.WhitelistedLinks.Any(l => l.Link == link))
+                {
+                    linksToAdd.Add(new WhitelistedLink
+                    {
+                        GuildId = currentSettings.GuildId,
+                        Link = link
+                    });
+                }
+            }
+
+            foreach (var link in currentSettings.LinkFilter.WhitelistedLinks)
+            {
+                if (!links.Contains(link.Link))
+                {
+                    linksToRemove.Add(link);
+                }
+            }
+
+            return new NewWhitelistedLinksState
+            {
+                LinksToAdd = linksToAdd,
+                LinksToRemove = linksToRemove
+            };
+        }
     }
 
     class NewChannelsState
@@ -327,6 +377,13 @@ namespace Volvox.Helios.Web.Controllers
         public List<WhitelistedChannel> ChannelsToAdd { get; set; }
 
         public List<WhitelistedChannel> ChannelsToRemove { get; set; }
+    }
+
+    class NewWhitelistedLinksState
+    {
+        public List<WhitelistedLink> LinksToAdd { get; set; }
+
+        public List<WhitelistedLink> LinksToRemove { get; set; }
     }
 
     class NewRolesState

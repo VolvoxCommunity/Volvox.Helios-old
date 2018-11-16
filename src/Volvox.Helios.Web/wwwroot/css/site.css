@@ -142,3 +142,9 @@ input:checked + .slider:before {
 }
 
 /*****************************************/
+
+
+.settings-group {
+  border-bottom: 1px #1d1c1c solid;
+  margin-bottom:10px;
+}
