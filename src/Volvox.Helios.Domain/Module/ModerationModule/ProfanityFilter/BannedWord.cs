@@ -12,6 +12,9 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter
         [Key]
         public int Id { get; set; }
 
+        [Required]
+        public virtual ulong GuildId { get; set; }
+
         [Required, ForeignKey("GuildId")]
         public virtual ProfanityFilter ProfanityFilter { get; set; }
 
