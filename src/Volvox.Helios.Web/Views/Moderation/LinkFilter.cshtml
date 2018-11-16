@@ -22,7 +22,7 @@
             <div class="settings-group">
                 <div class="form-group">
                     <label asp-for="WarningExpirePeriod"></label>
-                    <input type="number" min="0" step="1" max="2147483647" class="form-control"/>
+                    <input type="number" asp-for="WarningExpirePeriod" min="0" step="1" max="2147483647" class="form-control"/>
                 </div>
             </div>
 
@@ -30,7 +30,7 @@
             <div class="settings-group">
                 <div class="form-group">
                     <label asp-for="WhitelistedChannels"></label>
-                    <select data-placeholder="Choose channels..." asp-for="SelectedChannels" asp-items="Model.WhitelistedChannels" class="chosen-select form-control" multiple></select>
+                    <select data-placeholder="No channels selected..." asp-for="SelectedChannels" asp-items="Model.WhitelistedChannels" class="chosen-select form-control" multiple></select>
                     <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
                 </div>
             </div>
@@ -39,7 +39,7 @@
             <div class="settings-group">
                 <div class="form-group">
                     <label asp-for="WhitelistedRoles"></label>
-                    <select data-placeholder="Choose roles..." asp-for="SelectedRoles" asp-items="Model.WhitelistedRoles" class="chosen-select form-control" multiple></select>
+                    <select data-placeholder="No roles selected..." asp-for="SelectedRoles" asp-items="Model.WhitelistedRoles" class="chosen-select form-control" multiple></select>
                     <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
                 </div>
             </div>
@@ -47,7 +47,7 @@
             <div class="settings-group">
                 <div class="form-group">
                     <label asp-for="WhitelistedLinks"></label>
-                    <select data-placeholder="Choose roles..." asp-for="SelectedLinks" asp-items="Model.WhitelistedLinks" class="chosen-select form-control" multiple></select>
+                    <select data-placeholder="No links selected..." asp-for="SelectedLinks" asp-items="Model.WhitelistedLinks" class="chosen-select form-control" multiple></select>
                     <span asp-validation-for="WhitelistedLinks" class="text-danger"></span>
                 </div>
 
