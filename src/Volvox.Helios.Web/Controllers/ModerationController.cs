@@ -69,71 +69,64 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(ulong guildId)
+        public async Task<IActionResult> Index(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
-            var settings = await _moderationSettings.GetSettingsByGuild(guildId, s => s.WhitelistedRoles, s => s.WhitelistedChannels);
+            ClearCacheById(guildId);
 
-            var WhitelistedChannelIds = settings.WhitelistedChannels.Select(c => c.GuildId);
+            var settings = await _moderationSettings.GetSettingsByGuild(guildId, s => s.WhitelistedChannels, s => s.WhitelistedRoles);
 
-            //var vm = new ModerationGlobal()
-            //{
-            //    GuildId = guildId,
-            //    WhitelistedChannels = settings.WhitelistedChannels,
-            //    WhitelistedRoles = settings.WhitelistedRoles
-            //};
+            var guildChannels = await guildService.GetChannels(guildId);
 
-            return View();
+            var textChannels = guildChannels.Where(c => c.Type == (int)ChannelType.Text);
+
+            var roles = await guildService.GetRoles(guildId);
+
+            var alreadyWhitelistedRoles = settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Global).Select(r => r.RoleId).ToArray();
+
+            var alreadyWhitelistedChannels = settings.WhitelistedChannels.Where(r => r.WhitelistType == WhitelistType.Global).Select(c => c.ChannelId).ToArray();
+
+            var vm = new GlobalSettingsViewModel
+            {
+                Enabled = settings.Enabled,
+                WhitelistedChannels = new MultiSelectList(textChannels, "Id", "Name", alreadyWhitelistedChannels),
+                WhitelistedRoles = new MultiSelectList(roles, "Id", "Name", alreadyWhitelistedRoles)
+            };
+
+            ClearCacheById(guildId);
+
+            return View("GlobalSettings", vm);
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Index(ModerationGlobal vm)
-        //{
-        //    var settings = await _moderationSettings.GetSettingsByGuild(vm.GuildId, s => s.WhitelistedRoles, s => s.WhitelistedChannels);
+        [HttpPost]
+        public async Task<IActionResult> Index(ulong guildId, GlobalSettingsViewModel vm)
+        {
+            ClearCacheById(guildId);
 
-        //    var newWhitelistedChannels = new List<WhitelistedChannel>();
+            var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId, x => x.WhitelistedChannels, x => x.WhitelistedRoles);
 
-        //    foreach (var channelId in vm.WhitelistedChannelIds)
-        //    {
-        //        // Channel isn't already in database, so add it. Otherwise, skip it.
-        //        if (!settings.WhitelistedChannels.Any(c => c.ChannelId == channelId))
-        //        {
-        //            // TODO : null checks and check id is valid ulong
-        //            var channel = new WhitelistedChannel() {
-        //                ChannelId = channelId,
-        //                GuildId = vm.GuildId,
-        //                WhitelistType = WhitelistType.Global
-        //            };
+            // TODO : null check. if null, create as necessary.
 
-        //            newWhitelistedChannels.Add(channel);
-        //        }
-        //    }
+            currentSettings.Enabled = vm.Enabled;
 
-        //    var newWhitelistedRoles = new List<WhitelistedRole>();
+            var newChannelState = GetNewChannelState(currentSettings, WhitelistType.Global, vm.SelectedChannels);
 
-        //    foreach (var roleId in vm.WhitelistedRoleIds)
-        //    {
-        //        // Role isn't already in database, so add it. Otherwise, skip it.
-        //        if (!settings.WhitelistedChannels.Any(c => c.ChannelId == roleId))
-        //        {
-        //            // TODO : null checks and check id is valid ulong
-        //            var role = new WhitelistedRole()
-        //            {
-        //                GuildId = vm.GuildId,
-        //                RoleId = roleId,
-        //                WhitelistType = WhitelistType.Global
-        //            };
+            var newRolesState = GetNewRolesState(currentSettings, WhitelistType.Global, vm.SelectedRoles);
 
-        //            newWhitelistedRoles.Add(role);
-        //        }
-        //    }
-        //    await _moderationSettings.SaveSettings(settings);
+            await _entityServiceWhitelistedChannels.CreateBulk(newChannelState.ChannelsToAdd);
 
-        //    // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
-        //    _moderationSettings.ClearCacheByGuild(vm.GuildId);
+            await _entityServiceWhitelistedChannels.RemoveBulk(newChannelState.ChannelsToRemove);
 
-        //    return View();
-        //}
+            await _entityServiceWhitelistedRoles.CreateBulk(newRolesState.RolesToAdd);
 
+            await _entityServiceWhitelistedRoles.RemoveBulk(newRolesState.RolesToRemove);
+
+            await _moderationSettings.SaveSettings(currentSettings);
+
+            // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
+            ClearCacheById(guildId);
+
+            return RedirectToAction("linkfilter");
+        }
 
         [HttpGet("linkfilter")]
         public async Task<IActionResult> LinkFilter(ulong guildId, [FromServices] IDiscordGuildService guildService)
@@ -285,6 +278,13 @@ namespace Volvox.Helios.Web.Controllers
 
             return RedirectToAction("profanityfilter");
         }
+
+        [HttpGet("punishments")]
+        public async Task<IActionResult> Punishments (ulong guildId, [FromServices] IDiscordGuildService guildService)
+        {
+            return View();
+        }
+
 
         private NewChannelsState GetNewChannelState(ModerationSettings currentSettings, WhitelistType type, List<ulong> channelIds)
         {
@@ -446,28 +446,28 @@ namespace Volvox.Helios.Web.Controllers
         }
     }
 
-    class NewBannedWordsState
+    internal class NewBannedWordsState
     {
         public List<BannedWord> WordsToAdd { get; set; }
 
         public List<BannedWord> WordsToRemove { get; set; }
     }
 
-    class NewChannelsState
+    internal class NewChannelsState
     {
         public List<WhitelistedChannel> ChannelsToAdd { get; set; }
 
         public List<WhitelistedChannel> ChannelsToRemove { get; set; }
     }
 
-    class NewWhitelistedLinksState
+    internal class NewWhitelistedLinksState
     {
         public List<WhitelistedLink> LinksToAdd { get; set; }
 
         public List<WhitelistedLink> LinksToRemove { get; set; }
     }
 
-    class NewRolesState
+    internal class NewRolesState
     {
         public List<WhitelistedRole> RolesToAdd { get; set; }
 
