@@ -30,6 +30,18 @@
     }
 }
 
+/************** Home Page ***************/
+
+.home-page-banner {
+  width: 300px;
+}
+
+.home-page-cards {
+  margin-top: 30px;
+}
+
+/*****************************************/
+
 /**************** Margins ****************/
 .vertical-margin-large {
     margin: 40px 0;
@@ -68,10 +80,6 @@
 }
 
 /*****************************************/
-
-.home-page-cards {
-    margin-top: 30px;
-}
 
 /************ Toggle Switch *************/
 
