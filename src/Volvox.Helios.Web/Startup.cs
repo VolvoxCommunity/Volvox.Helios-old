@@ -167,14 +167,14 @@ namespace Volvox.Helios.Web
             services.AddDbContext<VolvoxHeliosContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("VolvoxHeliosDatabase")));
 
-            services.AddHangfire(gc =>
-            {
-                gc.UseSqlServerStorage(Configuration.GetConnectionString("VolvoxHeliosDatabase"), new SqlServerStorageOptions
-                {
-                    SchemaName = "hangfire",
-                    PrepareSchemaIfNecessary = true
-                });
-            });
+//            services.AddHangfire(gc =>
+//            {
+//                gc.UseSqlServerStorage(Configuration.GetConnectionString("VolvoxHeliosDatabase"), new SqlServerStorageOptions
+//                {
+//                    SchemaName = "hangfire",
+//                    PrepareSchemaIfNecessary = true
+//                });
+//            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -184,7 +184,7 @@ namespace Volvox.Helios.Web
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
-                app.UseHangfireDashboard();
+                //app.UseHangfireDashboard();
             }
             else
             {
@@ -196,7 +196,7 @@ namespace Volvox.Helios.Web
             }
 
             // Update the database.
-            context.Database.Migrate();
+            //context.Database.Migrate();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -210,11 +210,11 @@ namespace Volvox.Helios.Web
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
             });
-
-            app.UseHangfireServer(new BackgroundJobServerOptions
-            {
-                Activator = app.ApplicationServices.GetRequiredService<JobActivator>()
-            });
+//
+//            app.UseHangfireServer(new BackgroundJobServerOptions
+//            {
+//                Activator = app.ApplicationServices.GetRequiredService<JobActivator>()
+//            });
         }
     }
 }

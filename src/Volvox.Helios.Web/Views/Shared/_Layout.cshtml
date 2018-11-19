@@ -1,4 +1,5 @@
-﻿@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+@using System.Reflection
+@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,12 +8,12 @@
     <meta name="google-site-verification" content="18JHtM67T9ZVSSo1HwwLB5r8lghAxcJba3RRZb3r_Lg" />
     <meta property="og:title" content="Volvox.Helios" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="http://www.volvox.tech/" />
+    <meta property="og:url" content="https://www.volvox.tech/" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:image" content="http://www.volvox.tech/images/volvox.png" />
-    <meta property="og:image:width" content="400" />
+    <meta property="og:image" content="https://www.volvox.tech/images/large/volvox-icon.png" />
+    <meta property="og:image:width" content="300" />
     <meta property="og:image:height" content="300" />
-    <meta property="og:description" content="A powerful, community built discord bot." />
+    <meta property="og:description" content="Powerful, modular, web-managed, open-source Discord bot created by a community for communities." />
     <title>@ViewData["Title"] - Volvox.Helios</title>
 
     <environment include="Development">
@@ -27,13 +28,16 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     </environment>
-    <link rel="icon" type="image/x-icon" href="~/images/volvox.png">
+    <link rel="icon" type="image/x-icon" href="~/images/small/volvox-logo.png">
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container">
-            <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Volvox.Helios</a>
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
+                <img class="d-inline-block align-top" style="width: 30px; height: 30px" src="/images/small/volvox-logo.png" alt="Volvox.Helios" />
+                Volvox.Helios
+            </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -54,7 +58,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 - Volvox.Helios</p>
+            <p>&copy; 2018 - Volvox.Helios | v@(Assembly.GetEntryAssembly().GetName().Version.Major).@(Assembly.GetEntryAssembly().GetName().Version.Minor).@(Assembly.GetEntryAssembly().GetName().Version.Build)</p>
         </footer>
     </main>
 
