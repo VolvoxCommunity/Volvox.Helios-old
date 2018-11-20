@@ -5,19 +5,29 @@
 
 <partial name="./Partials/_DashboardHeader" />
 
-@foreach (var guild in Model.UserGuilds)
+@foreach (var userGuild in Model.UserGuilds)
 {
     <div class="row home-page-cards">
         <div class="col-sm">
             <div class="card">
                 <div class="card-img-top d-flex align-items-center bg-light">
                     <div>
-                        <img class="card-img-top" style="width: 64px;" src="@guild.Guild.ImageUrl">
+                        <img class="card-img-top" style="width: 64px;" src="@userGuild.Guild.ImageUrl" alt="@userGuild.Guild.Name">
                     </div>
-                    <h5 class="col m-0 card-title">@guild.Guild.Name</h5>
+                    <h5 class="col m-0 card-title">@userGuild.Guild.Name</h5>
                 </div>
                 <div class="card-body">
-                    <p class="card-text">@guild.Guild.Id</p>
+                    <p class="card-text">
+                        @if (!userGuild.Guild.Details.IsBotInGuild)
+                        {
+                            <a asp-controller="Settings" asp-action="Index" asp-route-guildId="@userGuild.Guild.Id">Add Bot to Server</a>
+                        }
+
+                        else
+                        {
+                            @:Member Count: @userGuild.Guild.Details.MemberCount
+                        }
+                    </p>
                 </div>
             </div>
         </div>

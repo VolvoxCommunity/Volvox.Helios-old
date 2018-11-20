@@ -11,5 +11,7 @@ namespace Volvox.Helios.Domain.Discord
         public string Icon { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public GuildDetails Details { get; set; }
     }
 }

@@ -129,6 +129,15 @@ namespace Volvox.Helios.Core.Bot
             return Client.Guilds;
         }
 
+        /// <summary>
+        ///     Get the specified guild.
+        /// </summary>
+        /// <returns>SocketGuild object.</returns>
+        public SocketGuild GetGuild(ulong guildId)
+        {
+            return GetGuilds().FirstOrDefault(g => g.Id == guildId);
+        }
+
         /// <inheritdoc />
         /// <summary>
         ///     Returns true if the specified guild is in the bot and false otherwise.
