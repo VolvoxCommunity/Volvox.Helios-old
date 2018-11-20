@@ -14,7 +14,7 @@ NPM -> Latest
 Clone the repo
 
 Head to the [discord developer site](https://discordapp.com/developers/applications/), and create an application.  
- _note_: Make sure to create a bot user, and require OAuth 2 grant.
+ _note_: Make sure to create a bot user.
 
  Add a redirect URL to the OAuth 2 column.
 _example_: http://localhost:5000/signin-discord
