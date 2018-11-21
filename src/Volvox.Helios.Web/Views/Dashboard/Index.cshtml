@@ -32,7 +32,7 @@
                 @if (userGuild.Guild.Details.IsBotInGuild)
                 {
                     <div class="card-footer text-muted">
-                        <a class="card-link" asp-action="Index">
+                        <a class="card-link" asp-action="Details" asp-route-guildId="@userGuild.Guild.Id">
                             <i class="fas fa-info-circle"></i> Info
                         </a>
                         <a class="card-link" asp-controller="Settings" asp-action="Index" asp-route-guildId="@userGuild.Guild.Id">
