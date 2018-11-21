@@ -3,7 +3,7 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<partial name="./Partials/_DashboardHeader" />
+<partial name="./Partials/_DashboardHeader" model="@Model.UserGuilds.Select(g => g.Guild)" />
 
 @foreach (var userGuild in Model.UserGuilds)
 {
@@ -20,7 +20,7 @@
                     <p class="card-text">
                         @if (!userGuild.Guild.Details.IsBotInGuild)
                         {
-                            <a asp-controller="Settings" asp-action="Index" asp-route-guildId="@userGuild.Guild.Id">Add Bot to Server</a>
+                            <a asp-controller="Settings" asp-action="Index" asp-route-guildId="@userGuild.Guild.Id"><i class="fas fa-plus"></i> Add Bot to Server</a>
                         }
 
                         else
@@ -29,6 +29,17 @@
                         }
                     </p>
                 </div>
+                @if (userGuild.Guild.Details.IsBotInGuild)
+                {
+                    <div class="card-footer text-muted">
+                        <a class="card-link" asp-action="Index">
+                            <i class="fas fa-info-circle"></i> Info
+                        </a>
+                        <a class="card-link" asp-controller="Settings" asp-action="Index" asp-route-guildId="@userGuild.Guild.Id">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                    </div>
+                }
             </div>
         </div>
     </div>

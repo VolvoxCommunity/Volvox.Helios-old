@@ -1,4 +1,6 @@
-﻿body {
+﻿/************** General ***************/
+
+body {
     padding-top: 50px;
     padding-bottom: 20px;
 }
@@ -29,6 +31,12 @@
         display: none;
     }
 }
+
+.black-icon {
+  color: black;
+}
+
+/*****************************************/
 
 /************** Home Page ***************/
 
