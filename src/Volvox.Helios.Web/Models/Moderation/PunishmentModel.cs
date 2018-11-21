@@ -8,14 +8,18 @@ namespace Volvox.Helios.Web.Models.Moderation
 {
     public class PunishmentModel
     {
+        public int? PunishmentId { get; set; }
+
         public short WarningThreshold { get; set; }
 
         public WarningType WarningType { get; set; }
 
         public PunishType PunishType { get; set; }
 
-        public int PunishDuration { get; set; }
+        public int? PunishDuration { get; set; }
 
-        public ulong RoleId { get; set; }
+        public ulong? RoleId { get; set; }
+
+        public bool DeletePunishment { get; set; }
     }
 }
