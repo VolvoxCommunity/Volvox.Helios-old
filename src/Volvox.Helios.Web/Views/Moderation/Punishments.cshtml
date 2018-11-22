@@ -1,43 +1,124 @@
-﻿<section class="container">
-    <div class="table table-responsive">
-        <table class="table table-responsive table-striped table-bordered">
-            <thead>
-                <tr>
-                    <td>TextBox</td>
-                    <td>Dropdown List</td>
-                    <td>Radio</td>
-                    <td>CheckBox</td>
-                    <td>BTN</td>
-                </tr>
-            </thead>
-            <tbody id="TextBoxContainer"></tbody>
-            <tfoot>
-                <tr>
-                    <th colspan="5">
-                        <button id="btnAdd" type="button" class="btn btn-primary" data-toggle="tooltip" data-original-title="Add more controls"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Add&nbsp;</button>
-                    </th>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-</section>
+﻿@model Volvox.Helios.Web.ViewModels.Moderation.PunishmentsViewModel
 
+<!--
+    TODO : Move styling into css classes
+    TODO : Make the new table rows be included when posting.
+-->
+
+
+<form method="POST">
+    <section class="container">
+        <div class="table table-responsive">
+            <table asp-for="Punishments" class="table table-responsive table-striped table-bordered">
+
+                <thead>
+                    <tr>
+                        <td>Punishment Type</td>
+                        <td>Punishment Duration mins</td>
+                        <td>Warning Type</td>
+                        <td>Warning Threshold</td>
+                        <td>Role</td>
+                        <td>Remove</td>
+                    </tr>
+                </thead>
+
+                <tbody id="TextBoxContainer">
+                    @{
+                        for (int i = 0; i < Model.Punishments.Count; i++)
+                        {
+                            <tr>
+                                @Html.HiddenFor(m => m.Punishments[i].PunishmentId)
+                                <td>@Html.TextBoxFor(m => m.Punishments[i].PunishType, new { @readonly = true })</td>
+                                <td>@Html.TextBoxFor(m => m.Punishments[i].PunishDuration, new { @readonly = true })</td>
+                                <td>@Html.TextBoxFor(m => m.Punishments[i].WarningType, new { @readonly = true })</td>
+                                <td>@Html.TextBoxFor(m => m.Punishments[i].WarningThreshold, new { @readonly = true })</td>
+                                <td>@Html.TextBoxFor(m => m.Punishments[i].RoleId, new { @readonly = true })</td>
+                                <td>@Html.CheckBoxFor(m => m.Punishments[i].DeletePunishment)</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="6">
+                            <button id="btnAdd" type="button" class="btn btn-primary" data-toggle="tooltip" data-original-title="Add more controls"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Add&nbsp;</button>
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-success" />
+    </div>
+</form>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        $(function () {
+        punishTypes = @Html.Raw(Json.Serialize(Model.PunishmentTypes));
+
+        warningTypes = @Html.Raw(Json.Serialize(Model.WarningTypes));
+
+        $(document).ready(function () {
             $("#btnAdd").bind("click", function () {
                 var div = $("<tr />");
                 div.html(GetDynamicTextBox(""));
                 $("#TextBoxContainer").append(div);
             });
-            $("body").on("click", ".remove", function () {
-                $(this).closest("tr").remove();
-            });
         });
+
         function GetDynamicTextBox(value) {
-            return '<td><input name = "DynamicTextBox" type="text" value = "' + value + '" class="form-control" /></td>' + '<td><select name="" class="form-control"><option> Select</option><option> Male</option><option> Female</option></select></td>' + '<td><input name = "DynamicTextBox" type="radio" value = "' + value + '" /></td>' + '<td><input name = "DynamicTextBox" type="checkbox" value = "' + value + '" /></td>' + '<td><button type="button" class="btn btn-danger remove"><i class="glyphicon glyphicon-remove-sign"></i></button></td>'
+            return (`
+                    <td>
+                        <select>
+                            ${GenerateSelectListOptions(punishTypes)}
+                        </select>
+                    </td>
+                    <td>
+                        <input name = "DynamicTextBox" min="0" step="1" max="2147483647" type="number" value="${value}" class="form-control" />
+                    </td>
+                    <td>
+                        <select>
+                            ${GenerateSelectListOptions(warningTypes)}
+                        </select>
+                    </td>
+                    <td>
+                        <input name = "DynamicTextBox" min="0" step="1" max="2147483647" type="number" value="${value}" class="form-control" />
+                    </td>
+                    <td>
+                        <input name = "DynamicTextBox" type="number" value="${value}" class="form-control" />
+                    </td>
+                    <td>
+                        <span onclick="RemoveTableRow(event)" class="table-remove"><i class="fas fa-times"></i></span>
+                    </td>
+                    `)
+        }
+
+        function RemoveTableRow(e) {
+            $(e.target).closest("tr").remove();
+        }
+
+        function GenerateSelectListOptions(list)
+        {
+            var string = "";
+
+            for (var i = 0; i < list.length; i++)
+            {
+                string+= `<option>${list[i]}</option>`
+            }
+
+            return string;
         }
     </script>
 }
+
+<style>
+    .table-remove {
+        color: #700;
+        cursor: pointer;
+    }
+    table-remove:hover {
+        color: #f00;
+    }
+</style>
