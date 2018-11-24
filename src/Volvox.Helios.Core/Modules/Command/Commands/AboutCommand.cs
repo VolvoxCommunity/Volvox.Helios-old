@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -39,14 +40,14 @@ namespace Volvox.Helios.Core.Modules.Command.Commands
                 case "-bot":
                 case null:
                     embed.WithTitle("So you want to hear my life story, ey?")
-                        .AddField(".NET Core Runtime Version", Environment.Version)
+                        .AddField(".NET Core Runtime Version", Assembly.GetEntryAssembly().GetName().Version)
                         .AddField("Bloat Factor", $"{GC.GetTotalMemory(false) / 1048576}MB", true)
                         .AddField("Server Count", context.Client.Guilds.Count, true);
                     await context.Channel.SendMessageAsync("", false, embed.Build());
                     break;
                 default:
                     embed.WithTitle("So you want to hear my life story, ey?")
-                        .AddField(".NET Core Runtime Version", Environment.Version)
+                        .AddField(".NET Core Runtime Version", Assembly.GetEntryAssembly().GetName().Version)
                         .AddField("Bloat Factor", $"{GC.GetTotalMemory(false) / 1048576}MB", true)
                         .AddField("Server Count", context.Client.Guilds.Count, true)
                         .WithFooter(new EmbedFooterBuilder().WithText("psst, you can use -g with this command to get server information!"));
