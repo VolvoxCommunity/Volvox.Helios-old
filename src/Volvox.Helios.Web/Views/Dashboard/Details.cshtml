@@ -1,6 +1,7 @@
 ﻿@model Volvox.Helios.Web.ViewModels.Dashboard.DashboardDetailsViewModel
+
 @{
-    ViewData["Title"] = Model.Guild.Name.ToString();
+    ViewData["Title"] = Model.Guild.Name;
 }
 
 <partial name="./Partials/_DashboardHeader" model="@Model.UserGuilds.Select(g => g.Guild)" />
