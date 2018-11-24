@@ -18,15 +18,7 @@
                 </div>
                 <div class="card-body">
                     <p class="card-text">
-                        @if (!userGuild.Guild.Details.IsBotInGuild)
-                        {
-                            <a asp-controller="Settings" asp-action="Index" asp-route-guildId="@userGuild.Guild.Id"><i class="fas fa-plus"></i> Add Bot to Server</a>
-                        }
-
-                        else
-                        {
-                            @:Member Count: @userGuild.Guild.Details.MemberCount
-                        }
+                        <partial name="./Partials/_DashboardCard" model="@userGuild.Guild" />
                     </p>
                 </div>
                 @if (userGuild.Guild.Details.IsBotInGuild)

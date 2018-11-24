@@ -1,4 +1,4 @@
-@using System.Reflection
+﻿@using System.Reflection
 @inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
 <!DOCTYPE html>
 <html>
@@ -58,7 +58,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 - Volvox.Helios | v@(Assembly.GetEntryAssembly().GetName().Version.Major).@(Assembly.GetEntryAssembly().GetName().Version.Minor).@(Assembly.GetEntryAssembly().GetName().Version.Build)</p>
+            <p>&copy; 2018 - Volvox.Helios v@(Assembly.GetEntryAssembly().GetName().Version.Major).@(Assembly.GetEntryAssembly().GetName().Version.Minor).@(Assembly.GetEntryAssembly().GetName().Version.Build)</p>
         </footer>
     </main>
 

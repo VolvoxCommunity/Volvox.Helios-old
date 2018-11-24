@@ -1,0 +1,11 @@
+@model Volvox.Helios.Domain.Discord.Guild
+
+@if (!Model.Details.IsBotInGuild)
+{
+    <a asp-controller="Settings" asp-action="Index" asp-route-guildId="@Model.Id"><i class="fas fa-plus"></i> Add Bot to Server</a>
+}
+
+else
+{
+    @:Member Count: @Model.Details.MemberCount
+}
