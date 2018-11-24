@@ -25,32 +25,33 @@ namespace Volvox.Helios.Core.Modules.Command.Commands
                 .WithAuthor(new EmbedAuthorBuilder()
                     .WithName("Helios"));
 
-            if (flag == "-g" || flag == "-guild")
+            switch (flag)
             {
-                embed.WithTitle($"Welcome to {channel.Guild.Name}!")
-                    .WithImageUrl(channel.Guild.IconUrl)
-                    .AddField("Owner", $"{channel.Guild.Owner.Username} ({channel.Guild.Owner.Mention})")
-                    .AddField("User Count", channel.Guild.MemberCount)
-                    .AddField("Voice Region", channel.Guild.VoiceRegionId, true);
-            }
-
-            if (flag == "-b" || flag == "-bot" || flag == null)
-            {
-                embed.WithTitle("So you want to hear my life story, ey?")
-                    .AddField(".NET Core Runtime Version", Environment.Version)
-                    .AddField("Bloat Factor", $"{GC.GetTotalMemory(false) / 1048576}MB", true)
-                    .AddField("Server Count", context.Client.Guilds.Count, true);
-                await context.Channel.SendMessageAsync("", false, embed.Build());
-            }
-
-            else
-            {
-                embed.WithTitle("So you want to hear my life story, ey?")
-                    .AddField(".NET Core Runtime Version", Environment.Version)
-                    .AddField("Bloat Factor", $"{GC.GetTotalMemory(false) / 1048576}MB", true)
-                    .AddField("Server Count", context.Client.Guilds.Count, true)
-                    .WithFooter(new EmbedFooterBuilder().WithText("psst, you can use -g with this command to get server information!"));
-                await context.Channel.SendMessageAsync("", false, embed.Build());
+                case "-g":
+                case "-guild":
+                    embed.WithTitle($"Welcome to {channel.Guild.Name}!")
+                        .WithImageUrl(channel.Guild.IconUrl)
+                        .AddField("Owner", $"{channel.Guild.Owner.Username} ({channel.Guild.Owner.Mention})")
+                        .AddField("User Count", channel.Guild.MemberCount)
+                        .AddField("Voice Region", channel.Guild.VoiceRegionId, true);
+                    break;
+                case "-b":
+                case "-bot":
+                case null:
+                    embed.WithTitle("So you want to hear my life story, ey?")
+                        .AddField(".NET Core Runtime Version", Environment.Version)
+                        .AddField("Bloat Factor", $"{GC.GetTotalMemory(false) / 1048576}MB", true)
+                        .AddField("Server Count", context.Client.Guilds.Count, true);
+                    await context.Channel.SendMessageAsync("", false, embed.Build());
+                    break;
+                default:
+                    embed.WithTitle("So you want to hear my life story, ey?")
+                        .AddField(".NET Core Runtime Version", Environment.Version)
+                        .AddField("Bloat Factor", $"{GC.GetTotalMemory(false) / 1048576}MB", true)
+                        .AddField("Server Count", context.Client.Guilds.Count, true)
+                        .WithFooter(new EmbedFooterBuilder().WithText("psst, you can use -g with this command to get server information!"));
+                    await context.Channel.SendMessageAsync("", false, embed.Build());
+                    break;
             }
         }
     }
