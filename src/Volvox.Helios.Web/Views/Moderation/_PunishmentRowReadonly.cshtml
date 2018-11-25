@@ -1,0 +1,21 @@
+﻿@model Volvox.Helios.Web.Models.Moderation.PunishmentModel
+@{
+    Layout = null;
+}
+
+<!--
+****************************************************
+****************************************************
+    TODO : Change Html to Tag Helpers
+****************************************************
+****************************************************
+-->
+<tr>
+    @Html.HiddenFor(m => m.PunishmentId)
+    <td>@Html.TextBoxFor(m => m.PunishType, new { @readonly = true })</td>
+    <td>@Html.TextBoxFor(m => m.PunishDuration, new { @readonly = true })</td>
+    <td>@Html.TextBoxFor(m => m.WarningType, new { @readonly = true })</td>
+    <td>@Html.TextBoxFor(m => m.WarningThreshold, new { @readonly = true })</td>
+    <td>@Html.TextBoxFor(m => m.RoleId, new { @readonly = true })</td>
+    <td>@Html.CheckBoxFor(m => m.DeletePunishment)</td>
+</tr>
