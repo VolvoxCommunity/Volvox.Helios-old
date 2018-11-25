@@ -4,19 +4,47 @@
     ViewData["Title"] = "Settings";
 }
 
-<h2>@Model.GuildName</h2>
+<div class="row mt-4">
+    <div class="col-10">
+        <h2>@Model.GuildName</h2>
+    </div>
+    <div class="col-2">
+        <div class="position-relative" style="top:50%;transform:translateY(-50%);">
+            <span class="badge badge-success d-table ml-auto">4 Users online</span>
+        </div>
+    </div>
+</div>
 <hr />
-<h4>Modules</h4>
+<h4>Members:</h4>
 <div class="row">
+    @for (var i = 0; i < 6; i++)
+    {
+    <div class="col-2">
+        <div class="d-inline-flex rounded border border-secondary pt-2 pb-2 w-100" style="background:#ececec;">
+            <img src="https://placeimg.com/32/32" alt="Alternate Text" class="rounded-circle mr-2 position-relative ml-2"
+                    style="width:32px;height:32px;top:8px;" />
+            <div>
+                <p class="mb-0">User @(i + 1)</p>
+                <small>Doing action xy</small>
+            </div>
+        </div>
+    </div>
+    }
+</div>
+<h4 class="mt-4">Modules:</h4>
+<div class="row mb-5">
     @foreach (var module in Model.Modules)
     {
-        <div class="col-sm">
-            <div class="card">
+        <div class="col-lg-3 col-md-6 mt-lg-0 mt-4">
+            <div class="card h-100 border-success">
                 <div class="card-body">
-                    <h5 class="card-title">
+                    <div class="w-100 bg-success module-enabled-popover">
+                        Module enabled
+                    </div>
+                    <h5 class="card-title mt-3">
                         @module.Name
                         <a style="color: black" class="float-right" asp-controller="Settings" asp-action="@(module.Name.Replace(" ", "") + "Settings")">
-                            <i class="fas fa-cog"></i>
+                            <i class="fas fa-cog text-success"></i>
                         </a>
                     </h5>
                     <p class="card-text">@module.Description</p>
@@ -25,13 +53,16 @@
         </div>
     }
 
-    <div class="col-sm">
-        <div class="card">
+    <div class="col-lg-3 col-md-6 mt-lg-0 mt-4">
+        <div class="card h-100" style="border-color: #FFA726;">
             <div class="card-body">
-                <h5 class="card-title">
+                <div class="w-100 bg-warning module-enabled-popover">
+                    0 Polls available
+                </div>
+                <h5 class="card-title mt-3">
                     Poll Manager
                     <a style="color: black" class="float-right" asp-controller="Poll">
-                        <i class="fas fa-cog"></i>
+                        <i class="fas fa-cog text-warning"></i>
                     </a>
                 </h5>
                 <p class="card-text">Create and view polls.</p>
@@ -39,3 +70,31 @@
         </div>
     </div>
 </div>
+
+<style>
+
+    footer{
+        position: absolute;
+        bottom: 0;
+    }
+    
+    .text-warning {
+        color: #FFA726 !important;
+    }
+
+    .bg-warning {
+        background: #FFA726 !important;
+    }
+
+    .module-enabled-popover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: white;
+        font-size: 14px;
+        text-align: center;
+        font-weight: bold;
+        border-radius: .25rem .25rem 0 0;
+    }
+
+</style>
