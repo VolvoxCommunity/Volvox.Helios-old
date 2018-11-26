@@ -142,3 +142,11 @@ input:checked + .slider:before {
 }
 
 /*****************************************/
+
+
+/** Settings page**/
+.module-enabled-popover {
+  color: white;
+  font-size: 14px;
+  text-align: center;
+}

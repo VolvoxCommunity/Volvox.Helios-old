@@ -37,11 +37,41 @@
     {
         <div class="col-lg-3 col-md-6 mt-lg-0 mt-4">
             <div class="card h-100 border-success">
-                <div class="card-body">
-                    <div class="w-100 bg-success module-enabled-popover">
+                <!--if module disabled-->
+                <!--
+                    <div class="card h-100 border-danger">
+
+                        <div>
+                            <div class="w-100 module-enabled-popover" style="border-radius: .25rem .25rem 0 0;background: #9e2c14;">
+                                v. 1.2.3
+                            </div>
+                            <div class="w-100 bg-danger module-enabled-popover" style="font-weight: bold;">
+                                Module enabled
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                @module.Name
+                                <a style="color: black" class="float-right" asp-controller="Settings" asp-action="@(module.Name.Replace(" ", "") + "Settings")">
+                                    <i class="fas fa-cog text-danger"></i>
+                                </a>
+                            </h5>
+                            <p class="card-text">@module.Description</p>
+                        </div>
+                    </div>
+
+                -->
+
+                <div>
+                    <div class="w-100 module-enabled-popover" style="border-radius: .25rem .25rem 0 0;background: #008410;">
+                        v. 1.2.3
+                    </div>
+                    <div class="w-100 bg-success module-enabled-popover" style="font-weight: bold;">
                         Module enabled
                     </div>
-                    <h5 class="card-title mt-3">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">
                         @module.Name
                         <a style="color: black" class="float-right" asp-controller="Settings" asp-action="@(module.Name.Replace(" ", "") + "Settings")">
                             <i class="fas fa-cog text-success"></i>
@@ -55,11 +85,11 @@
 
     <div class="col-lg-3 col-md-6 mt-lg-0 mt-4">
         <div class="card h-100" style="border-color: #FFA726;">
+            <div class="w-100 bg-warning module-enabled-popover" style="font-weight: bold;">
+                0 Polls available
+            </div>
             <div class="card-body">
-                <div class="w-100 bg-warning module-enabled-popover">
-                    0 Polls available
-                </div>
-                <h5 class="card-title mt-3">
+                <h5 class="card-title">
                     Poll Manager
                     <a style="color: black" class="float-right" asp-controller="Poll">
                         <i class="fas fa-cog text-warning"></i>
@@ -72,12 +102,6 @@
 </div>
 
 <style>
-
-    footer{
-        position: absolute;
-        bottom: 0;
-    }
-    
     .text-warning {
         color: #FFA726 !important;
     }
@@ -85,16 +109,4 @@
     .bg-warning {
         background: #FFA726 !important;
     }
-
-    .module-enabled-popover {
-        position: absolute;
-        top: 0;
-        left: 0;
-        color: white;
-        font-size: 14px;
-        text-align: center;
-        font-weight: bold;
-        border-radius: .25rem .25rem 0 0;
-    }
-
 </style>
