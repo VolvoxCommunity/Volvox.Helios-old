@@ -7,18 +7,23 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.Module.ChatTracker;
+using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.EntityService;
+using Volvox.Helios.Service.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.ChatTracker
 {
     public class ChatTrackerModule : Module
     {
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IModuleSettingsService<ChatTrackerSettings> _settingsService;
 
         public ChatTrackerModule(IDiscordSettings discordSettings, ILogger<IModule> logger, IConfiguration config,
-            IServiceScopeFactory scopeFactory) : base(discordSettings, logger, config)
+            IServiceScopeFactory scopeFactory, IModuleSettingsService<ChatTrackerSettings> settingsService) : base(
+            discordSettings, logger, config)
         {
             _scopeFactory = scopeFactory;
+            _settingsService = settingsService;
         }
 
         /// <summary>
@@ -40,19 +45,24 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
         /// <param name="message">Message to add.</param>
         private async Task MessageReceived(SocketMessage message)
         {
-            using (var scope = _scopeFactory.CreateScope())
+            if (message.Channel is IGuildChannel guildChannel && !message.Author.IsBot)
             {
-                var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<Message>>();
+                var settings = await _settingsService.GetSettingsByGuild(guildChannel.GuildId);
 
-                if (message.Channel is IGuildChannel guildChannel && !message.Author.IsBot)
-                    await messageService.Create(new Message
+                if (settings != null && settings.Enabled)
+                    using (var scope = _scopeFactory.CreateScope())
                     {
-                        Id = message.Id,
-                        AuthorId = message.Author.Id,
-                        GuildId = guildChannel.GuildId,
-                        ChannelId = guildChannel.Id,
-                        Timestamp = message.Timestamp
-                    });
+                        var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<Message>>();
+
+                        await messageService.Create(new Message
+                        {
+                            Id = message.Id,
+                            AuthorId = message.Author.Id,
+                            GuildId = guildChannel.GuildId,
+                            ChannelId = guildChannel.Id,
+                            Timestamp = message.Timestamp
+                        });
+                    }
             }
         }
 
@@ -60,21 +70,23 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
         ///     Mark the message as deleted.
         /// </summary>
         /// <param name="message">Message to delete.</param>
+        /// <param name="channel">Channel that the messages was sent in.</param>
         private async Task MessageDeleted(Cacheable<IMessage, ulong> message, ISocketMessageChannel channel)
         {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<Message>>();
-
-                var m = await messageService.Find(message.Id);
-
-                if (m != null)
+            if (!message.Value.Author.IsBot)
+                using (var scope = _scopeFactory.CreateScope())
                 {
-                    m.Deleted = true;
+                    var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<Message>>();
 
-                    await messageService.Update(m);
+                    var m = await messageService.Find(message.Id);
+
+                    if (m != null)
+                    {
+                        m.Deleted = true;
+
+                        await messageService.Update(m);
+                    }
                 }
-            }
         }
     }
 }
