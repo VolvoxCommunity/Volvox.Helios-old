@@ -5,35 +5,82 @@
 }
 
 <partial name="./Partials/_DashboardHeader" model="@Model.UserGuilds.Select(g => g.Guild)" />
-
-@foreach (var userGuild in Model.UserGuilds)
-{
-    <div class="row home-page-cards">
-        <div class="col-sm">
-            <div class="card">
-                <div class="card-img-top d-flex align-items-center bg-light">
-                    <div>
-                        <img class="card-img-top" style="width: 64px;" src="@userGuild.Guild.ImageUrl" alt="@userGuild.Guild.Name">
-                    </div>
-                    <h5 class="col m-0 card-title">@userGuild.Guild.Name</h5>
+<div class="accordion" id="serverAccordion">
+    @for (var i = 0; i < Model.UserGuilds.Count; i++)
+    {
+        var uG = Model.UserGuilds[i];
+        var classes = new string[] { "show", "on" };
+        if (i != 0)
+        {
+            classes[0] = "";
+            classes[1] = "off";
+        }
+        <div class="card mt-4" style="border-radius: .25rem;border-bottom: 1px solid rgba(0,0,0,.125);">
+            <div class="card-img-top d-flex align-items-center bg-gray pt-2 pb-2" id="s-@i-@uG.Guild.Name">
+                @if (uG.Guild.ImageUrl.EndsWith("/.png"))
+                {
+                    <img class="card-img-top ml-3" src="/images/small/volvox-logo.png" style="width: 21px;" alt="Alternative Image" />
+                }
+                else
+                {
+                    <img class="card-img-top ml-3" style="width: 21px;" src="@uG.Guild.ImageUrl" alt="@uG.Guild.Name">
+                }
+                <h5 class="col mb-0 card-title text-volvox">@uG.Guild.Name</h5>
+                <a href="#" onclick="toggleAccBtn(event);" class="text-volvox mr-3" data-toggle="collapse" data-target="#s-@i" aria-expanded="false" aria-controls="s-@i">
+                    <i class="fas fa-toggle-@classes[1] d-block"></i>
+                </a>
+                @if (uG.Guild.Details.IsBotInGuild)
+                {
+                    <a class="text-volvox mr-3" asp-action="Details" asp-route-guildId="@uG.Guild.Id">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                    <a class="text-volvox mr-3" asp-controller="Settings" asp-action="Index" asp-route-guildId="@uG.Guild.Id">
+                        <i class="fas fa-cog"></i>
+                    </a>
+                }
+                <a href="#" class="text-volvox mr-2" dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-h ml-auto mr-3"></i>
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">
+                        <i class="fas fa-share mr-2"></i>
+                        Share
+                    </a>
+                    <a class="dropdown-item" href="#">
+                        <i class="fas fa-pen mr-2"></i>
+                        Edit
+                    </a>
+                    <a class="dropdown-item" href="#">Action 3</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item text-danger" href="#">
+                        <i class="fas fa-trash-alt mr-2"></i>
+                        Remove
+                    </a>
                 </div>
+            </div>
+            <div class="collapse multi-collapse @classes[0]" id="s-@i" aria-labelledby="s-@i-@uG.Guild.Name">
                 <div class="card-body">
                     <p class="card-text">
-                        <partial name="./Partials/_DashboardCard" model="@userGuild.Guild" />
+                        <partial name="./Partials/_DashboardCard" model="@uG.Guild" />
                     </p>
                 </div>
-                @if (userGuild.Guild.Details.IsBotInGuild)
-                {
-                    <div class="card-footer text-muted">
-                        <a class="card-link" asp-action="Details" asp-route-guildId="@userGuild.Guild.Id">
-                            <i class="fas fa-info-circle"></i> Info
-                        </a>
-                        <a class="card-link" asp-controller="Settings" asp-action="Index" asp-route-guildId="@userGuild.Guild.Id">
-                            <i class="fas fa-cog"></i> Settings
-                        </a>
-                    </div>
-                }
             </div>
         </div>
-    </div>
+    }
+</div>
+
+@section Scripts {
+<script>
+
+    function toggleAccBtn(e) {
+        var el = $(e.target);
+        if (!el.is('a')) {
+            if (el.hasClass('fa-toggle-on'))
+                el.removeClass('fa-toggle-on').addClass('fa-toggle-off');
+            else
+                el.removeClass('fa-toggle-off').addClass('fa-toggle-on');
+        }
+    }
+
+</script>
 }

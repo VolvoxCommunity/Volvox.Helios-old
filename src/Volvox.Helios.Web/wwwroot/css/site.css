@@ -167,3 +167,41 @@ input:checked + .slider:before {
 }
 
 /*****************************************/
+
+
+
+
+/********** Web improvements *************/
+.material-badge {
+  background-color: #5dcc32;
+  padding: 10px 15px;
+  border-radius: 50px;
+  color: white;
+}
+
+.bg-gray {
+  background: #eaeaea;
+}
+
+.text-volvox {
+  color: #5dcc32;
+}
+
+a.text-volvox:hover {
+  color: #559a3a;
+}
+#serverAccordion a:focus, #serverAccordion a:hover, #serverAccordion a:active {
+  outline: 0;
+  text-decoration: none
+}
+.light-list li {
+  padding: 10px;
+  border-bottom: 1px solid #c8c8c8;
+}
+.light-list li:last-child {
+  padding: 10px;
+  border-bottom: 0;
+}
+.light-list li:hover{
+  background: rgba(255, 255, 255, .3);
+}
