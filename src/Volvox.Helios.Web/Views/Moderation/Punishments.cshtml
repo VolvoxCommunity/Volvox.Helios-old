@@ -1,11 +1,5 @@
 ﻿@model Volvox.Helios.Web.ViewModels.Moderation.PunishmentsViewModel
 
-<!--
-    TODO : Move styling into css classes
-    TODO : Make the new table rows be included when posting.
--->
-
-
 <form method="POST">
     <section class="container">
         <div class="table table-responsive">
@@ -22,26 +16,21 @@
                     </tr>
                 </thead>
 
-                <tbody id="TextBoxContainer">
+                <tbody id="PunishmentTableBody">
                     @{
-                        for (int i = 0; i < Model.Punishments.Count; i++)
+                        var i = 0;
+                        foreach (var punishment in Model.Punishments)
                         {
-                            <tr>
-                                @Html.HiddenFor(m => m.Punishments[i].PunishmentId)
-                                <td>@Html.TextBoxFor(m => m.Punishments[i].PunishType, new { @readonly = true })</td>
-                                <td>@Html.TextBoxFor(m => m.Punishments[i].PunishDuration, new { @readonly = true })</td>
-                                <td>@Html.TextBoxFor(m => m.Punishments[i].WarningType, new { @readonly = true })</td>
-                                <td>@Html.TextBoxFor(m => m.Punishments[i].WarningThreshold, new { @readonly = true })</td>
-                                <td>@Html.TextBoxFor(m => m.Punishments[i].RoleId, new { @readonly = true })</td>
-                                <td>@Html.CheckBoxFor(m => m.Punishments[i].DeletePunishment)</td>
-                            </tr>
+                            Html.ViewData.TemplateInfo.HtmlFieldPrefix = $"Punishments[{i}]";
+                            <partial name="_PunishmentRowReadonly" , for="@punishment" />
+                            i++;
                         }
                     }
                 </tbody>
                 <tfoot>
                     <tr>
                         <th colspan="6">
-                            <button id="btnAdd" type="button" class="btn btn-primary" data-toggle="tooltip" data-original-title="Add more controls"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Add&nbsp;</button>
+                            <button id="addPunishment" type="button" class="btn btn-primary" data-toggle="tooltip" data-original-title="Add more controls"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Add&nbsp;</button>
                         </th>
                     </tr>
                 </tfoot>
@@ -55,60 +44,21 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        punishTypes = @Html.Raw(Json.Serialize(Model.PunishmentTypes));
-
-        warningTypes = @Html.Raw(Json.Serialize(Model.WarningTypes));
-
+    <script>  
         $(document).ready(function () {
-            $("#btnAdd").bind("click", function () {
-                var div = $("<tr />");
-                div.html(GetDynamicTextBox(""));
-                $("#TextBoxContainer").append(div);
+            $("#addPunishment").click(function () {
+                $.ajax({
+                    url: "NewPunishmentRow",
+                    cache: false,
+                    success: function (html) { $("#PunishmentTableBody").append(html); }
+                });
+                return false;
             });
-        });
 
-        function GetDynamicTextBox(value) {
-            return (`
-                    <td>
-                        <select>
-                            ${GenerateSelectListOptions(punishTypes)}
-                        </select>
-                    </td>
-                    <td>
-                        <input name = "DynamicTextBox" min="0" step="1" max="2147483647" type="number" value="${value}" class="form-control" />
-                    </td>
-                    <td>
-                        <select>
-                            ${GenerateSelectListOptions(warningTypes)}
-                        </select>
-                    </td>
-                    <td>
-                        <input name = "DynamicTextBox" min="0" step="1" max="2147483647" type="number" value="${value}" class="form-control" />
-                    </td>
-                    <td>
-                        <input name = "DynamicTextBox" type="number" value="${value}" class="form-control" />
-                    </td>
-                    <td>
-                        <span onclick="RemoveTableRow(event)" class="table-remove"><i class="fas fa-times"></i></span>
-                    </td>
-                    `)
-        }
+        });
 
         function RemoveTableRow(e) {
             $(e.target).closest("tr").remove();
-        }
-
-        function GenerateSelectListOptions(list)
-        {
-            var string = "";
-
-            for (var i = 0; i < list.length; i++)
-            {
-                string+= `<option>${list[i]}</option>`
-            }
-
-            return string;
         }
     </script>
 }
@@ -118,6 +68,7 @@
         color: #700;
         cursor: pointer;
     }
+
     table-remove:hover {
         color: #f00;
     }

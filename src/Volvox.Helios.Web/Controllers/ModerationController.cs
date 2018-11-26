@@ -14,12 +14,18 @@ using Volvox.Helios.Service.Discord.Guild;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volvox.Helios.Domain.Discord;
 using Discord;
+using Volvox.Helios.Web.Models.Moderation;
+using System;
 
 namespace Volvox.Helios.Web.Controllers
 {
     // TODO : ensure channel exists before adding to whitelist. same for role.
 
     // TODO : NULL CHECKS
+
+    // TODO : exctract logic and inject them into controller
+
+    // TODO :  display if the filter is enabled or disabled from the card
 
     //[Authorize]
     [Route("/moderator/{guildId}")]
@@ -40,13 +46,16 @@ namespace Volvox.Helios.Web.Controllers
 
         IEntityService<BannedWord> _entityServiceBannedWords;
 
+        IEntityService<Punishment> _entityServicePunishments;
+
         public ModerationController(IModuleSettingsService<ModerationSettings> moderationSettings,
             IEntityService<ProfanityFilter> entityServiceProfanityFilter,
             IEntityService<LinkFilter> entityServiceLinkFilter,
             IEntityService<WhitelistedChannel> entityServiceWhitelistedChannels,
             IEntityService<WhitelistedRole> entityServiceWhitelistedRoles,
             IEntityService<WhitelistedLink> entityServiceWhitelistedLinks,
-            IEntityService<BannedWord> entityServiceBannedWords)
+            IEntityService<BannedWord> entityServiceBannedWords,
+            IEntityService<Punishment> entityServicePunishments)
         {
             _moderationSettings = moderationSettings;
 
@@ -61,6 +70,8 @@ namespace Volvox.Helios.Web.Controllers
             _entityServiceWhitelistedLinks = entityServiceWhitelistedLinks;
 
             _entityServiceBannedWords = entityServiceBannedWords;
+
+            _entityServicePunishments = entityServicePunishments;
         }
 
         private void ClearCacheById(ulong id)
@@ -68,7 +79,7 @@ namespace Volvox.Helios.Web.Controllers
             _moderationSettings.ClearCacheByGuild(id);
         }
 
-        [HttpGet]
+        [HttpGet("general")]
         public async Task<IActionResult> Index(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
             ClearCacheById(guildId);
@@ -97,7 +108,7 @@ namespace Volvox.Helios.Web.Controllers
             return View("GlobalSettings", vm);
         }
 
-        [HttpPost]
+        [HttpPost("general")]
         public async Task<IActionResult> Index(ulong guildId, GlobalSettingsViewModel vm)
         {
             ClearCacheById(guildId);
@@ -125,7 +136,7 @@ namespace Volvox.Helios.Web.Controllers
             // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
             ClearCacheById(guildId);
 
-            return RedirectToAction("linkfilter");
+            return RedirectToAction("general");
         }
 
         [HttpGet("linkfilter")]
@@ -282,9 +293,85 @@ namespace Volvox.Helios.Web.Controllers
         [HttpGet("punishments")]
         public async Task<IActionResult> Punishments (ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
-            return View();
+            var punishments = await _entityServicePunishments.Get(x => x.GuildId == guildId);
+
+            var punishmentModels = new List<PunishmentModel>();
+
+            foreach (var p in punishments)
+            {
+                punishmentModels.Add(new PunishmentModel
+                {
+                    PunishDuration = p.PunishDuration,
+                    PunishType = p.PunishType,
+                    RoleId = p.RoleId,
+                    WarningThreshold = p.WarningThreshold,
+                    WarningType = p.WarningType,
+                    PunishmentId = p.Id,
+                    DeletePunishment = false
+                });
+            }
+
+            var vm = new PunishmentsViewModel
+            {
+                Punishments = punishmentModels
+            };
+            return View(vm);
         }
 
+        [HttpPost("punishments")]
+        public async Task<IActionResult> Punishments(ulong guildId, PunishmentsViewModel vm)
+        {
+            // TODO : NULL CHECK
+            var punishmentsToRemove = new List<Punishment>();
+
+            foreach (var model in vm.Punishments.Where(x => x.DeletePunishment is true))
+            {
+                punishmentsToRemove.Add(ConvertModelPunishment(guildId, model));
+            }
+
+            await _entityServicePunishments.RemoveBulk(punishmentsToRemove);
+
+            return RedirectToAction("punishments");
+        }
+
+        [HttpGet("newpunishment")]
+        public IActionResult NewPunishment(ulong guildId)
+        {
+            return View(new PunishmentModel());
+        }
+
+        [HttpPost("newpunishment")]
+        public async Task<IActionResult> NewPunishment(ulong guildId, PunishmentModel vm)
+        {
+            if (ModelState.IsValid)
+            {
+                var punishment = ConvertModelPunishment(guildId, vm);
+
+                await _entityServicePunishments.Create(punishment);
+            }
+
+            return RedirectToAction("punishments");
+        }
+
+        private Punishment ConvertModelPunishment(ulong guildId, PunishmentModel model)
+        {
+            var punishment = new Punishment
+            {
+                GuildId = guildId,
+                PunishDuration = model.PunishDuration,
+                PunishType = model.PunishType,
+                WarningThreshold = model.WarningThreshold,
+                WarningType = model.WarningType,
+                RoleId = model.RoleId
+            };
+
+            if (model.PunishmentId.HasValue)
+            {
+                punishment.Id = model.PunishmentId.Value;
+            }
+
+            return punishment;
+        }
 
         private NewChannelsState GetNewChannelState(ModerationSettings currentSettings, WhitelistType type, List<ulong> channelIds)
         {

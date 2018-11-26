@@ -17,20 +17,13 @@
 
                 <tbody id="PunishmentTableBody">
                     @{
-                        await Html.PartialAsync("_PunishmentRow", Model);
+                        <partial name="_PunishmentRow" for="@Model"/>
                     }
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th colspan="6">
-                            <button id="addPunishment" type="button" class="btn btn-primary" data-toggle="tooltip" data-original-title="Add more controls"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Add&nbsp;</button>
-                        </th>
-                    </tr>
-                </tfoot>
+                </tbody>   
             </table>
         </div>
     </section>
     <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-success" />
+        <input type="submit" value="Add" class="btn btn-success" />
     </div>
 </form>
