@@ -205,3 +205,16 @@ a.text-volvox:hover {
 .light-list li:hover{
   background: rgba(255, 255, 255, .3);
 }
+
+.add-badge {
+  padding: 9px 10px 9px 10px;
+  background: #5dcc32;
+  border-radius: 50%;
+  color: white;
+}
+
+.add-label {
+  padding: 9px 15px;
+  background: #5dcc32;
+  border-radius: 0px 50px 50px 50px
+}

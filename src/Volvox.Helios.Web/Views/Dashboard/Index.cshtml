@@ -14,6 +14,7 @@
                 <img class="card-img-top ml-3" style="width: 21px;" src="@uG.Guild.ImageUrl" alt="@uG.Guild.Name">
                 <h5 class="col mb-0 card-title text-volvox">@uG.Guild.Name</h5>
                 <a href="#" onclick="toggleAccBtn(event);" class="text-volvox mr-3" data-toggle="collapse" data-target="#s-@i" aria-expanded="true" aria-controls="s-@i">
+                    @*TODO: toggle icon if is favourite*@
                     <i class="fas fa-toggle-on d-block"></i>
                 </a>
                 @if (uG.Guild.Details.IsBotInGuild)
@@ -37,7 +38,10 @@
                         <i class="fas fa-pen mr-2"></i>
                         Edit
                     </a>
-                    <a class="dropdown-item" href="#">Action 3</a>
+                    <a class="dropdown-item" href="#" onclick="toggleFavouriteBtn(event);">
+                        <i class="far fa-star mr-2"></i>
+                        Favourite
+                    </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item text-danger" href="#">
                         <i class="fas fa-trash-alt mr-2"></i>
@@ -61,12 +65,18 @@
 
         function toggleAccBtn(e) {
             const el = $(e.target);
-            if (!el.is('a')) {
-                if (el.hasClass('fa-toggle-on'))
-                    el.removeClass('fa-toggle-on').addClass('fa-toggle-off');
-                else
-                    el.removeClass('fa-toggle-off').addClass('fa-toggle-on');
-            }
+            if (el.hasClass('fa-toggle-on'))
+                el.removeClass('fa-toggle-on').addClass('fa-toggle-off');
+            else
+                el.removeClass('fa-toggle-off').addClass('fa-toggle-on');
+        }
+
+        function toggleFavouriteBtn(e) {
+            const el = $(e.target).find('i');
+            if (el.hasClass('fas'))
+                el.removeClass('fas').addClass('far');
+            else
+                el.removeClass('far').addClass('fas');
         }
 
     </script>

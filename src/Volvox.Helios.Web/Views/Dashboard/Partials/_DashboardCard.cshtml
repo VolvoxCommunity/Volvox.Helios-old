@@ -2,7 +2,9 @@
 
 @if (!Model.Details.IsBotInGuild)
 {
-    <a asp-controller="Settings" asp-action="Index" asp-route-guildId="@Model.Id"><i class="fas fa-plus"></i> Add Bot to Server</a>
+    <a asp-controller="Settings" asp-action="Index" asp-route-guildId="@Model.Id" class="text-light">
+        <i class="fas fa-plus add-badge"></i> <span class="add-label">Add Bot to Server</span>
+    </a>
 }
 
 else
