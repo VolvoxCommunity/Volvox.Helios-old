@@ -15,28 +15,12 @@
     </div>
 </div>
 <hr />
-<h4>Members:</h4>
-<div class="row">
-    @for (var i = 0; i < 6; i++)
-    {
-    <div class="col-2">
-        <div class="d-inline-flex rounded border border-secondary pt-2 pb-2 w-100" style="background:#ececec;">
-            <img src="https://placeimg.com/32/32" alt="Alternate Text" class="rounded-circle mr-2 position-relative ml-2"
-                    style="width:32px;height:32px;top:8px;" />
-            <div>
-                <p class="mb-0">User @(i + 1)</p>
-                <small>Doing action xy</small>
-            </div>
-        </div>
-    </div>
-    }
-</div>
 <h4 class="mt-4">Modules:</h4>
 <div class="row mb-5">
     @foreach (var module in Model.Modules)
     {
         <div class="col-lg-3 col-md-6 mt-lg-0 mt-4">
-            <div class="card h-100 border-success">
+            <div class="card h-100 border-volvox">
                 <!--if module disabled-->
                 <!--
                     <div class="card h-100 border-danger">
@@ -63,10 +47,10 @@
                 -->
 
                 <div>
-                    <div class="w-100 module-enabled-popover" style="border-radius: .25rem .25rem 0 0;background: #008410;">
-                        v. 1.2.3
+                    <div class="w-100 module-enabled-popover" style="border-radius: .25rem .25rem 0 0;background: #0fb623;">
+                        v.@module.Version
                     </div>
-                    <div class="w-100 bg-success module-enabled-popover" style="font-weight: bold;">
+                    <div class="w-100 bg-volvox module-enabled-popover" style="font-weight: bold;">
                         Module enabled
                     </div>
                 </div>
@@ -74,7 +58,7 @@
                     <h5 class="card-title">
                         @module.Name
                         <a style="color: black" class="float-right" asp-controller="Settings" asp-action="@(module.Name.Replace(" ", "") + "Settings")">
-                            <i class="fas fa-cog text-success"></i>
+                            <i class="fas fa-cog text-volvox"></i>
                         </a>
                     </h5>
                     <p class="card-text">@module.Description</p>

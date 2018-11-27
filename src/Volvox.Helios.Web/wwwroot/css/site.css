@@ -150,3 +150,15 @@ input:checked + .slider:before {
   font-size: 14px;
   text-align: center;
 }
+
+.border-volvox {
+  border-color: #5dcc32;
+}
+
+.text-volvox {
+  color: #5dcc32;
+}
+
+.bg-volvox {
+  background: #5dcc32;
+}
