@@ -76,6 +76,12 @@ namespace Volvox.Helios.Web.Controllers
 
                 guild.Guild.Details.IsBotInGuild = _bot.IsBotInGuild(guild.Guild.Id);
 
+                // Set the Volvox logo as the image if the guild does not have an icon.
+                if (string.IsNullOrWhiteSpace(guild.Guild.Icon))
+                {
+                    guild.Guild.ImageUrl = "/images/small/volvox-logo.png";
+                }
+
                 // Bot must be in the guild to retrieve details.
                 if (guild.Guild.Details.IsBotInGuild)
                 {
