@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Discord.WebSocket;
 
 namespace Volvox.Helios.Domain.Discord
 {
@@ -8,8 +9,8 @@ namespace Volvox.Helios.Domain.Discord
 
         public int MemberCount { get; set; }
 
-        public List<Role> Roles { get; set; }
+        public IReadOnlyCollection<SocketRole> Roles { get; set; }
 
-        public List<Channel> Channels { get; set; }
+        public IReadOnlyCollection<SocketChannel> Channels { get; set; }
     }
 }
