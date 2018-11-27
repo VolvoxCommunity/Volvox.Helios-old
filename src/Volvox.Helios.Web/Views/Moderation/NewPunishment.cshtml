@@ -2,13 +2,17 @@
 
 <form method="POST">
     <section class="container">
-        <div class="table table-responsive">
-            <table asp-for="Punishments" class="table table-responsive table-striped table-bordered">
+        <div class="vertical-margin-large">
+            <table asp-for="Punishments">
+
+                <colgroup>
+                    <col span="6" style="border:1px solid black"/>
+                </colgroup>
 
                 <thead>
                     <tr>
                         <td>Punishment Type</td>
-                        <td>Punishment Duration mins</td>
+                        <td>Duration (mins)</td>
                         <td>Warning Type</td>
                         <td>Warning Threshold</td>
                         <td>Role</td>
@@ -17,7 +21,7 @@
 
                 <tbody id="PunishmentTableBody">
                     @{
-                        <partial name="_PunishmentRow" for="@Model"/>
+                        <partial name="_PunishmentRow" model="Model"/>
                     }
                 </tbody>   
             </table>

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Volvox.Helios.Domain.Module.ModerationModule.Common
 {
-    public enum PunishType { None = 0, Kick = 1, Ban = 2, AddRole = 3 }
+    public enum PunishType {Kick = 0, Ban = 1, AddRole = 2 }
 
     public enum WarningType { General = 0, Profanity = 1, Link = 2 }
 

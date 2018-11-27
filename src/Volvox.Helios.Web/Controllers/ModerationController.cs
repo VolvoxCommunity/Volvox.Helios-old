@@ -335,9 +335,13 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpGet("newpunishment")]
-        public IActionResult NewPunishment(ulong guildId)
+        public async Task<IActionResult> NewPunishment(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
-            return View(new PunishmentModel());
+            var roles = await guildService.GetRoles(guildId);
+
+            return View(new PunishmentModel {
+                Role = new SelectList(roles, "Id", "Name")
+            });
         }
 
         [HttpPost("newpunishment")]
