@@ -162,8 +162,12 @@ input:checked + .slider:before {
 /*************** Dashboard ***************/
 
 .dashboard-guild-image {
-  height: 64px;
-  width: 64px;
+  height: 24px;
+  width: 24px;
+}
+#serverAccordion .card {
+  border-bottom: 1px solid rgba(0, 0, 0, .125);
+  border-radius: .25rem;
 }
 
 /*****************************************/
