@@ -48,9 +48,10 @@ namespace Volvox.Helios.Core.Modules.Command.Commands
                         .WithFooter(
                             new EmbedFooterBuilder().WithText(
                                 "psst, you can use -g with this command to get server information!"));
-                    await context.Channel.SendMessageAsync("", false, embed.Build());
                     break;
             }
+
+            await context.Channel.SendMessageAsync("", false, embed.Build());
         }
     }
 }
