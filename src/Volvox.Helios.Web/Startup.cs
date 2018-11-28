@@ -129,6 +129,7 @@ namespace Volvox.Helios.Web
             // Commands
             services.AddSingleton<IModule, CommandManager>();
             services.AddSingleton<ICommand, HelpCommand>();
+            services.AddSingleton<ICommand, AboutCommand>();
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
