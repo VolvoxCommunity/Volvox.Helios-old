@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
@@ -21,7 +21,12 @@ namespace Volvox.Helios.Core.Modules.Command.Commands
             if (!( context.Channel is SocketGuildChannel channel )) return;
 
             // Your args will always start at 1; the command itself is argument zero.
-            var flag = context.Message.Content.Split(' ')[1];
+            var flag = "";
+
+            var args = context.Message.Content.Split(' ');
+
+            // Add flag if arguments exist;
+            if (args.Length > 1) flag = args[1];
 
             var embed = new EmbedBuilder()
                 .WithColor(EmbedColors.LogoColor)
@@ -43,8 +48,8 @@ namespace Volvox.Helios.Core.Modules.Command.Commands
                 default:
                     embed.WithTitle("So you want to hear my life story, ey?")
                         .AddField("Bot Version", $"v{version.Major}.{version.Minor}.{version.Build}")
-                        .AddField("Bloat Factor", $"{GC.GetTotalMemory(false) / 1048576}MB", true)
                         .AddField("Server Count", context.Client.Guilds.Count, true)
+                        .AddField("Member Count", context.Client.Guilds.Sum(guild => guild.MemberCount), true)
                         .WithFooter(
                             new EmbedFooterBuilder().WithText(
                                 "psst, you can use -g with this command to get server information!"));
