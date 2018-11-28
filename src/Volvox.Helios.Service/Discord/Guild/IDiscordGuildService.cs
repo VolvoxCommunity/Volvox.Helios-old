@@ -19,5 +19,12 @@ namespace Volvox.Helios.Service.Discord.Guild
         /// <param name="guildId">Id of the guild.</param>
         /// <returns>List of roles in the guild.</returns>
         Task<List<Role>> GetRoles(ulong guildId);
+
+        /// <summary>
+        ///     Get the details of the specified guild.
+        /// </summary>
+        /// <param name="guildId">Id of the guild.</param>
+        /// <returns>Guild populated with details.</returns>
+        Task<Domain.Discord.Guild> GetDetails(ulong guildId);
     }
 }

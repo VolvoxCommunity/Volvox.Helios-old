@@ -55,6 +55,12 @@ namespace Volvox.Helios.Core.Bot
         IReadOnlyCollection<SocketGuild> GetGuilds();
 
         /// <summary>
+        ///     Get the specified guild.
+        /// </summary>
+        /// <returns>SocketGuild object.</returns>
+        SocketGuild GetGuild(ulong guildId);
+
+        /// <summary>
         ///     Returns true if the specified guild is in the bot and false otherwise.
         /// </summary>
         /// <returns>Returns true if the specified guild is in the bot and false otherwise.</returns>

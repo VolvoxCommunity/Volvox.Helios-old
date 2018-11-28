@@ -28,6 +28,9 @@ namespace Volvox.Helios.Web.Extensions
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
+        [HtmlAttributeName("match-controller")]
+        public bool MatchController { get; set; }
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             base.Process(context, output);
@@ -46,17 +49,18 @@ namespace Volvox.Helios.Web.Extensions
             var currentController = ViewContext.RouteData.Values["Controller"].ToString();
             var currentAction = ViewContext.RouteData.Values["Action"].ToString();
 
+            if (MatchController && !string.IsNullOrWhiteSpace(Controller) && string.Equals(Controller,
+                    currentController, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return true;
+            }
+
             if (!string.IsNullOrWhiteSpace(Controller) && !string.Equals(Controller, currentController, StringComparison.CurrentCultureIgnoreCase))
             {
                 return false;
             }
 
-            if (!string.IsNullOrWhiteSpace(Action) && !string.Equals(Action, currentAction, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return false;
-            }
-
-            return true;
+            return string.IsNullOrWhiteSpace(Action) || string.Equals(Action, currentAction, StringComparison.CurrentCultureIgnoreCase);
         }
 
         private void MakeActive(TagHelperOutput output)
