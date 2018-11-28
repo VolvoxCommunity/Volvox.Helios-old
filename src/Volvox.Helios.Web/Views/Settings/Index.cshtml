@@ -47,11 +47,11 @@
                 -->
 
                 <div>
-                    <div class="w-100 module-enabled-popover" style="border-radius: .25rem .25rem 0 0;background: #0fb623;">
+                    <div class="w-100 module-enabled-popover module-version">
                         v.@module.Version
                     </div>
-                    <div class="w-100 bg-volvox module-enabled-popover" style="font-weight: bold;">
-                        Module enabled
+                    <div class="w-100 bg-volvox module-enabled-popover">
+                        <strong>Module enabled</strong>
                     </div>
                 </div>
                 <div class="card-body">
@@ -68,15 +68,15 @@
     }
 
     <div class="col-lg-3 col-md-6 mt-lg-0 mt-4">
-        <div class="card h-100" style="border-color: #FFA726;">
-            <div class="w-100 bg-warning module-enabled-popover" style="font-weight: bold;">
-                0 Polls available
+        <div class="card h-100 border-skyblue">
+            <div class="w-100 bg-skyblue module-enabled-popover">
+                <strong>0 Polls available</strong>
             </div>
             <div class="card-body">
                 <h5 class="card-title">
                     Poll Manager
                     <a style="color: black" class="float-right" asp-controller="Poll">
-                        <i class="fas fa-cog text-warning"></i>
+                        <i class="fas fa-cog text-skyblue"></i>
                     </a>
                 </h5>
                 <p class="card-text">Create and view polls.</p>
@@ -84,13 +84,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    .text-warning {
-        color: #FFA726 !important;
-    }
-
-    .bg-warning {
-        background: #FFA726 !important;
-    }
-</style>

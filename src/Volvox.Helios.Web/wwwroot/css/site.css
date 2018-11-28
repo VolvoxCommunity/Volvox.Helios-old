@@ -150,6 +150,10 @@ input:checked + .slider:before {
   font-size: 14px;
   text-align: center;
 }
+.module-enabled-popover.module-version {
+  border-radius: .25rem .25rem 0 0;
+  background: #0fb623;
+}
 
 .border-volvox {
   border-color: #5dcc32;
@@ -161,4 +165,16 @@ input:checked + .slider:before {
 
 .bg-volvox {
   background: #5dcc32;
+}
+
+.bg-skyblue {
+  background: #26B2FF;
+}
+
+.text-skyblue {
+  color: #26B2FF;
+}
+
+.border-skyblue {
+  border-color: #26B2FF;
 }
