@@ -1,0 +1,33 @@
+﻿@model Volvox.Helios.Web.ViewModels.Dashboard.DashboardDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Guild.Name;
+}
+
+<partial name="./Partials/_DashboardHeader" model="@Model.UserGuilds.Select(g => g.Guild)" />
+
+<div class="row home-page-cards">
+    <div class="col-sm">
+        <div class="card">
+            <div class="card-img-top d-flex align-items-center bg-light">
+                <div>
+                    <img class="card-img-top" style="width: 64px;" src="@Model.Guild.ImageUrl" alt="@Model.Guild.Name">
+                </div>
+                <h5 class="col m-0 card-title">@Model.Guild.Name</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    <partial name="./Partials/_DashboardCard" model="@Model.Guild" />
+                </p>
+            </div>
+            @if (Model.Guild.Details.IsBotInGuild)
+            {
+                <div class="card-footer text-muted">
+                    <a class="card-link" asp-controller="Settings" asp-action="Index" asp-route-guildId="@Model.Guild.Id">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

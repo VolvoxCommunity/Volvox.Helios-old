@@ -1,0 +1,83 @@
+﻿@model Volvox.Helios.Web.ViewModels.Dashboard.DashboardIndexViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<partial name="./Partials/_DashboardHeader" model="@Model.UserGuilds.Select(g => g.Guild)" />
+<div class="accordion" id="serverAccordion">
+    @for (var i = 0; i < Model.UserGuilds.Count; i++)
+    {
+        var uG = Model.UserGuilds[i];
+        <div class="card mt-4" style="border-bottom: 1px solid rgba(0, 0, 0, .125); border-radius: .25rem;">
+            <div class="card-img-top d-flex align-items-center bg-gray pt-2 pb-2" id="s-@i-@uG.Guild.Name">
+                <img class="card-img-top ml-3" style="width: 21px;" src="@uG.Guild.ImageUrl" alt="@uG.Guild.Name">
+                <h5 class="col mb-0 card-title">@uG.Guild.Name</h5>
+                <a href="#" onclick="toggleAccBtn(event);" class="text-volvox mr-3" data-toggle="collapse" data-target="#s-@i" aria-expanded="true" aria-controls="s-@i">
+                    @*TODO: toggle icon if is favourite*@
+                    <i class="fas fa-toggle-on d-block"></i>
+                </a>
+                @if (uG.Guild.Details.IsBotInGuild)
+                {
+                    <a class="text-volvox mr-3" asp-action="Details" asp-route-guildId="@uG.Guild.Id">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                    <a class="text-volvox mr-3" asp-controller="Settings" asp-action="Index" asp-route-guildId="@uG.Guild.Id">
+                        <i class="fas fa-cog"></i>
+                    </a>
+                }
+                @*<a href="#" class="text-volvox mr-2" dropdown-toggle data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-h ml-auto mr-3"></i>
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">
+                        <i class="fas fa-share mr-2"></i>
+                        Share
+                    </a>
+                    <a class="dropdown-item" href="#">
+                        <i class="fas fa-pen mr-2"></i>
+                        Edit
+                    </a>
+                    <a class="dropdown-item" href="#" onclick="toggleFavouriteBtn(event);">
+                        <i class="far fa-star mr-2"></i>
+                        Favourite
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item text-danger" href="#">
+                        <i class="fas fa-trash-alt mr-2"></i>
+                        Remove
+                    </a>
+                </div>*@
+            </div>
+            <div class="collapse show" id="s-@i" aria-labelledby="s-@i-@uG.Guild.Name">
+                <div class="card-body">
+                    <p class="card-text">
+                        <partial name="./Partials/_DashboardCard" model="@uG.Guild" />
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+
+        function toggleAccBtn(e) {
+            const el = $(e.target);
+            if (el.hasClass('fa-toggle-on'))
+                el.removeClass('fa-toggle-on').addClass('fa-toggle-off');
+            else
+                el.removeClass('fa-toggle-off').addClass('fa-toggle-on');
+        }
+
+        function toggleFavouriteBtn(e) {
+            const el = $(e.target).find('i');
+            if (el.hasClass('fas'))
+                el.removeClass('fas').addClass('far');
+            else
+                el.removeClass('far').addClass('fas');
+        }
+
+    </script>
+}

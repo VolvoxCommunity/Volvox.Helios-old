@@ -1,0 +1,82 @@
+@model Volvox.Helios.Domain.Discord.Guild
+
+@if (!Model.Details.IsBotInGuild)
+{
+    <a asp-controller="Settings" asp-action="Index" asp-route-guildId="@Model.Id" class="text-light">
+        <i class="fas fa-plus add-badge"></i> <span class="add-label">Add Bot to Server</span>
+    </a>
+}
+
+else
+{
+
+    <div class="w-100 d-flex">
+        <div>
+            <span class="material-badge mr-2"><strong>@Model.Details.MemberCount</strong> Members</span>
+            <span class="material-badge mr-2"><strong>@Model.Details.Roles.Count</strong> Roles</span>
+            <span class="material-badge"><strong>@Model.Details.Channels.Count</strong> Channels</span>
+        </div>
+
+        <div class="ml-auto">
+            <span class="material-badge">Online</span>
+        </div>
+    </div>
+
+    @*<div class="mt-4">
+        <div class="row mt-3">
+            <p class="col-md-12">
+                Total Messages: 13 | Unique Posters: 0
+            </p>
+            <div class="col-md-4">
+                <div class="bg-gray pt-2 pb-2 h-100 rounded">
+                    <h5 class="ml-2">Members</h5>
+                    <ul class="pl-0 light-list" style="max-height: 230px;overflow-y:auto;">
+                        <li style="color: brown">Peter</li>
+                        <li style="color: chocolate">Samuel</li>
+                        <li style="color: darkgreen">Mune</li>
+                        <li style="color: darkorange">Dean</li>
+                        <li style="color: dodgerblue">Gryffin</li>
+                        <li style="color: olive">John</li>
+                        <li style="color: orange">Zonk</li>
+                        <li style="color: black">ARandomName</li>
+                        <li style="color: mediumseagreen">Lorem</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4 mt-md-0 mt-4">
+                <div class="bg-gray pt-2 pb-2 h-100 rounded">
+                    <h5 class="ml-2">Roles</h5>
+                    <ul class="pl-0 light-list" style="max-height: 230px;overflow-y:auto;">
+                        <li><strong style="color: orange">&commat;everyone</strong></li>
+                        <li><strong style="color: forestgreen">&commat;developer</strong></li>
+                        <li><strong style="color: darkred">&commat;introducing</strong></li>
+                        <li><strong style="color: deepskyblue">&commat;help</strong></li>
+                        <li><strong>&commat;faq</strong></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4 mt-md-0 mt-4">
+                <div class="bg-gray pt-2 pb-2 h-100 rounded">
+                    <h5 class="ml-2">Channels</h5>
+                    <ul class="pl-0 light-list" style="max-height: 230px;overflow-y:auto;">
+                        <li><span class="badge badge-secondary">#general</span></li>
+                        <li><span class="badge badge-secondary">#faq</span></li>
+                        <li><span class="badge badge-secondary">#help</span></li>
+                        <li><span class="badge badge-secondary">#introducing</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+
+    @*<div>
+            Member Count: @Model.Details.MemberCount
+        </div>
+        <div>
+            Role Count: @Model.Details.Roles.Count
+        </div>
+        <div>
+            Channel Count: @Model.Details.Channels.Count
+        </div>*@
+}
