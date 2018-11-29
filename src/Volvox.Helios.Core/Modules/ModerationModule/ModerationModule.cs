@@ -43,6 +43,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : check to see if user has role, if they do, don't add thepunishment as this could cause issues.
 
+        // TODO : Consider not adding warnings if the guild has no punishments in place. Perhaps have purge button too, for warnings of users.
+
+        // TODO : display role name instead of id in punishments view
+
+        // TODO : Add warnings page to clear user warnings and stuff
+
+        // TODO : add extra filters like caps filters, emoji filters
+
         #region Private vars
 
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
@@ -558,7 +566,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 await activePunishmentsService.CreateBulk(activePunishments);
 
-                await removePunishmentService.SchedulePunishmentRemovals(activePunishments);
+                // Schedule punishment removals where punishments expire. No point in scheduling punishments removal. which enver expire.
+                await removePunishmentService.SchedulePunishmentRemovals(activePunishments.Where(x => x.PunishmentExpires > DateTimeOffset.Now));
             }
         }
 
