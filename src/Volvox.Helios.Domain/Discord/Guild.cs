@@ -2,11 +2,6 @@
 {
     public class Guild
     {
-        public Guild()
-        {
-            Details = new GuildDetails();
-        }
-
         public ulong Id { get; set; }
 
         public string Name { get; set; }
@@ -18,6 +13,6 @@
         /// <summary>
         ///     Guild specific details. NOT populated from Discord API.
         /// </summary>
-        public GuildDetails Details { get; }
+        public GuildDetails Details { get; } = new GuildDetails();
     }
 }

@@ -30,7 +30,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             var userGuilds = await _userGuildService.GetUserGuilds();
 
-            var guilds = await GetGuildDetails(userGuilds.FilterAdministrator());
+            var guilds = GetGuildDetails(userGuilds.FilterAdministrator());
 
             var viewModel = new DashboardIndexViewModel
             {
@@ -45,7 +45,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             var userGuilds = await _userGuildService.GetUserGuilds();
 
-            var guilds = await GetGuildDetails(userGuilds.FilterAdministrator(), guildId);
+            var guilds = GetGuildDetails(userGuilds.FilterAdministrator(), guildId);
 
             var viewModel = new DashboardDetailsViewModel
             {
@@ -62,7 +62,7 @@ namespace Volvox.Helios.Web.Controllers
         /// <param name="guilds">Input list of guilds.</param>
         /// <param name="detailsGuildId">If specified, will only provide details for the guild with the specified id.</param>
         /// <returns>Populated list of guilds.</returns>
-        private async Task<List<UserGuild>> GetGuildDetails(List<UserGuild> guilds, ulong? detailsGuildId = null)
+        private List<UserGuild> GetGuildDetails(List<UserGuild> guilds, ulong? detailsGuildId = null)
         {
             foreach (var guild in guilds)
             {
@@ -85,9 +85,11 @@ namespace Volvox.Helios.Web.Controllers
                 // Bot must be in the guild to retrieve details.
                 if (guild.Guild.Details.IsBotInGuild)
                 {
-                    guild.Guild.Details.MemberCount = _bot.GetGuild(guildId).MemberCount;
-                    guild.Guild.Details.Roles = await _guildService.GetRoles(guildId);
-                    guild.Guild.Details.Channels = await _guildService.GetChannels(guildId);
+                    var botGuild = _bot.GetGuild(guildId);
+
+                    guild.Guild.Details.MemberCount = botGuild.MemberCount;
+                    guild.Guild.Details.Roles = botGuild.Roles;
+                    guild.Guild.Details.Channels = botGuild.Channels;
                 }
             }
 
