@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
@@ -13,10 +12,13 @@ using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.BackgroundJobs;
 using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
-using Volvox.Helios.Core.Services.MessageService;
 
 namespace Volvox.Helios.Core.Jobs
 {
+    //****************************************************************************
+    //***********  TODO : NULL CHECKS, ESPECIALLY INSIDE REMOVE ROLE METHOD ******
+    //****************************************************************************
+
     public class RemovePunishmentJob
     {
 
@@ -48,9 +50,7 @@ namespace Volvox.Helios.Core.Jobs
                 // TODO: null checks in methods
                 foreach (var punishment in punishments)
                 {
-                    // No point scheduling a removal for a punishment that is permanent.
-                    if (punishment.PunishmentExpires != DateTimeOffset.MaxValue)
-                        _jobService.ScheduleJob(() => RemovePunishmentDiscord(punishment), punishment.PunishmentExpires);
+                    _jobService.ScheduleJob(() => RemovePunishmentDiscord(punishment), punishment.PunishmentExpires);
                 }
             }
         }
