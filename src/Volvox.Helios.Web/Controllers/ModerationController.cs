@@ -79,8 +79,13 @@ namespace Volvox.Helios.Web.Controllers
             _moderationSettings.ClearCacheByGuild(id);
         }
 
+        public IActionResult Index(ulong guildID)
+        {
+            return View();
+        }
+
         [HttpGet("general")]
-        public async Task<IActionResult> Index(ulong guildId, [FromServices] IDiscordGuildService guildService)
+        public async Task<IActionResult> General(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
             ClearCacheById(guildId);
 
@@ -109,7 +114,7 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpPost("general")]
-        public async Task<IActionResult> Index(ulong guildId, GlobalSettingsViewModel vm)
+        public async Task<IActionResult> General(ulong guildId, GlobalSettingsViewModel vm)
         {
             ClearCacheById(guildId);
 
@@ -173,7 +178,7 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpPost("linkfilter")]
-        public async Task<IActionResult> LinkFilter(ulong guildId, LinkFilterViewModel vm)
+        public async Task<IActionResult> UpdateLinkFilter(ulong guildId, LinkFilterViewModel vm)
         {
             ClearCacheById(guildId);
 
@@ -321,15 +326,18 @@ namespace Volvox.Helios.Web.Controllers
         [HttpPost("punishments")]
         public async Task<IActionResult> Punishments(ulong guildId, PunishmentsViewModel vm)
         {
-            // TODO : NULL CHECK
+            var punishments = vm.Punishments ?? new List<PunishmentModel>();
+
             var punishmentsToRemove = new List<Punishment>();
 
-            foreach (var model in vm.Punishments.Where(x => x.DeletePunishment is true))
+            foreach (var model in punishments.Where(x => x.DeletePunishment))
             {
                 punishmentsToRemove.Add(ConvertModelPunishment(guildId, model));
             }
 
             await _entityServicePunishments.RemoveBulk(punishmentsToRemove);
+
+            ClearCacheById(guildId);
 
             return RedirectToAction("punishments");
         }
@@ -366,7 +374,7 @@ namespace Volvox.Helios.Web.Controllers
                 PunishType = model.PunishType,
                 WarningThreshold = model.WarningThreshold,
                 WarningType = model.WarningType,
-                RoleId = model.RoleId
+                RoleId = model.PunishType == PunishType.AddRole ? model.RoleId : null
             };
 
             if (model.PunishmentId.HasValue)
