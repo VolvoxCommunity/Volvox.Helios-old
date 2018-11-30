@@ -170,6 +170,17 @@ input:checked + .slider:before {
   border-radius: .25rem;
 }
 
+.card-title {
+  word-break: break-all;
+}
+
+@media screen and (max-width: 575px){
+  .material-badge{
+    display: block;
+    margin-bottom: 10px;
+  }
+}
+
 /*****************************************/
 
 
