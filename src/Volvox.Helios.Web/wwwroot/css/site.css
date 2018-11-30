@@ -73,6 +73,11 @@
     margin-top: 30px;
 }
 
+.home-page-cards .card-body {
+  border-bottom: 5px solid #5dcc32;
+  border-radius: 0 0 .25rem .25rem;
+}
+
 /************ Toggle Switch *************/
 
 .switch {
@@ -177,4 +182,57 @@ input:checked + .slider:before {
 
 .border-skyblue {
   border-color: #26B2FF;
+}
+
+
+/* Home */
+.home-header {
+  min-height: 70vh;
+  background: url('/images/hex-grid.jpg') no-repeat;
+  background-size: cover;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  overflow: hidden;
+}
+
+.home-header .image-shadow{
+  position: relative;
+  z-index: 1;
+}
+
+.home-header .image-shadow::before {
+  content: '';
+  position: absolute;
+  background: white;
+  width: 300%;
+  height: 200%;
+  opacity: .4;
+  bottom: -10%;
+  left: -89%;
+  transform: rotate(-50deg);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.home-header::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: .3;
+  background: black;
+}
+
+.section-spacing{
+  padding: 40px 0 70px;
+}
+
+@media screen and (max-width: 575px){
+  .home-header {
+    min-height: 50vh;
+  }
 }
