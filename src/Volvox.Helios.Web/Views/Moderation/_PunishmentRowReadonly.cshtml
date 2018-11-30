@@ -16,6 +16,8 @@
     <td>@Html.TextBoxFor(m => m.PunishDuration, new { @readonly = true })</td>
     <td>@Html.TextBoxFor(m => m.WarningType, new { @readonly = true })</td>
     <td>@Html.TextBoxFor(m => m.WarningThreshold, new { @readonly = true })</td>
-    <td>@Html.TextBoxFor(m => m.RoleId, new { @readonly = true })</td>
+    <td>
+        <select disabled asp-for="RoleId" asp-items="Model.Role"></select>
+    </td>
     <td>@Html.CheckBoxFor(m => m.DeletePunishment)</td>
 </tr>
