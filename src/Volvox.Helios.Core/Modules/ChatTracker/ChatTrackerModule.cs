@@ -33,7 +33,9 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
         /// <returns>True if the module is enabled for the specified guild and false if not.</returns>
         public override async Task<bool> IsEnabledForGuild(ulong guildId)
         {
-            return ( await _settingsService.GetSettingsByGuild(guildId) ).Enabled;
+            var settings = await _settingsService.GetSettingsByGuild(guildId);
+
+            return settings == null || settings.Enabled;
         }
 
         /// <summary>
