@@ -1,5 +1,16 @@
-﻿/************** General ***************/
+﻿/************ CSS Variables ***********/
+:root {
+  --color-volvox: #5DCC32;
+  --color-skyblue: #26B2FF;
+}
 
+/*************** Reset ****************/
+a:focus, a:active, a:visited, button:focus, button:active, button:visited{
+  outline: 0;
+}
+
+
+/************** General ***************/
 body {
     padding-top: 50px;
     padding-bottom: 20px;
@@ -10,7 +21,8 @@ body {
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
-    padding-top: 10px
+    padding-top: 10px;
+    margin-top: 25px;
 }
 
 /* Carousel */
@@ -94,7 +106,7 @@ body {
 }
 
 .home-page-cards .card-body {
-  border-bottom: 5px solid #5dcc32;
+  border-bottom: 5px solid var(--color-volvox);
   border-radius: 0 0 .25rem .25rem;
 }
 
@@ -189,7 +201,7 @@ input:checked + .slider:before {
 
 /********** Web improvements *************/
 .material-badge {
-  background-color: #5dcc32;
+  background-color: var(--color-volvox);
   padding: 10px 15px;
   border-radius: 50px;
   color: white;
@@ -199,13 +211,6 @@ input:checked + .slider:before {
   background: #eaeaea;
 }
 
-.text-volvox {
-  color: #5dcc32;
-}
-
-a.text-volvox:hover {
-  color: #559a3a;
-}
 #serverAccordion a:focus, #serverAccordion a:hover, #serverAccordion a:active {
   outline: 0;
   text-decoration: none
@@ -224,14 +229,14 @@ a.text-volvox:hover {
 
 .add-badge {
   padding: 9px 10px 9px 10px;
-  background: #5dcc32;
+  background: var(--color-volvox);
   border-radius: 50%;
   color: white;
 }
 
 .add-label {
   padding: 9px 15px;
-  background: #5dcc32;
+  background: var(--color-volvox);
   border-radius: 0px 50px 50px 50px
 }
 
@@ -243,32 +248,41 @@ a.text-volvox:hover {
   text-align: center;
 }
 .module-enabled-popover.module-version {
-  border-radius: .25rem .25rem 0 0;
+  border-radius: 3px 3px 0 0;
   background: #0fb623;
+}
+.module-enabled-popover.module-version.skyblue-popover {
+  background: #167DB6;
+}
+.module-enabled-popover.module-version.danger-popover {
+  background: #862b34;
 }
 
 .border-volvox {
-  border-color: #5dcc32;
+  border-color: var(--color-volvox);
 }
 
 .text-volvox {
-  color: #5dcc32;
+  color: var(--color-volvox);
+}
+a.text-volvox:hover {
+  color: #559a3a;
 }
 
 .bg-volvox {
-  background: #5dcc32;
+  background: var(--color-volvox);
 }
 
 .bg-skyblue {
-  background: #26B2FF;
+  background: var(--color-skyblue);
 }
 
 .text-skyblue {
-  color: #26B2FF;
+  color: var(--color-skyblue);
 }
 
 .border-skyblue {
-  border-color: #26B2FF;
+  border-color: var(--color-skyblue);
 }
 
 
@@ -316,6 +330,22 @@ a.text-volvox:hover {
 
 .section-spacing{
   padding: 40px 0 70px;
+}
+
+.underline-left{
+  position: relative;
+  display: table;
+  margin-bottom: 15px;
+}
+.underline-left::after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  background: var(--color-volvox);
+  bottom: -7px;
+  left: 0;
+  border-radius: 2px;
 }
 
 @media screen and (max-width: 575px){
