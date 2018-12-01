@@ -14,6 +14,8 @@
     <meta property="og:image:width" content="300" />
     <meta property="og:image:height" content="300" />
     <meta property="og:description" content="Powerful, modular, web-managed, open-source Discord bot created by a community for communities." />
+    <meta name="theme-color" content="#5DCC32">
+
     <title>@ViewData["Title"] - Volvox.Helios</title>
 
     <environment include="Development">
@@ -47,6 +49,20 @@
                     @await Html.PartialAsync("_NavigationPartial")
                 </ul>
                 <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" id="themeToggler">
+                            <i class="fas fa-moon active"></i>
+                            <i class="fas fa-sun d-none"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link position-relative">
+                            <i class="fas fa-newspaper"></i>
+                            <div id="changelog-wrapper">
+                                <div id="changelog" class="position-relative d-block h-100"></div>
+                            </div>
+                        </a>
+                    </li>
                     @await Html.PartialAsync("_LoginNavigationPartial")
                 </ul>
             </div>
@@ -98,6 +114,33 @@
         $('#analyticsNavDropdown').click(() => {
             $('#analyticsDropDown').populateAnalytics();
         });
+
+        // Dark theme toggle
+        var darkThemeEnabled = false;
+        $('#themeToggler').click((e) => {
+            darkThemeEnabled = !darkThemeEnabled;
+            var nextEl = $(e.currentTarget).find('i.d-none').removeClass('d-none').next();
+            if (nextEl.length == 0)
+                nextEl = $(e.currentTarget).find('i').first();
+            nextEl.addClass('d-none');
+
+            toggleTheme(darkThemeEnabled);
+        });
+
+        var HW_config = {
+            selector: "#changelog",
+            account: "7q0G0x"
+        }
+        function toggleTheme(darkThemeEnabled) {
+            $('.navbar').toggleClass('navbar-light navbar-dark bg-light');
+
+            if (darkThemeEnabled) {
+                $('head').append('<link rel="stylesheet" href="/css/dark-theme.css" id="darkThemeLink">');
+            } else {
+                $('#darkThemeLink').remove();
+            }
+        }
     </script>
+    <script async src="https://cdn.headwayapp.co/widget.js"></script>
 </body>
 </html>

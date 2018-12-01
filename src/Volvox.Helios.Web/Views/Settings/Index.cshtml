@@ -9,9 +9,9 @@
         <h2>@Model.GuildName</h2>
     </div>
     <div class="col-4 col-md-2">
-        <div class="position-relative" style="top:50%;transform:translateY(-50%);">
+        @*<div class="position-relative" style="top:50%;transform:translateY(-50%);">
             <span class="badge badge-success bg-volvox d-table ml-auto">4 Users online</span>
-        </div>
+        </div>*@
     </div>
 </div>
 <hr>
@@ -19,43 +19,23 @@
 <div class="row">
     @foreach (var module in Model.Modules)
     {
-
     <div class="col-lg-3 col-md-6 mt-lg-0 mt-4">
-        <!--if module disabled-->
-        @*<div class="card h-100 border-danger">
-
+        @{ var isModuleEnabled = await module.IsEnabledForGuild(Model.GuildId); }
+        <div class="card h-100 @(isModuleEnabled ? "border-volvox" : "border-gray2")">
             <div>
-                <div class="w-100 module-enabled-popover module-version danger-popover">
-                    v. 1.2.3
-                </div>
-                <div class="w-100 bg-danger module-enabled-popover" style="font-weight: bold;">
-                    Module enabled
-                </div>
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">
-                    @module.Name
-                    <a style="color: black" class="float-right" asp-controller="Settings" asp-action="@(module.Name.Replace(" ", "") + "Settings")">
-                        <i class="fas fa-cog text-danger"></i>
-                    </a>
-                </h5>
-                <p class="card-text">@module.Description</p>
-            </div>
-        </div>*@
-        <div class="card h-100 border-volvox">
-            <div>
-                <div class="w-100 module-enabled-popover module-version">
+                <div class="w-100 module-enabled-popover module-version @(isModuleEnabled ? "" : "danger-popover")">
                     v.@module.Version
                 </div>
-                <div class="w-100 bg-volvox module-enabled-popover">
-                    <strong>Module enabled</strong>
+
+                <div class="w-100 module-enabled-popover @(isModuleEnabled ? "bg-volvox" : "bg-gray2")">
+                    <strong>Module @(isModuleEnabled ? "enabled" : "disabled")</strong>
                 </div>
             </div>
             <div class="card-body">
                 <h5 class="card-title">
                     @module.Name
                     <a style="color: black" class="float-right" asp-controller="Settings" asp-action="@(module.Name.Replace(" ", "") + "Settings")">
-                        <i class="fas fa-cog text-volvox"></i>
+                        <i class="fas fa-cog @(isModuleEnabled ? "text-volvox" : "text-gray2")"></i>
                     </a>
                 </h5>
                 <p class="card-text">@module.Description</p>
@@ -67,7 +47,7 @@
     <div class="col-lg-3 col-md-6 mt-lg-0 mt-4">
         <div class="card h-100 border-skyblue">
             <div class="w-100 module-enabled-popover skyblue-popover module-version">
-                v. 1.0.0
+                v. 1.0
             </div>
             <div class="w-100 bg-skyblue module-enabled-popover">
                 <strong>0 Polls available</strong>

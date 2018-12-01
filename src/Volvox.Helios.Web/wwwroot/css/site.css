@@ -2,6 +2,10 @@
 :root {
   --color-volvox: #5DCC32;
   --color-skyblue: #26B2FF;
+  --color-dark: #2D2F32;
+  --color-deep-dark: #121111;
+  --color-gray: #EAEAEA;
+  --color-gray2: #B2B2B2;
 }
 
 /*************** Reset ****************/
@@ -14,6 +18,48 @@ a:focus, a:active, a:visited, button:focus, button:active, button:visited{
 body {
     padding-top: 50px;
     padding-bottom: 20px;
+}
+.bg-mat-dark{
+  background: var(--color-dark);
+}
+.bg-gray2 {
+  background: var(--color-gray2);
+}
+.text-gray2 {
+  color: var(--color-gray2);
+}
+.border-gray2 {
+  border-color: var(--color-gray2);
+}
+.bg-gray {
+  background: var(--color-gray);
+}
+.border-volvox {
+  border-color: var(--color-volvox);
+}
+
+.text-volvox {
+  color: var(--color-volvox);
+}
+
+a.text-volvox:hover {
+  color: #559a3a;
+}
+
+.bg-volvox {
+  background: var(--color-volvox);
+}
+
+.bg-skyblue {
+  background: var(--color-skyblue);
+}
+
+.text-skyblue {
+  color: var(--color-skyblue);
+}
+
+.border-skyblue {
+  border-color: var(--color-skyblue);
 }
 
 /* Wrapping element */
@@ -54,10 +100,6 @@ body {
 
 .home-page-banner {
   width: 300px;
-}
-
-.home-page-cards {
-  margin-top: 30px;
 }
 
 /*****************************************/
@@ -107,7 +149,7 @@ body {
 
 .home-page-cards .card-body {
   border-bottom: 5px solid var(--color-volvox);
-  border-radius: 0 0 .25rem .25rem;
+  border-radius: 0 0 2px 2px;
 }
 
 /************ Toggle Switch *************/
@@ -207,10 +249,6 @@ input:checked + .slider:before {
   color: white;
 }
 
-.bg-gray {
-  background: #eaeaea;
-}
-
 #serverAccordion a:focus, #serverAccordion a:hover, #serverAccordion a:active {
   outline: 0;
   text-decoration: none
@@ -252,37 +290,10 @@ input:checked + .slider:before {
   background: #0fb623;
 }
 .module-enabled-popover.module-version.skyblue-popover {
-  background: #167DB6;
+  background: #2C94CE;
 }
 .module-enabled-popover.module-version.danger-popover {
-  background: #862b34;
-}
-
-.border-volvox {
-  border-color: var(--color-volvox);
-}
-
-.text-volvox {
-  color: var(--color-volvox);
-}
-a.text-volvox:hover {
-  color: #559a3a;
-}
-
-.bg-volvox {
-  background: var(--color-volvox);
-}
-
-.bg-skyblue {
-  background: var(--color-skyblue);
-}
-
-.text-skyblue {
-  color: var(--color-skyblue);
-}
-
-.border-skyblue {
-  border-color: var(--color-skyblue);
+  background: #8C8C8C;
 }
 
 
@@ -348,12 +359,45 @@ a.text-volvox:hover {
   border-radius: 2px;
 }
 
-@media screen and (max-width: 575px){
+
+/**Z-index issue headway*/
+#HW_frame_cont.HW_visible{
+  z-index: 100000;
+}
+#changelog-wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+#changelog #HW_badge_cont {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#changelog #HW_badge {
+  left: 17px
+}
+
+@media screen and (max-width: 991px){
+  #themeToggler {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 575px) {
   .material-badge {
     display: block;
     margin-bottom: 10px;
   }
   .home-header {
     min-height: 50vh;
+  }
+  #HW_frame_cont {
+    width: calc(100% - 20px) !important;
+    margin: 0 10px;
   }
 }

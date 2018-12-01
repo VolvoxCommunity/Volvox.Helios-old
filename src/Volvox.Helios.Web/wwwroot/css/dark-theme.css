@@ -1,0 +1,16 @@
+﻿body {
+  background-color: var(--color-dark);
+  color: var(--color-gray);
+}
+
+.navbar {
+  background: var(--color-deep-dark);
+}
+
+.card-img-top.bg-gray {
+  background: #3f3f3f;
+}
+
+.card {
+  background-color: var(--color-deep-dark);
+}
