@@ -75,6 +75,18 @@ namespace Volvox.Helios.Service.Clients
         }
 
         /// <summary>
+        ///     Get the details of the specified guild.
+        /// </summary>
+        /// <param name="guildId">Id of the guild.</param>
+        /// <returns>JSON object of the guild.</returns>
+        public async Task<string> GetGuild(ulong guildId)
+        {
+            SetBotToken();
+
+            return await _client.GetStringAsync($"guilds/{guildId}");
+        }
+
+        /// <summary>
         ///     Get a specific user.
         /// </summary>
         /// <param name="userId">Id of the user to get.</param>

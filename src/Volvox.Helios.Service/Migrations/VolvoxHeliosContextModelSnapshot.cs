@@ -66,6 +66,8 @@ namespace Volvox.Helios.Service.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GuildId");
+
                     b.ToTable("Messages");
                 });
 

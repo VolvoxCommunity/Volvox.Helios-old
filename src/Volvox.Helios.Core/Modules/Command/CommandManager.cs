@@ -70,7 +70,7 @@ namespace Volvox.Helios.Core.Modules.Command
                     Logger.LogError($"Command Manager: Error occurred {e.Message}");
 
                     var embed = new EmbedBuilder()
-                        .WithColor(new Color(255, 0, 0))
+                        .WithColor(EmbedColors.ErrorColor)
                         .WithTitle("Well, this is embarrassing...")
                         .WithDescription(
                             $"Something went ***very*** wrong trying to run that command. \n```\n{e.Message}\n```")

@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Volvox.Helios.Service.Discord.UserGuild;
+using Volvox.Helios.Service.Extensions;
 
 namespace Volvox.Helios.Web.Controllers
 {
@@ -6,7 +10,10 @@ namespace Volvox.Helios.Web.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            if (!User.Identity.IsAuthenticated)
+                return View();
+
+            return RedirectToAction("Index", "Dashboard");
         }
         
         public IActionResult Privacy() => View();

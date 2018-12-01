@@ -30,5 +30,12 @@ namespace Volvox.Helios.Service.Clients
         /// <param name="guildId">Id of the guild.</param>
         /// <returns>JSON array of roles in the guild.</returns>
         Task<string> GetGuildRoles(ulong guildId);
+
+        /// <summary>
+        ///     Get the details of the specified guild.
+        /// </summary>
+        /// <param name="guildId">Id of the guild.</param>
+        /// <returns>JSON object of the guild.</returns>
+        Task<string> GetGuild(ulong guildId);
     }
 }
