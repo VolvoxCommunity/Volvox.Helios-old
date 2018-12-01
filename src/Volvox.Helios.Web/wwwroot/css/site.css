@@ -182,14 +182,6 @@ input:checked + .slider:before {
 .card-title {
   word-break: break-all;
 }
-
-@media screen and (max-width: 575px){
-  .material-badge{
-    display: block;
-    margin-bottom: 10px;
-  }
-}
-
 /*****************************************/
 
 
@@ -327,6 +319,10 @@ a.text-volvox:hover {
 }
 
 @media screen and (max-width: 575px){
+  .material-badge {
+    display: block;
+    margin-bottom: 10px;
+  }
   .home-header {
     min-height: 50vh;
   }
