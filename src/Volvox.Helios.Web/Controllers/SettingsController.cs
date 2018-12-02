@@ -99,7 +99,7 @@ namespace Volvox.Helios.Web.Controllers
             viewModel.RoleId = settings.RoleId;
 
             // Gets first text channel's settings to prepopulate view with.
-            var defaultChannel = settings.ChannelSettings.FirstOrDefault(x => x.ChannelId == textChannels[0].Id);
+            var defaultChannel = settings.ChannelSettings?.FirstOrDefault(x => x.ChannelId == textChannels[0].Id);
 
             // No channels setting saved, return view model as is.
             if (defaultChannel == null) return View(viewModel);
