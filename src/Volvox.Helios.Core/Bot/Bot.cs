@@ -65,15 +65,23 @@ namespace Volvox.Helios.Core.Bot
             // Announce to Volvox when the bot joins a guild.
             Client.JoinedGuild += async guild =>
             {
-                await Client.GetGuild(VolvoxGuildId).GetTextChannel(VolvoxGuildLogsChannelId)
-                    .SendMessageAsync($"Joined Guild: {guild.Name} [{guild.MemberCount} Members]");
+                var channel = Client.GetGuild(VolvoxGuildId)?.GetTextChannel(VolvoxGuildLogsChannelId);
+
+                if (channel != null)
+                {
+                    await channel.SendMessageAsync($"Joined Guild: {guild.Name} [{guild.MemberCount} Members]");
+                }
             };
 
             // Announce to Volvox when the bot leaves a guild.
             Client.LeftGuild += async guild =>
             {
-                await Client.GetGuild(VolvoxGuildId).GetTextChannel(VolvoxGuildLogsChannelId)
-                    .SendMessageAsync($"Left Guild: {guild.Name} [{guild.MemberCount} Members]");
+                var channel = Client.GetGuild(VolvoxGuildId)?.GetTextChannel(VolvoxGuildLogsChannelId);
+
+                if (channel != null)
+                {
+                    await channel.SendMessageAsync($"Left Guild: {guild.Name} [{guild.MemberCount} Members]");
+                }
             };
 
             // Add reliability service.
