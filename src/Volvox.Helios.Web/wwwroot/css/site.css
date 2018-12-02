@@ -19,6 +19,11 @@ body {
     padding-top: 50px;
     padding-bottom: 20px;
 }
+.valign {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
 .bg-mat-dark{
   background: var(--color-dark);
 }
@@ -60,6 +65,24 @@ a.text-volvox:hover {
 
 .border-skyblue {
   border-color: var(--color-skyblue);
+}
+.btn-volvox-outline{
+  border: 1px solid var(--color-volvox);
+  color: var(--color-volvox);
+  background: none;
+}
+
+.btn-volvox-outline:hover {
+  background: var(--color-volvox);
+  color: white;
+}
+
+.material-btn-group .btn {
+  border-radius: 1.25rem;
+}
+.material-btn-group .active{
+  background: var(--color-volvox);
+  color: white;
 }
 
 /* Wrapping element */
@@ -303,9 +326,6 @@ input:checked + .slider:before {
   background: url('/images/hex-grid.jpg') no-repeat;
   background-size: cover;
   position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   overflow: hidden;
 }
 

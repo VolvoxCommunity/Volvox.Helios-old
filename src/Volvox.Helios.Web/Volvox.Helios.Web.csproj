@@ -11,6 +11,7 @@
     <PackageReference Include="AWS.Logger.AspNetCore" Version="1.3.0" />
     <PackageReference Include="AWS.Logger.Core" Version="1.2.0" />
     <PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
+    <PackageReference Include="DevExtreme.Web" Version="18.2.3" />
     <PackageReference Include="FluentCache" Version="4.0.0.2" />
     <PackageReference Include="FluentCache.Microsoft.Extensions.Caching.Abstractions" Version="4.0.0.2" />
     <PackageReference Include="Hangfire" Version="1.6.20" />
