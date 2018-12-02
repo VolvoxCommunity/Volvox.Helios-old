@@ -25,23 +25,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 {
     public class ModerationModule : Module
     {
-        // TODO : Add reasons to punishments. defaut can be "no reason provided" or something
-
-        // TODO : MAKE SURE TO CHECK THE BOT HAS HIGH ENOUGH AUTHORITY TO DO WHAT IT WANTS TO DO. OTHERWISE WILL GET 403 ##########################
-
         // TODO : extract banning and stuff into services
 
         // TODO : MAKE SURE EXPIRE PERIOD DOESNT EXCEDE MAX DATETIME
 
-        // TODO : MAKE SURE USERS ARE IN GUILD BEFORE APPLYING ANY PUNISHMENT
-
-        // TODO : Add method in entity service to find the first option with an includes. currently GET finds all, we just need the first in some cases.
-
         // TODO : Uncomment out the auth checks in moderation controller.
-
-        // TODO : Check bot has permission to kick/ban before trying.
-
-        // TODO : check to see if user has role, if they do, don't add thepunishment as this could cause issues.
 
         // TODO : Consider not adding warnings if the guild has no punishments in place. Perhaps have purge button too, for warnings of users.
 
@@ -50,6 +38,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         // TODO : Add warnings page to clear user warnings and stuff
 
         // TODO : add extra filters like caps filters, emoji filters
+
+        ///////////////////////// IMPORTANT TODO :  Fix null errors in the call to has bypass authority. if settings.whitelistedchannels/roles is null, there is an error.
+
+        // TODO : Extract logic and user interfaces, that way can change the functionality without changing the core module
+
 
         #region Private vars
 
@@ -135,14 +128,19 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var channelPostedId = message.Channel.Id;
 
             // If the user or channel is globally whitelisted, there is no point in checking the message contents.
+            if (settings.ProfanityFilter is null || settings.WhitelistedChannels is null || settings.WhitelistedRoles is null)
+            {
+                // do soemthing with this null check
+            }
+
             if (HasBypassAuthority(user, channelPostedId, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Global),
                 settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Global)))
                 return;
 
             // Do nothing if the filter doesn't exist for the guild or it's disabled.
-            if (( settings.ProfanityFilter != null ) && ( settings.ProfanityFilter.Enabled ))
+            if (( settings?.ProfanityFilter != null ) && ( settings?.ProfanityFilter?.Enabled ?? false ))
             {
-                var whitelistedChannels = settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Profanity);
+                var whitelistedChannels = settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Profanity) ?? new List<WhitelistedChannel>();
 
                 var whitelistedRoles = settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Profanity);
 
