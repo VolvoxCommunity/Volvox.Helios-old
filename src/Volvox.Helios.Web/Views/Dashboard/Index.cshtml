@@ -27,7 +27,7 @@
                     </a>
                 }
 
-                @*<a href="#" class="text-volvox mr-2" dropdown-toggle data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a href="#" class="text-volvox mr-2" dropdown-toggle data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-ellipsis-h ml-auto mr-3"></i>
                 </a>
                 <div class="dropdown-menu">
@@ -48,14 +48,11 @@
                         <i class="fas fa-trash-alt mr-2"></i>
                         Remove
                     </a>
-                </div>*@
+                </div>
             </div>
             <div class="collapse show" id="s-@i" aria-labelledby="s-@i-@uG.Guild.Name">
                 <div class="card-body">
-                    <p class="card-text">
-                        <partial name="./Partials/_DashboardCard" model="@uG.Guild" />
-                    </p>
-                    <div id="pie"></div>
+                    <partial name="./Partials/_DashboardCard" model="@uG.Guild"/>
                 </div>
             </div>
         </div>
@@ -64,7 +61,6 @@
 
 @section Scripts {
     <script>
-
         function toggleAccBtn(e) {
             const el = $(e.target);
             if (el.hasClass('fa-toggle-on'))
@@ -80,64 +76,5 @@
             else
                 el.removeClass('far').addClass('fas');
         }
-
-        $(function () {
-            $("#pie").dxPieChart({
-                palette: "bright",
-                dataSource: dataSource,
-                title: "Chat analytics",
-                legend: {
-                    orientation: "horizontal",
-                    itemTextPosition: "right",
-                    horizontalAlignment: "left",
-                    verticalAlignment: "bottom",
-                    columnCount: 4
-                },
-                series: [{
-                    argumentField: "country",
-                    valueField: "medals",
-                    label: {
-                        visible: true,
-                        font: {
-                            size: 16
-                        },
-                        connector: {
-                            visible: true,
-                            width: 0.5
-                        },
-                        position: "columns",
-                        customizeText: function (arg) {
-                            return arg.valueText + " (" + arg.percentText + ")";
-                        }
-                    }
-                }]
-            });
-        });
-
-        var dataSource = [{
-            country: "USA",
-            medals: 110
-        }, {
-            country: "China",
-            medals: 100
-        }, {
-            country: "Russia",
-            medals: 72
-        }, {
-            country: "Britain",
-            medals: 47
-        }, {
-            country: "Australia",
-            medals: 46
-        }, {
-            country: "Germany",
-            medals: 41
-        }, {
-            country: "France",
-            medals: 40
-        }, {
-            country: "South Korea",
-            medals: 31
-        }];
     </script>
 }

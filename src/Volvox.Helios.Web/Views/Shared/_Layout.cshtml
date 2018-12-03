@@ -36,7 +36,7 @@
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top mb-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container">
             <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
                 <img class="d-inline-block align-top" style="width: 30px; height: 30px" src="/images/small/volvox-logo.png" alt="Volvox.Helios" />
@@ -74,11 +74,26 @@
 
     <main role="main" class="container body-content">
         @RenderBody()
-        <footer class="mt-5 text-center">
-            <hr class="col-10 col-md-7 border-volvox">
-            <p class="m-0">&copy; 2018 - Volvox.Helios v@(Assembly.GetEntryAssembly().GetName().Version.Major).@(Assembly.GetEntryAssembly().GetName().Version.Minor).@(Assembly.GetEntryAssembly().GetName().Version.Build)</p>
-        </footer>
     </main>
+    <div class="position-relative" style="margin-top: auto;">
+        <footer class="col-12 pt-4 pb-4 mt-5" style="background: #eee">
+            <div class="container">
+                <div class="col-md-6 text-center mx-auto">
+                    <a href="https://github.com/VolvoxCommunity/Volvox.Helios/" class="bg-volvox d-inline-flex footer-icon valign rounded-circle mr-2" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://discord.gg/6FuE67" class="bg-volvox d-inline-flex valign rounded-circle footer-icon" target="_blank">
+                        <i class="fab fa-discord"></i>
+                    </a>
+                </div>
+                <hr class="border-volvox col-md-6 mt-4">
+                <p class="mb-0 text-center">
+                    &copy; 2018 - Volvox.Helios v@(Assembly.GetEntryAssembly().GetName().Version.Major).@(Assembly.GetEntryAssembly().GetName().Version.Minor).@(Assembly.GetEntryAssembly().GetName().Version.Build)
+                </p>
+            </div>
+        </footer>
+        <footer class="col-12 pt-1 pb-1 text-volvox text-center bg-volvox"></footer>
+    </div>
 
     <environment include="Development">
         <script src="~/vendor.min.js"></script>

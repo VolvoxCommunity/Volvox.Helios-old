@@ -15,52 +15,52 @@
     </div>
 </div>
 <hr>
-<h4 class="mt-4">Modules:</h4>
 <div class="row">
     @foreach (var module in Model.Modules)
     {
-    <div class="col-lg-3 col-md-6 mt-lg-0 mt-4">
+    <div class="col-md-6 mt-4">
         @{ var isModuleEnabled = await module.IsEnabledForGuild(Model.GuildId); }
         <div class="card h-100 @(isModuleEnabled ? "border-volvox" : "border-gray2")">
             <div>
                 <div class="w-100 module-enabled-popover module-version @(isModuleEnabled ? "" : "danger-popover")">
-                    v.@module.Version
+                    @module.Name
                 </div>
 
                 <div class="w-100 module-enabled-popover @(isModuleEnabled ? "bg-volvox" : "bg-gray2")">
+                    <span style="right:0;" class="mr-2 position-absolute">v.@module.Version</span>
                     <strong>Module @(isModuleEnabled ? "enabled" : "disabled")</strong>
                 </div>
             </div>
-            <div class="card-body">
-                <h5 class="card-title">
-                    @module.Name
+            <div class="card-body pt-4 pb-4">
+                <h5 class="card-title mb-0">
                     <a style="color: black" class="float-right" asp-controller="Settings" asp-action="@(module.Name.Replace(" ", "") + "Settings")">
                         <i class="fas fa-cog @(isModuleEnabled ? "text-volvox" : "text-gray2")"></i>
                     </a>
                 </h5>
                 <p class="card-text">@module.Description</p>
             </div>
+            <div class="w-100 module-enabled-popover module-version @(isModuleEnabled ? "" : "danger-popover")" style="height: 4px;">&nbsp;</div>
         </div>
     </div>
     }
 
-    <div class="col-lg-3 col-md-6 mt-lg-0 mt-4">
+    <div class="col-md-6 mt-4">
         <div class="card h-100 border-skyblue">
             <div class="w-100 module-enabled-popover skyblue-popover module-version">
-                v. 1.0
+                Poll Manager
             </div>
             <div class="w-100 bg-skyblue module-enabled-popover">
                 <strong>0 Polls available</strong>
             </div>
-            <div class="card-body">
-                <h5 class="card-title">
-                    Poll Manager
+            <div class="card-body pt-4 pb-4">
+                <h5 class="card-title mb-0">
                     <a style="color: black" class="float-right" asp-controller="Poll">
                         <i class="fas fa-cog text-skyblue"></i>
                     </a>
                 </h5>
                 <p class="card-text">Create and view polls.</p>
             </div>
+            <div class="w-100 module-enabled-popover skyblue-popover module-version" style="height: 4px;">&nbsp;</div>
         </div>
     </div>
 </div>

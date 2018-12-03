@@ -15,9 +15,13 @@ a:focus, a:active, a:visited, button:focus, button:active, button:visited{
 
 
 /************** General ***************/
+html, body{
+  height: 100%;
+}
 body {
     padding-top: 50px;
-    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
 .valign {
   display: flex;
@@ -49,6 +53,9 @@ body {
 
 a.text-volvox:hover {
   color: #559a3a;
+}
+a:hover{
+  text-decoration: none;
 }
 
 .bg-volvox {
@@ -402,7 +409,22 @@ input:checked + .slider:before {
   left: 17px
 }
 
-@media screen and (max-width: 991px){
+/******* Footer ********/
+.footer-icon {
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  border: 2px solid var(--color-volvox);
+  color: white;
+  transition: .5s;
+}
+
+.footer-icon:hover{
+  background: none;
+  color: var(--color-volvox);
+}
+
+@media screen and (max-width: 991px) {
   #themeToggler {
     display: none;
   }

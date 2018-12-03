@@ -12,67 +12,68 @@
             <div class="col-12">
                 <div class="row border border-gray2 rounded">
                     <div class="col-md-9 pt-3 pb-3">
-                        <h4>Remembot Module</h4>
+                        <h4>Streamer Module</h4>
                         <p class="mb-0 text-volvox">
-                            Completely manage all reminders for your bot.
+                            Manage stream messages to specific channels and more.
                         </p>
                     </div>
                     <div class="col-md-3 valign">
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
-                            <label for="enabledBtn" class="btn pr-4 pl-4 @(Model.Enabled ? "active" : "border-gray2 bg-white text-gray2")">
+                            <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "border-gray2 bg-white text-gray2")">
                                 On
                                 <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true">
                             </label>
-                            <label for="disabledBtn" class="btn pr-4 pl-4 @(Model.Enabled ? "border-gray2 bg-white text-gray2" : "active")">
+                            <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "border-gray2 bg-white text-gray2" : "active")">
                                 Off
                                 <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false">
                             </label>
                         </div>
                     </div>
+
+                    <div class="col-12">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+
+                        <h4>Stream Announcer</h4>
+                        <div class="form-group">
+                            <label asp-for="ChannelId"></label>
+                            <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
+                            <span asp-validation-for="ChannelId" class="text-danger"></span>
+                        </div>
+                        <div class="form-check form-group">
+                            <input asp-for="ChannelSettings.Enabled" class="form-check-input" />
+                            <label asp-for="ChannelSettings.Enabled" class="form-check-label"></label>
+                            <span asp-validation-for="ChannelSettings.Enabled" class="text-danger"></span>
+                        </div>
+                        <div class="form-check form-group">
+                            <input asp-for="ChannelSettings.RemoveMessages" class="form-check-input" />
+                            <label asp-for="ChannelSettings.RemoveMessages" class="form-check-label"></label>
+                            <span asp-validation-for="ChannelSettings.RemoveMessages" class="text-danger"></span>
+                        </div>
+
+                        <h4 class="mt-4">Streamer Role</h4>
+                        <div class="form-check form-group">
+                            <input asp-for="StreamerRoleEnabled" class="form-check-input" />
+                            <label asp-for="StreamerRoleEnabled" class="form-check-label"></label>
+                            <span asp-validation-for="StreamerRoleEnabled" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="RoleId"></label>
+                            <select asp-for="RoleId" asp-items="Model.Roles" id="roles" class="form-control"></select>
+                            <span asp-validation-for="RoleId" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <div asp-validation-summary="All" class="text-danger"></div>
-
-            <h4>Stream Announcer</h4>
-            <div class="form-group">
-                <label asp-for="ChannelId"></label>
-                <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
-                <span asp-validation-for="ChannelId" class="text-danger"></span>
-            </div>
-            <div class="form-check form-group">
-                <input asp-for="ChannelSettings.Enabled" class="form-check-input" />
-                <label asp-for="ChannelSettings.Enabled" class="form-check-label"></label>
-                <span asp-validation-for="ChannelSettings.Enabled" class="text-danger"></span>
-            </div>
-            <div class="form-check form-group">
-                <input asp-for="ChannelSettings.RemoveMessages" class="form-check-input" />
-                <label asp-for="ChannelSettings.RemoveMessages" class="form-check-label"></label>
-                <span asp-validation-for="ChannelSettings.RemoveMessages" class="text-danger"></span>
-            </div>
-
-            <hr />
-
-            <h4>Streamer Role</h4>
-            <div class="form-check form-group">
-                <input asp-for="StreamerRoleEnabled" class="form-check-input" />
-                <label asp-for="StreamerRoleEnabled" class="form-check-label"></label>
-                <span asp-validation-for="StreamerRoleEnabled" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RoleId"></label>
-                <select asp-for="RoleId" asp-items="Model.Roles" id="roles" class="form-control"></select>
-                <span asp-validation-for="RoleId" class="text-danger"></span>
-            </div>
-
-            <div class="col-12">
-                <div class="row mt-4">
-                    <span asp-validation-summary="Enabled" class="text-danger"></span>
-                    <div class="ml-auto">
-                        <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+                <div class="col-12">
+                    <div class="row mt-4">
+                        <span asp-validation-summary="Enabled" class="text-danger"></span>
+                        <div class="ml-auto">
+                            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+                        </div>
                     </div>
                 </div>
             </div>
+            
+            
         </form>
     </div>
 </div>
@@ -103,7 +104,7 @@
                 });
             });
 
-        $('input:not(".active")').click((e) => {
+        $('.module-enabler input:not(".active")').click((e) => {
             $(e.currentTarget).parent().parent().find('.active').toggleClass('active border-gray2 bg-white text-gray2');
             $(e.currentTarget).parent().toggleClass('active border-gray2 bg-white text-gray2');
         });
