@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Volvox.Helios.Service.EntityService
 {
     /// <summary>
-    /// Caching version of the standard <see cref="EntityService{T}"/>.
+    ///     Caching version of the standard <see cref="EntityService{T}" />.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class CachedEntityService<T> : EntityServiceBase<T>
@@ -26,7 +26,7 @@ namespace Volvox.Helios.Service.EntityService
         }
 
         /// <summary>
-        ///     Get the first entity from the cache or database that matches the primary key. 
+        ///     Get the first entity from the cache or database that matches the primary key.
         /// </summary>
         /// <param name="keys">Primary keys used to find the entity.</param>
         /// <returns>First entity matching the primary key.</returns>
@@ -42,7 +42,7 @@ namespace Volvox.Helios.Service.EntityService
         ///     Update an entity in database and clear the value if this entity is cached.
         /// </summary>
         /// <param name="entity">Entity to update.</param>
-        public async override Task Update(T entity)
+        public override async Task Update(T entity)
         {
             await base.Create(entity);
             InvalidateFor(entity);
@@ -52,7 +52,7 @@ namespace Volvox.Helios.Service.EntityService
         ///     Remove an entity from the database and clear the value if this entity is cached.
         /// </summary>
         /// <param name="entity">Entity to remove.</param>
-        public async override Task Remove(T entity)
+        public override async Task Remove(T entity)
         {
             await base.Remove(entity);
             InvalidateFor(entity);
@@ -62,7 +62,7 @@ namespace Volvox.Helios.Service.EntityService
         ///     Remove entities from the database and clear the values of already cached entities.
         /// </summary>
         /// <param name="entities">Entities to remove.</param>
-        public async override Task RemoveBulk(IEnumerable<T> entities)
+        public override async Task RemoveBulk(IEnumerable<T> entities)
         {
             await base.RemoveBulk(entities);
             InvalidateForBulk(entities);
@@ -86,7 +86,7 @@ namespace Volvox.Helios.Service.EntityService
         private void InvalidateForBulk(IEnumerable<T> entities)
         {
             foreach (var entity in entities)
-                InvalidateFor(entity);           
+                InvalidateFor(entity);
         }
 
         /// <summary>
