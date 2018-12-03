@@ -128,11 +128,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var channelPostedId = message.Channel.Id;
 
             // If the user or channel is globally whitelisted, there is no point in checking the message contents.
-            if (settings.ProfanityFilter is null || settings.WhitelistedChannels is null || settings.WhitelistedRoles is null)
-            {
-                // do soemthing with this null check
-            }
-
             if (HasBypassAuthority(user, channelPostedId, settings.WhitelistedChannels.Where(c => c.WhitelistType == WhitelistType.Global),
                 settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Global)))
                 return;

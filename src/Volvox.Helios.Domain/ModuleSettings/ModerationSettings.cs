@@ -12,14 +12,14 @@ namespace Volvox.Helios.Domain.ModuleSettings
     {
         public ProfanityFilter ProfanityFilter { get; set; }
 
-        public LinkFilter LinkFilter { get; set; }   
+        public LinkFilter LinkFilter { get; set; }
 
-        public List<UserWarnings> UserWarnings { get; set; }
+        public virtual List<UserWarnings> UserWarnings { get; set; } = new List<UserWarnings>();
 
-        public List<Punishment> Punishments { get; set; }
+        public virtual List<Punishment> Punishments { get; set; } = new List<Punishment>();
 
-        public List<WhitelistedRole> WhitelistedRoles { get; set; }
+        public virtual List<WhitelistedRole> WhitelistedRoles { get; set; } = new List<WhitelistedRole>();
 
-        public List<WhitelistedChannel> WhitelistedChannels { get; set; }
+        public virtual List<WhitelistedChannel> WhitelistedChannels { get; set; } = new List<WhitelistedChannel>();
     }
 }

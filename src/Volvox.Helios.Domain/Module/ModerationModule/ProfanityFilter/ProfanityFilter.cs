@@ -11,7 +11,7 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter
     public class ProfanityFilter : FilterBase
     {
         [Required]
-        public List<BannedWord> BannedWords { get; set; }
+        public List<BannedWord> BannedWords { get; set; } = new List<BannedWord>();
 
         // Toggle whether user wants to use our own premade list of curse words.
         [Required]

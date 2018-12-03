@@ -9,6 +9,6 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.LinkFilter
     public class LinkFilter : FilterBase
     {
         [Required]
-        public List<WhitelistedLink> WhitelistedLinks { get; set; }
+        public virtual List<WhitelistedLink> WhitelistedLinks { get; set; } = new List<WhitelistedLink>();
     }
 }

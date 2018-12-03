@@ -99,9 +99,9 @@ namespace Volvox.Helios.Web.Controllers
 
             var roles = await guildService.GetRoles(guildId);
 
-            var alreadyWhitelistedRoles = settings?.WhitelistedRoles?.Where(r => r.WhitelistType == WhitelistType.Global).Select(r => r.RoleId) ?? new List<ulong>();
+            var alreadyWhitelistedRoles = settings?.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Global).Select(r => r.RoleId);
 
-            var alreadyWhitelistedChannels = settings?.WhitelistedChannels?.Where(r => r.WhitelistType == WhitelistType.Global).Select(c => c.ChannelId) ?? new List<ulong>();
+            var alreadyWhitelistedChannels = settings?.WhitelistedChannels.Where(r => r.WhitelistType == WhitelistType.Global).Select(c => c.ChannelId);
 
             var vm = new GlobalSettingsViewModel
             {
@@ -162,11 +162,11 @@ namespace Volvox.Helios.Web.Controllers
 
             var roles = await guildService.GetRoles(guildId);
 
-            var alreadyWhitelistedRoles = settings?.WhitelistedRoles?.Where(r => r.WhitelistType == WhitelistType.Link).Select(r => r.RoleId) ?? new List<ulong>();
+            var alreadyWhitelistedRoles = settings?.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Link).Select(r => r.RoleId);
 
-            var alreadyWhitelistedChannels = settings?.WhitelistedChannels?.Where(r => r.WhitelistType == WhitelistType.Link).Select(c => c.ChannelId) ?? new List<ulong>();
+            var alreadyWhitelistedChannels = settings?.WhitelistedChannels.Where(r => r.WhitelistType == WhitelistType.Link).Select(c => c.ChannelId);
 
-            var links = settings.LinkFilter?.WhitelistedLinks?.Select(l => l.Link) ?? new List<string>();
+            var links = settings.LinkFilter?.WhitelistedLinks.Select(l => l.Link) ?? new List<string>();
 
             var vm = new LinkFilterViewModel
             {
@@ -250,9 +250,9 @@ namespace Volvox.Helios.Web.Controllers
 
             var roles = await guildService.GetRoles(guildId);
 
-            var alreadyWhitelistedRoles = settings?.WhitelistedRoles?.Where(r => r.WhitelistType == WhitelistType.Profanity).Select(r => r.RoleId) ?? new List<ulong>();
+            var alreadyWhitelistedRoles = settings?.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Profanity).Select(r => r.RoleId);
 
-            var alreadyWhitelistedChannels = settings?.WhitelistedChannels?.Where(r => r.WhitelistType == WhitelistType.Profanity).Select(c => c.ChannelId) ?? new List<ulong>();
+            var alreadyWhitelistedChannels = settings?.WhitelistedChannels.Where(r => r.WhitelistType == WhitelistType.Profanity).Select(c => c.ChannelId);
 
             var words = settings?.ProfanityFilter?.BannedWords.Select(w => w.Word) ?? new List<string>();
 
@@ -436,7 +436,7 @@ namespace Volvox.Helios.Web.Controllers
 
         private NewChannelsState GetNewChannelState(ModerationSettings currentSettings, WhitelistType type, List<ulong> channelIds)
         {
-            var currentWhitelistedChannels = currentSettings?.WhitelistedChannels?.Where(c => c.WhitelistType == type) ?? new List<WhitelistedChannel>();
+            var currentWhitelistedChannels = currentSettings?.WhitelistedChannels.Where(c => c.WhitelistType == type);
 
             var channelsToAdd = new List<WhitelistedChannel>();
 
@@ -478,7 +478,8 @@ namespace Volvox.Helios.Web.Controllers
 
         private NewRolesState GetNewRolesState(ModerationSettings currentSettings, WhitelistType type, List<ulong> roleIds)
         {
-            var currentWhitelistedRoles = currentSettings?.WhitelistedRoles?.Where(r => r.WhitelistType == type) ?? new List<WhitelistedRole>();
+            var currentWhitelistedRoles = currentSettings?.WhitelistedRoles.Where(r => r.WhitelistType == type);
+
             var rolesToRemove = new List<WhitelistedRole>();
 
             var rolesToAdd = new List<WhitelistedRole>();
