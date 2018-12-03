@@ -7,8 +7,11 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
+using Volvox.Helios.Core.Services.MessageService;
+using Volvox.Helios.Core.Services.ServiceFactory;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
@@ -25,6 +28,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IModuleSettingsService<StreamerSettings> _settingsService;
+        private readonly IServiceFactory _serviceFactory;
 
         /// <summary>
         ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the
@@ -37,13 +41,15 @@ namespace Volvox.Helios.Core.Modules.Streamer
         /// <param name="scopeFactory">Scope factory.</param>
         public StreamerModule(IDiscordSettings discordSettings, ILogger<StreamerModule> logger,
             IConfiguration config, IModuleSettingsService<StreamerSettings> settingsService,
-            IServiceScopeFactory scopeFactory
+            IServiceScopeFactory scopeFactory, IServiceFactory serviceFactory
         ) : base(
             discordSettings, logger, config)
         {
             _settingsService = settingsService;
 
             _scopeFactory = scopeFactory;
+
+            _serviceFactory = serviceFactory;
         }
 
         private IDictionary<ulong, HashSet<StreamAnnouncerMessage>> StreamingList { get; } =
@@ -108,14 +114,31 @@ namespace Volvox.Helios.Core.Modules.Streamer
             }
             else
             {
-                // Add use to role.
-                if (guildUser.Activity != null && guildUser.Activity.Type == ActivityType.Streaming)
-                    await AddUserToStreamingRole(guildUser, streamingRole);
+                //Ensure bot has necessary permissions to add/remove specified role.
+                var bot = _serviceFactory.GetService<IBot>();
 
-                // Remove user from role.
-                else if (guildUser.Roles.Any(r => r.Id == streamingRole.Id))
-                    await RemoveUserFromStreamingRole(guildUser, streamingRole);
-            }
+                var botRolePosition = bot.GetBotRoleHierarchy(guildUser.Guild.Id);
+
+                if (streamingRole.Position < botRolePosition)
+                {
+                    // Add use to role.
+                    if (guildUser.Activity != null && guildUser.Activity.Type == ActivityType.Streaming)
+                        await AddUserToStreamingRole(guildUser, streamingRole);
+
+                    // Remove user from role.
+                    else if (guildUser.Roles.Any(r => r.Id == streamingRole.Id))
+                        await RemoveUserFromStreamingRole(guildUser, streamingRole);
+                }
+                else
+                {
+                    Logger.LogError($"Streamer Module: Could not add/remove role as bot has insufficient hierarchical position. " +
+                        $"Guild Id: {guildUser.Guild.Id}");
+
+                    await bot.GetGuild(guildUser.Guild.Id).Owner.SendMessageAsync($"We couldn't add/remove Role '{streamingRole.Name}' to a user as the role's hierarchical position is greater than the bots.{Environment.NewLine}" +
+                        $"To fix this, please adjust your role's position.{Environment.NewLine}" +
+                        $"Guild: {guildUser.Guild.Name}");
+                }
+            }          
         }
 
         /// <summary>
