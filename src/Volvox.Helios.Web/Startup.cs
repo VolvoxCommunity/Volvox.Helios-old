@@ -145,7 +145,7 @@ namespace Volvox.Helios.Web
 
             // Database Services
             services.AddScoped(typeof(IEntityService<>), typeof(EntityService<>));
-            services.AddScoped(typeof(CachedEntityService<>), typeof(CachedEntityService<>));
+            services.AddSingleton(typeof(CachedEntityService<>), typeof(CachedEntityService<>));
             services.AddSingleton(typeof(IModuleSettingsService<>), typeof(ModuleSettingsService<>));
             services.AddSingleton(typeof(EntityChangedDispatcher<>));
 
