@@ -4,6 +4,7 @@ using Volvox.Helios.Core.Modules.StreamAnnouncer;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.Module.ChatTracker;
 using Volvox.Helios.Domain.ModuleSettings;
+using Volvox.Helios.Domain.User;
 
 namespace Volvox.Helios.Service
 {
@@ -24,7 +25,11 @@ namespace Volvox.Helios.Service
 
         #endregion
 
+        #region Poll
+
         public DbSet<PollSettings> PollSettings { get; set; }
+
+        #endregion
 
         #region ChatTracker
 
@@ -35,8 +40,16 @@ namespace Volvox.Helios.Service
         #endregion
 
         #region Reminder
+
         public DbSet<RemembotSettings> ReminderSettings { get; set; }
         public DbSet<RecurringReminderMessage> RecurringReminderMessages { get; set; }
+
+        #endregion
+
+        #region User
+
+        public DbSet<UserSettings> Userettings { get; set; }
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
