@@ -134,9 +134,15 @@ namespace Volvox.Helios.Core.Modules.Streamer
                     Logger.LogError($"Streamer Module: Could not add/remove role as bot has insufficient hierarchical position. " +
                         $"Guild Id: {guildUser.Guild.Id}");
 
-                    await bot.GetGuild(guildUser.Guild.Id).Owner.SendMessageAsync($"We couldn't add/remove Role '{streamingRole.Name}' to a user as the role's hierarchical position is greater than the bots.{Environment.NewLine}" +
-                        $"To fix this, please adjust your role's position.{Environment.NewLine}" +
+                    await bot.GetGuild(guildUser.Guild.Id).Owner.SendMessageAsync($"We couldn't add/remove Role '{streamingRole.Name}' to a user as the role's hierarchical position is greater than the bot's.{Environment.NewLine}" +
+                        $"To fix this, please adjust your role's position and then re-enable the module via our website.{Environment.NewLine}" +
                         $"Guild: {guildUser.Guild.Name}");
+
+                    var settingsDb = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id);
+
+                    settingsDb.StreamerRoleEnabled = false;
+
+                    await _settingsService.SaveSettings(settingsDb);
                 }
             }          
         }
