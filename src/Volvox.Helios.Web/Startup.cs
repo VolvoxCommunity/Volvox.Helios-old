@@ -43,7 +43,6 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.HttpOverrides;
 using Volvox.Helios.Core.Modules.Streamer;
-using Volvox.Helios.Core.Services.ServiceFactory;
 
 namespace Volvox.Helios.Web
 {
@@ -138,9 +137,6 @@ namespace Volvox.Helios.Web
 
             // HTTP Clients
             services.AddHttpClient<IDiscordAPIClient, DiscordAPIClient>();
-
-            // Services
-            services.AddSingleton<IServiceFactory, ServiceFactory>();
 
             // Discord Services
             services.AddScoped<IDiscordUserGuildService, DiscordUserGuildService>();
