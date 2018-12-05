@@ -16,6 +16,6 @@ namespace Volvox.Helios.Core.Modules.StreamAnnouncer
 
         public ulong GuildId { get; set; }
 
-        public virtual StreamAnnouncerSettings StreamAnnouncerSettings { get; set; }
+        public virtual StreamerSettings StreamerSettings { get; set; }
     }
 }

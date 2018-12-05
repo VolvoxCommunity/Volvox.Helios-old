@@ -18,10 +18,10 @@ namespace Volvox.Helios.Service.Jobs
     /// </summary>
     public class RecurringReminderMessageJob
     {
-        IJobService _jobService;
-        IServiceScopeFactory _scopeFactory;
-        IBot _bot;
-        ILogger<IModule> _logger;
+        private readonly IJobService _jobService;
+        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IBot _bot;
+        private readonly ILogger<IModule> _logger;
 
         public RecurringReminderMessageJob(IJobService jobService,
             IServiceScopeFactory scopeFactory,

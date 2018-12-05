@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Volvox.Helios.Domain.Module.ChatTracker
 {
@@ -14,5 +15,7 @@ namespace Volvox.Helios.Domain.Module.ChatTracker
         public ulong ChannelId { get; set; }
 
         public bool Deleted { get; set; }
+
+        public DateTimeOffset Timestamp { get; set; }
     }
 }

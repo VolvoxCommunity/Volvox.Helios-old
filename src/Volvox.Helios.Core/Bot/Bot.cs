@@ -18,6 +18,9 @@ namespace Volvox.Helios.Core.Bot
     /// </summary>
     public class Bot : IBot
     {
+        private const long VolvoxGuildId = 468467000344313866;
+        private const long VolvoxGuildLogsChannelId = 507373438051287050;
+
         /// <summary>
         ///     Discord bot.
         /// </summary>
@@ -30,7 +33,6 @@ namespace Volvox.Helios.Core.Bot
             Logger = logger;
             Client = client;
 
-            // TODO: Convert logging to module
             Client.Log += Log;
 
             // Log when the bot is disconnected.
@@ -48,12 +50,38 @@ namespace Volvox.Helios.Core.Bot
                 {
                     for (;;)
                     {
-                        await Client.SetGameAsync($"volvox.tech | with {Client.Guilds.Count} servers");
+                        var memberCount = Client.Guilds.Sum(guild => guild.MemberCount);
+                        var version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+
+                        await Client.SetGameAsync(
+                            $"volvox.tech | {Client.Guilds.Count} servers | {memberCount} members | v{version.Major}.{version.Minor}.{version.Build}");
                         await Task.Delay(TimeSpan.FromMinutes(15));
                     }
                 });
 
                 return Task.CompletedTask;
+            };
+
+            // Announce to Volvox when the bot joins a guild.
+            Client.JoinedGuild += async guild =>
+            {
+                var channel = Client.GetGuild(VolvoxGuildId)?.GetTextChannel(VolvoxGuildLogsChannelId);
+
+                if (channel != null)
+                {
+                    await channel.SendMessageAsync($"Joined Guild: {guild.Name} [{guild.MemberCount} Members]");
+                }
+            };
+
+            // Announce to Volvox when the bot leaves a guild.
+            Client.LeftGuild += async guild =>
+            {
+                var channel = Client.GetGuild(VolvoxGuildId)?.GetTextChannel(VolvoxGuildLogsChannelId);
+
+                if (channel != null)
+                {
+                    await channel.SendMessageAsync($"Left Guild: {guild.Name} [{guild.MemberCount} Members]");
+                }
             };
 
             // Add reliability service.
@@ -107,6 +135,15 @@ namespace Volvox.Helios.Core.Bot
         public IReadOnlyCollection<SocketGuild> GetGuilds()
         {
             return Client.Guilds;
+        }
+
+        /// <summary>
+        ///     Get the specified guild.
+        /// </summary>
+        /// <returns>SocketGuild object.</returns>
+        public SocketGuild GetGuild(ulong guildId)
+        {
+            return GetGuilds().FirstOrDefault(g => g.Id == guildId);
         }
 
         /// <inheritdoc />

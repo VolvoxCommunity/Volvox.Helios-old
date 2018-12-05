@@ -8,9 +8,9 @@ namespace Volvox.Helios.Service.Discord.Guild
 {
     public class DiscordGuildService : IDiscordGuildService
     {
-        private readonly DiscordAPIClient _client;
+        private readonly IDiscordAPIClient _client;
 
-        public DiscordGuildService(DiscordAPIClient client)
+        public DiscordGuildService(IDiscordAPIClient client)
         {
             _client = client;
         }
@@ -39,6 +39,18 @@ namespace Volvox.Helios.Service.Discord.Guild
             var roles = await _client.GetGuildRoles(guildId);
 
             return JsonConvert.DeserializeObject<List<Role>>(roles);
+        }
+
+        /// <summary>
+        ///     Get the details of the specified guild.
+        /// </summary>
+        /// <param name="guildId">Id of the guild.</param>
+        /// <returns>Guild populated with details.</returns>
+        public async Task<Domain.Discord.Guild> GetDetails(ulong guildId)
+        {
+            var guild = await _client.GetGuild(guildId);
+
+            return JsonConvert.DeserializeObject<Domain.Discord.Guild>(guild);
         }
     }
 }

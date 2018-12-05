@@ -27,7 +27,7 @@
       "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
       "node_modules/chosen-js/chosen.min.css"
     ],
-    "minify": { "enabled": false }
+    "minify": { "enabled": false, "adjustRelativePaths" : false }
   },
   {
     "outputFileName": "wwwroot/vendor.min.js",

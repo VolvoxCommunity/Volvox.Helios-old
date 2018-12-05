@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
+using Discord;
 using Volvox.Helios.Core.Modules.Command.Framework;
+using Volvox.Helios.Core.Utilities;
 
 namespace Volvox.Helios.Core.Modules.Command.Commands
 {
@@ -17,7 +19,10 @@ namespace Volvox.Helios.Core.Modules.Command.Commands
 
         public async Task Execute(CommandContext context)
         {
-            await context.Channel.SendMessageAsync("Visit http://www.volvox.tech to manage the bot.");
+            var embed = new EmbedBuilder()
+                .WithColor(EmbedColors.LogoColor)
+                .WithDescription("All of the management for this bot can be found [here!](https://www.volvox.tech)");
+            await context.Channel.SendMessageAsync("", false, embed.Build());
         }
     }
 }

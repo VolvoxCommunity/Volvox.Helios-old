@@ -25,21 +25,18 @@ namespace Volvox.Helios.Web.Controllers
     public class SettingsController : Controller
     {
         private readonly IModuleSettingsService<ChatTrackerSettings> _chatTrackerSettingsService;
-        private readonly IEntityService<StreamAnnouncerChannelSettings> _streamAnnouncerChannelSettingsService;
-        private readonly IModuleSettingsService<StreamAnnouncerSettings> _streamAnnouncerSettingsService;
-        private readonly IModuleSettingsService<StreamerRoleSettings> _streamerRoleSettingsService;
-        private readonly IModuleSettingsService<RemembotSettings> _reminderSettingsService;
         private readonly IEntityService<RecurringReminderMessage> _recurringReminderService;
+        private readonly IModuleSettingsService<RemembotSettings> _reminderSettingsService;
+        private readonly IEntityService<StreamerChannelSettings> _streamAnnouncerChannelSettingsService;
+        private readonly IModuleSettingsService<StreamerSettings> _streamAnnouncerSettingsService;
 
-        public SettingsController(IModuleSettingsService<StreamAnnouncerSettings> streamAnnouncerSettingsService,
-            IModuleSettingsService<StreamerRoleSettings> streamerRoleSettingsService,
-            IEntityService<StreamAnnouncerChannelSettings> streamAnnouncerChannelSettingsService,
+        public SettingsController(IModuleSettingsService<StreamerSettings> streamAnnouncerSettingsService,
+            IEntityService<StreamerChannelSettings> streamAnnouncerChannelSettingsService,
             IModuleSettingsService<ChatTrackerSettings> chatTrackerSettingsService,
             IModuleSettingsService<RemembotSettings> reminderSettingsService,
             IEntityService<RecurringReminderMessage> recurringReminderService)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
-            _streamerRoleSettingsService = streamerRoleSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
             _chatTrackerSettingsService = chatTrackerSettingsService;
             _reminderSettingsService = reminderSettingsService;
@@ -68,24 +65,28 @@ namespace Volvox.Helios.Web.Controllers
                 $"https://discordapp.com/api/oauth2/authorize?client_id={discordSettings.ClientId}&permissions=8&redirect_uri={redirectUrl}&scope=bot&guild_id={guildId}");
         }
 
-        #region StreamAnnouncer
+        #region Streamer
 
         // GET
-        [HttpGet("StreamAnnouncer")]
-        public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId,
+        [HttpGet("Streamer")]
+        public async Task<IActionResult> StreamerSettings(ulong guildId,
             [FromServices] IDiscordGuildService guildService)
         {
-            // All channels for guild.
+            // All channels in guild.
             var channels = await guildService.GetChannels(guildId);
 
-            // Text channels for guild.
+            // Text channels in guild.
             var textChannels = channels.Where(x => x.Type == 0).ToList();
 
-            var viewModel = new StreamAnnouncerSettingsViewModel
+            // Roles in guild.
+            var roles = await guildService.GetRoles(guildId);
+
+            var viewModel = new StreamerSettingsViewModel
             {
                 Channels = new SelectList(textChannels, "Id", "Name"),
-                ChannelSettings = new StreamAnnouncerChannelSettingsViewModel(),
-                GuildId = guildId.ToString()
+                ChannelSettings = new StreamerChannelSettingsViewModel(),
+                GuildId = guildId.ToString(),
+                Roles = new SelectList(roles.RemoveManaged(), "Id", "Name")
             };
 
             // Get general module settings for guild, from database.
@@ -94,88 +95,19 @@ namespace Volvox.Helios.Web.Controllers
             if (settings == null) return View(viewModel);
 
             viewModel.Enabled = settings.Enabled;
+            viewModel.StreamerRoleEnabled = settings.StreamerRoleEnabled;
+            viewModel.RoleId = settings.RoleId;
 
             // Gets first text channel's settings to prepopulate view with.
-            var defaultChannel = settings.ChannelSettings.FirstOrDefault(x => x.ChannelId == textChannels[0].Id);
+            var defaultChannel = settings.ChannelSettings?.FirstOrDefault(x => x.ChannelId == textChannels[0].Id);
 
-            // No channels setting saved, return viewmodel as is.
+            // No channels setting saved, return view model as is.
             if (defaultChannel == null) return View(viewModel);
 
             viewModel.ChannelSettings.RemoveMessages = defaultChannel.RemoveMessage;
 
             // Channel settings only exist if the module is enabled.
             viewModel.ChannelSettings.Enabled = true;
-
-            return View(viewModel);
-        }
-
-        // POST
-        [HttpPost("StreamAnnouncer")]
-        public async Task<IActionResult> StreamAnnouncerSettings(ulong guildId,
-            StreamAnnouncerSettingsViewModel viewModel)
-        {
-            var settings = await _streamAnnouncerChannelSettingsService.Find(viewModel.ChannelId);
-
-            // Remember if there were settings in db, as settings will be populated later if they aren't.
-            var isSettingsInDb = settings != null;
-
-            var saveSettingsTasks = new List<Task>
-            {
-                _streamAnnouncerSettingsService.SaveSettings(new StreamAnnouncerSettings
-                {
-                    GuildId = guildId,
-                    Enabled = viewModel.Enabled
-                })
-            };
-
-            // Save general module settings to the database
-
-            if (!isSettingsInDb)
-                settings = new StreamAnnouncerChannelSettings
-                {
-                    GuildId = guildId,
-                    ChannelId = viewModel.ChannelId
-                };
-
-            settings.RemoveMessage = viewModel.ChannelSettings.RemoveMessages;
-
-            // Save specific channel settings to the database.
-            if (viewModel.ChannelSettings.Enabled)
-            {
-                saveSettingsTasks.Add(!isSettingsInDb
-                    ? _streamAnnouncerChannelSettingsService.Create(settings)
-                    : _streamAnnouncerChannelSettingsService.Update(settings));
-            }
-            else
-            {
-                if (isSettingsInDb)
-                    saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Remove(settings));
-            }
-
-            await Task.WhenAll(saveSettingsTasks.ToArray());
-
-            return RedirectToAction("Index");
-        }
-
-        #endregion
-
-        #region StreamerRole
-
-        // GET
-        [HttpGet("StreamerRole")]
-        public async Task<IActionResult> StreamerRoleSettings(ulong guildId,
-            [FromServices] IDiscordGuildService guildService)
-        {
-            var roles = await guildService.GetRoles(guildId);
-
-            var viewModel = new StreamerRoleSettingsViewModel
-            {
-                Roles = new SelectList(roles.RemoveManaged(), "Id", "Name")
-            };
-
-            var settings = await _streamerRoleSettingsService.GetSettingsByGuild(guildId);
-
-            if (settings == null) return View(viewModel);
 
             viewModel.RoleId = settings.RoleId;
             viewModel.Enabled = settings.Enabled;
@@ -184,9 +116,10 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         // POST
-        [HttpPost("StreamerRole")]
-        public async Task<IActionResult> StreamerRoleSettings(ulong guildId, StreamerRoleSettingsViewModel viewModel,
-            [FromServices] IBot bot, [FromServices] IDiscordGuildService guildService)
+        [HttpPost("Streamer")]
+        public async Task<IActionResult> StreamerSettings(ulong guildId,
+            StreamerSettingsViewModel viewModel, [FromServices] IBot bot,
+            [FromServices] IDiscordGuildService guildService)
         {
             var botRolePosition = bot.GetBotRoleHierarchy(guildId);
 
@@ -200,18 +133,56 @@ namespace Volvox.Helios.Web.Controllers
                 ModelState.AddModelError("RolePosition",
                     "The bots managed role must be positioned higher then the selected role");
 
+                // All channels in guild.
+                var channels = await guildService.GetChannels(guildId);
+
+                // Text channels in guild.
+                var textChannels = channels.Where(x => x.Type == 0).ToList();
+
+                viewModel.Channels = new SelectList(textChannels, "Id", "Name");
                 viewModel.Roles = new SelectList(roles.RemoveManaged(), "Id", "Name");
 
                 return View(viewModel);
             }
 
-            // Save the settings to the database.
-            await _streamerRoleSettingsService.SaveSettings(new StreamerRoleSettings
+            var settings = await _streamAnnouncerChannelSettingsService.Find(viewModel.ChannelId);
+
+            // Remember if there were settings in db, as settings will be populated later if they aren't.
+            var isSettingsInDb = settings != null;
+
+            var saveSettingsTasks = new List<Task>
             {
-                GuildId = guildId,
-                Enabled = viewModel.Enabled,
-                RoleId = viewModel.RoleId
-            });
+                _streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
+                {
+                    GuildId = guildId,
+                    Enabled = viewModel.Enabled,
+                    StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
+                    RoleId = viewModel.RoleId
+                })
+            };
+
+            // Save general module settings to the database
+            if (!isSettingsInDb)
+                settings = new StreamerChannelSettings
+                {
+                    GuildId = guildId,
+                    ChannelId = viewModel.ChannelId
+                };
+
+            settings.RemoveMessage = viewModel.ChannelSettings.RemoveMessages;
+
+            // Save specific channel settings to the database.
+            if (viewModel.ChannelSettings.Enabled)
+                saveSettingsTasks.Add(!isSettingsInDb
+                    ? _streamAnnouncerChannelSettingsService.Create(settings)
+                    : _streamAnnouncerChannelSettingsService.Update(settings));
+            else
+            {
+                if (isSettingsInDb)
+                    saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Remove(settings));
+            }
+
+            await Task.WhenAll(saveSettingsTasks.ToArray());
 
             return RedirectToAction("Index");
         }
@@ -238,7 +209,7 @@ namespace Volvox.Helios.Web.Controllers
 
         // POST
         [HttpPost("ChatTracker")]
-        public async Task<IActionResult> ChatTrackerSettings(ulong guildId, StreamerRoleSettingsViewModel viewModel)
+        public async Task<IActionResult> ChatTrackerSettings(ulong guildId, ChatTrackerSettingsViewModel viewModel)
         {
             // Save settings to the database.
             await _chatTrackerSettingsService.SaveSettings(new ChatTrackerSettings
@@ -253,14 +224,15 @@ namespace Volvox.Helios.Web.Controllers
         #endregion
 
         #region Reminder
+
         [HttpGet("Remembot")]
         public async Task<IActionResult> RemembotSettings(ulong guildId,
-            [FromServices]IDiscordGuildService guildService)
+            [FromServices] IDiscordGuildService guildService)
         {
             var settings = await _reminderSettingsService.GetSettingsByGuild(guildId);
             var channels = await guildService.GetChannels(guildId);
             var textChannels = channels.Where(x => x.Type == 0).ToList();
-            if(settings is null)
+            if (settings is null)
             {
                 settings = new RemembotSettings
                 {
@@ -288,6 +260,7 @@ namespace Volvox.Helios.Web.Controllers
 
             return RedirectToAction("Index");
         }
+
         #endregion
     }
 }

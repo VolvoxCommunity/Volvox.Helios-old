@@ -8,10 +8,10 @@ namespace Volvox.Helios.Core.Services.MessageService
         /// <summary>
         ///     Fetch a message by its Id.
         /// </summary>
-        /// <param name="messageId">Id of message to fetch.</param>
         /// <param name="channelId">Id of channel message is in.</param>
+        /// <param name="messageId">Id of message to fetch.</param>
         /// <returns></returns>
-        Task<IUserMessage> GetMessage(ulong messageId, ulong channelId);
+        Task<IUserMessage> GetMessage(ulong channelId, ulong messageId);
 
         /// <summary>
         ///     Post message to channel.
@@ -41,13 +41,5 @@ namespace Volvox.Helios.Core.Services.MessageService
         /// <param name="embed">Message embed to change to.</param>
         /// <returns>User message after modification.</returns>
         Task<IUserMessage> Modify(IUserMessage message, string text, Embed embed);
-
-        /// <summary>
-        ///     Delete message.
-        /// </summary>
-        /// <param name="channelId">Channel message is located in.</param>
-        /// <param name="messageIds">Array of message ids to delete.</param>
-        /// <returns></returns>
-        Task Delete(ulong channelId, ulong[] messageIds);
     }
 }

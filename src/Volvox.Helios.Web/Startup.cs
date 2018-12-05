@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentCache;
@@ -23,8 +24,6 @@ using Volvox.Helios.Core.Modules.Command;
 using Volvox.Helios.Core.Modules.Command.Commands;
 using Volvox.Helios.Core.Modules.Command.Framework;
 using Volvox.Helios.Core.Modules.Common;
-using Volvox.Helios.Core.Modules.StreamAnnouncer;
-using Volvox.Helios.Core.Modules.StreamerRole;
 using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Service;
@@ -42,16 +41,22 @@ using Volvox.Helios.Service.BackgroundJobs;
 using Volvox.Helios.Service.Jobs;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Discord.WebSocket;
+using Microsoft.AspNetCore.HttpOverrides;
+using Volvox.Helios.Core.Modules.Streamer;
+using Volvox.Helios.Core.Services.ServiceFactory;
 using Volvox.Helios.Core.Modules.ModerationModule;
 using Volvox.Helios.Core.Jobs;
 using Newtonsoft.Json;
 
 namespace Volvox.Helios.Web
 {
-    public class Startup 
+    public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IHostingEnvironment _env;
+
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
+            _env = env;
             Configuration = configuration;
         }
 
@@ -121,8 +126,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IBot, Bot>();
 
             // Modules
-            services.AddSingleton<IModule, StreamAnnouncerModule>();
-            services.AddSingleton<IModule, StreamerRoleModule>();
+            services.AddSingleton<IModule, StreamerModule>();
             services.AddSingleton<IModule, ChatTrackerModule>();
             services.AddSingleton<IModule, RemembotModule>();
             services.AddSingleton<IModule, ModerationModule>();
@@ -130,18 +134,17 @@ namespace Volvox.Helios.Web
             // Commands
             services.AddSingleton<IModule, CommandManager>();
             services.AddSingleton<ICommand, HelpCommand>();
+            services.AddSingleton<ICommand, AboutCommand>();
 
             // All Modules
             services.AddSingleton<IList<IModule>>(s => s.GetServices<IModule>().ToList());
             services.AddSingleton<IList<ICommand>>(s => s.GetServices<ICommand>().ToList());
 
             // HTTP Clients
-            services.AddHttpClient<DiscordAPIClient>(options =>
-            {
-                options.BaseAddress = new Uri("https://discordapp.com/api/");
-                options.DefaultRequestHeaders.Add("Accept", "application/json");
-                options.DefaultRequestHeaders.Add("User-Agent", "Volvox.Helios");
-            });
+            services.AddHttpClient<IDiscordAPIClient, DiscordAPIClient>();
+
+            // Services
+            services.AddSingleton<IServiceFactory, ServiceFactory>();
 
             // Discord Services
             services.AddScoped<IDiscordUserGuildService, DiscordUserGuildService>();
@@ -192,9 +195,9 @@ namespace Volvox.Helios.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, VolvoxHeliosContext context)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, VolvoxHeliosContext context)
         {
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
@@ -208,10 +211,10 @@ namespace Volvox.Helios.Web
 
                 loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
             }
-          
+
             // Update the database.
             context.Database.Migrate();
-          
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

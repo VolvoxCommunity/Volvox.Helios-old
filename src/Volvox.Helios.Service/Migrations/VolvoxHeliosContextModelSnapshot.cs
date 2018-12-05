@@ -16,7 +16,7 @@ namespace Volvox.Helios.Service.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -62,7 +62,11 @@ namespace Volvox.Helios.Service.Migrations
                     b.Property<decimal>("GuildId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
+                    b.Property<DateTimeOffset>("Timestamp");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("GuildId");
 
                     b.ToTable("Messages");
                 });
@@ -342,7 +346,7 @@ namespace Volvox.Helios.Service.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("StreamAnnouncerChannelSettings");
+                    b.ToTable("StreamerChannelSettings");
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.ChatTrackerSettings", b =>
@@ -405,10 +409,10 @@ namespace Volvox.Helios.Service.Migrations
 
                     b.HasKey("GuildId");
 
-                    b.ToTable("StreamAnnouncerSettings");
+                    b.ToTable("ReminderSettings");
                 });
 
-            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.StreamerRoleSettings", b =>
+            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.StreamerSettings", b =>
                 {
                     b.Property<decimal>("GuildId")
                         .ValueGeneratedOnAdd()
@@ -419,14 +423,16 @@ namespace Volvox.Helios.Service.Migrations
                     b.Property<decimal>("RoleId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
+                    b.Property<bool>("StreamerRoleEnabled");
+
                     b.HasKey("GuildId");
 
-                    b.ToTable("StreamerRoleSettings");
+                    b.ToTable("StreamerSettings");
                 });
 
             modelBuilder.Entity("Volvox.Helios.Core.Modules.StreamAnnouncer.StreamAnnouncerMessage", b =>
                 {
-                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.StreamAnnouncerSettings", "StreamAnnouncerSettings")
+                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.StreamerSettings", "StreamerSettings")
                         .WithMany("StreamMessages")
                         .HasForeignKey("GuildId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -528,9 +534,9 @@ namespace Volvox.Helios.Service.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Volvox.Helios.Domain.Module.StreamAnnouncerChannelSettings", b =>
+            modelBuilder.Entity("Volvox.Helios.Domain.Module.StreamerChannelSettings", b =>
                 {
-                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.StreamAnnouncerSettings", "StreamAnnouncerSettings")
+                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.StreamerSettings", "StreamerSettings")
                         .WithMany("ChannelSettings")
                         .HasForeignKey("GuildId")
                         .OnDelete(DeleteBehavior.Cascade);
