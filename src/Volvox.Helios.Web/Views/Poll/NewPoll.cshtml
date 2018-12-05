@@ -9,18 +9,31 @@
 <div class="row">
     <div class="col-md-12">
         <form method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="ChannelId"></label>
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="ChannelId"></label>
+                    <span asp-validation-for="ChannelId" class="text-danger"></span>
+                    @*<label asp-for="ChannelId"></label>
                 <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
-                <span asp-validation-for="ChannelId" class="text-danger"></span>
+                <span asp-validation-for="ChannelId" class="text-danger"></span>*@
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Title"></label> <br />
+                    <input asp-for="Title" type="text" class="form-control material-input" />
+                    <span asp-validation-for="Title" style="color:red"></span>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Title"></label> <br />
-                <input asp-for="Title" type="text" class="form-control" />
-                <span asp-validation-for="Title" style="color:red"></span>
+            <div class="options mt-3">
+                <div class="row">
+                    <label class="col-12">Option</label>
+                    <div class="col-md-11">
+                        <input name="option" maxlength="100" type="text" class="form-control material-input" autocomplete="off" />
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-volvox-outline btn-block" onclick="addPollOption(event)">New</button>
+                    </div>
+                </div>
             </div>
 
             <input type="hidden" asp-for="TotalOptions" value="@Model.TotalOptions" />
@@ -28,16 +41,15 @@
             @for (int i = 0; i < Model.TotalOptions; i++)
             {
                 var optionNo = i + 1;
-
-                <div class="form-group">
-                    <label> Option @optionNo </label>
-                    <br />
-                    <input name="options[@i]" maxlength="100" type="text" class="form-control" />
-                </div>
             }
 
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-success" />
+            <div class="col-12">
+                <div class="row mt-4">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="ml-auto">
+                        <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -45,4 +57,19 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function addPollOption(e) {
+            $('.options').append(`
+                <div class="row mt-3">
+                    <label class="col-12">Option</label>
+                    <div class="col-md-11">
+                        <input name="option" maxlength="100" type="text" class="form-control material-input" autocomplete="off" />
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-volvox-outline btn-block" onclick="addPollOption(event)">New</button>
+                    </div>
+                </div>
+            `);
+        }
+    </script>
 }

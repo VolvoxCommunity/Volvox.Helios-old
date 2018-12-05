@@ -77,6 +77,7 @@ a:hover{
   border: 1px solid var(--color-volvox);
   color: var(--color-volvox);
   background: none;
+  box-shadow: none !important;
 }
 
 .btn-volvox-outline:hover {
@@ -278,6 +279,10 @@ input:checked + .slider:before {
   border-radius: 50px;
   color: white;
 }
+.material-input:focus, .material-input:hover{
+  box-shadow: none;
+  border-color: var(--color-volvox);
+}
 
 #serverAccordion a:focus, #serverAccordion a:hover, #serverAccordion a:active {
   outline: 0;
@@ -386,8 +391,7 @@ input:checked + .slider:before {
   border-radius: 2px;
 }
 
-
-/**Z-index issue headway*/
+/** headway*/
 #HW_frame_cont.HW_visible{
   z-index: 100000;
 }
@@ -407,6 +411,21 @@ input:checked + .slider:before {
 
 #changelog #HW_badge {
   left: 17px
+}
+
+/******* POLL **********/
+.poll-item{
+  border-color: var(--color-volvox);
+}
+.vote-count{
+  position: absolute;
+  right: 0;
+  width: 15%;
+  background: var(--color-volvox);
+  height: 100%;
+  top: 0;
+  color: white;
+  justify-content: center;
 }
 
 /******* Footer ********/
