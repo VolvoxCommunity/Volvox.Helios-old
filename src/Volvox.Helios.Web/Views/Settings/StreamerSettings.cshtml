@@ -33,8 +33,8 @@
                     <div class="col-12">
                         <div asp-validation-summary="All" class="text-danger"></div>
 
-                        <h4>Stream Announcer</h4>
-                        <div class="form-group">
+                        <h4>@*Stream Announcer*@</h4>
+                        @*<div class="form-group">
                             <label asp-for="ChannelId"></label>
                             <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
                             <span asp-validation-for="ChannelId" class="text-danger"></span>
@@ -48,9 +48,9 @@
                             <input asp-for="ChannelSettings.RemoveMessages" class="form-check-input" />
                             <label asp-for="ChannelSettings.RemoveMessages" class="form-check-label"></label>
                             <span asp-validation-for="ChannelSettings.RemoveMessages" class="text-danger"></span>
-                        </div>
+                        </div>*@
 
-                        <h4 class="mt-4">Streamer Role</h4>
+                        @*<h4 class="mt-4">Streamer Role</h4>
                         <div class="form-check form-group">
                             <input asp-for="StreamerRoleEnabled" class="form-check-input" />
                             <label asp-for="StreamerRoleEnabled" class="form-check-label"></label>
@@ -60,9 +60,83 @@
                             <label asp-for="RoleId"></label>
                             <select asp-for="RoleId" asp-items="Model.Roles" id="roles" class="form-control"></select>
                             <span asp-validation-for="RoleId" class="text-danger"></span>
+                        </div>*@
+                    </div>
+                </div>
+
+                <div class="row mt-4 border border-gray2 rounded">
+                    <div class="col-12 pt-3">
+                        <h4>Stream Announcer</h4>
+                        <hr />
+                        <label asp-for="ChannelId"></label>
+                        <div id="selectChannel"></div>
+                    </div>
+                    <div class="col-md-9 pt-3 pb-3">
+                        <h4>Enable Channel</h4>
+                        <p class="mb-0 text-volvox">
+                            Enables the Stream Announcer Channel
+                        </p>
+                    </div>
+                    <div class="col-md-3 valign">
+                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                            <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "active" : "border-gray2 bg-white text-gray2")">
+                                On
+                                <input id="enabledBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="true">
+                            </label>
+                            <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "border-gray2 bg-white text-gray2" : "active")">
+                                Off
+                                <input id="disabledBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="false">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-9 pt-3 pb-3">
+                        <h4>Remove Messages</h4>
+                        <p class="mb-0 text-volvox">
+                            Removes the messages on conclusion
+                        </p>
+                    </div>
+                    <div class="col-md-3 valign">
+                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                            <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "active" : "border-gray2 bg-white text-gray2")">
+                                On
+                                <input id="enabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="true">
+                            </label>
+                            <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "border-gray2 bg-white text-gray2" : "active")">
+                                Off
+                                <input id="disabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="false">
+                            </label>
                         </div>
                     </div>
                 </div>
+
+                <div class="row mt-4 border border-gray2 rounded">
+                    <div class="col-12 pt-3">
+                        <h4>Streamer Role</h4>
+                        <hr />
+                        <label asp-for="RoleId"></label>
+                        <div id="selectRole"></div>
+                    </div>
+                    <div class="col-md-9 pt-3 pb-3">
+                        <h4>Role enabled</h4>
+                        <p class="mb-0 text-volvox">
+                            Enables the streamer role
+                        </p>
+                    </div>
+                    <div class="col-md-3 valign">
+                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                            <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "active" : "border-gray2 bg-white text-gray2")">
+                                On
+                                <input id="enabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="true">
+                            </label>
+                            <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "border-gray2 bg-white text-gray2" : "active")">
+                                Off
+                                <input id="disabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="false">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-12">
                     <div class="row mt-4">
                         <span asp-validation-summary="Enabled" class="text-danger"></span>
@@ -103,6 +177,19 @@
                     $('#ChannelSettings_RemoveMessages').prop('checked', response.removeMessages);
                 });
             });
+        
+        $('#selectChannel').dxSelectBox({
+            dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Channels)))'),
+            searchEnabled: true,
+            valueExpr: "value",
+            searchExpr: "text"
+        });
+        $('#selectRole').dxSelectBox({
+            dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Roles)))'),
+            searchEnabled: true,
+            valueExpr: "value",
+            searchExpr: "text"
+        });
 
         $('.module-enabler input:not(".active")').click((e) => {
             $(e.currentTarget).parent().parent().find('.active').toggleClass('active border-gray2 bg-white text-gray2');

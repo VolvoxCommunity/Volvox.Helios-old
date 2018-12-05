@@ -49,22 +49,7 @@
     </div>
     <div class="col-md-12 col-lg-6 mt-lg-0 mt-4">
         <div class="col-12 border border-gray2 rounded pt-2 h-100">
-            @*@(Html.DevExtreme().PieChart()
-                    .ID("pieChart")
-                    .DataSource(new[]
-                    {
-                        new { Label = "Not cool", Votes = 5 },
-                        new { Label = "Its alright", Votes = 44 },
-                        new { Label = "Pretty cool", Votes = 223 },
-                        new { Label = "Top notch", Votes = 304 }
-                    })
-                    .CommonSeriesSettings(c => c.ArgumentField("Label"))
-                    .Series(series =>
-                    {
-                        series.Add().ValueField("Label");
-                        series.Add().ValueField("Votes");
-                    })
-            )*@
+            <div id="pieChart"></div>
         </div>
     </div>
 </div>
@@ -113,23 +98,70 @@
     </script>
     <script>
         $(function () {
+            var src = JSON.parse('@(Html.Raw(Json.Serialize(Model.Polls)))');
+            
             $("#poll").dxSelectBox({
+                dataSource: src,
+                valueExpr: "value",
+                displayExpr: "text",
+                searchEnabled: true,
+                onValueChanged: (e) => {
+                    var Ids = e.value.split('-')
+                    var messageId = Ids[0];
+                    var channelId = Ids[1];
+                    $.when(GetPollDetails(channelId, messageId)).done(function (response) {
+                        $("#Title").text(RemoveLeadingEmoticon(response.title));
+                        $("#Options").empty();
+                        
+                        $.each(response.options, function (i, option) {
+                            // Remove 1 from option count as the bot will add one vote to all options, to display them as buttons.
+                            $("#Options").append(
+                                $('<li class="list-group-item poll-item"></li>').html(RemoveLeadingEmoticon(option.option) + "<div class=\"vote-count valign\">" + parseInt(option.voteCount - 1) + "</div>")
+                            );
+                        });
+                        
+                        $('#pieChart').dxPieChart({
+                            dataSource: response.options,
+                            commonSeriesSettings: {
+                                argumentField: "option"
+                            },
+                            series: [
+                                { valueField: "option" },
+                                { valueField: "voteCount" }
+                            ],
+                            legend: {
+                                horizontalAlignment: "center",
+                                verticalAlignment: "bottom",
+                                itemTextPosition: "left",
+                                orientation: "horizontal",
+                                customizeText: (e) => {
+                                    return RemoveLeadingEmoticon(e.pointName);
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+            $('#pieChart').dxPieChart({
                 dataSource: [
-                    "HD Video Player",
-                    "SuperHD Video Player",
-                    "SuperPlasma 50",
-                    "SuperLED 50",
-                    "SuperLED 42",
-                    "SuperLCD 55",
-                    "SuperLCD 42",
-                    "SuperPlasma 65",
-                    "SuperLCD 70",
-                    "Projector Plus",
-                    "Projector PlusHT",
-                    "ExcelRemote IR",
-                    "ExcelRemote BT",
-                    "ExcelRemote IP"
-                ]
+                    { option: "Not cool", voteCount: 5 },
+                    { option: "Its alright", voteCount: 44 },
+                    { option: "Pretty cool", voteCount: 223 },
+                    { option: "Top notch", voteCount: 304 }
+                ],
+                commonSeriesSettings: {
+                    argumentField: "option"
+                },
+                series: [
+                    { valueField: "option" },
+                    { valueField: "voteCount" }
+                ],
+                legend: {
+                    horizontalAlignment: "center",
+                    verticalAlignment: "bottom",
+                    itemTextPosition: "left",
+                    orientation: "horizontal"
+                }
             });
         });
     </script>

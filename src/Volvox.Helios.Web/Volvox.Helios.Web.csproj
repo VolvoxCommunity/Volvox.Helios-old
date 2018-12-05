@@ -8,6 +8,12 @@
     <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="wwwroot\css\NewFolder\**" />
+    <Content Remove="wwwroot\css\NewFolder\**" />
+    <EmbeddedResource Remove="wwwroot\css\NewFolder\**" />
+    <None Remove="wwwroot\css\NewFolder\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Discord" Version="2.0.0" />
     <PackageReference Include="AWS.Logger.AspNetCore" Version="1.3.0" />
     <PackageReference Include="AWS.Logger.Core" Version="1.2.0" />

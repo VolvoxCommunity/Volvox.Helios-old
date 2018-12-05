@@ -13,6 +13,7 @@
                 <div class="col-md-6">
                     <label asp-for="ChannelId"></label>
                     <span asp-validation-for="ChannelId" class="text-danger"></span>
+                    <div id="channelSelect"></div>
                     @*<label asp-for="ChannelId"></label>
                 <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
                 <span asp-validation-for="ChannelId" class="text-danger"></span>*@
@@ -38,11 +39,6 @@
 
             <input type="hidden" asp-for="TotalOptions" value="@Model.TotalOptions" />
 
-            @for (int i = 0; i < Model.TotalOptions; i++)
-            {
-                var optionNo = i + 1;
-            }
-
             <div class="col-12">
                 <div class="row mt-4">
                     <div asp-validation-summary="All" class="text-danger"></div>
@@ -58,6 +54,15 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
+        $("#channelSelect").dxSelectBox({
+            dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Channels)))'),
+            valueExpr: "value",
+            displayExpr: "text",
+            searchEnabled: true,
+            onValueChanged: (e) => {
+                
+            }
+        });
         function addPollOption(e) {
             $('.options').append(`
                 <div class="row mt-3">

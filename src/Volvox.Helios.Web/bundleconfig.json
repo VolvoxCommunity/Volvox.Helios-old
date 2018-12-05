@@ -29,7 +29,10 @@
       "node_modules/devextreme/dist/css/dx.common.css",
       "node_modules/devextreme/dist/css/dx.light.css"
     ],
-    "minify": { "enabled": false, "adjustRelativePaths" : false }
+    "minify": {
+      "enabled": false,
+      "adjustRelativePaths": false
+    }
   },
   {
     "outputFileName": "wwwroot/vendor.min.js",
