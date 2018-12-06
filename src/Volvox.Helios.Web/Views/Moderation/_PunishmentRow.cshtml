@@ -14,7 +14,7 @@
 <tr>
     @Html.HiddenFor(m => m.PunishmentId)
     <td>@Html.DropDownListFor(m => m.PunishType, Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.PunishType>())</td>
-    <td>@Html.TextBoxFor(m => m.PunishDuration)</td>
+    <td><input type="number" asp-for="PunishDuration" value="0" min="0" step="1" max="2147483647" class="form-control" /></td>
     <td>@Html.DropDownListFor(m => m.WarningType, Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.WarningType>())</td>
     <td><input type="number" asp-for="WarningThreshold" value="1" min="1" step="1" max="2147483647" class="form-control" /></td>
     <td>

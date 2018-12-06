@@ -30,7 +30,7 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.Common
         public WarningType WarningType { get; set; }
 
         // Duration of punishment in minutes. null == no duration / forever.
-        public int? PunishDuration { get; set; }
+        public int PunishDuration { get; set; }
 
         // Id of role to apply when punishment threshold met.
         public ulong? RoleId { get; set; }

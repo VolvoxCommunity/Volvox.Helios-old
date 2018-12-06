@@ -17,7 +17,7 @@ namespace Volvox.Helios.Web.Models.Moderation
 
         public PunishType PunishType { get; set; }
 
-        public int? PunishDuration { get; set; }
+        public int PunishDuration { get; set; }
 
         public ulong? RoleId { get; set; }
 

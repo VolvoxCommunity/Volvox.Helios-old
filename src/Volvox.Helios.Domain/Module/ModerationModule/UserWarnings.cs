@@ -24,9 +24,9 @@ namespace Volvox.Helios.Domain.Module.ModerationModule
         public ulong UserId { get; set; }
 
         [Required]
-        public List<Warning> Warnings { get; set; }
+        public virtual List<Warning> Warnings { get; set; } = new List<Warning>();
 
         [Required]
-        public List<ActivePunishment> ActivePunishments { get; set; }
+        public virtual List<ActivePunishment> ActivePunishments { get; set; } = new List<ActivePunishment>();
     }
 }

@@ -44,6 +44,24 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         // TODO : Extract logic and user interfaces, that way can change the functionality without changing the core module
 
 
+        // NEXT FEATURES TODO :
+        /*
+         when removing a setting
+            System.InvalidOperationException: 'The property 'Id' on entity type 'Punishment' has a temporary value while attempting to change the entity's state to 'Deleted'. Either set a permanent value explicitly or ensure that the database is configured to generate values for this property.'
+            line 98 entity srvice base
+
+          dont allow saving of any settings of profanitty filter if moderation settings is null as it will throw FK error
+
+
+          null check when setting expire date. if expire time is null it will throw an error. line 552
+
+            DECIDE WHETHER I WANT NULL OR 0 TO MEAN NEVER EXPIRE
+                            ----- WE WANT 0. MAY HAVE TO UPDATE MODELS
+
+          look into wildcards as bapes suggested
+         */
+
+
         #region Private vars
 
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
@@ -275,24 +293,22 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             {
                 var userWarningService = scope.ServiceProvider.GetRequiredService<IEntityService<UserWarnings>>();
 
-                var listUserData = await userWarningService.Get(u => u.UserId == user.Id, u => u.Warnings, u => u.ActivePunishments);
+                var userDataDb = await userWarningService.GetFirst(u => u.UserId == user.Id, u => u.Warnings, u => u.ActivePunishments);
 
                 // User isn't tracked yet, so create new entry for them.
-                if (listUserData.Count == 0)
+                if (userDataDb == null )
                 {
                     userData = new UserWarnings()
                     {
                         GuildId = moderationSettings.GuildId,
-                        UserId = user.Id,
-                        ActivePunishments = new List<ActivePunishment>(),
-                        Warnings = new List<Warning>()
+                        UserId = user.Id
                     };
 
                     await userWarningService.Create(userData);
                 }
                 else
                 {
-                    userData = listUserData[0];
+                    userData = userDataDb;
                 }
             }
 
@@ -433,8 +449,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             var role = guild.GetRole(punishment.RoleId.Value);
 
-            if (guild is null || role is null)
+            if (guild is null)
                 return false;
+
+            if (role is null)
+            {
+                await _messageService.Post(channelId, $"Could not add Role to user '{user.Username}' as Role doesn't exist.");
+                return false;
+            }
 
             var hierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
 
@@ -443,7 +465,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             {
                 await user.AddRoleAsync(role);
 
-                var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
+                var expireTime = punishment.PunishDuration == 0 ? "Never" : punishment.PunishDuration.ToString();
 
                 await _messageService.Post(channelId, $"Adding role '{role.Name}' to user <@{user.Id}>" +
                     $"\nReason: {punishment.WarningType}\n" +
@@ -501,7 +523,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 Logger.LogInformation($"Moderation Module: Banning user '{user.Username}'." +
                         $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
 
-                var expireTime = punishment.PunishDuration == null ? "Never" : punishment.PunishDuration.ToString();
+                var expireTime = punishment.PunishDuration == 0 ? "Never" : punishment.PunishDuration.ToString();
 
                 await _messageService.Post(channelId, $"Banning user <@{user.Id}>" +
                     $"\nReason: {punishment.WarningType}" +
@@ -532,11 +554,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 foreach (var punishment in punishments)
                 {
-                    // Null means apply permanently/punishment is just a kick, so no point in adding punishment to db.
+                    // No need to add kick punishment to DB as it's not a punishment with a duration.
                     if (punishment.PunishType == PunishType.Kick)
                         continue;
 
-                    var expireDate = DateTimeOffset.Now.AddMinutes(punishment.PunishDuration.Value);
+                    // If PunishDuration is null, user never wants punishment to expire.
+                    var expireDate = punishment.PunishDuration == 0
+                        ? DateTimeOffset.Now.AddMinutes(punishment.PunishDuration)
+                        : DateTimeOffset.MaxValue;
 
                     // Refetching prevents self referencing loop AND ensures the entity is tracked, therefore stopping ef core from trying to re-add it.
                     var userDbEntry = await userWarningsService.Find(userData.Id);
