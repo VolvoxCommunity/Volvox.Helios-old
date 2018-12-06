@@ -143,9 +143,6 @@ namespace Volvox.Helios.Web
             // HTTP Clients
             services.AddHttpClient<IDiscordAPIClient, DiscordAPIClient>();
 
-            // Services
-            services.AddSingleton<IServiceFactory, ServiceFactory>();
-
             // Discord Services
             services.AddScoped<IDiscordUserGuildService, DiscordUserGuildService>();
             services.AddScoped<IDiscordGuildService, DiscordGuildService>();
