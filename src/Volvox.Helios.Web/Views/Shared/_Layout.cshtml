@@ -21,6 +21,7 @@
     <environment include="Development">
         <link rel="stylesheet" href="~/vendor.min.css" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <link rel="stylesheet" href="/css/light-theme.css" id="lightThemeLink">
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment exclude="Development">
@@ -78,7 +79,7 @@
         @RenderBody()
     </main>
     <div class="position-relative" style="margin-top: auto;">
-        <footer class="col-12 pt-4 pb-4 mt-5" style="background: #eee">
+        <footer class="col-12 pt-4 pb-4 mt-5">
             <div class="container">
                 <div class="col-md-6 text-center mx-auto">
                     <a href="https://github.com/VolvoxCommunity/Volvox.Helios/" class="bg-volvox d-inline-flex footer-icon valign rounded-circle mr-2" target="_blank">
@@ -155,9 +156,11 @@
             $('.navbar').toggleClass('navbar-light navbar-dark bg-light');
 
             if (darkThemeEnabled) {
+                $('#lightThemeLink').remove();
                 $('head').append('<link rel="stylesheet" href="/css/dark-theme.css" id="darkThemeLink">');
             } else {
                 $('#darkThemeLink').remove();
+                $('head').append('<link rel="stylesheet" href="/css/light-theme.css" id="lightThemeLink">');
             }
         }
     </script>
