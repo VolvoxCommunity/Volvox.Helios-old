@@ -62,7 +62,7 @@ namespace Volvox.Helios.Core.Modules.ReminderModule
         {
             var settings = await _moduleSettings.GetSettingsByGuild(guildId);
 
-            return settings == null || settings.Enabled;
+            return settings != null && settings.Enabled;
         }
 
         /// <summary>

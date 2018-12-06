@@ -35,7 +35,7 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
         {
             var settings = await _settingsService.GetSettingsByGuild(guildId);
 
-            return settings == null || settings.Enabled;
+            return settings != null && settings.Enabled;
         }
 
         /// <summary>
