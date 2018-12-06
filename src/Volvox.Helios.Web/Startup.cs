@@ -40,6 +40,8 @@ using Volvox.Helios.Service.Jobs;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Modules.Streamer;
+using System.Data.SqlClient;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Volvox.Helios.Web
 {
@@ -174,7 +176,23 @@ namespace Volvox.Helios.Web
                 });
             });
 
-            services.AddHealthChecks();
+            //TODO: Refactor to make cleaner
+            services.AddHealthChecks()
+                .AddCheck("sql", () =>
+                {
+                    using (var connection = new SqlConnection(Configuration.GetConnectionString("VolvoxHeliosDatabase")))
+                    {
+                        try
+                        {
+                            connection.Open();
+                        }
+                        catch (SqlException)
+                        {
+                            return HealthCheckResult.Unhealthy();
+                        }
+                        return HealthCheckResult.Healthy();
+                    }
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
