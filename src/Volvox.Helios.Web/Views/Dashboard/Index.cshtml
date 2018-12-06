@@ -11,7 +11,7 @@
         var uG = Model.UserGuilds[i];
         <div class="card mt-4">
             <div class="card-img-top d-flex align-items-center bg-gray pt-2 pb-2" id="s-@i-@uG.Guild.Name">
-                <img class="card-img-top ml-3 dashboard-guild-image" src="@uG.Guild.ImageUrl" alt="@uG.Guild.Name">
+                <img class="card-img-top rounded ml-3 dashboard-guild-image" src="@uG.Guild.ImageUrl" alt="@uG.Guild.Name">
                 <h5 class="col mb-0 card-title text-volvox">@uG.Guild.Name</h5>
                 <a href="#" onclick="toggleAccBtn(event);" class="text-volvox mr-3" data-toggle="collapse" data-target="#s-@i" aria-expanded="true" aria-controls="s-@i">
                     @*TODO: toggle icon if is favourite*@

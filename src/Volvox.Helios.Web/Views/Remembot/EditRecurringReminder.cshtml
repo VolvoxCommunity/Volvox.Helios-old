@@ -22,43 +22,38 @@
 }
 
 <hr />
-<div class="row">
-    <div class="col-md-12">
-        <form asp-action="EditRecurringReminder">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-row">
-                <div style="display:flex;" class="form-group float-right">
-                    <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
-                    <label class="switch" />
-                    <input asp-for="Enabled" type="checkbox" />
-                    <div class="slider round"></div>
-                    <span asp-validation-for="Enabled" class="text-danger"></span>
-                </div>
+<form asp-action="EditRecurringReminder" class="col-12">
+    <div class="row border border-gray2 rounded">
+        <div class="col-md-9 pt-3 pb-3">
+            <h4>Reminder enabled</h4>
+            <p class="mb-0 text-volvox">
+                Decide wheter the reminder is enabled or not
+            </p>
+        </div>
+        <div class="col-md-3 valign">
+            <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3 mr-3">
+                <label for="enabledBtn" class="btn pr-4 pl-4 @(Model.Enabled ? "active" : "border-gray2 bg-white text-gray2")">
+                    On
+                    <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true">
+                </label>
+                <label for="disabledBtn" class="btn pr-4 pl-4 @(Model.Enabled ? "border-gray2 bg-white text-gray2" : "active")">
+                    Off
+                    <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false">
+                </label>
             </div>
-
-            <div class="form-row">
-                <div class="col-4">
-                    <div class="form-group">
-                        <label asp-for="ChannelId"></label>
-                        <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
-                        <span asp-validation-for="ChannelId" class="text-danger"></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="col-12">
-                    <div class="form-group">
-                        <label asp-for="Message" class="control-label"></label>
-                        <textarea asp-for="Message" rows="5" class="form-control"></textarea>
-                        <span asp-validation-for="Message" class="text-danger"></span>
-                    </div>
-                </div>
-            </div>
-            <br />
-
-            <div id="easy_cron"></div>
+        </div>
+    </div>
+    <div class="row border border-gray2 rounded mt-4">
+        <div class="col-12 pt-3 pb-3">
+            <label asp-for="ChannelId"></label>
+            <input type="hidden" name="ChannelId" />
+            <div id="selectBox"></div>
+            <span asp-validation-for="ChannelId" class="text-danger"></span>
+            <label asp-for="Message" class="control-label mt-3"></label>
+            <div id="textBox"></div>
+            <span asp-validation-for="Message" class="text-danger"></span>
+            <input type="hidden" name="Message" />
+            <div id="easy_cron" class="mt-3"></div>
 
             <div id="manual_cron" style="display:none">
                 <h3>Recurrence</h3>
@@ -66,7 +61,6 @@
                 <hr />
 
                 <div class="form-row">
-
                     <div class="col">
                         <div class="form-group">
                             <label asp-for="CronExpression" class="control-label"></label>
@@ -74,25 +68,47 @@
                             <span asp-validation-for="CronExpression" class="text-danger"></span>
                         </div>
                     </div>
-
                 </div>
             </div>
-
-            <div class="form-group" style="display:none">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-            </div>
-            <br /><br />
-            <div class="form-group">
-                <input type="submit" value="Save Reminder" class="btn btn-success" />
-                @if (Model.Id != default(long))
-                {
-                    <input type="button" id="deleteBtn" value="Delete Reminder" class="btn btn-danger" />
-                }
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @*<div class="form-row">
+            <div class="col-4">
+                <div class="form-group">
+                    <label asp-for="ChannelId"></label>
+                    <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
+                    <span asp-validation-for="ChannelId" class="text-danger"></span>
+                </div>
+            </div>
+        </div>*@
+
+    @*<div class="form-row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label asp-for="Message" class="control-label"></label>
+                    <textarea asp-for="Message" rows="5" class="form-control"></textarea>
+                    <span asp-validation-for="Message" class="text-danger"></span>
+                </div>
+            </div>
+        </div>*@
+    
+    <div class="row mt-4">
+        <div class="ml-auto">
+            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save Reminder</button>
+            @if (Model.Id != default(long))
+            {
+                <button type="button" id="deleteBtn" class="btn btn-danger pr-4 pl-4 ml-2" style="border-radius:20px;">Delete Reminder</button>
+            }
+        </div>
+    </div>
+    <div class="form-group" style="display:none">
+        <label asp-for="Id" class="control-label"></label>
+        <input asp-for="Id" class="form-control" />
+    </div>
+</form>
 
 <div>
     <form asp-action="DeleteRecurringReminder" id="deleteForm">
@@ -100,7 +116,6 @@
             <label asp-for="Id" class="control-label"></label>
             <input asp-for="Id" class="form-control" />
         </div>
-
     </form>
     <a asp-action="RemembotSettings" asp-controller="Settings">Back to List</a>
 </div>
@@ -119,6 +134,37 @@
     </environment>
 
     <script type="text/javascript">
+        $("#selectBox").dxSelectBox({
+            dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Channels)))'),
+            valueExpr: "value",
+            displayExpr: "text",
+            searchEnabled: true,
+            value: '@Model.ChannelId',
+            onInitialized: (e) => {
+                $('input[name="ChannelId"]').val('@Model.ChannelId');
+            },
+            onValueChanged: (e) => {
+                $('input[name="ChannelId"]').val(e.value);
+            }
+        });
+        $("#textBox").dxTextArea({
+            height: 250,
+            value: '@Model.Message',
+            onInitialized: (e) => {
+                $('input[name="Message"]').val('@Model.Message');
+            },
+            onValueChanged: (e) => {
+                $('input[name="Message"]').val(e.value.replaceAll('\n', '<br>'));
+            }
+        });
+        $('input:not(".active")').click((e) => {
+            $(e.currentTarget).parent().parent().find('.active').toggleClass('active border-gray2 bg-white text-gray2');
+            $(e.currentTarget).parent().toggleClass('active border-gray2 bg-white text-gray2');
+        });
+        String.prototype.replaceAll = function (search, replacement) {
+            var target = this;
+            return target.replace(new RegExp(search, 'g'), replacement);
+        };
         $(document).ready(function () {
             var faultType = @Model.FaultType;
             var cronExpression = $("#CronExpression").val();

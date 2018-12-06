@@ -4,7 +4,7 @@
 }
 
 <h2>@ViewData["Title"]</h2>
-<hr />
+<hr /> 
 
 <div class="row">
     <div class="col-md-12">
@@ -32,7 +32,7 @@
 
                     <div class="col-12">
                         <div asp-validation-summary="All" class="text-danger"></div>
-
+                        <input type="hidden" name="ChannelId" />
                         <h4>@*Stream Announcer*@</h4>
                         @*<div class="form-group">
                             <label asp-for="ChannelId"></label>
@@ -69,6 +69,7 @@
                         <h4>Stream Announcer</h4>
                         <hr />
                         <label asp-for="ChannelId"></label>
+                        <input type="hidden" name="ChannelId"  />
                         <div id="selectChannel"></div>
                     </div>
                     <div class="col-md-9 pt-3 pb-3">
@@ -79,13 +80,13 @@
                     </div>
                     <div class="col-md-3 valign">
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
-                            <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "active" : "border-gray2 bg-white text-gray2")">
+                            <label for="enabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "active" : "border-gray2 bg-white text-gray2")">
                                 On
-                                <input id="enabledBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="true">
+                                <input id="enabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="true">
                             </label>
-                            <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "border-gray2 bg-white text-gray2" : "active")">
+                            <label for="disabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "border-gray2 bg-white text-gray2" : "active")">
                                 Off
-                                <input id="disabledBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="false">
+                                <input id="disabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="false">
                             </label>
                         </div>
                     </div>
@@ -98,13 +99,13 @@
                     </div>
                     <div class="col-md-3 valign">
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
-                            <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "active" : "border-gray2 bg-white text-gray2")">
+                            <label for="rmEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "active" : "border-gray2 bg-white text-gray2")">
                                 On
-                                <input id="enabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="true">
+                                <input id="rmEnabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="true">
                             </label>
-                            <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "border-gray2 bg-white text-gray2" : "active")">
+                            <label for="rmDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "border-gray2 bg-white text-gray2" : "active")">
                                 Off
-                                <input id="disabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="false">
+                                <input id="rmDisabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="false">
                             </label>
                         </div>
                     </div>
@@ -115,6 +116,7 @@
                         <h4>Streamer Role</h4>
                         <hr />
                         <label asp-for="RoleId"></label>
+                        <input type="hidden" name="RoleId" />
                         <div id="selectRole"></div>
                     </div>
                     <div class="col-md-9 pt-3 pb-3">
@@ -125,13 +127,13 @@
                     </div>
                     <div class="col-md-3 valign">
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
-                            <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "active" : "border-gray2 bg-white text-gray2")">
+                            <label for="roleEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "active" : "border-gray2 bg-white text-gray2")">
                                 On
-                                <input id="enabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="true">
+                                <input id="roleEnabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="true">
                             </label>
-                            <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "border-gray2 bg-white text-gray2" : "active")">
+                            <label for="roleDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "border-gray2 bg-white text-gray2" : "active")">
                                 Off
-                                <input id="disabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="false">
+                                <input id="roleDisabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="false">
                             </label>
                         </div>
                     </div>
@@ -182,13 +184,28 @@
             dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Channels)))'),
             searchEnabled: true,
             valueExpr: "value",
-            searchExpr: "text"
+            displayExpr: "text",
+            value: '@Model.ChannelId',
+            onInitialized: (e) => {
+                $('input[name="ChannelId"]').val('@Model.ChannelId');
+            },
+            onValueChanged: (e) => {
+                $('input[name="ChannelId"]').val(e.value);
+            }
         });
+
         $('#selectRole').dxSelectBox({
             dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Roles)))'),
             searchEnabled: true,
             valueExpr: "value",
-            searchExpr: "text"
+            displayExpr: "text",
+            value: '@Model.RoleId',
+            onInitialized: (e) => {
+                $('input[name="RoleId"]').val('@Model.RoleId');
+            },
+            onValueChanged: (e) => {
+                $('input[name="RoleId"]').val(e.value);
+            }
         });
 
         $('.module-enabler input:not(".active")').click((e) => {

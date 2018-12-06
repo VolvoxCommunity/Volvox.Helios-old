@@ -13,6 +13,7 @@
                 <div class="col-md-6">
                     <label asp-for="ChannelId"></label>
                     <span asp-validation-for="ChannelId" class="text-danger"></span>
+                    <input type="hidden" name="ChannelId"  />
                     <div id="channelSelect"></div>
                     @*<label asp-for="ChannelId"></label>
                 <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
@@ -27,12 +28,14 @@
 
             <div class="options mt-3">
                 <div class="row">
-                    <label class="col-12">Option</label>
+                    <label class="col-12">Option 1</label>
                     <div class="col-md-11">
-                        <input name="option" maxlength="100" type="text" class="form-control material-input" autocomplete="off" />
+                        <input name="options[0]" maxlength="100" type="text" class="form-control material-input" autocomplete="off" />
                     </div>
                     <div class="col-md-1">
-                        <button type="button" class="btn btn-volvox-outline btn-block" onclick="addPollOption(event)">New</button>
+                        <button type="button" class="btn btn-volvox-outline rounded-circle d-block mx-auto" style="height: 40px;" onclick="addPollOption(event)">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -60,21 +63,30 @@
             displayExpr: "text",
             searchEnabled: true,
             onValueChanged: (e) => {
-                
+                $('input[name="ChannelId"]').val(e.value);
             }
         });
+        
         function addPollOption(e) {
-            $('.options').append(`
+            var options = $('.options').find('.row').length + 1;
+            if (options <= 10) {
+                console.log($('.options .row')[options - 2], options - 2);
+                $(e.currentTarget).parent().remove();
+                $($('.options .row')[options - 2]).find('.col-md-11').toggleClass('col-md-11 col-12');
+                $('.options').append(`
                 <div class="row mt-3">
-                    <label class="col-12">Option</label>
+                    <label class="col-12">Option ${options}</label>
                     <div class="col-md-11">
-                        <input name="option" maxlength="100" type="text" class="form-control material-input" autocomplete="off" />
+                        <input name="options[${options}]" maxlength="100" type="text" class="form-control material-input" autocomplete="off" />
                     </div>
                     <div class="col-md-1">
-                        <button type="button" class="btn btn-volvox-outline btn-block" onclick="addPollOption(event)">New</button>
+                        <button type="button" class="btn btn-volvox-outline rounded-circle d-block mx-auto" style="height: 40px;" onclick="addPollOption(event)">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
                 </div>
             `);
+            }
         }
     </script>
 }

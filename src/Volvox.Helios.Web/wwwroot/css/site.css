@@ -417,15 +417,15 @@ input:checked + .slider:before {
 .poll-item{
   border-color: var(--color-volvox);
 }
-.vote-count{
+.vote-count {
   position: absolute;
-  right: 0;
-  width: 15%;
+  right: 20px;
   background: var(--color-volvox);
-  height: 100%;
   top: 0;
   color: white;
   justify-content: center;
+  padding: 0px 14px 2px;
+  border-radius: 0 0 3px 3px;
 }
 
 /******* Footer ********/
@@ -450,8 +450,11 @@ input:checked + .slider:before {
   height: 38px;
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
-.dx-selectbox.dx-state-hover, .dx-texteditor.dx-state-focused {
+.dx-texteditor.dx-state-hover, .dx-texteditor.dx-state-focused {
   border-color: var(--color-volvox) !important;
+}
+.dx-list-item.dx-state-active{
+  background: var(--color-volvox) !important;
 }
 
 @media screen and (max-width: 991px) {
