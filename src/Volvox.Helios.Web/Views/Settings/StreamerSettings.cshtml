@@ -21,11 +21,11 @@
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
                             <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "border-gray2 bg-white text-gray2")">
                                 On
-                                <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true">
+                                <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
                             </label>
                             <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "border-gray2 bg-white text-gray2" : "active")">
                                 Off
-                                <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false">
+                                <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false"@(Model.Enabled ? "" : "checked")>
                             </label>
                         </div>
                     </div>
@@ -69,8 +69,9 @@
                         <h4>Stream Announcer</h4>
                         <hr />
                         <label asp-for="ChannelId"></label>
-                        <input type="hidden" name="ChannelId"  />
+                        <input type="hidden" name="ChannelId" />
                         <div id="selectChannel"></div>
+                        <span asp-validation-for="ChannelId" class="text-danger"></span>
                     </div>
                     <div class="col-md-9 pt-3 pb-3">
                         <h4>Enable Channel</h4>
@@ -82,11 +83,11 @@
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
                             <label for="enabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "active" : "border-gray2 bg-white text-gray2")">
                                 On
-                                <input id="enabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="true">
+                                <input id="enabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="true" @(Model.ChannelSettings.Enabled ? "checked" : "")>
                             </label>
                             <label for="disabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "border-gray2 bg-white text-gray2" : "active")">
                                 Off
-                                <input id="disabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="false">
+                                <input id="disabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="false" @(Model.ChannelSettings.Enabled ? "" : "checked")>
                             </label>
                         </div>
                     </div>
@@ -101,11 +102,11 @@
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
                             <label for="rmEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "active" : "border-gray2 bg-white text-gray2")">
                                 On
-                                <input id="rmEnabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="true">
+                                <input id="rmEnabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="true" @(Model.ChannelSettings.RemoveMessages ? "checked" : "")>
                             </label>
                             <label for="rmDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "border-gray2 bg-white text-gray2" : "active")">
                                 Off
-                                <input id="rmDisabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="false">
+                                <input id="rmDisabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="false" @(Model.ChannelSettings.RemoveMessages ? "" : "checked")>
                             </label>
                         </div>
                     </div>
@@ -118,6 +119,7 @@
                         <label asp-for="RoleId"></label>
                         <input type="hidden" name="RoleId" />
                         <div id="selectRole"></div>
+                        <span asp-validation-for="RoleId" class="text-danger"></span>
                     </div>
                     <div class="col-md-9 pt-3 pb-3">
                         <h4>Role enabled</h4>
@@ -129,11 +131,11 @@
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
                             <label for="roleEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "active" : "border-gray2 bg-white text-gray2")">
                                 On
-                                <input id="roleEnabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="true">
+                                <input id="roleEnabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="true" @(Model.StreamerRoleEnabled ? "checked" : "")>
                             </label>
                             <label for="roleDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "border-gray2 bg-white text-gray2" : "active")">
                                 Off
-                                <input id="roleDisabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="false">
+                                <input id="roleDisabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="false" @(Model.StreamerRoleEnabled ? "" : "checked")>
                             </label>
                         </div>
                     </div>
@@ -149,7 +151,7 @@
                 </div>
             </div>
             
-            
+            @Model.ChannelId
         </form>
     </div>
 </div>
