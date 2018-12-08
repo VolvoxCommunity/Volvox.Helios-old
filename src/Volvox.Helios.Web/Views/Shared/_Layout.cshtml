@@ -17,7 +17,7 @@
     <meta name="theme-color" content="#5DCC32">
 
     <title>@ViewData["Title"] - Volvox.Helios</title>
-
+    <link href="~/css/loader.css" rel="stylesheet" />
     <environment include="Development">
         <link rel="stylesheet" href="~/vendor.min.css" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
@@ -36,9 +36,29 @@
     </environment>
     <link rel="icon" type="image/x-icon" href="~/images/small/volvox-logo.png">
 
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            var loader = document.getElementById('preloader');
+            loader.classList.add('toggled');
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 1500)
+        });
+
+    </script>
+
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
 <body>
+    <div id="preloader">
+        <div class="loader-anim">
+            <div class="bg"></div>
+            <div class="content">
+                Loading...
+            </div>
+        </div>
+    </div>
     <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
         <div class="container">
             <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
