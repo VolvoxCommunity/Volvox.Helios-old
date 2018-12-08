@@ -150,17 +150,33 @@ namespace Volvox.Helios.Web.Controllers
             // Remember if there were settings in db, as settings will be populated later if they aren't.
             var isSettingsInDb = settings != null;
 
-            var saveSettingsTasks = new List<Task>
+            var isInitialEntry = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId);
+
+            var saveSettingsTasks = new List<Task>();
+
+            // If the guild doesn't already have a settings DB entry, we want to add one before we do anything else.
+            // Running that operation along side adding individual channel settings risks throwing an FK exception.
+            if (isInitialEntry == null)
             {
-                _streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
+                await _streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
                 {
                     GuildId = guildId,
                     Enabled = viewModel.Enabled,
                     StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
                     RoleId = viewModel.RoleId
-                })
-            };
-
+                });
+            }
+            else
+            {
+                saveSettingsTasks.Add(_streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
+                {
+                    GuildId = guildId,
+                    Enabled = viewModel.Enabled,
+                    StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
+                    RoleId = viewModel.RoleId
+                }));
+            }
+            
             // Save general module settings to the database
             if (!isSettingsInDb)
                 settings = new StreamerChannelSettings
