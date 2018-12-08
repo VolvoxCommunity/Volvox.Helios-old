@@ -22,6 +22,7 @@ body {
     padding-top: 50px;
     display: flex;
     flex-direction: column;
+    overflow-y: hidden;
 }
 .valign {
   display: flex;
@@ -330,7 +331,9 @@ input:checked + .slider:before {
 .module-enabled-popover.module-version.danger-popover {
   background: #8C8C8C;
 }
-
+.module-enabler{
+  margin-bottom: 0;
+}
 
 /* Home */
 .home-header {
@@ -457,7 +460,12 @@ input:checked + .slider:before {
   background: var(--color-volvox) !important;
 }
 
-@media screen and (max-width: 991px) {
+/*******Cookie consent*****/
+#cookieConsent{
+  border-top: 3px solid var(--color-skyblue);
+}
+
+@media screen and (max-width: 767px) {
   #themeToggler {
     display: none;
   }

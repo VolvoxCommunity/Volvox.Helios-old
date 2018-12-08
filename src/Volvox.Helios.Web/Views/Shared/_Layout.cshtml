@@ -21,7 +21,6 @@
     <environment include="Development">
         <link rel="stylesheet" href="~/vendor.min.css" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-        <link rel="stylesheet" href="/css/light-theme.css" id="lightThemeLink">
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment exclude="Development">
@@ -43,7 +42,8 @@
             loader.classList.add('toggled');
             setTimeout(() => {
                 loader.style.display = 'none';
-            }, 1500)
+                document.body.style.overflowY = "auto";
+            }, 1300)
         });
 
     </script>
@@ -62,7 +62,7 @@
     <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
         <div class="container">
             <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
-                <img class="d-inline-block align-top" style="width: 30px; height: 30px" src="/images/small/volvox-logo.png" alt="Volvox.Helios" />
+                <img class="d-inline-block align-top" style="width: 30px; height: 30px" src="/images/small/volvox-logo.png" alt="Volvox.Helios" id="navLogo" />
                 Volvox.Helios
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -148,6 +148,11 @@
     </environment>
     @RenderSection("Scripts", required: false)
     <script>
+        var darkTheme = window.localStorage.getItem('darkTheme');
+        if (!darkTheme)
+            darkTheme = "true";
+        
+        toggleTheme(darkTheme);
         $('#settingsNavDropdown').click(() => {
             $('#settingsDropDown').populateSettings();
         });
@@ -157,15 +162,14 @@
         });
 
         // Dark theme toggle
-        var darkThemeEnabled = false;
         $('#themeToggler').click((e) => {
-            darkThemeEnabled = !darkThemeEnabled;
             var nextEl = $(e.currentTarget).find('i.d-none').removeClass('d-none').next();
             if (nextEl.length == 0)
                 nextEl = $(e.currentTarget).find('i').first();
             nextEl.addClass('d-none');
 
-            toggleTheme(darkThemeEnabled);
+            darkTheme = window.localStorage.getItem('darkTheme');
+            toggleTheme(darkTheme == "true" ? "false" : "true");
         });
 
         var HW_config = {
@@ -173,15 +177,20 @@
             account: "7q0G0x"
         }
         function toggleTheme(darkThemeEnabled) {
-            $('.navbar').toggleClass('navbar-light navbar-dark bg-light');
-
-            if (darkThemeEnabled) {
+            if (darkThemeEnabled == "true") {
                 $('#lightThemeLink').remove();
                 $('head').append('<link rel="stylesheet" href="/css/dark-theme.css" id="darkThemeLink">');
-            } else {
+                $('.navbar').removeClass('navbar-light bg-light').addClass('navbar-dark');
+                $('#themeToggler').find('.fa-sun').removeClass('d-none').parent().find('.fa-moon').addClass('d-none');
+                $('#navLogo').attr('src', '/images/small/volvox-logo-light.png');
+            } else if (darkThemeEnabled == "false") {
                 $('#darkThemeLink').remove();
                 $('head').append('<link rel="stylesheet" href="/css/light-theme.css" id="lightThemeLink">');
+                $('.navbar').removeClass('navbar-dark').addClass('navbar-light bg-light');
+                $('#themeToggler').find('.fa-moon').removeClass('d-none').parent().find('.fa-sun').addClass('d-none');
+                $('#navLogo').attr('src', '/images/small/volvox-logo.png');
             }
+            window.localStorage.setItem("darkTheme", darkThemeEnabled);
         }
     </script>
     <script async src="https://cdn.headwayapp.co/widget.js"></script>

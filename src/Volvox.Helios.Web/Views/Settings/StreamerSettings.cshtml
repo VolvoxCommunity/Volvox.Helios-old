@@ -19,22 +19,22 @@
                     </div>
                     <div class="col-md-3 valign">
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
-                            <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "border-gray2 bg-white text-gray2")">
+                            <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
                                 On
                                 <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
                             </label>
-                            <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "border-gray2 bg-white text-gray2" : "active")">
+                            <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
                                 Off
                                 <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false"@(Model.Enabled ? "" : "checked")>
                             </label>
                         </div>
                     </div>
 
-                    <div class="col-12">
+                    @*<div class="col-12">
                         <div asp-validation-summary="All" class="text-danger"></div>
                         <input type="hidden" name="ChannelId" />
-                        <h4>@*Stream Announcer*@</h4>
-                        @*<div class="form-group">
+                        <h4>Stream Announcer</h4>
+                        <div class="form-group">
                             <label asp-for="ChannelId"></label>
                             <select asp-for="ChannelId" asp-items="Model.Channels" id="channels" class="form-control"></select>
                             <span asp-validation-for="ChannelId" class="text-danger"></span>
@@ -48,9 +48,9 @@
                             <input asp-for="ChannelSettings.RemoveMessages" class="form-check-input" />
                             <label asp-for="ChannelSettings.RemoveMessages" class="form-check-label"></label>
                             <span asp-validation-for="ChannelSettings.RemoveMessages" class="text-danger"></span>
-                        </div>*@
+                        </div>
 
-                        @*<h4 class="mt-4">Streamer Role</h4>
+                        <h4 class="mt-4">Streamer Role</h4>
                         <div class="form-check form-group">
                             <input asp-for="StreamerRoleEnabled" class="form-check-input" />
                             <label asp-for="StreamerRoleEnabled" class="form-check-label"></label>
@@ -60,8 +60,8 @@
                             <label asp-for="RoleId"></label>
                             <select asp-for="RoleId" asp-items="Model.Roles" id="roles" class="form-control"></select>
                             <span asp-validation-for="RoleId" class="text-danger"></span>
-                        </div>*@
-                    </div>
+                        </div>
+                    </div>*@
                 </div>
 
                 <div class="row mt-4 border border-gray2 rounded">
@@ -81,11 +81,11 @@
                     </div>
                     <div class="col-md-3 valign">
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
-                            <label for="enabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "active" : "border-gray2 bg-white text-gray2")">
+                            <label for="enabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "active" : "disabled")">
                                 On
                                 <input id="enabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="true" @(Model.ChannelSettings.Enabled ? "checked" : "")>
                             </label>
-                            <label for="disabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "border-gray2 bg-white text-gray2" : "active")">
+                            <label for="disabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "disabled" : "active")">
                                 Off
                                 <input id="disabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="false" @(Model.ChannelSettings.Enabled ? "" : "checked")>
                             </label>
@@ -100,11 +100,11 @@
                     </div>
                     <div class="col-md-3 valign">
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
-                            <label for="rmEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "active" : "border-gray2 bg-white text-gray2")">
+                            <label for="rmEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "active" : "disabled")">
                                 On
                                 <input id="rmEnabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="true" @(Model.ChannelSettings.RemoveMessages ? "checked" : "")>
                             </label>
-                            <label for="rmDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "border-gray2 bg-white text-gray2" : "active")">
+                            <label for="rmDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "disabled" : "active")">
                                 Off
                                 <input id="rmDisabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="false" @(Model.ChannelSettings.RemoveMessages ? "" : "checked")>
                             </label>
@@ -129,11 +129,11 @@
                     </div>
                     <div class="col-md-3 valign">
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
-                            <label for="roleEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "active" : "border-gray2 bg-white text-gray2")">
+                            <label for="roleEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "active" : "disabled")">
                                 On
                                 <input id="roleEnabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="true" @(Model.StreamerRoleEnabled ? "checked" : "")>
                             </label>
-                            <label for="roleDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "border-gray2 bg-white text-gray2" : "active")">
+                            <label for="roleDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "disabled" : "active")">
                                 Off
                                 <input id="roleDisabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="false" @(Model.StreamerRoleEnabled ? "" : "checked")>
                             </label>
@@ -144,6 +144,7 @@
                 <div class="col-12">
                     <div class="row mt-4">
                         <span asp-validation-summary="Enabled" class="text-danger"></span>
+                        <div asp-validation-summary="All" class="text-danger"></div>
                         <div class="ml-auto">
                             <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
                         </div>
@@ -211,8 +212,8 @@
         });
 
         $('.module-enabler input:not(".active")').click((e) => {
-            $(e.currentTarget).parent().parent().find('.active').toggleClass('active border-gray2 bg-white text-gray2');
-            $(e.currentTarget).parent().toggleClass('active border-gray2 bg-white text-gray2');
+            $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
+            $(e.currentTarget).parent().toggleClass('active disabled');
         });
     </script>
 }

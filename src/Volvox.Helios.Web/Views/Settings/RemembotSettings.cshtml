@@ -18,13 +18,13 @@
         </div>
         <div class="col-md-3 valign">
             <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
-                <label for="enabledBtn" class="btn pr-4 pl-4 @(Model.Enabled ? "active" : "border-gray2 bg-white text-gray2")">
+                <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
                     On
-                    <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true">
+                    <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
                 </label>
-                <label for="disabledBtn" class="btn pr-4 pl-4 @(Model.Enabled ? "border-gray2 bg-white text-gray2" : "active")">
+                <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
                     Off
-                    <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false">
+                    <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
                 </label>
             </div>
         </div>
@@ -100,9 +100,9 @@
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
     <script>
-        $('input:not(".active")').click((e) => {
-            $(e.currentTarget).parent().parent().find('.active').toggleClass('active border-gray2 bg-white text-gray2');
-            $(e.currentTarget).parent().toggleClass('active border-gray2 bg-white text-gray2');
+        $('.module-enabler input:not(".active")').click((e) => {
+            $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
+            $(e.currentTarget).parent().toggleClass('active disabled');
         });
     </script>
 }
