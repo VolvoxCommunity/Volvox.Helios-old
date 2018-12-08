@@ -68,6 +68,7 @@
                     <div class="col-12 pt-3">
                         <h4>Stream Announcer</h4>
                         <hr />
+                        @(Model.ChannelId)
                         <label asp-for="ChannelId"></label>
                         <input type="hidden" name="ChannelId" />
                         <div id="selectChannel"></div>
@@ -78,6 +79,7 @@
                         <p class="mb-0 text-volvox">
                             Enables the Stream Announcer Channel
                         </p>
+                        <span asp-validation-for="ChannelSettings.Enabled" class="text-danger"></span>
                     </div>
                     <div class="col-md-3 valign">
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
@@ -97,6 +99,7 @@
                         <p class="mb-0 text-volvox">
                             Removes the messages on conclusion
                         </p>
+                        <span asp-validation-for="ChannelSettings.RemoveMessages" class="text-danger"></span>
                     </div>
                     <div class="col-md-3 valign">
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
@@ -126,6 +129,7 @@
                         <p class="mb-0 text-volvox">
                             Enables the streamer role
                         </p>
+                        <span asp-validation-for="StreamerRoleEnabled" class="text-danger"></span>
                     </div>
                     <div class="col-md-3 valign">
                         <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
@@ -151,8 +155,6 @@
                     </div>
                 </div>
             </div>
-            
-            @Model.ChannelId
         </form>
     </div>
 </div>
@@ -182,7 +184,8 @@
                     $('#ChannelSettings_RemoveMessages').prop('checked', response.removeMessages);
                 });
             });
-        
+        var src = '@(Html.Raw(Json.Serialize(Model.Channels)))';
+        console.log(JSON.parse(src));
         $('#selectChannel').dxSelectBox({
             dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Channels)))'),
             searchEnabled: true,
