@@ -23,11 +23,7 @@ namespace Volvox.Helios.Web.Controllers
 {
     // TODO : ensure channel exists before adding to whitelist. same for role.
 
-    // TODO : NULL CHECKS
-
     // TODO : exctract logic and inject them into controller
-
-    // TODO :  display if the filter is enabled or disabled from the card
 
     [Authorize]
     [Route("/moderator/{guildId}")]
@@ -187,6 +183,9 @@ namespace Volvox.Helios.Web.Controllers
         {
             ClearCacheById(guildId);
 
+            // Ensures the base moderation settings exist to prevent FK exceptions.
+            await EnsureSettingsExists(guildId);
+
             var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId, x => x.LinkFilter.WhitelistedLinks, x => x.WhitelistedChannels, x => x.WhitelistedRoles);
 
             var filter = await _entityServiceLinkFilter.GetFirst(f => f.GuildId == guildId);
@@ -275,6 +274,9 @@ namespace Volvox.Helios.Web.Controllers
         public async Task<IActionResult> UpdateProfanityFilter(ulong guildId, ProfanityFilterViewModel vm)
         {
             ClearCacheById(guildId);
+
+            // Ensures the base moderation settings exist to prevent FK exceptions.
+            await EnsureSettingsExists(guildId);
 
             var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId, x => x.ProfanityFilter.BannedWords, x => x.WhitelistedChannels, x => x.WhitelistedRoles);
 
@@ -366,6 +368,9 @@ namespace Volvox.Helios.Web.Controllers
         [HttpPost("punishments")]
         public async Task<IActionResult> Punishments(ulong guildId, PunishmentsViewModel vm)
         {
+            // Ensures the base moderation settings exist to prevent FK exceptions.
+            await EnsureSettingsExists(guildId);
+
             var punishments = vm.Punishments ?? new List<PunishmentModel>();
 
             var punishmentsToRemove = new List<Punishment>();

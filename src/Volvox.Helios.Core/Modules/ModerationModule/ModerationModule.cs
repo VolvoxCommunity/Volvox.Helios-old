@@ -29,8 +29,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : MAKE SURE EXPIRE PERIOD DOESNT EXCEDE MAX DATETIME
 
-        // TODO : Uncomment out the auth checks in moderation controller.
-
         // TODO : Consider not adding warnings if the guild has no punishments in place. Perhaps have purge button too, for warnings of users.
 
         // TODO : display role name instead of id in punishments view
@@ -39,26 +37,13 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : add extra filters like caps filters, emoji filters
 
-        ///////////////////////// IMPORTANT TODO :  Fix null errors in the call to has bypass authority. if settings.whitelistedchannels/roles is null, there is an error.
-
         // TODO : Extract logic and user interfaces, that way can change the functionality without changing the core module
-
 
         // NEXT FEATURES TODO :
         /*
-         when removing a setting
-            System.InvalidOperationException: 'The property 'Id' on entity type 'Punishment' has a temporary value while attempting to change the entity's state to 'Deleted'. Either set a permanent value explicitly or ensure that the database is configured to generate values for this property.'
-            line 98 entity srvice base
-
-          dont allow saving of any settings of profanitty filter if moderation settings is null as it will throw FK error
-
-
-          null check when setting expire date. if expire time is null it will throw an error. line 552
-
-            DECIDE WHETHER I WANT NULL OR 0 TO MEAN NEVER EXPIRE
-                            ----- WE WANT 0. MAY HAVE TO UPDATE MODELS
-
           look into wildcards as bapes suggested
+
+          why is punishment never expire even though it should? the punishment entry is correct, but active punishment entry is set to never expire....
          */
 
 
