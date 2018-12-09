@@ -73,7 +73,7 @@ namespace Volvox.Helios.Core.Modules.ChatTracker
         /// <param name="channel">Channel that the messages was sent in.</param>
         private async Task MessageDeleted(Cacheable<IMessage, ulong> message, ISocketMessageChannel channel)
         {
-            if (!message.Value.Author.IsBot)
+            if (message.HasValue && !message.Value.Author.IsBot)
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var messageService = scope.ServiceProvider.GetRequiredService<IEntityService<Message>>();
