@@ -351,7 +351,8 @@ namespace Volvox.Helios.Web.Controllers
                     WarningThreshold = p.WarningThreshold,
                     WarningType = p.WarningType,
                     Role = new SelectList(roles, "Id", "Name", role),
-                    DeletePunishment = false
+                    DeletePunishment = false,
+                    PunishmentId = p.Id
                 });
             }
 
@@ -371,7 +372,10 @@ namespace Volvox.Helios.Web.Controllers
 
             foreach (var model in punishments.Where(x => x.DeletePunishment))
             {
-                punishmentsToRemove.Add(ConvertModelPunishment(guildId, model));
+                if (model.PunishmentId.HasValue)
+                {
+                    punishmentsToRemove.Add(ConvertModelPunishment(guildId, model));
+                }
             }
 
             await _entityServicePunishments.RemoveBulk(punishmentsToRemove);
