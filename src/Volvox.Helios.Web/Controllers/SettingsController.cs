@@ -143,44 +143,65 @@ namespace Volvox.Helios.Web.Controllers
                 viewModel.Roles = new SelectList(roles.RemoveManaged(), "Id", "Name");
 
                 return View(viewModel);
-            }
+            }  
 
-            var settings = await _streamAnnouncerChannelSettingsService.Find(viewModel.ChannelId);
+            var moduleSettings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId);
 
-            // Remember if there were settings in db, as settings will be populated later if they aren't.
-            var isSettingsInDb = settings != null;
+            var saveSettingsTasks = new List<Task>();
 
-            var saveSettingsTasks = new List<Task>
+            // If the guild doesn't already have a settings DB entry, we want to add one before we do anything else.
+            // Running that operation along side adding individual channel settings risks throwing an FK exception.
+            if (moduleSettings == null)
             {
-                _streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
+                await _streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
                 {
                     GuildId = guildId,
                     Enabled = viewModel.Enabled,
                     StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
                     RoleId = viewModel.RoleId
-                })
-            };
-
-            // Save general module settings to the database
-            if (!isSettingsInDb)
-                settings = new StreamerChannelSettings
-                {
-                    GuildId = guildId,
-                    ChannelId = viewModel.ChannelId
-                };
-
-            settings.RemoveMessage = viewModel.ChannelSettings.RemoveMessages;
-
-            // Save specific channel settings to the database.
-            if (viewModel.ChannelSettings.Enabled)
-                saveSettingsTasks.Add(!isSettingsInDb
-                    ? _streamAnnouncerChannelSettingsService.Create(settings)
-                    : _streamAnnouncerChannelSettingsService.Update(settings));
+                });
+            }
             else
             {
-                if (isSettingsInDb)
-                    saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Remove(settings));
+                saveSettingsTasks.Add(_streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
+                {
+                    GuildId = guildId,
+                    Enabled = viewModel.Enabled,
+                    StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
+                    RoleId = viewModel.RoleId
+                }));
             }
+
+            // Value defaults to 0, if the value is 0, EF will try to auto increment the ID, throwing an error.
+            if (viewModel.ChannelId != 0)
+            {
+                // Settings for the specified channel of a guild.
+                var settings = await _streamAnnouncerChannelSettingsService.Find(viewModel.ChannelId);
+
+                // Remember if there were settings in db, as settings will be populated later if they aren't.
+                var isSettingsInDb = settings != null;
+
+                // Save general module settings to the database
+                if (!isSettingsInDb)
+                    settings = new StreamerChannelSettings
+                    {
+                        GuildId = guildId,
+                        ChannelId = viewModel.ChannelId
+                    };
+
+                settings.RemoveMessage = viewModel.ChannelSettings.RemoveMessages;
+
+                // Save specific channel settings to the database.
+                if (viewModel.ChannelSettings.Enabled)
+                    saveSettingsTasks.Add(!isSettingsInDb
+                        ? _streamAnnouncerChannelSettingsService.Create(settings)
+                        : _streamAnnouncerChannelSettingsService.Update(settings));
+                else
+                {
+                    if (isSettingsInDb)
+                        saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Remove(settings));
+                }
+            }         
 
             await Task.WhenAll(saveSettingsTasks.ToArray());
 
