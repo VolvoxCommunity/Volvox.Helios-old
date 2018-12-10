@@ -218,15 +218,15 @@
                     }
 
                     if (response.removeMessages) {
-                        $('#rmEnabledBtn').prop('checked', response.enabled).parent().addClass('active');
-                        $('#rmDisabledBtn').prop('checked', !response.enabled).parent().removeClass('active');
-                        $('#rmEnabledBtn').prop('checked', response.enabled).parent().removeClass('disabled');
-                        $('#rmDisabledBtn').prop('checked', !response.enabled).parent().addClass('disabled');
+                        $('#rmEnabledBtn').prop('checked', response.removeMessages).parent().addClass('active');
+                        $('#rmDisabledBtn').prop('checked', !response.removeMessages).parent().removeClass('active');
+                        $('#rmEnabledBtn').prop('checked', response.removeMessages).parent().removeClass('disabled');
+                        $('#rmDisabledBtn').prop('checked', !response.removeMessages).parent().addClass('disabled');
                     } else {
-                        $('#rmEnabledBtn').prop('checked', response.enabled).parent().addClass('disabled');
-                        $('#rmDisabledBtn').prop('checked', !response.enabled).parent().removeClass('disabled');
-                        $('#rmEnabledBtn').prop('checked', response.enabled).parent().removeClass('active');
-                        $('#rmDisabledBtn').prop('checked', !response.enabled).parent().addClass('active');
+                        $('#rmEnabledBtn').prop('checked', response.removeMessages).parent().addClass('disabled');
+                        $('#rmDisabledBtn').prop('checked', !response.removeMessages).parent().removeClass('disabled');
+                        $('#rmEnabledBtn').prop('checked', response.removeMessages).parent().removeClass('active');
+                        $('#rmDisabledBtn').prop('checked', !response.removeMessages).parent().addClass('active');
                     }
 
                     console.log(response, 'changed');
