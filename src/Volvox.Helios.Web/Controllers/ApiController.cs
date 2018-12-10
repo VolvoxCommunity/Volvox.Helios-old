@@ -56,7 +56,7 @@ namespace Volvox.Helios.Web.Controllers
                 };
 
             // Settings for specific channel.
-            var channelSettings = allChannelSettings.ChannelSettings.FirstOrDefault(x => x.ChannelId == channelId);
+            var channelSettings = allChannelSettings.ChannelSettings?.FirstOrDefault(x => x.ChannelId == channelId);
 
             var isEnabled = channelSettings != null;
 
