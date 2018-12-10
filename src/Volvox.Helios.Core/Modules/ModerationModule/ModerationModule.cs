@@ -31,8 +31,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Consider not adding warnings if the guild has no punishments in place. Perhaps have purge button too, for warnings of users.
 
-        // TODO : display role name instead of id in punishments view
-
         // TODO : Add warnings page to clear user warnings and stuff
 
         // TODO : add extra filters like caps filters, emoji filters
@@ -45,7 +43,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
           why is punishment never expire even though it should? the punishment entry is correct, but active punishment entry is set to never expire....
          */
-
 
         #region Private vars
 

@@ -30,21 +30,21 @@ namespace Volvox.Helios.Web.Controllers
     [IsUserGuildAdminFilter]
     public class ModerationController : Controller
     {
-        IModuleSettingsService<ModerationSettings> _moderationSettings;
+        private readonly IModuleSettingsService<ModerationSettings> _moderationSettings;
 
-        IEntityService<ProfanityFilter> _entityServiceProfanityFilter;
+        private readonly IEntityService<ProfanityFilter> _entityServiceProfanityFilter;
 
-        IEntityService<LinkFilter> _entityServiceLinkFilter;
+        private readonly IEntityService<LinkFilter> _entityServiceLinkFilter;
 
-        IEntityService<WhitelistedChannel> _entityServiceWhitelistedChannels;
+        private readonly IEntityService<WhitelistedChannel> _entityServiceWhitelistedChannels;
 
-        IEntityService<WhitelistedRole> _entityServiceWhitelistedRoles;
+        private readonly IEntityService<WhitelistedRole> _entityServiceWhitelistedRoles;
 
-        IEntityService<WhitelistedLink> _entityServiceWhitelistedLinks;
+        private readonly IEntityService<WhitelistedLink> _entityServiceWhitelistedLinks;
 
-        IEntityService<BannedWord> _entityServiceBannedWords;
+        private readonly IEntityService<BannedWord> _entityServiceBannedWords;
 
-        IEntityService<Punishment> _entityServicePunishments;
+        private readonly IEntityService<Punishment> _entityServicePunishments;
 
         public ModerationController(IModuleSettingsService<ModerationSettings> moderationSettings,
             IEntityService<ProfanityFilter> entityServiceProfanityFilter,
@@ -412,6 +412,9 @@ namespace Volvox.Helios.Web.Controllers
 
             return RedirectToAction("punishments");
         }
+
+        //[HttpGet("activepunishments")]
+        //public async Task<IActionResult> ActivePunishments(ulong guildId, Puni)
 
         private async Task EnsureSettingsExists(ulong guildId)
         {
