@@ -206,12 +206,29 @@
 
                 $.when(getChannelSettingsAnnouncer(guildId, channelId)).done(function (response) {
                     if (response.enabled) {
-                        $('#rmEnabledBtn').prop('checked', response.enabled).parent().toggleClass('active disabled');
-                        $('#rmDisabledBtn').prop('checked', !response.enabled).parent().toggleClass('active disabled');
+                        $('#enabledChannelBtn').prop('checked', response.enabled).parent().addClass('active');
+                        $('#disabledChannelBtn').prop('checked', !response.enabled).parent().removeClass('active');
+                        $('#enabledChannelBtn').prop('checked', response.enabled).parent().removeClass('disabled');
+                        $('#disabledChannelBtn').prop('checked', !response.enabled).parent().addClass('disabled');
                     } else {
-                        $('#rmEnabledBtn').prop('checked', !response.enabled).parent().toggleClass('active disabled');
-                        $('#rmDisabledBtn').prop('checked', response.enabled).parent().toggleClass('active disabled');
+                        $('#enabledChannelBtn').prop('checked', response.enabled).parent().addClass('disabled');
+                        $('#disabledChannelBtn').prop('checked', !response.enabled).parent().removeClass('disabled');
+                        $('#enabledChannelBtn').prop('checked', response.enabled).parent().removeClass('active');
+                        $('#disabledChannelBtn').prop('checked', !response.enabled).parent().addClass('active');
                     }
+
+                    if (response.removeMessages) {
+                        $('#rmEnabledBtn').prop('checked', response.enabled).parent().addClass('active');
+                        $('#rmDisabledBtn').prop('checked', !response.enabled).parent().removeClass('active');
+                        $('#rmEnabledBtn').prop('checked', response.enabled).parent().removeClass('disabled');
+                        $('#rmDisabledBtn').prop('checked', !response.enabled).parent().addClass('disabled');
+                    } else {
+                        $('#rmEnabledBtn').prop('checked', response.enabled).parent().addClass('disabled');
+                        $('#rmDisabledBtn').prop('checked', !response.enabled).parent().removeClass('disabled');
+                        $('#rmEnabledBtn').prop('checked', response.enabled).parent().removeClass('active');
+                        $('#rmDisabledBtn').prop('checked', !response.enabled).parent().addClass('active');
+                    }
+
                     console.log(response, 'changed');
                 });
 
