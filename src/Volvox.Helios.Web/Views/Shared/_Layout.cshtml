@@ -36,16 +36,14 @@
     <link rel="icon" type="image/x-icon" href="~/images/small/volvox-logo.png">
 
     <script>
-
-        document.addEventListener('DOMContentLoaded', () => {
+        window.onload = function () {
             var loader = document.getElementById('preloader');
             loader.classList.add('toggled');
             setTimeout(() => {
                 loader.style.display = 'none';
                 document.body.style.overflowY = "auto";
             }, 1300)
-        });
-
+        }
     </script>
 
     @Html.Raw(JavaScriptSnippet.FullScript)
