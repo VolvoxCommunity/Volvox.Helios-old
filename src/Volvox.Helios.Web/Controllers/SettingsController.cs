@@ -70,7 +70,7 @@ namespace Volvox.Helios.Web.Controllers
         // GET
         [HttpGet("Streamer")]
         public async Task<IActionResult> StreamerSettings(ulong guildId,
-            [FromServices] IDiscordGuildService guildService)
+            [FromServices] IDiscordGuildService guildService, [FromServices] IEntityService<StreamerChannelSettings> channelSettingsService)
         {
             // All channels in guild.
             var channels = await guildService.GetChannels(guildId);
@@ -97,6 +97,9 @@ namespace Volvox.Helios.Web.Controllers
             viewModel.Enabled = settings.Enabled;
             viewModel.StreamerRoleEnabled = settings.StreamerRoleEnabled;
             viewModel.RoleId = settings.RoleId;
+
+            if (settings.ChannelSettings == null)
+                settings.ChannelSettings = await channelSettingsService.Get(c => c.GuildId == guildId);
 
             // Gets first text channel's settings to prepopulate view with.
             var defaultChannel = settings.ChannelSettings?.FirstOrDefault(x => x.ChannelId == textChannels[0].Id);
@@ -201,7 +204,7 @@ namespace Volvox.Helios.Web.Controllers
                     if (isSettingsInDb)
                         saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Remove(settings));
                 }
-            }         
+            }
 
             await Task.WhenAll(saveSettingsTasks.ToArray());
 
