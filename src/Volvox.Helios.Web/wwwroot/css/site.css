@@ -1,24 +1,4 @@
-﻿/************ CSS Variables ***********/
-:root {
-  --color-volvox: #5DCC32;
-  --color-skyblue: #26B2FF;
-  --color-dark: #2D2F32;
-  --color-deep-dark: #121111;
-  --color-gray: #EAEAEA;
-  --color-gray2: #B2B2B2;
-}
-
-/*************** Reset ****************/
-a:focus, a:active, a:visited, button:focus, button:active, button:visited{
-  outline: 0;
-}
-
-
-/************** General ***************/
-html, body{
-  height: 100%;
-}
-body {
+﻿body {
     padding-top: 50px;
     display: flex;
     flex-direction: column;
