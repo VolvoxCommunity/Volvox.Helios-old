@@ -184,8 +184,7 @@
                 });
             });*@
 
-
-        var src = '@(Html.Raw(Json.Serialize(Model.Channels)))';
+        
         var selectChannelVal = @Model.ChannelId;
         if (selectChannelVal == 0)
             selectChannelVal = '@Model.Channels.FirstOrDefault().Value';

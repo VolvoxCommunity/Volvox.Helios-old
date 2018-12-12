@@ -21,7 +21,7 @@
                 </div>
                 <div class="col-md-6">
                     <label asp-for="Title"></label> <br />
-                    <input asp-for="Title" type="text" class="form-control material-input" />
+                    <input asp-for="Title" type="text" class="form-control material-input" autocomplete="off"/>
                     <span asp-validation-for="Title" style="color:red"></span>
                 </div>
             </div>
@@ -57,11 +57,19 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
+        var selectChannelVal = @Model.ChannelId;
+        if (selectChannelVal == 0)
+            selectChannelVal = '@Model.Channels.FirstOrDefault().Value';
+        
         $("#channelSelect").dxSelectBox({
             dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Channels)))'),
             valueExpr: "value",
             displayExpr: "text",
+            value: selectChannelVal,
             searchEnabled: true,
+            onInitialized: (e) => {
+                $('input[name="ChannelId"]').val(selectChannelVal);
+            },
             onValueChanged: (e) => {
                 $('input[name="ChannelId"]').val(e.value);
             }
@@ -77,7 +85,7 @@
                 <div class="row mt-3">
                     <label class="col-12">Option ${options}</label>
                     <div class="col-md-11">
-                        <input name="options[${options}]" maxlength="100" type="text" class="form-control material-input" autocomplete="off" />
+                        <input name="options[${options - 1}]" maxlength="100" type="text" class="form-control material-input" autocomplete="off" />
                     </div>
                     <div class="col-md-1">
                         <button type="button" class="btn btn-volvox-outline rounded-circle d-block mx-auto" style="height: 40px;" onclick="addPollOption(event)">

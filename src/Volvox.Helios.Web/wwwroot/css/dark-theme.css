@@ -1,4 +1,9 @@
-﻿body {
+﻿::selection{
+  color: white;
+  background: var(--color-dark);
+}
+
+body {
   background-color: var(--color-dark);
   color: var(--color-gray);
 }
@@ -26,6 +31,20 @@ hr{
 .dx-texteditor.dx-editor-outlined {
   border-color: #797878;
 }
+.dx-overlay-content.dx-popup-normal {
+  background: var(--color-dark);
+  border: 0;
+}
+.dx-overlay-content.dx-popup-normal .dx-item.dx-list-item {
+  background: #333;
+  color: var(--color-gray);
+}
+.dx-overlay-content.dx-popup-normal .dx-item.dx-list-item.dx-list-item-selected {
+  background: var(--color-gray2);
+}
+.dx-overlay-content.dx-popup-normal .dx-item.dx-list-item.dx-state-hover {
+  background: var(--color-volvox);
+}
 
 .module-enabler.disabled {
   background: var(--color-deep-dark);
@@ -47,7 +66,13 @@ hr{
 }
 
 .dropdown-menu.show a:hover {
-  background: var(--color-volvox)
+  background: var(--color-dark);
+}
+
+.material-input {
+  background: var(--color-deep-dark) !important;
+  border-color: #797878;
+  color: var(--color-gray2) !important;
 }
 
 footer {

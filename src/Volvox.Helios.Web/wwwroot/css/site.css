@@ -91,10 +91,10 @@ a:hover {
   box-shadow: none !important;
 }
 
-  .btn-volvox-outline:hover {
-    background: var(--color-volvox);
-    color: white;
-  }
+.btn-volvox-outline:hover {
+  background: var(--color-volvox);
+  color: white;
+}
 
 .material-btn-group .btn {
   border-radius: 1.25rem;
@@ -103,6 +103,13 @@ a:hover {
 .material-btn-group .active {
   background: var(--color-volvox);
   color: white;
+}
+.dropdown-menu{
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.dropdown-menu.show a:focus {
+  background: var(--color-volvox) !important;
 }
 
 /* Wrapping element */
