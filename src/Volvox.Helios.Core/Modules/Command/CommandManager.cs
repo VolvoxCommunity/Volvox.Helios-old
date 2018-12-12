@@ -34,6 +34,16 @@ namespace Volvox.Helios.Core.Modules.Command
         private IList<ICommand> Modules { get; }
 
         /// <summary>
+        ///     Returns true if the module is enabled for the specified guild and false if not.
+        /// </summary>
+        /// <param name="guildId">Id if the guild to check.</param>
+        /// <returns>True if the module is enabled for the specified guild and false if not.</returns>
+        public override Task<bool> IsEnabledForGuild(ulong guildId)
+        {
+            return Task.FromResult(true);
+        }
+
+        /// <summary>
         ///     Initialize the manager by binding to the MessageReceived event.
         /// </summary>
         /// <param name="client">Client to subscribe to.</param>

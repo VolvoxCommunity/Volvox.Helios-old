@@ -4,38 +4,63 @@
     ViewData["Title"] = "Settings";
 }
 
-<h2>@Model.GuildName</h2>
-<hr />
-<h4>Modules</h4>
+<div class="row">
+    <div class="col-8 col-md-10">
+        <h2>@Model.GuildName</h2>
+    </div>
+    <div class="col-4 col-md-2">
+        @*<div class="position-relative" style="top:50%;transform:translateY(-50%);">
+            <span class="badge badge-success bg-volvox d-table ml-auto">4 Users online</span>
+        </div>*@
+    </div>
+</div>
+<hr>
 <div class="row">
     @foreach (var module in Model.Modules)
     {
-        <div class="col-sm">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        @module.Name
-                        <a style="color: black" class="float-right" asp-controller="Settings" asp-action="@(module.Name.Replace(" ", "") + "Settings")">
-                            <i class="fas fa-cog"></i>
-                        </a>
-                    </h5>
-                    <p class="card-text">@module.Description</p>
+    <div class="col-md-6 mt-4">
+        @{ var isModuleEnabled = await module.IsEnabledForGuild(Model.GuildId); }
+        <div class="card h-100 @(isModuleEnabled ? "border-volvox" : "border-gray2")">
+            <div>
+                <div class="w-100 module-enabled-popover module-version @(isModuleEnabled ? "" : "danger-popover")">
+                    @module.Name
+                </div>
+
+                <div class="w-100 module-enabled-popover @(isModuleEnabled ? "bg-volvox" : "bg-gray2")">
+                    <span style="right:0;" class="mr-2 position-absolute">v.@module.Version</span>
+                    <strong>Module @(isModuleEnabled ? "enabled" : "disabled")</strong>
                 </div>
             </div>
-        </div>
-    }
-
-    <div class="col-sm">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">
-                    Poll Manager
-                    <a style="color: black" class="float-right" asp-controller="Poll">
-                        <i class="fas fa-cog"></i>
+            <div class="card-body pt-4 pb-4">
+                <h5 class="card-title mb-0">
+                    <a style="color: black" class="float-right" asp-controller="Settings" asp-action="@(module.Name.Replace(" ", "") + "Settings")">
+                        <i class="fas fa-cog @(isModuleEnabled ? "text-volvox" : "text-gray2")"></i>
                     </a>
                 </h5>
-                <p class="card-text">Create and view polls.</p>
+                <p class="card-text mr-4">@module.Description</p>
             </div>
+            <div class="w-100 module-enabled-popover module-version @(isModuleEnabled ? "" : "danger-popover")" style="height: 4px;">&nbsp;</div>
+        </div>
+    </div>
+    }
+
+    <div class="col-md-6 mt-4">
+        <div class="card h-100 border-skyblue">
+            <div class="w-100 module-enabled-popover skyblue-popover module-version">
+                Poll Manager
+            </div>
+            <div class="w-100 bg-skyblue module-enabled-popover">
+                <strong>@Model.PollCount Polls</strong>
+            </div>
+            <div class="card-body pt-4 pb-4">
+                <h5 class="card-title mb-0">
+                    <a style="color: black" class="float-right" asp-controller="Poll">
+                        <i class="fas fa-cog text-skyblue"></i>
+                    </a>
+                </h5>
+                <p class="card-text mr-4">Create and view polls. With the chart feature you have a better view of the polls.</p>
+            </div>
+            <div class="w-100 module-enabled-popover skyblue-popover module-version" style="height: 4px;">&nbsp;</div>
         </div>
     </div>
 </div>

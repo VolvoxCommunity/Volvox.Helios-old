@@ -43,8 +43,9 @@ namespace Volvox.Helios.Web.Controllers
             _recurringReminderService = recurringReminderService;
         }
 
-        public IActionResult Index(ulong guildId, [FromServices] IBot bot,
-            [FromServices] IDiscordSettings discordSettings, [FromServices] IList<IModule> modules)
+        public async Task<IActionResult> Index(ulong guildId, [FromServices] IBot bot,
+            [FromServices] IDiscordSettings discordSettings, [FromServices] IList<IModule> modules,
+            [FromServices] IEntityService<Poll> pollService)
         {
             if (bot.IsBotInGuild(guildId))
             {
@@ -52,7 +53,8 @@ namespace Volvox.Helios.Web.Controllers
                 {
                     GuildId = guildId,
                     GuildName = bot.GetGuilds().FirstOrDefault(g => g.Id == guildId)?.Name,
-                    Modules = modules.Where(mod => mod.Configurable).ToList()
+                    Modules = modules.Where(mod => mod.Configurable).ToList(),
+                    PollCount = ( await pollService.Get(p => p.GuildId == guildId) ).Count
                 };
 
                 return View(viewModel);
@@ -70,7 +72,8 @@ namespace Volvox.Helios.Web.Controllers
         // GET
         [HttpGet("Streamer")]
         public async Task<IActionResult> StreamerSettings(ulong guildId,
-            [FromServices] IDiscordGuildService guildService)
+            [FromServices] IDiscordGuildService guildService,
+            [FromServices] IEntityService<StreamerChannelSettings> channelSettingsService)
         {
             // All channels in guild.
             var channels = await guildService.GetChannels(guildId);
@@ -97,6 +100,9 @@ namespace Volvox.Helios.Web.Controllers
             viewModel.Enabled = settings.Enabled;
             viewModel.StreamerRoleEnabled = settings.StreamerRoleEnabled;
             viewModel.RoleId = settings.RoleId;
+
+            if (settings.ChannelSettings == null)
+                settings.ChannelSettings = await channelSettingsService.Get(c => c.GuildId == guildId);
 
             // Gets first text channel's settings to prepopulate view with.
             var defaultChannel = settings.ChannelSettings?.FirstOrDefault(x => x.ChannelId == textChannels[0].Id);
@@ -143,7 +149,7 @@ namespace Volvox.Helios.Web.Controllers
                 viewModel.Roles = new SelectList(roles.RemoveManaged(), "Id", "Name");
 
                 return View(viewModel);
-            }  
+            }
 
             var moduleSettings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId);
 
@@ -152,7 +158,6 @@ namespace Volvox.Helios.Web.Controllers
             // If the guild doesn't already have a settings DB entry, we want to add one before we do anything else.
             // Running that operation along side adding individual channel settings risks throwing an FK exception.
             if (moduleSettings == null)
-            {
                 await _streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
                 {
                     GuildId = guildId,
@@ -160,9 +165,7 @@ namespace Volvox.Helios.Web.Controllers
                     StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
                     RoleId = viewModel.RoleId
                 });
-            }
             else
-            {
                 saveSettingsTasks.Add(_streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
                 {
                     GuildId = guildId,
@@ -170,7 +173,6 @@ namespace Volvox.Helios.Web.Controllers
                     StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
                     RoleId = viewModel.RoleId
                 }));
-            }
 
             // Value defaults to 0, if the value is 0, EF will try to auto increment the ID, throwing an error.
             if (viewModel.ChannelId != 0)
@@ -201,7 +203,7 @@ namespace Volvox.Helios.Web.Controllers
                     if (isSettingsInDb)
                         saveSettingsTasks.Add(_streamAnnouncerChannelSettingsService.Remove(settings));
                 }
-            }         
+            }
 
             await Task.WhenAll(saveSettingsTasks.ToArray());
 
