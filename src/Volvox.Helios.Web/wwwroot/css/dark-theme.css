@@ -75,6 +75,10 @@ hr{
   color: var(--color-gray2) !important;
 }
 
+.gentleselect-dialog {
+  background: var(--color-deep-dark) !important;
+}
+
 footer {
   background: var(--color-deep-dark);
 }
