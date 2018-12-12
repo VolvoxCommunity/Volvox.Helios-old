@@ -57,8 +57,8 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        var selectChannelVal = @Model.ChannelId;
-        if (selectChannelVal == 0)
+        var selectChannelVal = '@Model.ChannelId';
+        if (selectChannelVal == '0')
             selectChannelVal = '@Model.Channels.FirstOrDefault().Value';
         
         $("#channelSelect").dxSelectBox({
