@@ -37,6 +37,19 @@ hr{
   background: var(--color-deep-dark);
 }
 
+.dropdown-menu.show{
+  background: var(--color-deep-dark);
+  border-color: var(--color-gray2);
+}
+
+.dropdown-menu.show a{
+  color: var(--color-gray);
+}
+
+.dropdown-menu.show a:hover {
+  background: var(--color-volvox)
+}
+
 footer {
   background: var(--color-deep-dark);
 }

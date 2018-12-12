@@ -45,7 +45,7 @@ body {
 }
 
 .border-gray2 {
-  border-color: var(--color-gray2);
+  border-color: var(--color-gray2) !important;
 }
 
 .bg-gray {

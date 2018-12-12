@@ -39,10 +39,10 @@
         window.onload = function () {
             var loader = document.getElementById('preloader');
             loader.classList.add('toggled');
-            setTimeout(() => {
+            setTimeout(function () {
                 loader.style.display = 'none';
                 document.body.style.overflowY = "auto";
-            }, 1300)
+            }, 1000);
         }
     </script>
 
