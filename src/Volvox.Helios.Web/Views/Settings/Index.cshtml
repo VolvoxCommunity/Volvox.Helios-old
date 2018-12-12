@@ -37,7 +37,7 @@
                         <i class="fas fa-cog @(isModuleEnabled ? "text-volvox" : "text-gray2")"></i>
                     </a>
                 </h5>
-                <p class="card-text">@module.Description</p>
+                <p class="card-text mr-4">@module.Description</p>
             </div>
             <div class="w-100 module-enabled-popover module-version @(isModuleEnabled ? "" : "danger-popover")" style="height: 4px;">&nbsp;</div>
         </div>
@@ -50,7 +50,7 @@
                 Poll Manager
             </div>
             <div class="w-100 bg-skyblue module-enabled-popover">
-                <strong>0 Polls available</strong>
+                <strong>@Model.PollCount Polls</strong>
             </div>
             <div class="card-body pt-4 pb-4">
                 <h5 class="card-title mb-0">
@@ -58,7 +58,7 @@
                         <i class="fas fa-cog text-skyblue"></i>
                     </a>
                 </h5>
-                <p class="card-text">Create and view polls.</p>
+                <p class="card-text mr-4">Create and view polls. With the chart feature you have a better view of the polls.</p>
             </div>
             <div class="w-100 module-enabled-popover skyblue-popover module-version" style="height: 4px;">&nbsp;</div>
         </div>

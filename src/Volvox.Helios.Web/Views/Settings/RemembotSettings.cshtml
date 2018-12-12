@@ -70,7 +70,7 @@
                     {
                         <tr>
                             <td><span class="badge badge-secondary">#@reminder.ChannelName</span></td>
-                            <td>@reminder.Message</td>
+                            <td id="message">@reminder.Message</td>
                             @if (reminder.IsFaulted)
                             {
                                 <td class="text-danger">@reminder.Status</td>
@@ -104,5 +104,8 @@
             $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
             $(e.currentTarget).parent().toggleClass('active disabled');
         });
+
+        var msgText = $('#message').text();
+        $('#message').html(msgText);
     </script>
 }
