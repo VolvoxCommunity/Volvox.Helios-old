@@ -4,26 +4,42 @@
 }
 
 <h2>@ViewData["Title"]</h2>
-<hr />
-
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div style="display:flex;" class="form-group">
-                <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
-                <label class="switch" />
-                <input asp-for="Enabled" type="checkbox" />
-                <div class="slider round"></div>
-                <span asp-validation-for="Enabled" class="text-danger"></span>
+<hr>
+<form method="post" class="col-12">
+    <div class="row border border-gray2 rounded">
+        <div class="col-md-9 pt-3 pb-3">
+            <h4>Chat tracker Module</h4>
+            <p class="mb-0 text-volvox">
+                Decide wheter the chat will be tracked or not
+            </p>
+        </div>
+        <div class="col-md-3 valign">
+            <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3 mr-3">
+                <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
+                    On
+                    <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
+                </label>
+                <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
+                    Off
+                    <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
+                </label>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-success" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+    <div class="row mt-4">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="ml-auto">
+            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+        </div>
+    </div>
+</form>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        $('.module-enabler input:not(".active")').click((e) => {
+            $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
+            $(e.currentTarget).parent().toggleClass('active disabled');
+        });
+    </script>
 }

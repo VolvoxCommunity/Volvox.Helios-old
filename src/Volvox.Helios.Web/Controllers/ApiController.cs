@@ -43,20 +43,15 @@ namespace Volvox.Helios.Web.Controllers
         public async Task<StreamerChannelSettingsViewModel> GetChannelSettingsAnnouncer(
             [FromServices] IDiscordUserGuildService userGuildService,
             [FromServices] IModuleSettingsService<StreamerSettings> streamerSettingsService, ulong guildId,
-            ulong channelId)
+            ulong channelId, [FromServices] IEntityService<StreamerChannelSettings> channelSettingsService)
         {
             // All channel's settings in guild.
             var allChannelSettings = await streamerSettingsService.GetSettingsByGuild(guildId, x => x.ChannelSettings);
 
-            if (allChannelSettings == null)
-                return new StreamerChannelSettingsViewModel
-                {
-                    Enabled = false,
-                    RemoveMessages = false
-                };
+            allChannelSettings.ChannelSettings = await channelSettingsService.Get(c => c.GuildId == guildId);
 
             // Settings for specific channel.
-            var channelSettings = allChannelSettings.ChannelSettings.FirstOrDefault(x => x.ChannelId == channelId);
+            var channelSettings = allChannelSettings.ChannelSettings?.FirstOrDefault(x => x.ChannelId == channelId);
 
             var isEnabled = channelSettings != null;
 

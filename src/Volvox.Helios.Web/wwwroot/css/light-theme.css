@@ -1,0 +1,9 @@
+﻿.module-enabler{
+  border-color: var(--color-gray2);
+  color: var(--color-gray2);
+  cursor: pointer;
+}
+
+footer{
+  background: #eee;
+}

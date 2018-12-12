@@ -2,37 +2,53 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="row">
-    <div class="col-12">
-        <div class="text-center">
-            <img class="home-page-banner" src="images/large/volvox-combination-mark.png" alt="Volvox.Helios" />
+<header class="home-header valign mb-4">
+    <div class="container">
+        <div class="col-md-6 image-shadow">
+            <img src="https://volvox.tech/images/large/volvox-combination-mark.png" alt="Volvox logo" class="img-fluid" />
+        </div>
+    </div>
+</header>
+
+
+<div class="section-spacing">
+    <div class="container">
+        <div class="row home-page-cards">
+            <div class="col-sm-12 col-md mt-md-0">
+                <div class="card h-100 border-volvox">
+                    <div class="card-body pt-5 pb-5">
+                        <h4 class="card-title">Easy to Get Started</h4>
+                        <p class="card-text">You can literally get this bot running with one button.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md mt-md-0 mt-4">
+                <div class="card h-100 border-volvox">
+                    <div class="card-body pt-5 pb-5">
+                        <h4 class="card-title">Modular</h4>
+                        <p class="card-text">Volvox.Helios is built as a modular bot. Enable and disable modules as you see fit.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md mt-md-0 mt-4">
+                <div class="card h-100 border-volvox">
+                    <div class="card-body pt-5 pb-5">
+                        <h4 class="card-title">Customizable</h4>
+                        <p class="card-text">Customize any module any way that you want.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="row home-page-cards">
-    <div class="col-sm">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Easy to Get Started</h5>
-                <p class="card-text">You can literally get this bot running with one button.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Modular</h5>
-                <p class="card-text">Volvox.Helios is built as a modular bot. Enable and disable modules as you see fit.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Customizable</h5>
-                <p class="card-text">Customize any module any way that you want.</p>
-            </div>
-        </div>
-    </div>
-</div>
+@section Scripts {
+    <script>
+
+        $(document).ready(() => {
+            $('.home-header').parent().removeClass('container body-content');
+            $('footer').addClass('container');
+        });
+
+    </script>
+}
