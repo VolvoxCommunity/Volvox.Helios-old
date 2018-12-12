@@ -10,5 +10,7 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         public string GuildName { get; set; }
 
         public IList<IModule> Modules { get; set; }
+
+        public int PollCount { get; set; }
     }
 }
