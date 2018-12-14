@@ -540,17 +540,13 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                     if (punishment.PunishType == PunishType.Kick)
                         continue;
 
-                    // If PunishDuration is null, user never wants punishment to expire.
+                    // If PunishDuration is 0, user never wants punishment to expire.
                     var expireDate = punishment.PunishDuration == 0
-                        ? DateTimeOffset.Now.AddMinutes(punishment.PunishDuration)
-                        : DateTimeOffset.MaxValue;
+                        ? DateTimeOffset.MaxValue
+                        : DateTimeOffset.Now.AddMinutes(punishment.PunishDuration);
 
                     // Refetching prevents self referencing loop AND ensures the entity is tracked, therefore stopping ef core from trying to re-add it.
                     var userDbEntry = await userWarningsService.Find(userData.Id);
-
-                    // value of 0 means no expiration.
-                    if (punishment.PunishDuration == 0)
-                        expireDate = DateTimeOffset.MaxValue;
 
                     activePunishments.Add(new ActivePunishment
                     {
