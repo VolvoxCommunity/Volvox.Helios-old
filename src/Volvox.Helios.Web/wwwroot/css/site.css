@@ -3,6 +3,7 @@
   --color-volvox: #5DCC32;
   --color-skyblue: #26B2FF;
   --color-dark: #2D2F32;
+  --color-dark2: #515352;
   --color-deep-dark: #121111;
   --color-gray: #EAEAEA;
   --color-gray2: #B2B2B2;
@@ -130,6 +131,19 @@ a:hover {
 /* QR code generator */
 #qrCode {
   margin: 15px;
+}
+
+.gentleselect-dialog {
+  border-radius: 4px !important;
+  margin-top: 10px !important;
+  border-width: 1px !important;
+  box-shadow: none !important;
+}
+.gentleselect-label {
+  background: none !important;
+  border-width: 1px !important;
+  margin-left: 10px !important;
+  padding: 0px 18px !important;
 }
 
 /* Hide/rearrange for smaller screens */
