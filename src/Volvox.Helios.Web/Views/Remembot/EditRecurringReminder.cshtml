@@ -142,7 +142,7 @@
             height: 250,
             value: '@Model.Message'.replaceAll('&#xA;', '\n'),
             onInitialized: (e) => {
-                $('textarea[name="Message"]').html('@Model.Message');
+                $('textarea[name="Message"]').html('@Model.Message'.replaceAll('\n', '<br>'));
             },
             onValueChanged: (e) => {
                 $('textarea[name="Message"]').html(e.value.replaceAll('\n', '<br>'));
