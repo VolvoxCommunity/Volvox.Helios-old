@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentCache;
@@ -45,6 +43,7 @@ using Volvox.Helios.Core.Modules.Streamer;
 using Volvox.Helios.Core.Modules.ModerationModule;
 using Volvox.Helios.Core.Jobs;
 using Newtonsoft.Json;
+using Volvox.Helios.Service.Discord.User;
 
 namespace Volvox.Helios.Web
 {
@@ -143,6 +142,7 @@ namespace Volvox.Helios.Web
 
             // Discord Services
             services.AddScoped<IDiscordUserGuildService, DiscordUserGuildService>();
+            services.AddScoped<IDiscordUserService, DiscordUserService>();
             services.AddScoped<IDiscordGuildService, DiscordGuildService>();
             services.AddSingleton<IMessageService, MessageService>();
 
