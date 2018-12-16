@@ -19,11 +19,11 @@ namespace Volvox.Helios.Service.Discord.User
         /// </summary>
         /// <param name="userId">Id of the user to get.</param>
         /// <returns>Specified user.</returns>
-        public async Task<Domain.Discord.User> GetUser(ulong userId)
+        public async Task<Domain.Discord.DiscordUser> GetUser(ulong userId)
         {
             var userResponse = await _client.GetUser(userId);
 
-            return JsonConvert.DeserializeObject<Domain.Discord.User>(userResponse, new UserGuildJsonConverter());
+            return JsonConvert.DeserializeObject<Domain.Discord.DiscordUser>(userResponse, new UserGuildJsonConverter());
         }
     }
 }

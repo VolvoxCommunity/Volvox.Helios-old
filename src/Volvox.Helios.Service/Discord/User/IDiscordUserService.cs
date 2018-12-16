@@ -9,6 +9,6 @@ namespace Volvox.Helios.Service.Discord.User
         /// </summary>
         /// <param name="userId">Id of the user to get.</param>
         /// <returns>Specified user.</returns>
-        Task<Domain.Discord.User> GetUser(ulong userId);
+        Task<Domain.Discord.DiscordUser> GetUser(ulong userId);
     }
 }
