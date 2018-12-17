@@ -25,9 +25,14 @@
     "inputFiles": [
       "node_modules/bootstrap/dist/css/bootstrap.min.css",
       "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
-      "node_modules/chosen-js/chosen.min.css"
+      "node_modules/chosen-js/chosen.min.css",
+      "node_modules/devextreme/dist/css/dx.common.css",
+      "node_modules/devextreme/dist/css/dx.light.css"
     ],
-    "minify": { "enabled": false, "adjustRelativePaths" : false }
+    "minify": {
+      "enabled": false,
+      "adjustRelativePaths": false
+    }
   },
   {
     "outputFileName": "wwwroot/vendor.min.js",
@@ -35,7 +40,8 @@
       "node_modules/jquery/dist/jquery.min.js",
       "node_modules/popper.js/dist/umd/popper.min.js",
       "node_modules/bootstrap/dist/js/bootstrap.min.js",
-      "node_modules/chosen-js/chosen.jquery.min.js"
+      "node_modules/chosen-js/chosen.jquery.min.js",
+      "node_modules/devextreme/dist/js/dx.all.js"
     ],
     "minify": { "enabled": false }
   }

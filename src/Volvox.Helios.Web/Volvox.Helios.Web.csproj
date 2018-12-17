@@ -5,7 +5,14 @@
     <UserSecretsId>45e5b330-6506-4c0b-8aa6-6402838521f9</UserSecretsId>
     <ApplicationInsightsResourceId>/subscriptions/bd7d1cf3-1ec9-43b1-b7c9-35f9700cfaa8/resourcegroups/Volvox.Helios/providers/microsoft.insights/components/Volvox.Helios</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/bd7d1cf3-1ec9-43b1-b7c9-35f9700cfaa8/resourcegroups/Volvox.Helios/providers/microsoft.insights/components/Volvox.Helios</ApplicationInsightsAnnotationResourceId>
+    <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="wwwroot\css\NewFolder\**" />
+    <Content Remove="wwwroot\css\NewFolder\**" />
+    <EmbeddedResource Remove="wwwroot\css\NewFolder\**" />
+    <None Remove="wwwroot\css\NewFolder\**" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Discord" Version="2.0.0" />
     <PackageReference Include="AWS.Logger.AspNetCore" Version="1.3.0" />

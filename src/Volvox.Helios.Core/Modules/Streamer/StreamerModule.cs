@@ -7,8 +7,10 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
+
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
@@ -48,6 +50,18 @@ namespace Volvox.Helios.Core.Modules.Streamer
 
         private IDictionary<ulong, HashSet<StreamAnnouncerMessage>> StreamingList { get; } =
             new Dictionary<ulong, HashSet<StreamAnnouncerMessage>>();
+
+        /// <summary>
+        ///     Returns true if the module is enabled for the specified guild and false if not.
+        /// </summary>
+        /// <param name="guildId">Id if the guild to check.</param>
+        /// <returns>True if the module is enabled for the specified guild and false if not.</returns>
+        public override async Task<bool> IsEnabledForGuild(ulong guildId)
+        {
+            var settings = await _settingsService.GetSettingsByGuild(guildId);
+
+            return settings != null && settings.Enabled;
+        }
 
         /// <summary>
         ///     Initialize the module on GuildMemberUpdated event.
@@ -108,14 +122,40 @@ namespace Volvox.Helios.Core.Modules.Streamer
             }
             else
             {
-                // Add use to role.
-                if (guildUser.Activity != null && guildUser.Activity.Type == ActivityType.Streaming)
-                    await AddUserToStreamingRole(guildUser, streamingRole);
+                //Ensure bot has necessary permissions to add/remove specified role.
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var botService = scope.ServiceProvider.GetRequiredService<IBot>();
 
-                // Remove user from role.
-                else if (guildUser.Roles.Any(r => r.Id == streamingRole.Id))
-                    await RemoveUserFromStreamingRole(guildUser, streamingRole);
-            }
+                    var botRolePosition = botService.GetBotRoleHierarchy(guildUser.Guild.Id);
+
+                    if (streamingRole.Position < botRolePosition)
+                    {
+                        // Add use to role.
+                        if (guildUser.Activity != null && guildUser.Activity.Type == ActivityType.Streaming)
+                            await AddUserToStreamingRole(guildUser, streamingRole);
+
+                        // Remove user from role.
+                        else if (guildUser.Roles.Any(r => r.Id == streamingRole.Id))
+                            await RemoveUserFromStreamingRole(guildUser, streamingRole);
+                    }
+                    else
+                    {
+                        Logger.LogError($"Streamer Module: Could not add/remove role as bot has insufficient hierarchical position. " +
+                            $"Guild Id: {guildUser.Guild.Id}");
+
+                        await botService.GetGuild(guildUser.Guild.Id).Owner.SendMessageAsync($"We couldn't add/remove Role '{streamingRole.Name}' to a user as the role's hierarchical position is greater than the bot's.{Environment.NewLine}" +
+                            $"To fix this, please adjust your role's position and then re-enable the module via our website.{Environment.NewLine}" +
+                            $"Guild: {guildUser.Guild.Name}");
+
+                        var settingsDb = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id);
+
+                        settingsDb.StreamerRoleEnabled = false;
+
+                        await _settingsService.SaveSettings(settingsDb);
+                    }
+                }
+            }          
         }
 
         /// <summary>
@@ -140,7 +180,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
                     await AnnounceUserHandler(user, channels);
 
                 // Else, the user is already streaming and already has an announcement message.
-                // This happens when GuildMemberUpdated is triggered by something other than the user stopping their stream. 
+                // This happens when GuildMemberUpdated is triggered by something other than the user stopping their stream.
                 // So, do nothing.
             }
             // User is not streaming.

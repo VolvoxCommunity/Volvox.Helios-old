@@ -83,7 +83,7 @@ namespace Volvox.Helios.Web.Controllers
                 {
                     ChannelId = vm.ChannelId,
                     Enabled = vm.Enabled,
-                    Message = vm.Message,
+                    Message = vm.Message.Replace("<br>", "\n"),
                     CronExpression = vm.CronExpression,
                     GuildId = guildId
                 };
@@ -95,7 +95,7 @@ namespace Volvox.Helios.Web.Controllers
             var reminder = await _reminderService.Find(vm.Id);
             reminder.ChannelId = vm.ChannelId;
             reminder.Enabled = vm.Enabled;
-            reminder.Message = vm.Message;
+            reminder.Message = vm.Message.Replace("<br>", "\n");
             reminder.CronExpression = vm.CronExpression;
 
             await _reminderService.Update(reminder);

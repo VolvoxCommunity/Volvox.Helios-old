@@ -26,7 +26,7 @@
                         <i class="fas fa-cog"></i>
                     </a>
                 }
-                @*<a href="#" class="text-volvox mr-2" dropdown-toggle data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a href="#" class="text-volvox mr-2" dropdown-toggle data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-ellipsis-h ml-auto mr-3"></i>
                 </a>
                 <div class="dropdown-menu">
@@ -40,14 +40,14 @@
                     </a>
                     <a class="dropdown-item" href="#" onclick="toggleFavouriteBtn(event);">
                         <i class="far fa-star mr-2"></i>
-                        Favourite
+                        Favorite
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item text-danger" href="#">
                         <i class="fas fa-trash-alt mr-2"></i>
-                        Remove
+                        Delete
                     </a>
-                </div>*@
+                </div>
             </div>
             <div class="collapse show" id="s-@i" aria-labelledby="s-@i-@uG.Guild.Name">
                 <div class="card-body">
@@ -78,6 +78,116 @@
             else
                 el.removeClass('far').addClass('fas');
         }
+        
+        $('#lineChart').dxChart({
+            dataSource: [
+                {
+                    "arg": "Monday",
+                    "val": 3
+                },
+                {
+                    "arg": "Tuesday",
+                    "val": 2
+                },
+                {
+                    "arg": "Wednesday",
+                    "val": 3
+                },
+                {
+                    "arg": "Thursday",
+                    "val": 4
+                },
+                {
+                    "arg": "Friday",
+                    "val": 6
+                },
+                {
+                    "arg": "Saturday",
+                    "val": 11
+                },
+                {
+                    "arg": "Sunday",
+                    "val": 4
+                }
+            ],
+            series: {
+
+            }
+        });
+
+        $('#mostActiveUsers').dxPieChart({
+            dataSource: [
+                {
+                    "arg": "general",
+                    "val": 12
+                },
+                {
+                    "arg": "test",
+                    "val": 7
+                },
+                {
+                    "arg": "gaming",
+                    "val": 7
+                },
+                {
+                    "arg": "support",
+                    "val": 7
+                },
+                {
+                    "arg": "suggestions",
+                    "val": 6
+                },
+                {
+                    "arg": "memes",
+                    "val": 5
+                },
+                {
+                    "arg": "channel1",
+                    "val": 2
+                },
+                {
+                    "arg": "github",
+                    "val": 55
+                }
+            ],
+            series: {},
+            legend: {
+                horizontalAlignment: "center",
+                verticalAlignment: "bottom",
+                itemTextPosition: "center",
+                orientation: "horizontal"
+            },
+            palette: "Carmine"
+        });
+
+        $('#mostActiveChannels').dxPieChart({
+            dataSource: [
+                {
+                    "arg": "Bill",
+                    "val": 12
+                },
+                {
+                    "arg": "Sam",
+                    "val": 7
+                },
+                {
+                    "arg": "Brian",
+                    "val": 5
+                },
+                {
+                    "arg": "Smite",
+                    "val": 15
+                }
+            ],
+            palette: "Carmine",
+            series: {},
+            legend: {
+                horizontalAlignment: "center",
+                verticalAlignment: "bottom",
+                itemTextPosition: "center",
+                orientation: "horizontal"
+            }
+        });
 
     </script>
 }

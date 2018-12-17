@@ -9,49 +9,80 @@
     </div>
 
     <div class="col-sm-1">
-        <button class="btn btn-success" id="NewPoll">New</button>
+        <button class="btn btn-volvox-outline" id="NewPoll">New</button>
     </div>
 </div>
 
 <hr />
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
         <div class="form-group">
-            <label asp-for="Polls"></label>
-            <select asp-items="Model.Polls" id="poll" class="form-control">
-                <option disabled selected> -- select a poll -- </option>
-            </select>
+            <div id="poll"></div>
         </div>
-
-        <div class="form-group">
-            <label asp-for="Title" class="font-size-small"></label>
-            <p id="Title">
-                Hey, how cool is this example?
-            </p>
-        </div>
-
-        <br />
-
-        <div class="form-group">
-            <label asp-for="Options" class="font-size-small"></label>
-            <div id="Options">
-                <p>Not cool: 0</p>
-
-                <p>Its alright...: 0</p>
-
-                <p>Pretty cool: 3</p>
-
-                <p>Top notch: 304</p>
+    </div>
+    <div class="col-md-12 col-lg-6">
+        <div class="col-12 border border-gray2 rounded pt-2 h-100">
+            <h5 id="Title" class="mb-4">Hey, how cool is this example?</h5>
+            <div class="form-group">
+                <label asp-for="Options" class="font-size-small"></label>
+                <ul class="list-group" id="Options">
+                    <li class="list-group-item poll-item">
+                        Not cool
+                        <div class="vote-count valign">
+                            5 Votes
+                        </div>
+                    </li>
+                    <li class="list-group-item poll-item">
+                        Its alright...:
+                        <div class="vote-count valign">
+                            44 Votes
+                        </div>
+                    </li>
+                    <li class="list-group-item poll-item">
+                        Pretty cool:
+                        <div class="vote-count valign">
+                            223 Votes
+                        </div>
+                    </li>
+                    <li class="list-group-item poll-item">
+                        Top notch:
+                        <div class="vote-count valign">
+                            304 Votes
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
+    <div class="col-md-12 col-lg-6 mt-lg-0 mt-4">
+        <div class="col-12 border border-gray2 rounded pt-2 h-100">
+            <div id="pieChart"></div>
+        </div>
+    </div>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
+        // Populate selected polls data
+        function updatePoll(e) {
+            var Ids = e.value.split('-')
+            var messageId = Ids[0];
+            var channelId = Ids[1];
+            $.when(GetPollDetails(channelId, messageId)).done(function (response) {
+                $("#Title").text(RemoveLeadingEmoticon(response.Title));
+                $("#Options").empty();
+
+                $.each(response.Options, function (i, option) {
+                    // Remove 1 from option count as the bot will add one vote to all options, to display them as buttons.
+                    $("#Options").append(
+                        $('<li class="list-group-item poll-item"></li>').html(RemoveLeadingEmoticon(option.Option) + "<div class=\"vote-count valign\">" + parseInt(option.VoteCount - 1) + "</div>")
+                    );
+                })
+            });
+        }
+
         function GetPollDetails(channelId, messageId) {
             const url = `/api/GetPollData?channelId=${channelId}&messageId=${messageId}`;
             return $.ajax({
@@ -68,26 +99,78 @@
             return text.trim().substr(text.indexOf(" ") + 1)
         }
 
-        // Populate selected polls data
-        $("#poll").on('change', function () {
-            var Ids = $('#poll').val().split("-");
-            var messageId = Ids[0];
-            var channelId = Ids[1];
-
-            $.when(GetPollDetails(channelId, messageId)).done(function (response) {
-                $("#Title").text(RemoveLeadingEmoticon(response.title));
-                $("#Options").empty();
-
-                $.each(response.options, function (i, option) {
-                    // Remove 1 from option count as the bot will add one vote to all options, to display them as buttons.
-                    $("#Options").append($("<p></p>").text(RemoveLeadingEmoticon(option.option) + " : " + parseInt(option.voteCount - 1)));
-                })
-            });
-        });
-
         // Direct user to new poll form
         $("#NewPoll").on('click', function () {
             window.location = `${window.location.href}/newpoll`
+        });
+    </script>
+    <script>
+        $(function () {
+            var src = JSON.parse('@(Html.Raw(Json.Serialize(Model.Polls)))');
+            
+            $("#poll").dxSelectBox({
+                dataSource: src,
+                valueExpr: "value",
+                displayExpr: "text",
+                searchEnabled: true,
+                onValueChanged: (e) => {
+                    var Ids = e.value.split('-')
+                    var messageId = Ids[0];
+                    var channelId = Ids[1];
+                    $.when(GetPollDetails(channelId, messageId)).done(function (response) {
+                        $("#Title").text(RemoveLeadingEmoticon(response.title));
+                        $("#Options").empty();
+                        
+                        $.each(response.options, function (i, option) {
+                            // Remove 1 from option count as the bot will add one vote to all options, to display them as buttons.
+                            $("#Options").append(
+                                $('<li class="list-group-item poll-item"></li>').html(RemoveLeadingEmoticon(option.option) + "<div class=\"vote-count valign\">" + parseInt(option.voteCount - 1) + "</div>")
+                            );
+                        });
+                        
+                        $('#pieChart').dxPieChart({
+                            dataSource: response.options,
+                            commonSeriesSettings: {
+                                argumentField: "option"
+                            },
+                            series: [
+                                { valueField: "option" },
+                                { valueField: "voteCount" }
+                            ],
+                            legend: {
+                                horizontalAlignment: "center",
+                                verticalAlignment: "bottom",
+                                itemTextPosition: "left",
+                                orientation: "horizontal",
+                                customizeText: (e) => {
+                                    return RemoveLeadingEmoticon(e.pointName);
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+            $('#pieChart').dxPieChart({
+                dataSource: [
+                    { option: "Not cool", voteCount: 5 },
+                    { option: "Its alright", voteCount: 44 },
+                    { option: "Pretty cool", voteCount: 223 },
+                    { option: "Top notch", voteCount: 304 }
+                ],
+                commonSeriesSettings: {
+                    argumentField: "option"
+                },
+                series: [
+                    { valueField: "option" },
+                    { valueField: "voteCount" }
+                ],
+                legend: {
+                    horizontalAlignment: "center",
+                    verticalAlignment: "bottom",
+                    itemTextPosition: "left",
+                    orientation: "horizontal"
+                }
+            });
         });
     </script>
 }
