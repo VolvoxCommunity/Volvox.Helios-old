@@ -37,13 +37,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Extract logic and user interfaces, that way can change the functionality without changing the core module
 
-        // NEXT FEATURES TODO :
-        /*
-          look into wildcards as bapes suggested
-
-          why is punishment never expire even though it should? the punishment entry is correct, but active punishment entry is set to never expire....
-         */
-
         #region Private vars
 
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
@@ -235,7 +228,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var whitelistedLinks = linkFilter.WhitelistedLinks.Select(l => l.Link);
 
             // Regular expression for detecting url patterns
-            var urlCheck = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)");
+            var urlCheck = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)");
 
             // Flag for tracking whether current url is whitelisted
             var isLinkLegal = false;
@@ -248,7 +241,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 {
                     foreach (var link in whitelistedLinks)
                     {
-                        if (link == word)
+                        var rgx = WildCardToRegular(link);
+
+                        if (Regex.IsMatch(word, rgx))
                         {
                             isLinkLegal = true;
                             break;
@@ -261,6 +256,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                 }
             }       
             return false;
+        }
+
+        private static string WildCardToRegular(string value)
+        {
+            return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
         }
 
         private async Task HandleViolation(ModerationSettings moderationSettings, SocketMessage message, SocketGuildUser user, WarningType warningType)
