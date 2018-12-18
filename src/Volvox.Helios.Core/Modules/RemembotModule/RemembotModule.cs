@@ -54,6 +54,18 @@ namespace Volvox.Helios.Core.Modules.ReminderModule
         }
 
         /// <summary>
+        ///     Returns true if the module is enabled for the specified guild and false if not.
+        /// </summary>
+        /// <param name="guildId">Id if the guild to check.</param>
+        /// <returns>True if the module is enabled for the specified guild and false if not.</returns>
+        public override async Task<bool> IsEnabledForGuild(ulong guildId)
+        {
+            var settings = await _moduleSettings.GetSettingsByGuild(guildId);
+
+            return settings != null && settings.Enabled;
+        }
+
+        /// <summary>
         ///     Initializes this module and subscribes to settings and reminder data changes to update the recurring jobs accordingly.
         /// </summary>
         /// <param name="client"></param>

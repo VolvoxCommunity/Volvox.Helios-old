@@ -52,6 +52,18 @@ namespace Volvox.Helios.Core.Modules.Streamer
             new Dictionary<ulong, HashSet<StreamAnnouncerMessage>>();
 
         /// <summary>
+        ///     Returns true if the module is enabled for the specified guild and false if not.
+        /// </summary>
+        /// <param name="guildId">Id if the guild to check.</param>
+        /// <returns>True if the module is enabled for the specified guild and false if not.</returns>
+        public override async Task<bool> IsEnabledForGuild(ulong guildId)
+        {
+            var settings = await _settingsService.GetSettingsByGuild(guildId);
+
+            return settings != null && settings.Enabled;
+        }
+
+        /// <summary>
         ///     Initialize the module on GuildMemberUpdated event.
         /// </summary>
         /// <param name="client">Client for the module to be registered to.</param>
@@ -168,7 +180,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
                     await AnnounceUserHandler(user, channels);
 
                 // Else, the user is already streaming and already has an announcement message.
-                // This happens when GuildMemberUpdated is triggered by something other than the user stopping their stream. 
+                // This happens when GuildMemberUpdated is triggered by something other than the user stopping their stream.
                 // So, do nothing.
             }
             // User is not streaming.

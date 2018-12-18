@@ -14,12 +14,14 @@
     <meta property="og:image:width" content="300" />
     <meta property="og:image:height" content="300" />
     <meta property="og:description" content="Powerful, modular, web-managed, open-source Discord bot created by a community for communities." />
-    <title>@ViewData["Title"] - Volvox.Helios</title>
+    <meta name="theme-color" content="#5DCC32">
 
+    <title>@ViewData["Title"] - Volvox.Helios</title>
+    <link href="~/css/loader.min.css" rel="stylesheet" />
     <environment include="Development">
         <link rel="stylesheet" href="~/vendor.min.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
@@ -28,15 +30,37 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha256-EH/CzgoJbNED+gZgymswsIOrM9XhIbdSJ6Hwro09WE4=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/18.2.3/css/dx.common.css" />
+        <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/18.2.3/css/dx.light.css" />
     </environment>
     <link rel="icon" type="image/x-icon" href="~/images/small/volvox-logo.png">
+
+    <script>
+        window.onload = function () {
+            var loader = document.getElementById('preloader');
+            loader.classList.add('toggled');
+            setTimeout(function () {
+                loader.style.display = 'none';
+                document.body.style.overflowY = "auto";
+            }, 1000);
+        }
+    </script>
+
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <div id="preloader">
+        <div class="loader-anim">
+            <div class="bg"></div>
+            <div class="content">
+                Loading...
+            </div>
+        </div>
+    </div>
+    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
         <div class="container">
             <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
-                <img class="d-inline-block align-top" style="width: 30px; height: 30px" src="/images/small/volvox-logo.png" alt="Volvox.Helios" />
+                <img class="d-inline-block align-top" style="width: 30px; height: 30px" src="/images/small/volvox-logo.png" alt="Volvox.Helios" id="navLogo" />
                 Volvox.Helios
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +71,20 @@
                     @await Html.PartialAsync("_NavigationPartial")
                 </ul>
                 <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" id="themeToggler">
+                            <i class="fas fa-moon active"></i>
+                            <i class="fas fa-sun d-none"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link position-relative">
+                            <i class="fas fa-newspaper"></i>
+                            <div id="changelog-wrapper">
+                                <div id="changelog" class="position-relative d-block h-100"></div>
+                            </div>
+                        </a>
+                    </li>
                     @await Html.PartialAsync("_LoginNavigationPartial")
                 </ul>
             </div>
@@ -57,11 +95,27 @@
 
     <main role="main" class="container body-content">
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; 2018 - Volvox.Helios v@(Assembly.GetEntryAssembly().GetName().Version.Major).@(Assembly.GetEntryAssembly().GetName().Version.Minor).@(Assembly.GetEntryAssembly().GetName().Version.Build)</p>
-        </footer>
     </main>
+    <div class="position-relative" style="margin-top: auto;">
+        <footer class="col-12 pt-4 pb-4 mt-5">
+            <div class="container">
+                <div class="col-md-6 text-center mx-auto">
+                    <a href="https://github.com/VolvoxCommunity/Volvox.Helios/" class="bg-volvox d-inline-flex footer-icon valign rounded-circle mr-2" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://discord.gg/jReSmc3" class="bg-volvox d-inline-flex valign rounded-circle footer-icon" target="_blank">
+                        <i class="fab fa-discord"></i>
+                    </a>
+                </div>
+                <hr class="border-volvox col-md-6 mt-4">
+                <p class="mb-0 text-center">
+                    @{ var version = Assembly.GetEntryAssembly().GetName().Version; }
+                    &copy; 2018 - Volvox.Helios v@(version.Major).@(version.Minor).@(version.Build)
+                </p>
+            </div>
+        </footer>
+        <footer class="col-12 pt-1 pb-1 text-volvox text-center bg-volvox"></footer>
+    </div>
 
     <environment include="Development">
         <script src="~/vendor.min.js"></script>
@@ -74,6 +128,9 @@
                 crossorigin="anonymous"
                 integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
         </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"
+                integrity="sha256-c4gVE6fn+JRKMRvqjoDp+tlG4laudNYrXI1GncbfAYY="
+                crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
                 asp-fallback-src="~/vendor.min.js"
                 crossorigin="anonymous"
@@ -86,11 +143,15 @@
                 integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy">
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" integrity="sha256-c4gVE6fn+JRKMRvqjoDp+tlG4laudNYrXI1GncbfAYY=" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.2.3/js/dx.all.js"></script>
     </environment>
-
     @RenderSection("Scripts", required: false)
     <script>
+        var darkTheme = window.localStorage.getItem('darkTheme');
+        if (!darkTheme)
+            darkTheme = "true";
+        
+        toggleTheme(darkTheme);
         $('#settingsNavDropdown').click(() => {
             $('#settingsDropDown').populateSettings();
         });
@@ -98,6 +159,39 @@
         $('#analyticsNavDropdown').click(() => {
             $('#analyticsDropDown').populateAnalytics();
         });
+
+        // Dark theme toggle
+        $('#themeToggler').click((e) => {
+            var nextEl = $(e.currentTarget).find('i.d-none').removeClass('d-none').next();
+            if (nextEl.length == 0)
+                nextEl = $(e.currentTarget).find('i').first();
+            nextEl.addClass('d-none');
+
+            darkTheme = window.localStorage.getItem('darkTheme');
+            toggleTheme(darkTheme == "true" ? "false" : "true");
+        });
+
+        var HW_config = {
+            selector: "#changelog",
+            account: "7q0G0x"
+        }
+        function toggleTheme(darkThemeEnabled) {
+            if (darkThemeEnabled == "true") {
+                $('#lightThemeLink').remove();
+                $('head').append('<link rel="stylesheet" href="/css/dark-theme.css" id="darkThemeLink">');
+                $('.navbar').removeClass('navbar-light bg-light').addClass('navbar-dark');
+                $('#themeToggler').find('.fa-sun').removeClass('d-none').parent().find('.fa-moon').addClass('d-none');
+                $('#navLogo').attr('src', '/images/small/volvox-logo-light.png');
+            } else if (darkThemeEnabled == "false") {
+                $('#darkThemeLink').remove();
+                $('head').append('<link rel="stylesheet" href="/css/light-theme.css" id="lightThemeLink">');
+                $('.navbar').removeClass('navbar-dark').addClass('navbar-light bg-light');
+                $('#themeToggler').find('.fa-moon').removeClass('d-none').parent().find('.fa-sun').addClass('d-none');
+                $('#navLogo').attr('src', '/images/small/volvox-logo.png');
+            }
+            window.localStorage.setItem("darkTheme", darkThemeEnabled);
+        }
     </script>
+    <script async src="https://cdn.headwayapp.co/widget.js"></script>
 </body>
 </html>

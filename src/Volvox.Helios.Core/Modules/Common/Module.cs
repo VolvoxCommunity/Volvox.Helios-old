@@ -40,6 +40,13 @@ namespace Volvox.Helios.Core.Modules.Common
         }
 
         /// <summary>
+        ///     Returns true if the module is enabled for the specified guild and false if not.
+        /// </summary>
+        /// <param name="guildId">Id if the guild to check.</param>
+        /// <returns>True if the module is enabled for the specified guild and false if not.</returns>
+        public abstract Task<bool> IsEnabledForGuild(ulong guildId);
+
+        /// <summary>
         ///     Initialize the module.
         /// </summary>
         /// <param name="client">Client for the module to be registered to.</param>

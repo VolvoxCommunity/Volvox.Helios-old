@@ -4,57 +4,73 @@
 }
 
 <h2>@ViewData["Title"]</h2>
-<hr />
+<hr>
+
+<form method="post" class="col-12">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="row border border-gray2 rounded">
+        <div class="col-md-9 pt-3 pb-3">
+            <h4>Remembot Module</h4>
+            <p class="mb-0 text-volvox">
+                Completely manage all reminders for your bot.
+            </p>
+        </div>
+        <div class="col-md-3 valign">
+            <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
+                    On
+                    <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
+                </label>
+                <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
+                    Off
+                    <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <span asp-validation-summary="Enabled" class="text-danger"></span>
+        <div class="ml-auto">
+            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+        </div>
+    </div>
+</form> 
 
 <div class="row">
-    <div class="col-md-12">
-        <form method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-
-            <div style="display:flex;" class="form-group">
-                <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
-                <label class="switch" />
-                <input asp-for="Enabled" type="checkbox" />
-                <div class="slider round"></div>
-                <span asp-validation-for="Enabled" class="text-danger"></span>
+    <div class="col-12 mt-4">
+        <div class="row mb-4">
+            <div class="col-md-9">
+                <h3>Reminders</h3>
             </div>
-
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-success" />
+            <div class="col-md-3">
+                <a asp-controller="Remembot" asp-action="EditRecurringReminder" class="btn btn-primary d-block">Add Reminder</a>
             </div>
+        </div>
 
-            <br/>
-            <h3>Reminders</h3>
-            <hr />
-            <br />
-
-            <div class="form-group">
-                <a asp-controller="Remembot" asp-action="EditRecurringReminder" class="btn btn-primary">Add Reminder</a>
-            </div>
-
-            @if (Model.RecurringReminders != null && Model.RecurringReminders.Any())
-            {
-                <table class="table table-striped">
-                    <colgroup>
-                        <col />
-                        <col width="100%" />
-                        <col />
-                        <col />
-                    </colgroup>
-                    <thead>
+        @if (Model.RecurringReminders != null && Model.RecurringReminders.Any())
+        {
+            <table class="table table-striped table-responsive">
+                <colgroup>
+                    <col />
+                    <col width="100%" />
+                    <col />
+                    <col />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Channel</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reminder in Model.RecurringReminders)
+                    {
                         <tr>
-                            <th>Channel</th>
-                            <th>Message</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var reminder in Model.RecurringReminders)
-                        {
-                        <tr>
-                            <td>@reminder.ChannelName</td>
-                            <td>@reminder.Message</td>
+                            <td><span class="badge badge-secondary">#@reminder.ChannelName</span></td>
+                            <td id="message">@reminder.Message</td>
                             @if (reminder.IsFaulted)
                             {
                                 <td class="text-danger">@reminder.Status</td>
@@ -65,41 +81,31 @@
                             }
 
                             <td>
-                                <a class="btn btn-primary"
+                                <a class="text-volvox"
                                    asp-controller="Remembot"
                                    asp-action="EditRecurringReminder"
                                    asp-route-guildId="@Model.GuildId"
-                                   asp-route-rid="@reminder.Id">Edit</a>
+                                   asp-route-rid="@reminder.Id">
+                                    <i class="fas fa-pen"></i>
+                                </a>
                             </td>
                         </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-        </form>
-    </div>
-</div>
-
-<div class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Modal body text goes here.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Save changes</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
+                    }
+                </tbody>
+            </table>
+        }
     </div>
 </div>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        $('.module-enabler input:not(".active")').click((e) => {
+            $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
+            $(e.currentTarget).parent().toggleClass('active disabled');
+        });
+
+        var msgText = $('#message').text();
+        $('#message').html(msgText);
+    </script>
 }
