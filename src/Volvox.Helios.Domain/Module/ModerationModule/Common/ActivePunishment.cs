@@ -30,5 +30,9 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.Common
 
         [Required]
         public DateTimeOffset PunishmentExpires { get; set; }
+
+        // This field is used to mark whether this punishment should be removed as specified by the user on the front end.
+        [NotMapped]
+        public bool Remove { get; set; }
     }
 }

@@ -27,5 +27,9 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.Common
 
         [Required]
         public DateTimeOffset WarningExpires { get; set; }
+
+        // This field is used to mark whether this warning should be removed as specified by the user on the front end.
+        [NotMapped]
+        public bool Remove { get; set; }
     }
 }

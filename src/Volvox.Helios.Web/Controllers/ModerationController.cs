@@ -12,12 +12,11 @@ using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
 using Volvox.Helios.Web.ViewModels.Moderation;
 using Volvox.Helios.Service.Discord.Guild;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Volvox.Helios.Domain.Discord;
 using Discord;
 using Volvox.Helios.Web.Models.Moderation;
-using System;
 using Microsoft.AspNetCore.Authorization;
 using Volvox.Helios.Web.Filters;
+using Volvox.Helios.Service.Discord.User;
 
 namespace Volvox.Helios.Web.Controllers
 {
@@ -25,11 +24,28 @@ namespace Volvox.Helios.Web.Controllers
 
     // TODO : exctract logic and inject them into controller
 
+    // TODO : sort out individual users page
+
+    // TODO : pagination for users
+
+    // TODO : Rename User method as to unhide inherited member
+
+    // TODO : Make the user page stuff an update to the module
+
+    // TODO : Convert other methods of deletion/modification to use a notmapped field to mark for deletion, instead of converting to a new class with said field.
+
+    // TODO : May have to clear cache after doign stuff with users.
+
+    // TODO : Display all users, not just ones with warnings. Make "remove" of active punishments invoke the hangfire scheduled event early.
+
+    // TODO : Why are whitelisted links duplicating? when clicking save repeatedly. shti is fucked 
+
     [Authorize]
     [Route("/moderator/{guildId}")]
     [IsUserGuildAdminFilter]
     public class ModerationController : Controller
     {
+        #region private vars
         private readonly IModuleSettingsService<ModerationSettings> _moderationSettings;
 
         private readonly IEntityService<ProfanityFilter> _entityServiceProfanityFilter;
@@ -46,6 +62,15 @@ namespace Volvox.Helios.Web.Controllers
 
         private readonly IEntityService<Punishment> _entityServicePunishments;
 
+        private readonly IEntityService<Warning> _entityServiceWarnings;
+
+        private readonly IEntityService<ActivePunishment> _entityServiceActivePunishments;
+
+        private readonly IEntityService<UserWarnings> _entityServiceUsers;
+
+        private readonly IDiscordUserService _discordUserService;
+        #endregion
+
         public ModerationController(IModuleSettingsService<ModerationSettings> moderationSettings,
             IEntityService<ProfanityFilter> entityServiceProfanityFilter,
             IEntityService<LinkFilter> entityServiceLinkFilter,
@@ -53,7 +78,12 @@ namespace Volvox.Helios.Web.Controllers
             IEntityService<WhitelistedRole> entityServiceWhitelistedRoles,
             IEntityService<WhitelistedLink> entityServiceWhitelistedLinks,
             IEntityService<BannedWord> entityServiceBannedWords,
-            IEntityService<Punishment> entityServicePunishments)
+            IEntityService<Punishment> entityServicePunishments,
+            IEntityService<Warning> entityServiceWarnings,
+            IEntityService<ActivePunishment> entityServiceActivePunishments,
+            IEntityService<UserWarnings> entityServiceUsers,
+            IDiscordUserService discordUserService
+            )
         {
             _moderationSettings = moderationSettings;
 
@@ -70,6 +100,14 @@ namespace Volvox.Helios.Web.Controllers
             _entityServiceBannedWords = entityServiceBannedWords;
 
             _entityServicePunishments = entityServicePunishments;
+
+            _entityServiceWarnings = entityServiceWarnings;
+
+            _entityServiceActivePunishments = entityServiceActivePunishments;
+
+            _entityServiceUsers = entityServiceUsers;
+
+            _discordUserService = discordUserService;
         }
 
         private void ClearCacheById(ulong id)
@@ -181,10 +219,10 @@ namespace Volvox.Helios.Web.Controllers
         [HttpPost("linkfilter")]
         public async Task<IActionResult> UpdateLinkFilter(ulong guildId, LinkFilterViewModel vm)
         {
-            ClearCacheById(guildId);
-
             // Ensures the base moderation settings exist to prevent FK exceptions.
             await EnsureSettingsExists(guildId);
+
+            ClearCacheById(guildId);
 
             var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId, x => x.LinkFilter.WhitelistedLinks, x => x.WhitelistedChannels, x => x.WhitelistedRoles);
 
@@ -413,8 +451,57 @@ namespace Volvox.Helios.Web.Controllers
             return RedirectToAction("punishments");
         }
 
-        //[HttpGet("activepunishments")]
-        //public async Task<IActionResult> ActivePunishments(ulong guildId, Puni)
+        [HttpGet("users")]
+        public async Task<IActionResult> Users(ulong guildId, [FromServices] IDiscordGuildService guildService)
+        {
+            var activePunishments = await _entityServiceActivePunishments.Get(p => p.User.GuildId == guildId);
+
+            var settings = await _moderationSettings.GetSettingsByGuild(guildId, a => a.UserWarnings);
+
+            var users = new List<UserModel>();
+
+            foreach (var user in settings.UserWarnings)
+            {
+                var u = await _discordUserService.GetUser(user.UserId);
+
+                users.Add(new UserModel
+                {
+                    Id = user.UserId,
+                    Username = $"{u.Username}#{u.Discriminator}"
+                });
+            }
+
+            var vm = new UsersViewModel
+            {
+                Users = users
+            };
+
+            return View(vm);
+        }
+      
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> User(ulong guildId, ulong userId)
+        {
+            var user = await _entityServiceUsers.GetFirst(u => u.UserId == userId, x => x.Warnings, x => x.ActivePunishments);
+
+            var vm = new UserViewModel
+            {
+                ActivePunishments = user.ActivePunishments,
+                Warnings = user.Warnings
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost("user/{userId}")]
+        public async Task<IActionResult> User(ulong guildId, ulong userId, UserViewModel vm)
+        {
+            await _entityServiceActivePunishments.RemoveBulk(vm.ActivePunishments.Where(p => p.Remove));
+
+            await _entityServiceWarnings.RemoveBulk(vm.Warnings.Where(p => p.Remove));
+
+            return RedirectToAction("user/{userId}");
+        }
 
         private async Task EnsureSettingsExists(ulong guildId)
         {
@@ -549,6 +636,8 @@ namespace Volvox.Helios.Web.Controllers
                         GuildId = currentSettings.GuildId,
                         Link = link.ToLower()
                     });
+
+                  
                 }
             }
 

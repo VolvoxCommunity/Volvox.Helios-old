@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volvox.Helios.Domain.Module.ModerationModule;
+using Volvox.Helios.Web.Models.Moderation;
 
 namespace Volvox.Helios.Web.ViewModels.Moderation
 {
-    public class ActivePunishmentsViewModel
+    public class UsersViewModel
     {
-        public virtual List<UserWarnings> Users { get; set; }
+        public List<UserModel> Users { get; set; }
     }
 }

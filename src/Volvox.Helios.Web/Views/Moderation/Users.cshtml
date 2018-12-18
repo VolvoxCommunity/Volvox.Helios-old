@@ -1,0 +1,9 @@
+﻿@model Volvox.Helios.Web.ViewModels.Moderation.UsersViewModel
+@{
+    foreach(var user in Model.Users)
+    {
+        <a asp-controller="Moderation" asp-action="user" asp-route-userId="@user.Id">@user.Username</a>
+    }
+}
+
+

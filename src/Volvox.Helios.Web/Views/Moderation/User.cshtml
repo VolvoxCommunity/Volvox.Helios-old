@@ -1,0 +1,58 @@
+﻿@model Volvox.Helios.Web.ViewModels.Moderation.UserViewModel
+
+
+<form method="POST">
+    <section class="container">
+        <div class="vertical-margin-large">
+            <h2>Active Punishments</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Type</td>
+                        <td>Date Expires</td>
+                        <td>Remove</td>
+                    </tr>
+                </thead>
+                @{
+
+                    for (int i = 0; i < Model.ActivePunishments.Count; i++)
+                    {
+                        <tr>
+                            <input type="hidden" asp-for="@Model.ActivePunishments[i].Id">
+                            <td><input type="text" asp-for="@Model.ActivePunishments[i].PunishType" class="form-control" asp- /></td>
+                            <td><input type="text" asp-for="@Model.ActivePunishments[i].PunishmentExpires" class="form-control" /></td>
+                            <td><input type="checkbox" asp-for="@Model.ActivePunishments[i].Remove" /></td>
+                        </tr>
+                    }
+                }
+            </table>
+
+            <hr />
+            <h2>Warnings</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <td>Type</td>
+                        <td>Date Received</td>
+                        <td>Date Expires</td>
+                        <td>Remove</td>
+                    </tr>
+                </thead>
+                @{
+                    for (int i = 0; i < Model.Warnings.Count; i++)
+                    {
+                        <tr>
+                            <input type="hidden" asp-for="@Model.Warnings[i].Id">
+                            <td><input type="text" asp-for="@Model.Warnings[i].WarningType" class="form-control" /></td>
+                            <td><input type="text" asp-for="@Model.Warnings[i].WarningRecieved" class="form-control" /></td>
+                            <td><input type="text" asp-for="@Model.Warnings[i].WarningExpires" class="form-control" /></td>
+                            <td><input type="checkbox" asp-for="@Model.Warnings[i].Remove" /></td>
+                        </tr>
+                    }
+                }
+            </table>
+        </div>
+    </section>
+    <input type="submit" class="btn btn-primary" />
+</form>
