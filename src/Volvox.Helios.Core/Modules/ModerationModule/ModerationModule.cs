@@ -574,5 +574,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             // bool indicating whether user already has punishment.
             return ( currentlyActivePunishments.Any(x => x.PunishmentId == punishment.Id) );
         }
+
+        public override async Task<bool> IsEnabledForGuild(ulong guildId)
+        {
+            var settings = await _settingsService.GetSettingsByGuild(guildId);
+
+            return settings != null && settings.Enabled;
+        }
     }
 }
