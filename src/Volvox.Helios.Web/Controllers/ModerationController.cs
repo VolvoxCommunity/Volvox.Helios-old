@@ -635,9 +635,7 @@ namespace Volvox.Helios.Web.Controllers
                     {
                         GuildId = currentSettings.GuildId,
                         Link = link.ToLower()
-                    });
-
-                  
+                    });               
                 }
             }
 
