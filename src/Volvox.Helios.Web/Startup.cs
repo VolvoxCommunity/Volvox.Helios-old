@@ -44,6 +44,10 @@ using Volvox.Helios.Core.Modules.ModerationModule;
 using Volvox.Helios.Core.Jobs;
 using Newtonsoft.Json;
 using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity;
+using Volvox.Helios.Core.Modules.ModerationModule.Filters.Link;
+using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
+using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
 
 namespace Volvox.Helios.Web
 {
@@ -127,6 +131,12 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IModule, ChatTrackerModule>();
             services.AddSingleton<IModule, RemembotModule>();
             services.AddSingleton<IModule, ModerationModule>();
+
+            // Moderation Module specific services
+            services.AddSingleton<IProfanityFilterService, ProfanityFilterService>();
+            services.AddSingleton<ILinkFilterService, LinkFilterService>();
+            services.AddSingleton<IPunishmentService, PunishmentService>();
+            services.AddSingleton<IWarningService, WarningService>();
 
             // Commands
             services.AddSingleton<IModule, CommandManager>();

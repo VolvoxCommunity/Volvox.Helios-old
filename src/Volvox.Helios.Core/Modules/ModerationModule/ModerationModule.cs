@@ -20,6 +20,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Volvox.Helios.Service.BackgroundJobs;
 using Hangfire;
 using Volvox.Helios.Core.Jobs;
+using Volvox.Helios.Core.Modules.ModerationModule.Filters.Link;
+using Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity;
+using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
+using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
@@ -47,15 +51,21 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private readonly IJobService _jobService;
 
-        private DiscordSocketClient _client;
+        private readonly ILinkFilterService _linkFilterService;
 
-        private readonly List<string> _defaultBannedWords = new List<string>();
+        private readonly IProfanityFilterService _profanityFilterService;
+
+        private readonly IPunishmentService _punishmentService;
+
+        private readonly IWarningService _warningService;
 
         #endregion
 
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
             IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService,
-            IMessageService messageService, IServiceScopeFactory scopeFactory, IJobService jobservice
+            IMessageService messageService, IServiceScopeFactory scopeFactory, IJobService jobservice,
+            ILinkFilterService linkFilterService, IProfanityFilterService profanityFilterService,
+            IPunishmentService punishmentService, IWarningService warningService
         ) : base(
             discordSettings, logger, config)
         {
@@ -67,19 +77,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             _jobService = jobservice;
 
-            var defaultBannedWords = config.GetSection("BannedWords").GetChildren().Select(x => x.Value);
+            _linkFilterService = linkFilterService;
 
-            if (defaultBannedWords != null)
-            {
-                _defaultBannedWords.AddRange(defaultBannedWords);
-            }
+            _profanityFilterService = profanityFilterService;
+
+            _punishmentService = punishmentService;
+
+            _warningService = warningService;
         }
 
         public override Task Init(DiscordSocketClient client)
         {
-            // As client is passed into init, no point in assigning client in constructor.
-            _client = client;
-
             client.MessageReceived += async message =>
             {
                 await CheckMessage(message);
@@ -132,7 +140,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 var whitelistedRoles = settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Profanity);
 
-                if (!HasBypassAuthority(user, channelPostedId, whitelistedChannels, whitelistedRoles) && ProfanityCheck(message, settings.ProfanityFilter))
+                if (!HasBypassAuthority(user, channelPostedId, whitelistedChannels, whitelistedRoles)
+                    && _profanityFilterService.ProfanityCheck(message, settings.ProfanityFilter))
                 {
                     await HandleViolation(settings, message, user, WarningType.Profanity);
                     return;
@@ -146,7 +155,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
                 var whitelistedRoles = settings.WhitelistedRoles.Where(r => r.WhitelistType == WhitelistType.Link);
 
-                if (!HasBypassAuthority(user, channelPostedId, whitelistedChannels, whitelistedRoles) && LinkCheck(message, settings.LinkFilter))
+                if (!HasBypassAuthority(user, channelPostedId, whitelistedChannels, whitelistedRoles) &&
+                   _linkFilterService.LinkCheck(message, settings.LinkFilter))
                 {
                     await HandleViolation(settings, message, user, WarningType.Link);
                     return;
@@ -167,100 +177,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             if (user.Roles.Any(r => whitelistedRoles.Any(w => w.RoleId == r.Id))) return true;
 
             return false;
-        }
-
-        private bool ProfanityCheck(SocketMessage message, ProfanityFilter profanityFilter)
-        {
-            // Normalize message to lowercase and split into array of words.
-            var messageWords = message.Content.ToLower().Split(" ");
-
-            var bannedWords = profanityFilter.BannedWords.Select(w => w.Word).ToList();
-
-            // Check for default banned words if UserDefaultList enabled.
-            if (profanityFilter.UseDefaultList)
-                bannedWords.AddRange(_defaultBannedWords);
-
-            foreach (var word in messageWords)
-            {
-                foreach (var bannedWord in bannedWords)
-                {
-                    if (word == bannedWord) return true;
-                }
-            }
-
-            return false;
-        }
-
-        private string ConvertClbuttic(string word)
-        {
-            return word.Replace("[a]", "[a A @]")
-                .Replace("[b]", "[b B I3 l3 i3]")
-                .Replace("[c]", "(?:[c C \\(]|[k K])")
-                .Replace("[d]", "[d D]")
-                .Replace("[e]", "[e E 3]")
-                .Replace("[f]", "(?:[f F]|[ph pH Ph PH])")
-                .Replace("[g]", "[g G 6]")
-                .Replace("[h]", "[h H]")
-                .Replace("[i]", "[i I l ! 1]")
-                .Replace("[j]", "[j J]")
-                .Replace("[k]", "(?:[c C \\(]|[k K])")
-                .Replace("[l]", "[l L 1 ! i]")
-                .Replace("[m]", "[m M]")
-                .Replace("[n]", "[n N]")
-                .Replace("[o]", "[o O 0]")
-                .Replace("[p]", "[p P]")
-                .Replace("[q]", "[q Q 9]")
-                .Replace("[r]", "[r R]")
-                .Replace("[s]", "[s S $ 5]")
-                .Replace("[t]", "[t T 7]")
-                .Replace("[u]", "[u U v V]")
-                .Replace("[v]", "[v V u U]")
-                .Replace("[w]", "[w W vv VV]")
-                .Replace("[x]", "[x X]")
-                .Replace("[y]", "[y Y]");
-        }
-
-        private bool LinkCheck(SocketMessage message, LinkFilter linkFilter)
-        {
-            // Normalize message to lowercase and split into array of words.
-            var messageWords = message.Content.ToLower().Split(" ");
-
-            var whitelistedLinks = linkFilter.WhitelistedLinks.Select(l => l.Link);
-
-            // Regular expression for detecting url patterns
-            var urlCheck = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)");
-
-            // Flag for tracking whether current url is whitelisted
-            var isLinkLegal = false;
-
-            // Check each word for illegal link
-            foreach (var word in messageWords)
-            {
-                // TODO: In future version of this module, check if url entered is of the same base, and not just matches exactly.
-                if (urlCheck.IsMatch(word))
-                {
-                    foreach (var link in whitelistedLinks)
-                    {
-                        var rgx = WildCardToRegular(link);
-
-                        if (Regex.IsMatch(word, rgx))
-                        {
-                            isLinkLegal = true;
-                            break;
-                        }
-                    }
-
-                    if (!isLinkLegal) return true;
-                                                 
-                    isLinkLegal = false;
-                }
-            }       
-            return false;
-        }
-
-        private static string WildCardToRegular(string value)
-        {
-            return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
         }
 
         private async Task HandleViolation(ModerationSettings moderationSettings, SocketMessage message, SocketGuildUser user, WarningType warningType)
@@ -295,7 +211,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             }
 
             // Add warning to database.
-            await AddWarning(moderationSettings, user, userData, warningType);
+            await _warningService.AddWarning(moderationSettings, user, userData, warningType);
 
             // Get all warnings that haven't expired.
             var userWarnings = userData.Warnings.Where(x => x.WarningExpires > DateTimeOffset.Now);
@@ -314,267 +230,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             // Punishments for specific type. I.E. profanity violation.
             punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
 
-            await ApplyPunishments(moderationSettings, message.Channel.Id, punishments, user, userData);
+            await _punishmentService.ApplyPunishments(moderationSettings, message.Channel.Id, punishments, user, userData);
         }
  
-        private async Task AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, UserWarnings userData, WarningType warningType)
-        {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var warningService = scope.ServiceProvider.GetRequiredService<IEntityService<Warning>>();
-
-                var specificWarningDuration = GetWarningDuration(moderationSettings, warningType);
-
-                var expireDate = DateTimeOffset.Now.AddMinutes(specificWarningDuration);
-
-                // 0 means punishment lasts forever.
-                if (specificWarningDuration == 0)
-                    expireDate = DateTimeOffset.MaxValue;
-
-                var warning = new Warning()
-                {
-                    UserId = userData.Id,
-                    WarningRecieved = DateTimeOffset.Now,
-                    WarningExpires = expireDate,
-                    WarningType = warningType
-                };
-
-                if (userData.Warnings == null) userData.Warnings = new List<Warning>();
-
-                userData.Warnings.Add(warning);
-
-                await warningService.Create(warning);
-
-                Logger.LogInformation($"Moderation Module: User {user.Username} warned. Added warning to database. " +
-                    $"Guild Id: {user.Guild.Id}, User Id: {user.Id}");
-            }
-        }
-
-        private int GetWarningDuration(ModerationSettings moderationSettings, WarningType warningType)
-        {
-            var duration = 0;
-
-            switch (warningType)
-            {
-                case ( WarningType.Link ):
-                    duration = moderationSettings.LinkFilter.WarningExpirePeriod;
-                    break;
-                case ( WarningType.Profanity ):
-                    duration = moderationSettings.ProfanityFilter.WarningExpirePeriod;
-                    break;
-            }
-
-            return duration;
-        }
-
-        private async Task ApplyPunishments(ModerationSettings moderationSettings, ulong channelId, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
-        {
-            var userHasBeenRemoved = false;
-
-            // List of punishments to add to database as active punishments.
-            var activePunishments = new List<Punishment>();
-
-            foreach (var punishment in punishments)
-            {
-                // If a user has been kicked/banned or otherwise removed from the guild, you can't add any other punishments. So return from this method.
-                if (userHasBeenRemoved)
-                    return;
-
-                // Check to make sure user doesn't already have this punishment. This could cause issues if the same punishment is applied twice.
-                if (IsPunishmentAlreadyActive(punishment, userData))
-                    continue;
-
-                var wasSuccessful = true;
-
-                // For each punishment, check if applying them has been successful. If successful, add this to active punishments db, if not, don't add it.
-                // If a punishment removes the user from the guild, no more punisments can be applied to them, so don't attempt any more.
-                switch (punishment.PunishType)
-                {
-                    case ( PunishType.Kick ):
-                        if (await KickPunishment(punishment, channelId, user))            
-                            userHasBeenRemoved = true;
-                        else
-                            wasSuccessful = false;
-                        break;
-
-                    case ( PunishType.Ban ):
-                        if (await BanPunishment(punishment, channelId, user))
-                            userHasBeenRemoved = true;
-                        else
-                            wasSuccessful = false;
-                        break;
-
-                    case ( PunishType.AddRole ):
-                        if (await AddRolePunishment(punishment, channelId, user))
-                        {}
-                        else
-                            wasSuccessful = false;
-                        break;
-                }
-
-                // Punishment applied successfully, add to list to add to db.
-                if (wasSuccessful)
-                    activePunishments.Add(punishment);
-
-                wasSuccessful = true;
-            }
-
-            await AddActivePunishments(moderationSettings, activePunishments, user, userData);
-        }
-
-        private async Task<bool> AddRolePunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
-        {
-            if (!punishment.RoleId.HasValue)
-                return false;
-
-            var guild = user.Guild;
-
-            var role = guild.GetRole(punishment.RoleId.Value);
-
-            if (guild is null)
-                return false;
-
-            if (role is null)
-            {
-                await _messageService.Post(channelId, $"Could not add Role to user '{user.Username}' as Role doesn't exist.");
-                return false;
-            }
-
-            var hierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
-
-            // Trying to assign a role higher than the bots hierarchy will throw an error.
-            if (role.Position < hierarchy)
-            {
-                await user.AddRoleAsync(role);
-
-                var expireTime = punishment.PunishDuration == 0 ? "Never" : punishment.PunishDuration.ToString();
-
-                await _messageService.Post(channelId, $"Adding role '{role.Name}' to user <@{user.Id}>" +
-                    $"\nReason: {punishment.WarningType}\n" +
-                    $"Expires (minutes): {expireTime}");
-            }
-            else
-            {
-                Logger.LogInformation($"Moderation Module: Couldn't apply role '{role.Name}' to user '{user.Username}' as bot doesn't have appropriate permissions. " +
-                    $"Guild Id:{user.Guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}.");
-
-                await _messageService.Post(channelId, $"Couldn't add role '{role.Name}' to user <@{user.Id}> as bot has insufficient permissions. " +
-                    $"Check your role hierarchy and make sure the bot is higher than the role you wish to apply.");
-
-                return false;
-            }
-
-            return true;
-        }
-
-        private async Task<bool> KickPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
-        {                
-            var botHierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
-
-            if (botHierarchy > user.Hierarchy)
-            {
-                await user.KickAsync();
-
-                Logger.LogInformation($"Moderation Module: Kicking user '{user.Username}'." +
-                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
-
-                await _messageService.Post(channelId, $"Kicking user <@{user.Id}>" +
-                    $"\nReason: {punishment.WarningType}");
-
-                return true;
-            }
-            else
-            {
-                Logger.LogInformation($"Moderation Module: Failed to kick user '{user.Username}' as bot has insufficient permissions." +
-                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
-
-                await _messageService.Post(channelId, $"Failed to kick user <@{user.Id}> as bot has insufficient permissions.");
-
-                return false;
-            }
-        }
-
-        private async Task<bool> BanPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
-        {
-            var botHierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
-
-            if (botHierarchy > user.Hierarchy)
-            {
-                await user.Guild.AddBanAsync(user);
-
-                Logger.LogInformation($"Moderation Module: Banning user '{user.Username}'." +
-                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
-
-                var expireTime = punishment.PunishDuration == 0 ? "Never" : punishment.PunishDuration.ToString();
-
-                await _messageService.Post(channelId, $"Banning user <@{user.Id}>" +
-                    $"\nReason: {punishment.WarningType}" +
-                    $"Expires: {expireTime}");
-
-                return true;
-            }
-            else
-            {
-                Logger.LogInformation($"Moderation Module: Failed to ban user '{user.Username}' as bot has insufficient permissions." +
-                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
-
-                await _messageService.Post(channelId, $"Failed to ban user <@{user.Id}> as bot has insufficient permissions.");
-
-                return false;
-            }  
-        }
-
-        private async Task AddActivePunishments(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
-        {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var activePunishmentsService = scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
-
-                var userWarningsService = scope.ServiceProvider.GetRequiredService<IEntityService<UserWarnings>>();
-
-                var activePunishments = new List<ActivePunishment>();
-
-                foreach (var punishment in punishments)
-                {
-                    // No need to add kick punishment to DB as it's not a punishment with a duration.
-                    if (punishment.PunishType == PunishType.Kick)
-                        continue;
-
-                    // If PunishDuration is 0, user never wants punishment to expire.
-                    var expireDate = punishment.PunishDuration == 0
-                        ? DateTimeOffset.MaxValue
-                        : DateTimeOffset.Now.AddMinutes(punishment.PunishDuration);
-
-                    // Refetching prevents self referencing loop AND ensures the entity is tracked, therefore stopping ef core from trying to re-add it.
-                    var userDbEntry = await userWarningsService.Find(userData.Id);
-
-                    activePunishments.Add(new ActivePunishment
-                    {
-                        PunishmentExpires = expireDate,
-                        PunishType = punishment.PunishType,
-                        PunishmentId = punishment.Id,
-                        RoleId = punishment.RoleId,
-                        User = userDbEntry
-                    });
-                }
-
-                var removePunishmentService = scope.ServiceProvider.GetRequiredService<RemovePunishmentJob>();
-
-                await activePunishmentsService.CreateBulk(activePunishments);
-
-                // Schedule punishment removals where punishments expire. No point in scheduling punishments removal. which enver expire.
-                await removePunishmentService.SchedulePunishmentRemovals(activePunishments.Where(x => x.PunishmentExpires > DateTimeOffset.Now));
-            }
-        }
-
-        private bool IsPunishmentAlreadyActive(Punishment punishment, UserWarnings userData)
-        {
-            var currentlyActivePunishments = userData.ActivePunishments;
-
-            // bool indicating whether user already has punishment.
-            return ( currentlyActivePunishments.Any(x => x.PunishmentId == punishment.Id) );
-        }
-
         public override async Task<bool> IsEnabledForGuild(ulong guildId)
         {
             var settings = await _settingsService.GetSettingsByGuild(guildId);
