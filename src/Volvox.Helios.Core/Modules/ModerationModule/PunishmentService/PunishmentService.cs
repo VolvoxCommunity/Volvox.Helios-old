@@ -232,7 +232,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
                 await activePunishmentsService.CreateBulk(activePunishments);
 
-                // Schedule punishment removals where punishments expire. No point in scheduling punishments removal. which enver expire.
+                // Schedule punishment removals where punishments expire. No point in scheduling punishments for removal if they never expire.
                 await removePunishmentService.SchedulePunishmentRemovals(activePunishments.Where(x => x.PunishmentExpires > DateTimeOffset.Now));
             }
         }
