@@ -1,8 +1,15 @@
 ﻿@model Volvox.Helios.Web.ViewModels.Moderation.UsersViewModel
+
+<h2>Users</h2>
+<hr />
 @{
-    foreach(var user in Model.Users)
+
+    foreach (var user in Model.Users)
     {
-        <a asp-controller="Moderation" asp-action="user" asp-route-userId="@user.Id">@user.Username</a>
+        <div class="settings-group">
+            <img src="@user.AvatarUrl" class="dropdown-image-small" />
+            <a asp-controller="Moderation" asp-action="user" asp-route-userId="@user.Id">@user.Username</a>
+        </div>
     }
 }
 
