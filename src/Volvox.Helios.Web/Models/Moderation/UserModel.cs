@@ -11,5 +11,7 @@ namespace Volvox.Helios.Web.Models.Moderation
         public ulong Id { get; set; }
 
         public string Username { get; set; }
+
+        public string AvatarUrl { get; set; }
     }
 }
