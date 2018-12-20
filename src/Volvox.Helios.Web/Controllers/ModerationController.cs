@@ -17,6 +17,7 @@ using Volvox.Helios.Web.Models.Moderation;
 using Microsoft.AspNetCore.Authorization;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Service.Discord.User;
+using Volvox.Helios.Core.Utilities.Constants;
 
 namespace Volvox.Helios.Web.Controllers
 {
@@ -38,7 +39,11 @@ namespace Volvox.Helios.Web.Controllers
 
     // TODO : Display all users, not just ones with warnings. Make "remove" of active punishments invoke the hangfire scheduled event early.
 
-    // TODO : Why are whitelisted links duplicating? when clicking save repeatedly. shti is fucked 
+    // TODO : Why are whitelisted links duplicating? when clicking save repeatedly. shti is fucked
+
+    // TODO : Give user option to not post message for warning/banning
+
+    // TODO : Add attributes for ensuring user entry exists.
 
     [Authorize]
     [Route("/moderator/{guildId}")]
@@ -451,25 +456,20 @@ namespace Volvox.Helios.Web.Controllers
             return RedirectToAction("punishments");
         }
 
-        [HttpGet("users")]
-        public async Task<IActionResult> Users(ulong guildId, [FromServices] IDiscordGuildService guildService)
+        [HttpGet("users/{pageNo}"), HttpGet("users")]
+        public async Task<IActionResult> Users(ulong guildId, [FromServices] IDiscordGuildService guildService, int pageNo = 0)
         {
             var activePunishments = await _entityServiceActivePunishments.Get(p => p.User.GuildId == guildId);
 
             var settings = await _moderationSettings.GetSettingsByGuild(guildId, a => a.UserWarnings);
 
-            var users = new List<UserModel>();
-
-            foreach (var user in settings.UserWarnings)
+            var users = _discordUserService.GetUsers(guildId).Where(u => !u.IsBot)
+                .Skip(pageNo * ModuleConstants.ResultsPerPageUsers).Take(ModuleConstants.ResultsPerPageUsers).Select(u => new UserModel
             {
-                var u = await _discordUserService.GetUser(user.UserId);
-
-                users.Add(new UserModel
-                {
-                    Id = user.UserId,
-                    Username = $"{u.Username}#{u.Discriminator}"
-                });
-            }
+                Id = u.Id,
+                Username = $"{u.Username}#{u.Discriminator}",
+                AvatarUrl = u.GetAvatarUrl(size: ModuleConstants.AvatarSizeUsers) ?? u.GetDefaultAvatarUrl()
+            }).ToList();
 
             var vm = new UsersViewModel
             {
@@ -484,10 +484,16 @@ namespace Volvox.Helios.Web.Controllers
         {
             var user = await _entityServiceUsers.GetFirst(u => u.UserId == userId, x => x.Warnings, x => x.ActivePunishments);
 
+            // Create user entry if one doesn't exist.
+            if (user == null)
+            {
+                await _entityServiceUsers.Create(new UserWarnings { UserId = userId, GuildId = guildId });
+            }
+               
             var vm = new UserViewModel
             {
-                ActivePunishments = user.ActivePunishments,
-                Warnings = user.Warnings
+                ActivePunishments = user?.ActivePunishments ?? new List<ActivePunishment>(),
+                Warnings = user?.Warnings ?? new List<Warning>()
             };
 
             return View(vm);
