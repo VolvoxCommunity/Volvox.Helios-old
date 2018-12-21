@@ -19,7 +19,7 @@ namespace Volvox.Helios.Web.Controllers
             _userSettingsService = userSettingsService;
         }
 
-        [HttpGet("")]
+        [HttpGet]
         public async Task<UserSettings> GetUserSettings()
         {
             var userId = GetUserId();
