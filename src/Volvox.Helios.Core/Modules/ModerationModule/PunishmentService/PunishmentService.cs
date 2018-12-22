@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Jobs;
+using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Domain.Module.ModerationModule;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
@@ -20,16 +21,21 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
         private readonly IServiceScopeFactory _scopeFactory;
 
+        private readonly IUserWarningsService _userWarningService;
+
         private readonly DiscordSocketClient _client;
 
         private readonly ILogger<ModerationModule> _logger;
 
         public PunishmentService(IMessageService messageService, IServiceScopeFactory scopeFactory,
-            DiscordSocketClient client, ILogger<ModerationModule> logger)
+            DiscordSocketClient client, ILogger<ModerationModule> logger,
+            IUserWarningsService userWarningService)
         {
             _messageService = messageService;
 
             _scopeFactory = scopeFactory;
+
+            _userWarningService = userWarningService;
 
             _client = client;
 
@@ -37,8 +43,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
         }
 
         /// <inheritdoc />
-        public async Task ApplyPunishments(ModerationSettings moderationSettings, ulong channelId, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
+        public async Task ApplyPunishments(ModerationSettings moderationSettings, ulong channelId, List<Punishment> punishments, SocketGuildUser user)
         {
+            var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.ActivePunishments);
+
             var userHasBeenRemoved = false;
 
             // List of punishments to add to database as active punishments.

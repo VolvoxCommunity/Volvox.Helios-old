@@ -24,6 +24,7 @@ using Volvox.Helios.Core.Modules.ModerationModule.Filters.Link;
 using Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
 using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
+using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
@@ -40,6 +41,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         // TODO : add extra filters like caps filters, emoji filters
 
         // TODO : Extract logic and user interfaces, that way can change the functionality without changing the core module
+
+        // TODO : Why is the module not working properly sometimes? usually after I just boot up shit. perhaps because it hasnt finished loading or something? try and figure out what the problem is.
+
+        // TODO : Extract adding of punishments into their own service
+
+        // TODO : Ensure bot has perms to remove a message before it does.
 
         #region Private vars
 
@@ -59,13 +66,16 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private readonly IWarningService _warningService;
 
+        private readonly IUserWarningsService _userWarningService;
+
         #endregion
 
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
             IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService,
             IMessageService messageService, IServiceScopeFactory scopeFactory, IJobService jobservice,
             ILinkFilterService linkFilterService, IProfanityFilterService profanityFilterService,
-            IPunishmentService punishmentService, IWarningService warningService
+            IPunishmentService punishmentService, IWarningService warningService,
+            IUserWarningsService userWarningService
         ) : base(
             discordSettings, logger, config)
         {
@@ -84,6 +94,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             _punishmentService = punishmentService;
 
             _warningService = warningService;
+
+            _userWarningService = userWarningService;
         }
 
         public override Task Init(DiscordSocketClient client)
@@ -185,33 +197,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
             await _messageService.Post(message.Channel.Id, $"Message by <@{user.Id}> deleted\nReason: {warningType}");
 
-            UserWarnings userData;
-
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var userWarningService = scope.ServiceProvider.GetRequiredService<IEntityService<UserWarnings>>();
-
-                var userDataDb = await userWarningService.GetFirst(u => u.UserId == user.Id, u => u.Warnings, u => u.ActivePunishments);
-
-                // User isn't tracked yet, so create new entry for them.
-                if (userDataDb == null )
-                {
-                    userData = new UserWarnings()
-                    {
-                        GuildId = moderationSettings.GuildId,
-                        UserId = user.Id
-                    };
-
-                    await userWarningService.Create(userData);
-                }
-                else
-                {
-                    userData = userDataDb;
-                }
-            }
+            var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.Warnings, u => u.ActivePunishments);
 
             // Add warning to database.
-            await _warningService.AddWarning(moderationSettings, user, userData, warningType);
+            await _warningService.AddWarning(moderationSettings, user, warningType);
 
             // Get all warnings that haven't expired.
             var userWarnings = userData.Warnings.Where(x => x.WarningExpires > DateTimeOffset.Now);
@@ -230,7 +219,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             // Punishments for specific type. I.E. profanity violation.
             punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
 
-            await _punishmentService.ApplyPunishments(moderationSettings, message.Channel.Id, punishments, user, userData);
+            await _punishmentService.ApplyPunishments(moderationSettings, message.Channel.Id, punishments, user);
         }
  
         public override async Task<bool> IsEnabledForGuild(ulong guildId)
