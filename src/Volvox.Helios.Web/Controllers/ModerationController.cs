@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Core.Utilities.Constants;
+using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
 
 namespace Volvox.Helios.Web.Controllers
 {
@@ -46,7 +47,7 @@ namespace Volvox.Helios.Web.Controllers
     // TODO : Add attributes for ensuring user entry exists.
 
     [Authorize]
-    [Route("/moderator/{guildId}")]
+    [Route("/Moderation/{guildId}")]
     [IsUserGuildAdminFilter]
     public class ModerationController : Controller
     {
@@ -74,6 +75,8 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IEntityService<UserWarnings> _entityServiceUsers;
 
         private readonly IDiscordUserService _discordUserService;
+
+        private readonly IPunishmentService _punishmentService;
         #endregion
 
         public ModerationController(IModuleSettingsService<ModerationSettings> moderationSettings,
@@ -87,7 +90,8 @@ namespace Volvox.Helios.Web.Controllers
             IEntityService<Warning> entityServiceWarnings,
             IEntityService<ActivePunishment> entityServiceActivePunishments,
             IEntityService<UserWarnings> entityServiceUsers,
-            IDiscordUserService discordUserService
+            IDiscordUserService discordUserService,
+            IPunishmentService punishmentService
             )
         {
             _moderationSettings = moderationSettings;
@@ -113,6 +117,8 @@ namespace Volvox.Helios.Web.Controllers
             _entityServiceUsers = entityServiceUsers;
 
             _discordUserService = discordUserService;
+
+            _punishmentService = punishmentService;
         }
 
         private void ClearCacheById(ulong id)
@@ -120,7 +126,8 @@ namespace Volvox.Helios.Web.Controllers
             _moderationSettings.ClearCacheByGuild(id);
         }
 
-        public IActionResult Index(ulong guildID)
+        [HttpGet]
+        public IActionResult Index(ulong guildId)
         {
             return View();
         }
@@ -502,7 +509,7 @@ namespace Volvox.Helios.Web.Controllers
         [HttpPost("user/{userId}")]
         public async Task<IActionResult> User(ulong guildId, ulong userId, UserViewModel vm)
         {
-            await _entityServiceActivePunishments.RemoveBulk(vm.ActivePunishments.Where(p => p.Remove));
+            await _punishmentService.RemovePunishmentBulk(vm.ActivePunishments.Where(p => p.Remove).ToList());
 
             await _entityServiceWarnings.RemoveBulk(vm.Warnings.Where(p => p.Remove));
 
