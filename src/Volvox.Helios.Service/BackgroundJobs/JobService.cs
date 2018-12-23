@@ -34,6 +34,12 @@ namespace Volvox.Helios.Service.BackgroundJobs
         }
 
         /// <inheritdoc />
+        void IJobService.CancelJob(string jobIdentifier)
+        {
+            BackgroundJob.Delete(jobIdentifier);
+        }
+
+        /// <inheritdoc />
         void IJobService.ScheduleRecurringJob(Expression<Action> jobToRun, string chronExpression, string jobIdentifyer)
         {
             RecurringJob.AddOrUpdate(jobIdentifyer, jobToRun, chronExpression);

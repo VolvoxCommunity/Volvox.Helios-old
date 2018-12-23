@@ -40,6 +40,12 @@ namespace Volvox.Helios.Service.BackgroundJobs
         string ScheduleJob(Expression<Func<Task>> jobToRun, DateTimeOffset enqueueDate);
 
         /// <summary>
+        ///     Cancel a scheduled job.
+        /// </summary>
+        /// <param name="jobIdentifier">Id of job to cancel.</param>
+        void CancelJob(string jobIdentifier);
+
+        /// <summary>
         ///     Schedule a recurring job to run.
         /// </summary>
         /// <param name="jobToRun">The method to be invoked when the background job starts.</param>
