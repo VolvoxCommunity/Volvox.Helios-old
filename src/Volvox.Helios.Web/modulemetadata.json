@@ -36,7 +36,7 @@
       "Configurable": "true"
     },
     "ModerationModule": {
-      "Name": "Moderator",
+      "Name": "Moderation",
       "Version": "1.0",
       "Description": "Automatically moderate your discord server.",
       "ReleaseState": "Canary",
