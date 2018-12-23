@@ -31,7 +31,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             _logger = logger;
         }
 
-        public async Task AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, WarningType warningType)
+        public async Task<Warning> AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, WarningType warningType)
         {
             var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.Warnings);
      
@@ -55,15 +55,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
                     WarningType = warningType
                 };
 
-                if (userData.Warnings == null)
-                    userData.Warnings = new List<Warning>();
-
-                userData.Warnings.Add(warning);
-
                 await warningService.Create(warning);
 
                 _logger.LogInformation($"Moderation Module: User {user.Username} warned. Added warning to database. " +
                     $"Guild Id: {user.Guild.Id}, User Id: {user.Id}");
+
+                return warning;
             }
         }
 
