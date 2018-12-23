@@ -48,6 +48,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Ensure bot has perms to remove a message before it does.
 
+        // TODO : Why does redirect on users page fail after posting
+
+        // TODO : Fix removal of punishments from posting on users page.
+
         #region Private vars
 
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
@@ -200,7 +204,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.Warnings, u => u.ActivePunishments);
 
             // Add warning to database.
-            await _warningService.AddWarning(moderationSettings, user, warningType);
+            var newWarning = await _warningService.AddWarning(moderationSettings, user, warningType);
+
+            // Update cached version.
+            userData.Warnings.Add(newWarning);
 
             // Get all warnings that haven't expired.
             var userWarnings = userData.Warnings.Where(x => x.WarningExpires > DateTimeOffset.Now);
