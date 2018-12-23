@@ -19,5 +19,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
         /// <param name="userData">User Data entry from our database.</param>
         /// <returns></returns>
         Task ApplyPunishments(ModerationSettings moderationSettings, ulong channelId, List<Punishment> punishments, SocketGuildUser user);
+
+        Task RemovePunishment(ActivePunishment punishment);
+
+        Task RemovePunishmentBulk(List<ActivePunishment> punishments);
     }
 }

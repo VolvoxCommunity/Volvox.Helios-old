@@ -11,6 +11,7 @@ using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Domain.Module.ModerationModule;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.ModuleSettings;
+using Volvox.Helios.Service.BackgroundJobs;
 using Volvox.Helios.Service.EntityService;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
@@ -238,10 +239,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
                 var removePunishmentService = scope.ServiceProvider.GetRequiredService<RemovePunishmentJob>();
 
-                await activePunishmentsService.CreateBulk(activePunishments);
+                foreach (var p in activePunishments)
+                {
+                    if (p.PunishmentExpires > DateTimeOffset.Now  && p.PunishmentExpires != DateTimeOffset.MaxValue)
+                    {
+                        var jobId = removePunishmentService.SchedulePunishmentRemoval(p);
 
-                // Schedule punishment removals where punishments expire. No point in scheduling punishments for removal if they never expire.
-                await removePunishmentService.SchedulePunishmentRemovals(activePunishments.Where(x => x.PunishmentExpires > DateTimeOffset.Now));
+                        p.JobId = jobId;
+                    }
+                }
+
+                await activePunishmentsService.CreateBulk(activePunishments.Where(p => p.PunishmentExpires > DateTimeOffset.Now));
             }
         }
 
@@ -251,6 +259,102 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
             // bool indicating whether user already has punishment.
             return ( currentlyActivePunishments.Any(x => x.PunishmentId == punishment.Id) );
+        }
+
+        private async Task Unban(ActivePunishment punishment)
+        {
+            var guild = _client.GetGuild(punishment.User.GuildId);
+
+            var userId = punishment.User.UserId;
+
+            await guild.RemoveBanAsync(userId);
+        }
+
+        private async Task RemoveRole(ActivePunishment punishment)
+        {
+            var guild = _client.GetGuild(punishment.User.GuildId);
+
+            var role = guild?.GetRole(punishment.RoleId.Value);
+
+            var user = guild?.Users.FirstOrDefault(x => x.Id == punishment.User.UserId);
+
+            // If role hierarchy has changed since punishment was applied and now the bot doesn't have sufficient privilages, do nothing.
+            if (role != null && HasSufficientPrivilages(role, guild))
+            {
+                await user.RemoveRoleAsync(role);
+
+                _logger.LogInformation($"Moderation Module: Removing role '{role.Name}' from {user.Username}."  +
+                    $"Guild Id:{user.Guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}.");
+            }
+            else
+            {
+                if (user != null && guild != null)
+                {
+                    _logger.LogInformation($"Moderation Module: Couldn't apply role '{role.Name}' to user {user.Username} as bot doesn't have appropriate permissions. " +
+                       $"Guild Id:{guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}");
+                }
+                else
+                {
+                    _logger.LogError("Moderation Module: Something wen't wrong when trying to remove role in the punishment removal job. User or guild were unexpectedly null.");
+                }
+            }
+        }
+
+        private async Task RemoveActivePunishmentFromDb(ActivePunishment punishment)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var activePunishmentService = scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
+
+                await activePunishmentService.Remove(punishment);
+            }
+        }
+
+        private void CancelHangfireJob(string jobId)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var jobService = scope.ServiceProvider.GetRequiredService<IJobService>();
+
+                jobService.CancelJob(jobId);
+            }
+        }
+
+        private bool HasSufficientPrivilages(SocketRole role, SocketGuild guild)
+        {
+            var hierarchy = guild.CurrentUser.Hierarchy;
+
+            return hierarchy > role.Position;
+        }
+
+        public async Task RemovePunishment(ActivePunishment punishment)
+        {
+            switch (punishment.PunishType)
+            {
+                case ( PunishType.Ban ):
+                    await Unban(punishment);
+                    break;
+
+                case ( PunishType.AddRole ):
+                    await RemoveRole(punishment);
+                    break;
+            }
+
+            CancelHangfireJob(punishment.JobId);
+    
+            await RemoveActivePunishmentFromDb(punishment);
+        }
+
+        public async Task RemovePunishmentBulk(List<ActivePunishment> punishments)
+        {
+            var tasks = new List<Task>();
+
+            foreach (var p in punishments)
+            {
+                tasks.Add(Task.Run(() => RemovePunishment(p)));
+            }
+
+            await Task.WhenAll(tasks);
         }
     }
 }
