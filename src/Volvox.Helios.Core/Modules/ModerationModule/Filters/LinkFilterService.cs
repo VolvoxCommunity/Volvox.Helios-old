@@ -5,9 +5,9 @@ using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
 {
-    public class LinkFilterService : ILinkFilterService
+    public class LinkFilterService : IFilterService<LinkFilter>
     {
-        public bool LinkCheck(SocketMessage message, LinkFilter linkFilter)
+        public bool CheckViolation(LinkFilter linkFilter, SocketMessage message)
         {
             // Normalize message to lowercase and split into array of words.
             var messageWords = message.Content.ToLower().Split(" ");
@@ -49,6 +49,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
         private static string WildCardToRegular(string value)
         {
             return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
+        }
+
+
+        public void HandleViolation(LinkFilter linkFilter, SocketMessage message)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

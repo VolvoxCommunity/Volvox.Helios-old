@@ -7,7 +7,7 @@ using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
 {
-    public class ProfanityFilterService : IProfanityFilterService
+    public class ProfanityFilterService : IFilterService<ProfanityFilter>
     {
         private readonly List<string> _defaultBannedWords = new List<string>();
 
@@ -21,7 +21,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
             }
         }
 
-        public bool ProfanityCheck(SocketMessage message, ProfanityFilter profanityFilter)
+        public bool CheckViolation(ProfanityFilter profanityFilter, SocketMessage message)
         {
             // Normalize message to lowercase and split into array of words.
             var messageWords = message.Content.ToLower().Split(" ");
@@ -42,6 +42,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
             }
 
             return false;
+        }
+
+        public void HandleViolation(ProfanityFilter filter, SocketMessage message)
+        {
         }
 
         private string ConvertClbuttic(string word)
@@ -72,6 +76,5 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
                 .Replace("[x]", "[x X]")
                 .Replace("[y]", "[y Y]");
         }
-
     }
 }
