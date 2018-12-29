@@ -53,6 +53,7 @@ using Volvox.Helios.Core.Modules.ModerationModule.Filters;
 using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
 using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
 using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
+using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 
 namespace Volvox.Helios.Web
 {
@@ -138,6 +139,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IModule, ModerationModule>();
 
             // Moderation Module specific services
+            services.AddSingleton<IViolationService, ViolationService>();
             services.AddSingleton<IFilterService<LinkFilter>, LinkFilterService>();
             services.AddSingleton<IFilterService<ProfanityFilter>, ProfanityFilterService>();
             services.AddSingleton<IBypassCheck, BypassCheck>();

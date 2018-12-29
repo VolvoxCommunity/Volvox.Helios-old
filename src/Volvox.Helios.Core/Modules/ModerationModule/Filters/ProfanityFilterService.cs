@@ -1,18 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
+using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
+using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
+using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
+using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
 {
     public class ProfanityFilterService : IFilterService<ProfanityFilter>
     {
+        private readonly IViolationService _violationService;
+
+        private readonly IBypassCheck _bypassCheck;
+
         private readonly List<string> _defaultBannedWords = new List<string>();
 
-        public ProfanityFilterService(IConfiguration config)
+        public ProfanityFilterService(IViolationService violationService, IBypassCheck bypassCheck, IConfiguration config)
         {
+            _violationService = violationService;
+
+            _bypassCheck = bypassCheck;
+
             var defaultBannedWords = config.GetSection("BannedWords").GetChildren().Select(x => x.Value);
 
             if (defaultBannedWords != null)
@@ -21,7 +34,20 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
             }
         }
 
-        public bool CheckViolation(ProfanityFilter profanityFilter, SocketMessage message)
+        public bool CheckViolation(ModerationSettings settings, SocketMessage message)
+        {
+            var filterViolatedFlag = false;
+
+            if (!HasBypassAuthority(settings, message))
+            {
+                if (ContainsProfanity(settings.ProfanityFilter, message));
+                filterViolatedFlag = true;
+            }
+
+            return filterViolatedFlag;
+        }
+
+        private bool ContainsProfanity(ProfanityFilter profanityFilter, SocketMessage message)
         {
             // Normalize message to lowercase and split into array of words.
             var messageWords = message.Content.ToLower().Split(" ");
@@ -42,10 +68,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
             }
 
             return false;
-        }
-
-        public void HandleViolation(ProfanityFilter filter, SocketMessage message)
-        {
         }
 
         private string ConvertClbuttic(string word)
@@ -75,6 +97,16 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
                 .Replace("[w]", "[w W vv VV]")
                 .Replace("[x]", "[x X]")
                 .Replace("[y]", "[y Y]");
+        }
+
+        public async Task HandleViolation(ModerationSettings settings, SocketMessage message)
+        {
+            await _violationService.HandleViolation(settings, message, WarningType.Profanity);
+        }
+
+        private bool HasBypassAuthority(ModerationSettings settings, SocketMessage message)
+        {
+            return _bypassCheck.HasBypassAuthority(settings, message, WhitelistType.Profanity);
         }
     }
 }

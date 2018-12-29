@@ -62,11 +62,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Further abstract logic in punishment service. Too much in one class atm, think of making the actual banning/kicking its own separate class.
 
+        // TODO : Extract handle violation into its own class
+
+        // TODO : consider making GlobalFilter instead of checking for global in this class.
+
+        // TODO : Try to refactor so dont have to pass moderation settings into filter classes, just the filter. maybe add reference to warnings/punishments to the filter?
+
+        // TODO : Currently removing role and stuff doesnt work as user is null when coming from view model. fix this
+
         #region Private vars
 
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;
-
-        private readonly IMessageService _messageService;
 
         private readonly IServiceScopeFactory _scopeFactory;
 
@@ -78,44 +84,26 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private readonly IBypassCheck _bypassCheck;
 
-        private readonly IPunishmentService _punishmentService;
-
-        private readonly IWarningService _warningService;
-
-        private readonly IUserWarningsService _userWarningService;
-
         #endregion
 
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
-            IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService,
-            IMessageService messageService, IServiceScopeFactory scopeFactory, IJobService jobservice,
-            IFilterService<LinkFilter> linkFilterService, IFilterService<ProfanityFilter> profanityFilterService,
-            IPunishmentService punishmentService, IWarningService warningService, IBypassCheck bypassCheck,
-            IUserWarningsService userWarningService
+            IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService, IServiceScopeFactory scopeFactory,
+            IJobService jobService, IFilterService<LinkFilter> linkFilterService,
+            IFilterService<ProfanityFilter> profanityFilterService,IBypassCheck bypassCheck
         ) : base(
             discordSettings, logger, config)
         {
             _settingsService = settingsService;
 
-            _messageService = messageService;
-
-            _scopeFactory = scopeFactory;
-
-            _jobService = jobservice;
-
             _linkFilterService = linkFilterService;
 
             _profanityFilterService = profanityFilterService;
 
+            _scopeFactory = scopeFactory;
+
+            _jobService = jobService;
+
             _bypassCheck = bypassCheck;
-
-            _punishmentService = punishmentService;
-
-            _warningService = warningService;
-
-            _userWarningService = userWarningService;
-
-            
         }
 
         public override Task Init(DiscordSocketClient client)
@@ -156,6 +144,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             // Settings will be null if users haven't done anything with the moderation module.
             // If settings are null, or settings isn't enabled, then the module isn't enabled. Do nothing.
             if (settings is null || !settings.Enabled)
+                return;
 
             await AnalyseWithFilters(settings, message);
         }
@@ -163,103 +152,18 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         private async Task AnalyseWithFilters(ModerationSettings settings, SocketMessage message)
         {
             if (_bypassCheck.HasBypassAuthority(settings, message, WhitelistType.Global))
-
-            // Return if true as we don't want to bother checking for links if the message already violates the profanity filter.
-            if (await ProfanityFilterHandler(settings, message))
                 return;
 
-            if (await LinkFilterHandler(settings, message))
-                return;   
-        }
-
-        private async Task<bool> ProfanityFilterHandler(ModerationSettings settings, SocketMessage message)
-        {
-            var author = message.Author as SocketGuildUser;
-
-            if (ProfanityCheck(settings, message))
+            // Return if true as we don't want to bother checking for links if the message already violates previous filters.
+            if (_profanityFilterService.CheckViolation(settings, message))
             {
-                await HandleViolation(settings, message, author, WarningType.Profanity);
-
-                return true;
+                await _profanityFilterService.HandleViolation(settings, message);
             }
-
-            return false;
-        }
-
-        private async Task<bool> LinkFilterHandler(ModerationSettings settings, SocketMessage message)
-        {
-            var author = message.Author as SocketGuildUser;
-
-            if (LinkCheck(settings, message))
+            else if (_linkFilterService.CheckViolation(settings, message))
             {
-                await HandleViolation(settings, message, author, WarningType.Link);
-
-                return true;
+                await _linkFilterService.HandleViolation(settings, message);
             }
-
-            return false;
         }
-
-        private bool ProfanityCheck(ModerationSettings settings, SocketMessage message)
-        {
-            var filterViolatedFlag = false;
-
-            if (!_bypassCheck.HasBypassAuthority(settings, message, WhitelistType.Profanity))
-            {
-                if (_profanityFilterService.CheckViolation(settings.ProfanityFilter, message))
-                    filterViolatedFlag = true;
-            }
-
-            return filterViolatedFlag;
-        }
-
-        private bool LinkCheck(ModerationSettings settings, SocketMessage message)
-        {
-            var filterViolatedFlag = false;
-
-            if (!_bypassCheck.HasBypassAuthority(settings, message, WhitelistType.Link))
-            {
-                if (_linkFilterService.CheckViolation(settings.LinkFilter, message))
-                    filterViolatedFlag = true;
-            }
-
-            return filterViolatedFlag;
-        }
-
-        private async Task HandleViolation(ModerationSettings moderationSettings, SocketMessage message, SocketGuildUser user, WarningType warningType)
-        {
-            await message.DeleteAsync();
-
-            await _messageService.Post(message.Channel.Id, $"Message by <@{user.Id}> deleted\nReason: {warningType}");
-
-            var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.Warnings, u => u.ActivePunishments);
-
-            // Add warning to database.
-            var newWarning = await _warningService.AddWarning(moderationSettings, user, warningType);
-
-            // Update cached version.
-            userData.Warnings.Add(newWarning);
-
-            // Get all warnings that haven't expired.
-            var userWarnings = userData.Warnings.Where(x => x.WarningExpires > DateTimeOffset.Now);
-
-            // Count warnings of violation type.
-            var specificWarningCount = userWarnings.Count(x => x.WarningType == warningType);
-
-            // Count total number of warnings.
-            var allWarningsCount = userWarnings.Count();
-
-            var punishments = new List<Punishment>();
-
-            // Global punishments
-            punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == WarningType.General && x.WarningThreshold == allWarningsCount));
-
-            // Punishments for specific type. I.E. profanity violation.
-            punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
-
-            await _punishmentService.ApplyPunishments(moderationSettings, message.Channel.Id, punishments, user);
-        }
- 
         public override async Task<bool> IsEnabledForGuild(ulong guildId)
         {
             var settings = await _settingsService.GetSettingsByGuild(guildId);

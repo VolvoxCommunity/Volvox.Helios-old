@@ -1,13 +1,42 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Discord.WebSocket;
+using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
+using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
+using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
+using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
 {
     public class LinkFilterService : IFilterService<LinkFilter>
     {
-        public bool CheckViolation(LinkFilter linkFilter, SocketMessage message)
+        private readonly IViolationService _violationService;
+
+        private readonly IBypassCheck _bypassCheck;
+
+        public LinkFilterService(IViolationService violationService, IBypassCheck bypassCheck)
+        {
+            _violationService = violationService;
+
+            _bypassCheck = bypassCheck;
+        }
+
+        public bool CheckViolation(ModerationSettings settings, SocketMessage message)
+        {
+            var filterViolatedFlag = false;
+
+            if (!HasBypassAuthority(settings, message))
+            {
+                if (ContainsIllegalLink(settings.LinkFilter, message));
+                    filterViolatedFlag = true;
+            }
+
+            return filterViolatedFlag;
+        }
+
+        private bool ContainsIllegalLink(LinkFilter linkFilter, SocketMessage message)
         {
             // Normalize message to lowercase and split into array of words.
             var messageWords = message.Content.ToLower().Split(" ");
@@ -51,10 +80,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
             return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
         }
 
-
-        public void HandleViolation(LinkFilter linkFilter, SocketMessage message)
+        public async Task HandleViolation(ModerationSettings settings, SocketMessage message)
         {
-            throw new System.NotImplementedException();
+            await _violationService.HandleViolation(settings, message, WarningType.Link);
+        }
+
+        private bool HasBypassAuthority(ModerationSettings settings, SocketMessage message)
+        {
+            return _bypassCheck.HasBypassAuthority(settings, message, WhitelistType.Link);
         }
     }
 }
