@@ -32,8 +32,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 {
     public class ModerationModule : Module
     {
-        // TODO : extract banning and stuff into services
-
         // TODO : MAKE SURE EXPIRE PERIOD DOESNT EXCEDE MAX DATETIME
 
         // TODO : Consider not adding warnings if the guild has no punishments in place. Perhaps have purge button too, for warnings of users.
@@ -44,31 +42,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Why is the module not working properly sometimes? usually after I just boot up shit. perhaps because it hasnt finished loading or something? try and figure out what the problem is.
 
-        // TODO : Extract adding of punishments into their own service
-
         // TODO : Ensure bot has perms to remove a message before it does.
 
         // TODO : Why does redirect on users page fail after posting
 
-        // TODO : Fix removal of punishments from posting on users page.
-
-        // TODO : Extract logic and user interfaces, that way can change the functionality without changing the core module
-
         // TODO : Add prev/next buttons to users page
 
-        // TODO : Finish punishment service stuff like remove punishments
-
-        // TODO : Possible caching issue. Sometimes moduel things profanity/link filter is null. needing a restart to fix. wtf?
-
         // TODO : Further abstract logic in punishment service. Too much in one class atm, think of making the actual banning/kicking its own separate class.
-
-        // TODO : Extract handle violation into its own class
 
         // TODO : consider making GlobalFilter instead of checking for global in this class.
 
         // TODO : Try to refactor so dont have to pass moderation settings into filter classes, just the filter. maybe add reference to warnings/punishments to the filter?
-
-        // TODO : Currently removing role and stuff doesnt work as user is null when coming from view model. fix this
 
         #region Private vars
 

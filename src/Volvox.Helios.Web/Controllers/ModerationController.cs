@@ -19,6 +19,7 @@ using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Service.Discord.User;
 using Volvox.Helios.Core.Utilities.Constants;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
+using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
 
 namespace Volvox.Helios.Web.Controllers
 {
@@ -26,13 +27,9 @@ namespace Volvox.Helios.Web.Controllers
 
     // TODO : exctract logic and inject them into controller
 
-    // TODO : sort out individual users page
-
     // TODO : pagination for users
 
     // TODO : Rename User method as to unhide inherited member
-
-    // TODO : Make the user page stuff an update to the module
 
     // TODO : Convert other methods of deletion/modification to use a notmapped field to mark for deletion, instead of converting to a new class with said field.
 
@@ -77,6 +74,8 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IDiscordUserService _discordUserService;
 
         private readonly IPunishmentService _punishmentService;
+
+        private readonly IWarningService _warningService;
         #endregion
 
         public ModerationController(IModuleSettingsService<ModerationSettings> moderationSettings,
@@ -91,7 +90,8 @@ namespace Volvox.Helios.Web.Controllers
             IEntityService<ActivePunishment> entityServiceActivePunishments,
             IEntityService<UserWarnings> entityServiceUsers,
             IDiscordUserService discordUserService,
-            IPunishmentService punishmentService
+            IPunishmentService punishmentService,
+            IWarningService warningService
             )
         {
             _moderationSettings = moderationSettings;
@@ -119,6 +119,8 @@ namespace Volvox.Helios.Web.Controllers
             _discordUserService = discordUserService;
 
             _punishmentService = punishmentService;
+
+            _warningService = warningService;
         }
 
         private void ClearCacheById(ulong id)
@@ -507,11 +509,21 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpPost("user/{userId}")]
-        public async Task<IActionResult> User(ulong guildId, ulong userId, UserViewModel vm)
+        public async Task<IActionResult> User(ulong guildId, ulong userId, UserViewModel vm) 
         {
-            await _punishmentService.RemovePunishmentBulk(vm.ActivePunishments.Where(p => p.Remove).ToList());
+            var punishmentsToRemoveIds = vm.ActivePunishments.Where(p => p.Remove).Select(p => p.Id);
 
-            await _entityServiceWarnings.RemoveBulk(vm.Warnings.Where(p => p.Remove));
+            var punishmentsToRemove = await _entityServiceActivePunishments.Get(p => punishmentsToRemoveIds.Contains(p.Id)
+            && p.User.UserId == userId && p.User.GuildId == guildId, p => p.User);
+
+            var warningsToRemoveIds = vm.Warnings.Where(w => w.Remove).Select(w => w.Id);
+
+            var warningsToRemove = await _entityServiceWarnings.Get(w => warningsToRemoveIds.Contains(w.Id)
+            && w.User.UserId == userId && w.User.GuildId == guildId, w => w.User);
+
+            await _punishmentService.RemovePunishmentBulk(punishmentsToRemove);
+
+            await _warningService.RemoveWarningBulk(warningsToRemove);
 
             return RedirectToAction("user/{userId}");
         }
