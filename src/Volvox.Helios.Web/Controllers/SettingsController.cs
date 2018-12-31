@@ -62,9 +62,8 @@ namespace Volvox.Helios.Web.Controllers
 
             // Bot is not in guild so redirect to the add bot URL.
             var redirectUrl = Uri.EscapeDataString($"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}");
-
             return Redirect(
-                $"https://discordapp.com/api/oauth2/authorize?client_id={discordSettings.ClientId}&permissions=8&redirect_uri={redirectUrl}&scope=bot&guild_id={guildId}");
+                $"https://discordapp.com/api/oauth2/authorize?client_id={discordSettings.ClientId}&permissions=8&redirect_uri={redirectUrl}&scope=bot&guild_id={guildId}&response_type=code");
         }
 
         #region Streamer
