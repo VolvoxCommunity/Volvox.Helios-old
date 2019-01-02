@@ -19,18 +19,15 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
 
         private readonly IUserWarningsService _userWarningService;
 
-        private readonly IEntityService<Warning> _warningService;
-
         private readonly ILogger<ModerationModule> _logger;
 
+
         public WarningService(IServiceScopeFactory scopeFactory, ILogger<ModerationModule> logger,
-            IUserWarningsService userWarningService, IEntityService<Warning> warningService)
+            IUserWarningsService userWarningService)
         {
             _scopeFactory = scopeFactory;
 
             _userWarningService = userWarningService;
-
-            _warningService = warningService;
 
             _logger = logger;
         }
@@ -70,12 +67,22 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
 
         public async Task RemoveWarning(Warning warning)
         {
-            await _warningService.Remove(warning);
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var warningService = scope.ServiceProvider.GetRequiredService<IEntityService<Warning>>();
+
+                await warningService.Remove(warning);
+            }
         }
 
         public async Task RemoveWarningBulk(List<Warning> warnings)
         {
-            await _warningService.RemoveBulk(warnings);
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var warningService = scope.ServiceProvider.GetRequiredService<IEntityService<Warning>>();
+
+                await warningService.RemoveBulk(warnings);
+            }
         }
 
         private int GetWarningDuration(ModerationSettings moderationSettings, WarningType warningType)

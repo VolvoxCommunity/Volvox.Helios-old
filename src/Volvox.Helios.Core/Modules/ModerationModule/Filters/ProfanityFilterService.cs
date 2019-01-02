@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
@@ -38,7 +37,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
         {
             var filterViolatedFlag = false;
 
-            if (!HasBypassAuthority(settings, message))
+            if (!HasBypassAuthority(settings, message) && settings.ProfanityFilter != null)
             {
                 if (ContainsProfanity(settings.ProfanityFilter, message));
                 filterViolatedFlag = true;

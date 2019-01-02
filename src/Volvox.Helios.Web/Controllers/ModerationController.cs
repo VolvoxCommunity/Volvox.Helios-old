@@ -35,13 +35,9 @@ namespace Volvox.Helios.Web.Controllers
 
     // TODO : May have to clear cache after doign stuff with users.
 
-    // TODO : Display all users, not just ones with warnings. Make "remove" of active punishments invoke the hangfire scheduled event early.
-
     // TODO : Why are whitelisted links duplicating? when clicking save repeatedly. shti is fucked
 
     // TODO : Give user option to not post message for warning/banning
-
-    // TODO : Add attributes for ensuring user entry exists.
 
     [Authorize]
     [Route("/Moderation/{guildId}")]

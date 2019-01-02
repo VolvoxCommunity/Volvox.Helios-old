@@ -34,15 +34,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
     {
         // TODO : MAKE SURE EXPIRE PERIOD DOESNT EXCEDE MAX DATETIME
 
-        // TODO : Consider not adding warnings if the guild has no punishments in place. Perhaps have purge button too, for warnings of users.
-
-        // TODO : Add warnings page to clear user warnings and stuff
-
         // TODO : add extra filters like caps filters, emoji filters
 
         // TODO : Why is the module not working properly sometimes? usually after I just boot up shit. perhaps because it hasnt finished loading or something? try and figure out what the problem is.
-
-        // TODO : Ensure bot has perms to remove a message before it does.
 
         // TODO : Why does redirect on users page fail after posting
 
@@ -53,6 +47,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         // TODO : consider making GlobalFilter instead of checking for global in this class.
 
         // TODO : Try to refactor so dont have to pass moderation settings into filter classes, just the filter. maybe add reference to warnings/punishments to the filter?
+
+        // TODO : need to resave to enable filter? could be that its not saved, but the default value when loading a filter page is to be enabled so it looks enabled?
 
         #region Private vars
 

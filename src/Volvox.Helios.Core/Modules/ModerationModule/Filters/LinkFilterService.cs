@@ -27,7 +27,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
         {
             var filterViolatedFlag = false;
 
-            if (!HasBypassAuthority(settings, message))
+            if (!HasBypassAuthority(settings, message) && settings.LinkFilter != null)
             {
                 if (ContainsIllegalLink(settings.LinkFilter, message));
                     filterViolatedFlag = true;
