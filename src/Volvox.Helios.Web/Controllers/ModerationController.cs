@@ -27,8 +27,6 @@ namespace Volvox.Helios.Web.Controllers
 
     // TODO : exctract logic and inject them into controller
 
-    // TODO : pagination for users
-
     // TODO : Rename User method as to unhide inherited member
 
     // TODO : Convert other methods of deletion/modification to use a notmapped field to mark for deletion, instead of converting to a new class with said field.
@@ -478,7 +476,8 @@ namespace Volvox.Helios.Web.Controllers
 
             var vm = new UsersViewModel
             {
-                Users = users
+                Users = users,
+                PageNo = pageNo
             };
 
             return View(vm);

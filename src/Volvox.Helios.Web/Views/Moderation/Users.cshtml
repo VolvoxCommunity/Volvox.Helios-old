@@ -11,6 +11,13 @@
             <a asp-controller="Moderation" asp-action="user" asp-route-userId="@user.Id">@user.Username</a>
         </div>
     }
+
+    var pageNext = Model.PageNo + 1;
+
+    var pagePrev = ((Model.PageNo - 1) < 0) ? 0 : Model.PageNo - 1;
+
+    <a asp-controller="Moderation" asp-action="users" asp-route-pageNo="@pagePrev" >Prev</a>
+    <a asp-controller="Moderation" asp-action="users" asp-route-pageNo="@pageNext" >Next</a>
 }
 
 

@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Discord.WebSocket;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Volvox.Helios.Core.Bot;
-using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
-using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.BackgroundJobs;
-using Volvox.Helios.Service.EntityService;
-using Volvox.Helios.Service.ModuleSettings;
 
 namespace Volvox.Helios.Core.Jobs
 {
