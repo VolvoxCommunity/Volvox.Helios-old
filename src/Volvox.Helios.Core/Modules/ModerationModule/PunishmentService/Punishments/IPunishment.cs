@@ -6,6 +6,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
 {
     public interface IPunishment
     {
+        PunishmentDataModel GetPunishmentTypeDetails();
+
         Task<PunishmentResponse> ApplyPunishment(Punishment punishment, SocketGuildUser user);
 
         Task<PunishmentResponse> RemovePunishment(ActivePunishment punishment);

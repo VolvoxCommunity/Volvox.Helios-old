@@ -69,6 +69,15 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
             return punishmentResponse;
         }
 
+        public PunishmentDataModel GetPunishmentTypeDetails()
+        {
+            return new PunishmentDataModel()
+            {
+                PunishType = PunishType.AddRole,
+                RemovesUserFromGuild = false
+            };
+        }
+
         public async Task<PunishmentResponse> RemovePunishment(ActivePunishment punishment)
         {
             var punishmentResponse = new PunishmentResponse();

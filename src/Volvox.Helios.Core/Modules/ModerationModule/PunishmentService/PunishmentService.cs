@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Jobs;
+using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishments;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Domain.Module.ModerationModule;
@@ -16,6 +17,7 @@ using Volvox.Helios.Service.EntityService;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 {
+    // TODO : Maybe make this service scope or transient?
     public class PunishmentService : IPunishmentService
     {
         private readonly IMessageService _messageService;
@@ -30,7 +32,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
         public PunishmentService(IMessageService messageService, IServiceScopeFactory scopeFactory,
             DiscordSocketClient client, ILogger<ModerationModule> logger,
-            IUserWarningsService userWarningService)
+            IUserWarningsService userWarningService, IServiceProvider serviceProvider)
         {
             _messageService = messageService;
 
@@ -41,6 +43,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
             _client = client;
 
             _logger = logger;
+
+
+            var x = serviceProvider.GetRequiredService<IPunishment>();
+
+
+
         }
 
         /// <inheritdoc />
