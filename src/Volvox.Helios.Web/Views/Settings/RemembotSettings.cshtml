@@ -9,7 +9,25 @@
 <form method="post" class="col-12">
     <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div class="row border border-gray2 rounded">
+    <div class="row border border-gray2 rounded sliding-border">
+        <div class="col-md-9 pt-3 pb-3">
+            <h4 class="mb-0">Information and Instructions</h4>
+        </div>
+        <div class="col-md-3 valign">
+            <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                <a href="#infoCollapse" class="text-light" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
+                    <i class="fas fa-info-circle" style="font-size: 20px;cursor:pointer;"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 collapse" id="infoCollapse">
+            <p>
+                Toggle the radio boxes to enable the Remebot module. With the "Add Reminder" button you can send a custom message to a defined channel of your server. You can also set the message interval in which the message should be send. In order to work properly ensure that the remembot module is activated and the status of the message is active.
+            </p>
+        </div>
+    </div>
+
+    <div class="row border border-gray2 rounded mt-4">
         <div class="col-md-9 pt-3 pb-3">
             <h4>Remembot Module</h4>
             <p class="mb-0 text-volvox">

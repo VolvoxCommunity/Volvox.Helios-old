@@ -71,4 +71,10 @@
     `);
   }
 
+  $('[data-animation="sliding-border"]').click(function () {
+    $(this).closest('.row').toggleClass('animate');
+  }, function () {
+    $(this).closest('.row').toggleClass('animate');
+  });
+
 }(jQuery));

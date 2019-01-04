@@ -1,4 +1,9 @@
-﻿.module-enabler{
+﻿::selection {
+  color: white;
+  background: var(--color-dark2);
+}
+
+.module-enabler{
   border-color: var(--color-gray2);
   color: var(--color-gray2);
   cursor: pointer;

@@ -128,7 +128,6 @@ namespace Volvox.Helios.Web.Controllers
             [FromServices] IDiscordGuildService guildService)
         {
             var botRolePosition = bot.GetBotRoleHierarchy(guildId);
-
             var roles = await guildService.GetRoles(guildId);
 
             var selectedRolePosition = roles.FirstOrDefault(r => r.Id == viewModel.RoleId)?.Position;
@@ -137,7 +136,7 @@ namespace Volvox.Helios.Web.Controllers
             if (selectedRolePosition > botRolePosition)
             {
                 ModelState.AddModelError("RolePosition",
-                    "The bots managed role must be positioned higher then the selected role");
+                    "The bots managed role must be positioned higher than the selected role");
 
                 // All channels in guild.
                 var channels = await guildService.GetChannels(guildId);
