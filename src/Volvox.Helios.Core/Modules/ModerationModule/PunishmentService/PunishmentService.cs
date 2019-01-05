@@ -17,7 +17,7 @@ using Volvox.Helios.Service.EntityService;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 {
-    // TODO : Maybe make this service scope or transient?
+
     public class PunishmentService : IPunishmentService
     {
         private readonly IMessageService _messageService;
@@ -30,9 +30,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
         private readonly ILogger<ModerationModule> _logger;
 
+        private readonly Dictionary<PunishType, IPunishment> _punishments = new Dictionary<PunishType, IPunishment>();
+
         public PunishmentService(IMessageService messageService, IServiceScopeFactory scopeFactory,
             DiscordSocketClient client, ILogger<ModerationModule> logger,
-            IUserWarningsService userWarningService, IServiceProvider serviceProvider)
+            IUserWarningsService userWarningService, IList<IPunishment> punishments)
         {
             _messageService = messageService;
 
@@ -44,11 +46,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
             _logger = logger;
 
+            foreach (var punishment in punishments)
+            {
+                var punishmentType = punishment.GetPunishmentTypeDetails().PunishType;
 
-            var x = serviceProvider.GetRequiredService<IPunishment>();
-
-
-
+                _punishments[punishmentType] = punishment;
+            }
         }
 
         /// <inheritdoc />
@@ -56,54 +59,25 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
         {
             var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.ActivePunishments);
 
-            var userHasBeenRemoved = false;
-
             // List of punishments to add to database as active punishments.
             var activePunishments = new List<Punishment>();
 
             foreach (var punishment in punishments)
             {
-                // If a user has been kicked/banned or otherwise removed from the guild, you can't add any other punishments. So return from this method.
-                if (userHasBeenRemoved)
-                    return;
-
                 // Check to make sure user doesn't already have this punishment. This could cause issues if the same punishment is applied twice.
                 if (IsPunishmentAlreadyActive(punishment, userData))
                     continue;
 
-                var wasSuccessful = true;
+                var punishmentResponse = await _punishments[punishment.PunishType].ApplyPunishment(punishment, user);
 
-                // For each punishment, check if applying them has been successful. If successful, add this to active punishments db, if not, don't add it.
-                // If a punishment removes the user from the guild, no more punisments can be applied to them, so don't attempt any more.
-                switch (punishment.PunishType)
+                if (punishmentResponse.Successful)
                 {
-                    case ( PunishType.Kick ):
-                        if (await KickPunishment(punishment, channelId, user))
-                            userHasBeenRemoved = true;
-                        else
-                            wasSuccessful = false;
-                        break;
-
-                    case ( PunishType.Ban ):
-                        if (await BanPunishment(punishment, channelId, user))
-                            userHasBeenRemoved = true;
-                        else
-                            wasSuccessful = false;
-                        break;
-
-                    case ( PunishType.AddRole ):
-                        if (await AddRolePunishment(punishment, channelId, user))
-                        { }
-                        else
-                            wasSuccessful = false;
-                        break;
-                }
-
-                // Punishment applied successfully, add to list to add to db.
-                if (wasSuccessful)
                     activePunishments.Add(punishment);
 
-                wasSuccessful = true;
+                    // If the punishment was successful, and this type of punishment removes the user from the guild, do nothing.
+                    if (_punishments[punishment.PunishType].GetPunishmentTypeDetails().RemovesUserFromGuild)
+                        break;
+                }
             }
 
             await AddActivePunishments(moderationSettings, activePunishments, user, userData);
@@ -337,16 +311,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
         public async Task RemovePunishment(ActivePunishment punishment)
         {
-            switch (punishment.PunishType)
-            {
-                case ( PunishType.Ban ):
-                    await Unban(punishment);
-                    break;
-
-                case ( PunishType.AddRole ):
-                    await RemoveRole(punishment);
-                    break;
-            }
+            await _punishments[punishment.PunishType].RemovePunishment(punishment);
 
             CancelHangfireJob(punishment.JobId);
     
