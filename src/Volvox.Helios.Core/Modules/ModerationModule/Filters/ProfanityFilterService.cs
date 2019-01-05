@@ -39,8 +39,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
 
             if (!HasBypassAuthority(settings, message) && settings.ProfanityFilter != null)
             {
-                if (ContainsProfanity(settings.ProfanityFilter, message));
-                filterViolatedFlag = true;
+                if (ContainsProfanity(settings.ProfanityFilter, message))
+                    filterViolatedFlag = true;
             }
 
             return filterViolatedFlag;
