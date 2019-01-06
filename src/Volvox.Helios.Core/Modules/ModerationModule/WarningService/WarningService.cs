@@ -21,7 +21,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
 
         private readonly ILogger<ModerationModule> _logger;
 
-
         public WarningService(IServiceScopeFactory scopeFactory, ILogger<ModerationModule> logger,
             IUserWarningsService userWarningService)
         {
