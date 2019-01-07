@@ -520,7 +520,7 @@ namespace Volvox.Helios.Web.Controllers
 
             await _warningService.RemoveWarningBulk(warningsToRemove);
 
-            return RedirectToAction("user/{userId}");
+            return RedirectToAction("User");
         }
 
         private async Task EnsureSettingsExists(ulong guildId)
