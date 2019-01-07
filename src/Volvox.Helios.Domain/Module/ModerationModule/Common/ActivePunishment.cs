@@ -31,9 +31,6 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.Common
         [Required]
         public DateTimeOffset PunishmentExpires { get; set; }
 
-        // Id of hangfire job. This is the id of the job that removes the active punishment when expired.
-        public string JobId { get; set; }
-
         // This field is used to mark whether this punishment should be removed as specified by the user on the front end.
         [NotMapped]
         public bool Remove { get; set; }
