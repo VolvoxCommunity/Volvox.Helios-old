@@ -72,9 +72,9 @@
   }
 
   $('[data-animation="sliding-border"]').click(function () {
-    $(this).closest('.row').toggleClass('animate');
+    $(this).closest('.sliding-border').toggleClass('animate');
   }, function () {
-    $(this).closest('.row').toggleClass('animate');
+    $(this).closest('.sliding-border').toggleClass('animate');
   });
 
 }(jQuery));

@@ -9,6 +9,10 @@
   cursor: pointer;
 }
 
+.sliding-border .info-btn{
+  color: var(--color-deep-dark);
+}
+
 footer{
   background: #eee;
 }

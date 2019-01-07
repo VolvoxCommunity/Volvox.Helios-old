@@ -12,19 +12,19 @@
             <div class="col-12">
 
                 <div class="row border border-gray2 rounded sliding-border">
-                    <div class="col-md-9 pt-3 pb-3">
+                    <div class="col-md-9 col-10 pt-3 pb-3">
                         <h4 class="mb-0">Information and Instructions</h4>
                     </div>
-                    <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
-                            <a href="#infoCollapse" class="text-light" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
-                                <i class="fas fa-info-circle" style="font-size: 20px;cursor:pointer;"></i>
+                    <div class="col-md-3 col-2 valign">
+                        <div class="btn-group material-btn-group ml-auto">
+                            <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
+                                <i class="fas fa-info-circle"></i>
                             </a>
                         </div>
                     </div>
                     <div class="col-12 collapse" id="infoCollapse">
                         <p>
-                            
+
                         </p>
                     </div>
                 </div>
@@ -37,7 +37,7 @@
                         </p>
                     </div>
                     <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mb-3 mb-md-0">
                             <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
                                 On
                                 <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
@@ -48,7 +48,6 @@
                             </label>
                         </div>
                     </div>
-
                 </div>
 
                 <div class="row mt-4 border border-gray2 rounded">
@@ -68,7 +67,7 @@
                         <span asp-validation-for="ChannelSettings.Enabled" class="text-danger"></span>
                     </div>
                     <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mb-3 mb-md-0">
                             <label for="enabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "active" : "disabled")">
                                 On
                                 <input id="enabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="true" @(Model.ChannelSettings.Enabled ? "checked" : "")>
@@ -88,7 +87,7 @@
                         <span asp-validation-for="ChannelSettings.RemoveMessages" class="text-danger"></span>
                     </div>
                     <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mb-3 mb-md-0">
                             <label for="rmEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "active" : "disabled")">
                                 On
                                 <input id="rmEnabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="true" @(Model.ChannelSettings.RemoveMessages ? "checked" : "")>
@@ -118,7 +117,7 @@
                         <span asp-validation-for="StreamerRoleEnabled" class="text-danger"></span>
                     </div>
                     <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mb-3 mb-md-0">
                             <label for="roleEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "active" : "disabled")">
                                 On
                                 <input id="roleEnabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="true" @(Model.StreamerRoleEnabled ? "checked" : "")>
@@ -128,6 +127,16 @@
                                 <input id="roleDisabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="false" @(Model.StreamerRoleEnabled ? "" : "checked")>
                             </label>
                         </div>
+                    </div>
+                </div>
+
+                <div class="row border border-gray2 rounded mt-4">
+                    <div class="col-12 pt-3 pb-3">
+                        <h4>Blacklist</h4>
+                        <p class="mb-0 text-volvox">
+                            Add Roles to the blacklist
+                        </p>
+                        <div id="blacklistTagBox" class="mt-3" style="overflow: hidden;"></div>
                     </div>
                 </div>
 
@@ -227,6 +236,12 @@
         $('.module-enabler input:not(".active")').click((e) => {
             $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
             $(e.currentTarget).parent().toggleClass('active disabled');
+        });
+
+        $('#blacklistTagBox').dxTagBox({
+            dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Roles)))'),
+            valueExpr: "value",
+            displayExpr: "text",
         });
     </script>
 }

@@ -24,11 +24,21 @@ hr{
   background-color: var(--color-deep-dark);
 }
 
+.dx-tag-content{
+  background: var(--color-dark2);
+  color: #ddd;
+}
+
+.dx-tagbox .dx-texteditor-container {
+  background: var(--color-deep-dark);
+}
+
 .dx-texteditor-input {
   background: var(--color-deep-dark);
   color: var(--color-gray2);
 }
 .dx-texteditor.dx-editor-outlined {
+  background: none;
   border-color: #797878;
 }
 .dx-overlay-content.dx-popup-normal {
@@ -103,6 +113,10 @@ hr{
 
 .gentleselect-label {
   color: white !important;
+}
+
+.sliding-border .info-btn {
+  color: var(--color-gray);
 }
 
 footer {
