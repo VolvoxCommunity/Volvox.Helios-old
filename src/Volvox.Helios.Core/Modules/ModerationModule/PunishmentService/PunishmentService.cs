@@ -17,6 +17,9 @@ using Volvox.Helios.Service.EntityService;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 {
+    // TODO : Maybe make this service scope or transient?
+
+    // TODO : initially profanity filter failed.the fix was to go to filter and save. why is that? caching maybe? or maybe the function to create if not exists in the controller doesnt update the cache properly, then saving updates it as the cache is cleared?
 
     public class PunishmentService : IPunishmentService
     {
@@ -83,108 +86,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
             await AddActivePunishments(moderationSettings, activePunishments, user, userData);
         }
 
-        private async Task<bool> AddRolePunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
-        {
-            if (!punishment.RoleId.HasValue)
-                return false;
-
-            var guild = user.Guild;
-
-            var role = guild.GetRole(punishment.RoleId.Value);
-
-            if (guild is null)
-                return false;
-
-            if (role is null)
-            {
-                await _messageService.Post(channelId, $"Could not add Role to user '{user.Username}' as Role doesn't exist.");
-                return false;
-            }
-
-            var hierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
-
-            // Trying to assign a role higher than the bots hierarchy will throw an error.
-            if (role.Position < hierarchy)
-            {
-                await user.AddRoleAsync(role);
-
-                var expireTime = punishment.PunishDuration == 0 ? "Never" : punishment.PunishDuration.ToString();
-
-                await _messageService.Post(channelId, $"Adding role '{role.Name}' to user <@{user.Id}>" +
-                    $"\nReason: {punishment.WarningType}\n" +
-                    $"Expires (minutes): {expireTime}");
-            }
-            else
-            {
-                _logger.LogInformation($"Moderation Module: Couldn't apply role '{role.Name}' to user '{user.Username}' as bot doesn't have appropriate permissions. " +
-                    $"Guild Id:{user.Guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}.");
-
-                await _messageService.Post(channelId, $"Couldn't add role '{role.Name}' to user <@{user.Id}> as bot has insufficient permissions. " +
-                    $"Check your role hierarchy and make sure the bot is higher than the role you wish to apply.");
-
-                return false;
-            }
-
-            return true;
-        }
-
-        private async Task<bool> KickPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
-        {
-            var botHierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
-
-            if (botHierarchy > user.Hierarchy)
-            {
-                await user.KickAsync();
-
-                _logger.LogInformation($"Moderation Module: Kicking user '{user.Username}'." +
-                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
-
-                await _messageService.Post(channelId, $"Kicking user <@{user.Id}>" +
-                    $"\nReason: {punishment.WarningType}");
-
-                return true;
-            }
-            else
-            {
-                _logger.LogInformation($"Moderation Module: Failed to kick user '{user.Username}' as bot has insufficient permissions." +
-                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
-
-                await _messageService.Post(channelId, $"Failed to kick user <@{user.Id}> as bot has insufficient permissions.");
-
-                return false;
-            }
-        }
-
-        private async Task<bool> BanPunishment(Punishment punishment, ulong channelId, SocketGuildUser user)
-        {
-            var botHierarchy = _client.GetGuild(user.Guild.Id)?.CurrentUser.Hierarchy ?? 0;
-
-            if (botHierarchy > user.Hierarchy)
-            {
-                await user.Guild.AddBanAsync(user);
-
-                _logger.LogInformation($"Moderation Module: Banning user '{user.Username}'." +
-                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
-
-                var expireTime = punishment.PunishDuration == 0 ? "Never" : punishment.PunishDuration.ToString();
-
-                await _messageService.Post(channelId, $"Banning user <@{user.Id}>" +
-                    $"\nReason: {punishment.WarningType}" +
-                    $"Expires: {expireTime}");
-
-                return true;
-            }
-            else
-            {
-                _logger.LogInformation($"Moderation Module: Failed to ban user '{user.Username}' as bot has insufficient permissions." +
-                        $"Guild Id:{user.Guild.Id}, User Id: {user.Id}.");
-
-                await _messageService.Post(channelId, $"Failed to ban user <@{user.Id}> as bot has insufficient permissions.");
-
-                return false;
-            }
-        }
-
         private async Task AddActivePunishments(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
         {
             using (var scope = _scopeFactory.CreateScope())
@@ -221,17 +122,15 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
                 var removePunishmentService = scope.ServiceProvider.GetRequiredService<RemovePunishmentJob>();
 
+                await activePunishmentsService.CreateBulk(activePunishments.Where(p => p.PunishmentExpires > DateTimeOffset.Now));
+
                 foreach (var p in activePunishments)
                 {
-                    if (p.PunishmentExpires > DateTimeOffset.Now  && p.PunishmentExpires != DateTimeOffset.MaxValue)
+                    if (p.PunishmentExpires > DateTimeOffset.Now && p.PunishmentExpires != DateTimeOffset.MaxValue)
                     {
-                        var jobId = removePunishmentService.SchedulePunishmentRemoval(p);
-
-                        p.JobId = jobId;
+                       removePunishmentService.ScheduleActivePunishmentRemoval(p);
                     }
-                }
-
-                await activePunishmentsService.CreateBulk(activePunishments.Where(p => p.PunishmentExpires > DateTimeOffset.Now));
+                }    
             }
         }
 
@@ -243,45 +142,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
             return ( currentlyActivePunishments.Any(x => x.PunishmentId == punishment.Id) );
         }
 
-        private async Task Unban(ActivePunishment punishment)
-        {
-            var guild = _client.GetGuild(punishment.User.GuildId);
-
-            var userId = punishment.User.UserId;
-
-            await guild.RemoveBanAsync(userId);
-        }
-
-        private async Task RemoveRole(ActivePunishment punishment)
-        {
-            var guild = _client.GetGuild(punishment.User.GuildId);
-
-            var role = guild?.GetRole(punishment.RoleId.Value);
-
-            var user = guild?.Users.FirstOrDefault(x => x.Id == punishment.User.UserId);
-
-            // If role hierarchy has changed since punishment was applied and now the bot doesn't have sufficient privilages, do nothing.
-            if (role != null && HasSufficientPrivilages(role, guild))
-            {
-                await user.RemoveRoleAsync(role);
-
-                _logger.LogInformation($"Moderation Module: Removing role '{role.Name}' from {user.Username}."  +
-                    $"Guild Id:{user.Guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}.");
-            }
-            else
-            {
-                if (user != null && guild != null)
-                {
-                    _logger.LogInformation($"Moderation Module: Couldn't apply role '{role.Name}' to user {user.Username} as bot doesn't have appropriate permissions. " +
-                       $"Guild Id:{guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}");
-                }
-                else
-                {
-                    _logger.LogError("Moderation Module: Something wen't wrong when trying to remove role in the punishment removal job. User or guild were unexpectedly null.");
-                }
-            }
-        }
-
         private async Task RemoveActivePunishmentFromDb(ActivePunishment punishment)
         {
             using (var scope = _scopeFactory.CreateScope())
@@ -289,16 +149,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
                 var activePunishmentService = scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
 
                 await activePunishmentService.Remove(punishment);
-            }
-        }
-
-        private void CancelHangfireJob(string jobId)
-        {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var jobService = scope.ServiceProvider.GetRequiredService<IJobService>();
-
-                jobService.CancelJob(jobId);
             }
         }
 
@@ -313,8 +163,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
         {
             await _punishments[punishment.PunishType].RemovePunishment(punishment);
 
-            CancelHangfireJob(punishment.JobId);
-    
             await RemoveActivePunishmentFromDb(punishment);
         }
 
