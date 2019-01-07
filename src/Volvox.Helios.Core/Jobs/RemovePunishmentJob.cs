@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Discord.WebSocket;
 using Hangfire.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
@@ -13,14 +15,16 @@ namespace Volvox.Helios.Core.Jobs
         private readonly IJobService _jobService;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IPunishmentService _punishmentService;
+        private readonly DiscordSocketClient _client;
 
         public RemovePunishmentJob(IJobService jobService,
             IServiceScopeFactory scopeFactory,
-            IPunishmentService punishmentService )
+            IPunishmentService punishmentService, DiscordSocketClient client )
         {
             _jobService = jobService;
             _scopeFactory = scopeFactory;
             _punishmentService = punishmentService;
+            _client = client;
         }
 
         public string ScheduleActivePunishmentRemoval(ActivePunishment activePunishment)
@@ -31,6 +35,11 @@ namespace Volvox.Helios.Core.Jobs
         public async Task RemoveActivePunishmentDiscord(int activePunishmentId)
         {
             ActivePunishment activePunishment;
+
+            while (_client.ConnectionState != Discord.ConnectionState.Connected)
+            {
+                await Task.Delay(5000);
+            }
             
             using (var scope = _scopeFactory.CreateScope())
             {
