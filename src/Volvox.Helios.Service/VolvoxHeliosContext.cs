@@ -39,10 +39,48 @@ namespace Volvox.Helios.Service
         public DbSet<RecurringReminderMessage> RecurringReminderMessages { get; set; }
         #endregion
 
+        #region Reaction Roles
+        public DbSet<ReactionRoleSettings> ReactionRoleSettings { get; set; }
+        public DbSet<ReactionRoleMessage> ReactionRoleMessages { get; set; }
+        public DbSet<ReactionRollEmoteMapping> ReactionRoleEmoteMappings { get; set; }
+        #endregion
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             SetupForReminderSchema(modelBuilder);
+            SetupForReactionRoleSchema(modelBuilder);
+        }
+
+        private void SetupForReactionRoleSchema(ModelBuilder modelBuilder)
+        {
+            var settingsModel = modelBuilder.Entity<ReactionRoleSettings>();
+            var reactionRoleMessageModel = modelBuilder.Entity<ReactionRoleMessage>();
+            var emoteRoleMappingModel = modelBuilder.Entity<ReactionRollEmoteMapping>();
+
+            reactionRoleMessageModel.HasKey(x => x.Id)
+                .ForSqlServerIsClustered();
+
+            reactionRoleMessageModel.Property(x => x.Id)
+                .UseSqlServerIdentityColumn();
+
+            reactionRoleMessageModel.HasIndex(x => new
+            {
+                x.GuildId,
+                x.MessageId,
+                x.ChannelId
+            });
+
+            reactionRoleMessageModel
+                .HasMany(x => x.RollMappings);
+
+            emoteRoleMappingModel.HasKey(x => x.Id)
+                .ForSqlServerIsClustered();
+
+            emoteRoleMappingModel.Property(x => x.Id)
+                .UseSqlServerIdentityColumn();
+
+            emoteRoleMappingModel.HasIndex(x => x.ReactionRoleMessageId);
         }
 
         private void SetupForReminderSchema(ModelBuilder modelBuilder)
