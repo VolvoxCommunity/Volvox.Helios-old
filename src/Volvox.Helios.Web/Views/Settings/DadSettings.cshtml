@@ -1,0 +1,51 @@
+﻿@model Volvox.Helios.Web.ViewModels.Settings.DadModuleSettingViewModel
+@{
+    ViewData["Title"] = "Dad Module Settings";
+}
+
+<h2>@ViewData["Title"]</h2>
+<hr>
+
+<form method="post" class="col-12">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="row border border-gray2 rounded">
+        <div class="col-md-9 pt-3 pb-3">
+            <h4>Dad Module</h4>
+            <p class="mb-0 text-volvox">
+                Unleash the "dad" on your server. Messages that start with "I'm" will be met with a dad-like response.
+            </p>
+        </div>
+        <div class="col-md-3 valign">
+            <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
+                    On
+                    <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
+                </label>
+                <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
+                    Off
+                    <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <span asp-validation-summary="Enabled" class="text-danger"></span>
+        <div class="ml-auto">
+            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        $('.module-enabler input:not(".active")').click((e) => {
+            $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
+            $(e.currentTarget).parent().toggleClass('active disabled');
+        });
+
+        var msgText = $('#message').text();
+        $('#message').html(msgText);
+    </script>
+}
