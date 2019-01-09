@@ -498,6 +498,11 @@ input:checked + .slider {
   border-top: 3px solid var(--color-skyblue);
 }
 
+/******Dashboard drag & drop**********/
+.dashboard-guild-header{
+  cursor: move;
+}
+
 @media screen and (max-width: 767px) {
   #themeToggler {
     display: none;
