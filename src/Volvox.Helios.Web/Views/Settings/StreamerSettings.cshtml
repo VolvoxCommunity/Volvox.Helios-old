@@ -136,6 +136,7 @@
                         <p class="mb-0 text-volvox">
                             Add Roles to the blacklist
                         </p>
+                        <select class="d-none blacklist-items" multiple></select>
                         <div id="blacklistTagBox" class="mt-3" style="overflow: hidden;"></div>
                     </div>
                 </div>
@@ -242,6 +243,12 @@
             dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Roles)))'),
             valueExpr: "value",
             displayExpr: "text",
+            onInitialized: (e) => {
+                $('.blacklist-items').append($('.dx-dropdowneditor-input-wrapper').find('select option'));
+            },
+            onValueChanged: (e) => {
+                $('.blacklist-items').empty().append($('.dx-dropdowneditor-input-wrapper').find('select option'));
+            }
         });
     </script>
 }
