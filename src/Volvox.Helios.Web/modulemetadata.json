@@ -34,6 +34,13 @@
       "Description": "Set periodic reminders that will be sent to specific channels.",
       "ReleaseState": "Canary",
       "Configurable": "true"
+    },
+    "DadModule": {
+      "Name": "Dad",
+      "Version": "1.0",
+      "Description": "Good ol' Dad... at it again.",
+      "ReleaseState": "Canary",
+      "Configurable": "true"
     }
   }
 }
