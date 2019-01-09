@@ -13,7 +13,7 @@ namespace Volvox.Helios.Web.Models.Moderation
 
         public short WarningThreshold { get; set; }
 
-        public WarningType WarningType { get; set; }
+        public FilterType WarningType { get; set; }
 
         public PunishType PunishType { get; set; }
 

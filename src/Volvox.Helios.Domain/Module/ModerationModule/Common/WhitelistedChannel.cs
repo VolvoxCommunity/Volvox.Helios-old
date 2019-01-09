@@ -24,6 +24,6 @@ namespace Volvox.Helios.Domain.Module.ModerationModule
         public ulong ChannelId { get; set; }
 
         [Required]
-        public WhitelistType WhitelistType { get; set; }
+        public FilterType WhitelistType { get; set; }
     }
 }

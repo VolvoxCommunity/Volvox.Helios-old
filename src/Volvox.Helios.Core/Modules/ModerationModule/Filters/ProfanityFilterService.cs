@@ -11,7 +11,7 @@ using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
 {
-    public class ProfanityFilterService : IFilterService<ProfanityFilter>
+    public class ProfanityFilterService : IFilterService
     {
         private readonly IViolationService _violationService;
 
@@ -100,12 +100,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
 
         public async Task HandleViolation(ModerationSettings settings, SocketMessage message)
         {
-            await _violationService.HandleViolation(settings, message, WarningType.Profanity);
+            await _violationService.HandleViolation(settings, message, FilterType.Profanity);
         }
 
         private bool HasBypassAuthority(ModerationSettings settings, SocketMessage message)
         {
-            return _bypassCheck.HasBypassAuthority(settings, message, WhitelistType.Profanity);
+            return _bypassCheck.HasBypassAuthority(settings, message, FilterType.Profanity);
+        }
+
+        public FilterType GetFilterType()
+        {
+            return FilterType.Profanity;
         }
     }
 }

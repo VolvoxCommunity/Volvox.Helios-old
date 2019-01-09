@@ -20,7 +20,7 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.Common
         public virtual UserWarnings User { get; set; }
 
         [Required]
-        public WarningType WarningType { get; set; }
+        public FilterType WarningType { get; set; }
 
         [Required]
         public DateTimeOffset WarningRecieved { get; set; }

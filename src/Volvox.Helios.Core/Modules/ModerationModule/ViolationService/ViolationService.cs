@@ -36,7 +36,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
             _userWarningService = userWarningService;
         }
 
-        public async Task HandleViolation(ModerationSettings moderationSettings, SocketMessage message, WarningType warningType)
+        public async Task HandleViolation(ModerationSettings moderationSettings, SocketMessage message, FilterType warningType)
         {
             var user = message.Author as SocketGuildUser;
 
@@ -52,7 +52,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
             await ApplyPunishments(moderationSettings, message, userData, warningType);
         }
 
-        private async Task AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, UserWarnings userData, WarningType warningType)
+        private async Task AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, UserWarnings userData, FilterType warningType)
         {
             // Add warning to database.
             var newWarning = await _warningService.AddWarning(moderationSettings, user, warningType);
@@ -61,7 +61,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
             userData.Warnings.Add(newWarning);
         }
 
-        private async Task ApplyPunishments(ModerationSettings moderationSettings, SocketMessage message, UserWarnings userData, WarningType warningType)
+        private async Task ApplyPunishments(ModerationSettings moderationSettings, SocketMessage message, UserWarnings userData, FilterType warningType)
         {
             var user = message.Author as SocketGuildUser;
 
@@ -70,7 +70,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
             await _punishmentService.ApplyPunishments(moderationSettings, message.Channel.Id, punishments, user);
         }
 
-        private List<Punishment> GetPunishmentsToApply(ModerationSettings moderationSettings, UserWarnings userData, WarningType warningType)
+        private List<Punishment> GetPunishmentsToApply(ModerationSettings moderationSettings, UserWarnings userData, FilterType warningType)
 
         {
             // Get all warnings that haven't expired.
@@ -85,7 +85,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
             var punishments = new List<Punishment>();
 
             // Global punishments
-            punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == WarningType.General && x.WarningThreshold == allWarningsCount));
+            punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == FilterType.Global && x.WarningThreshold == allWarningsCount));
 
             // Punishments for specific type. I.E. profanity violation.
             punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));

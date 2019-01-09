@@ -27,7 +27,7 @@ namespace Volvox.Helios.Domain.Module.ModerationModule.Common
         public PunishType PunishType { get; set; }
 
         [Required]
-        public WarningType WarningType { get; set; }
+        public FilterType WarningType { get; set; }
 
         // Duration of punishment in minutes. null == no duration / forever.
         public int PunishDuration { get; set; }

@@ -40,15 +40,32 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Why does redirect on users page fail after posting
 
-        // TODO : Add prev/next buttons to users page
-
-        // TODO : Further abstract logic in punishment service. Too much in one class atm, think of making the actual banning/kicking its own separate class.
-
-        // TODO : consider making GlobalFilter instead of checking for global in this class.
-
-        // TODO : Try to refactor so dont have to pass moderation settings into filter classes, just the filter. maybe add reference to warnings/punishments to the filter?
-
         // TODO : need to resave to enable filter? could be that its not saved, but the default value when loading a filter page is to be enabled so it looks enabled?
+
+        /* Punishment service abstraction to do list:
+         * 1) make sure addrolepunishment functions properly. see if way to make addpunishment not require socket guild user
+         * 2) do similar class/service for each punishment (i.e. kick/ban...)
+        */
+
+        // TODO : subscribe to settings changed events etc in module. look at how remembot does it.
+
+        // TODO : Potential bug if deleting punishment tier before hangfire job is fired
+
+        // TODO : Why is client getguilds empty/why is guild null when hangfire job fired immediately after startup due to schedule.?
+
+        // TODO : remove activepunishment first, if it fails, dont remove punishment and return a value to get hangfire to reschedule job or something?
+        // ^ make sure to include performcontext (or whatever its called) into the method called by hangfire. RemovePunishment method in punishment service,
+
+        // TODO : re-add functionality to Post information about punishment that is applied.
+
+        // TODO :  If removal of a punishment fails, dont readd the schdeduled job, but do keep active punishment. the admin will have to manually remove the punishments.
+
+        // TODO : In addrolepunishment service, if guild is null, think about changing from not doing anyuthing to removing data about the guild as it was removed from the bot?
+
+        // TODO : do whats done with entitiy service instead of writing down each punishment like that in startup
+
+        // TODO : Consider extracting all sub services from startup into one main service, which can call all other services.
+
 
         #region Private vars
 
@@ -58,9 +75,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private readonly IJobService _jobService;
 
-        private readonly IFilterService<LinkFilter> _linkFilterService;
-
-        private readonly IFilterService<ProfanityFilter> _profanityFilterService;
+        private readonly IList<IFilterService> _filters;
 
         private readonly IBypassCheck _bypassCheck;
 
@@ -68,20 +83,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
             IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService, IServiceScopeFactory scopeFactory,
-            IJobService jobService, IFilterService<LinkFilter> linkFilterService,
-            IFilterService<ProfanityFilter> profanityFilterService,IBypassCheck bypassCheck
+            IJobService jobService, IList<IFilterService> filters, IBypassCheck bypassCheck
         ) : base(
             discordSettings, logger, config)
         {
             _settingsService = settingsService;
 
-            _linkFilterService = linkFilterService;
-
-            _profanityFilterService = profanityFilterService;
-
             _scopeFactory = scopeFactory;
 
             _jobService = jobService;
+
+            _filters = filters;
 
             _bypassCheck = bypassCheck;
         }
@@ -131,17 +143,18 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private async Task AnalyseWithFilters(ModerationSettings settings, SocketMessage message)
         {
-            if (_bypassCheck.HasBypassAuthority(settings, message, WhitelistType.Global))
+            if (_bypassCheck.HasBypassAuthority(settings, message, FilterType.Global))
                 return;
 
-            // Return if true as we don't want to bother checking for links if the message already violates previous filters.
-            if (_profanityFilterService.CheckViolation(settings, message))
+            foreach(var filter in _filters)
             {
-                await _profanityFilterService.HandleViolation(settings, message);
-            }
-            else if (_linkFilterService.CheckViolation(settings, message))
-            {
-                await _linkFilterService.HandleViolation(settings, message);
+                if (filter.CheckViolation(settings, message))
+                {
+                    await filter.HandleViolation(settings, message);
+
+                    // Don't check for more violations if already found one in previous filter.
+                    break;
+                }
             }
         }
         public override async Task<bool> IsEnabledForGuild(ulong guildId)

@@ -9,7 +9,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
 {
     public interface IWarningService
     {
-        Task<Warning> AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, WarningType warningType);
+        Task<Warning> AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, FilterType warningType);
 
         Task RemoveWarning(Warning warning);
 

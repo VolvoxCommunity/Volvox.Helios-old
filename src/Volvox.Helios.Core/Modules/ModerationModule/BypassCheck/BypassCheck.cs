@@ -11,7 +11,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.BypassCheck
 {
     public class BypassCheck : IBypassCheck
     {
-        public bool HasBypassAuthority(ModerationSettings settings, SocketMessage message, WhitelistType type)
+        public bool HasBypassAuthority(ModerationSettings settings, SocketMessage message, FilterType type)
         {
             var whitelistedChannels = settings?.WhitelistedChannels.Where(c => c.WhitelistType == type);
 

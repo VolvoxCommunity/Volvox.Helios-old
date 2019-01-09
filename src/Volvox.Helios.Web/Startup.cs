@@ -141,8 +141,9 @@ namespace Volvox.Helios.Web
 
             // Moderation Module specific services
             services.AddSingleton<IViolationService, ViolationService>();
-            services.AddSingleton<IFilterService<LinkFilter>, LinkFilterService>();
-            services.AddSingleton<IFilterService<ProfanityFilter>, ProfanityFilterService>();
+            services.AddSingleton<IFilterService, LinkFilterService>();
+            services.AddSingleton<IFilterService, ProfanityFilterService>();
+            services.AddSingleton<IList<IFilterService>>(s => s.GetServices<IFilterService>().ToList());
             services.AddSingleton<IBypassCheck, BypassCheck>();
             services.AddSingleton<IWarningService, WarningService>();
             services.AddSingleton<IUserWarningsService, UserWarningsService>();

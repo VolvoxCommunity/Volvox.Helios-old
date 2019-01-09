@@ -6,6 +6,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.BypassCheck
 {
     public interface IBypassCheck
     {
-        bool HasBypassAuthority(ModerationSettings settings, SocketMessage message, WhitelistType type);
+        bool HasBypassAuthority(ModerationSettings settings, SocketMessage message, FilterType type);
     }
 }

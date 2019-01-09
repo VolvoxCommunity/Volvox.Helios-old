@@ -10,7 +10,7 @@ using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
 {
-    public class LinkFilterService : IFilterService<LinkFilter>
+    public class LinkFilterService : IFilterService
     {
         private readonly IViolationService _violationService;
 
@@ -82,12 +82,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
 
         public async Task HandleViolation(ModerationSettings settings, SocketMessage message)
         {
-            await _violationService.HandleViolation(settings, message, WarningType.Link);
+            await _violationService.HandleViolation(settings, message, FilterType.Link);
         }
 
         private bool HasBypassAuthority(ModerationSettings settings, SocketMessage message)
         {
-            return _bypassCheck.HasBypassAuthority(settings, message, WhitelistType.Link);
+            return _bypassCheck.HasBypassAuthority(settings, message, FilterType.Link);
+        }
+
+        public FilterType GetFilterType()
+        {
+            return FilterType.Link;
         }
     }
 }

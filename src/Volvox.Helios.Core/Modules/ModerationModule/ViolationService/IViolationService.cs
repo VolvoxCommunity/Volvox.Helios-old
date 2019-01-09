@@ -10,6 +10,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
 {
     public interface IViolationService
     {
-        Task HandleViolation(ModerationSettings moderationSettings, SocketMessage message, WarningType warningType);
+        Task HandleViolation(ModerationSettings moderationSettings, SocketMessage message, FilterType warningType);
     }
 }

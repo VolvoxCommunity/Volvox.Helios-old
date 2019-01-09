@@ -31,7 +31,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             _logger = logger;
         }
 
-        public async Task<Warning> AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, WarningType warningType)
+        public async Task<Warning> AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, FilterType warningType)
         {
             var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.Warnings);
      
@@ -84,16 +84,16 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             }
         }
 
-        private int GetWarningDuration(ModerationSettings moderationSettings, WarningType warningType)
+        private int GetWarningDuration(ModerationSettings moderationSettings, FilterType warningType)
         {
             var duration = 0;
 
             switch (warningType)
             {
-                case ( WarningType.Link ):
+                case ( FilterType.Link ):
                     duration = moderationSettings.LinkFilter.WarningExpirePeriod;
                     break;
-                case ( WarningType.Profanity ):
+                case ( FilterType.Profanity ):
                     duration = moderationSettings.ProfanityFilter.WarningExpirePeriod;
                     break;
             }
