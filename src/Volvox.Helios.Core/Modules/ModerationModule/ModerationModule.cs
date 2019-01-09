@@ -27,6 +27,8 @@ using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 using Volvox.Helios.Core.Modules.ModerationModule.Filters;
 using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
@@ -38,8 +40,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Why is the module not working properly sometimes? usually after I just boot up shit. perhaps because it hasnt finished loading or something? try and figure out what the problem is.
 
-        // TODO : Why does redirect on users page fail after posting
-
         // TODO : need to resave to enable filter? could be that its not saved, but the default value when loading a filter page is to be enabled so it looks enabled?
 
         /* Punishment service abstraction to do list:
@@ -49,22 +49,22 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : subscribe to settings changed events etc in module. look at how remembot does it.
 
-        // TODO : Potential bug if deleting punishment tier before hangfire job is fired
-
-        // TODO : Why is client getguilds empty/why is guild null when hangfire job fired immediately after startup due to schedule.?
-
         // TODO : remove activepunishment first, if it fails, dont remove punishment and return a value to get hangfire to reschedule job or something?
         // ^ make sure to include performcontext (or whatever its called) into the method called by hangfire. RemovePunishment method in punishment service,
 
         // TODO : re-add functionality to Post information about punishment that is applied.
 
-        // TODO :  If removal of a punishment fails, dont readd the schdeduled job, but do keep active punishment. the admin will have to manually remove the punishments.
+        // TODO : If removal of a punishment fails, dont readd the schdeduled job, but do keep active punishment. the admin will have to manually remove the punishments.
 
         // TODO : In addrolepunishment service, if guild is null, think about changing from not doing anyuthing to removing data about the guild as it was removed from the bot?
 
-        // TODO : do whats done with entitiy service instead of writing down each punishment like that in startup
-
         // TODO : Consider extracting all sub services from startup into one main service, which can call all other services.
+
+        // TODO : Change views to modern razer pages instead of @html stuff
+
+        // TODO : Subscribe to onchannelcreated to configure muted role?
+
+        // TODO : Stop passing in moderation settings into services. have each service get the info themselves.
 
 
         #region Private vars
@@ -129,9 +129,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var user = message.Author as SocketGuildUser;
 
             // Get all relevant data from database using navigation properties.
-            var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id,
-                s => s.ProfanityFilter.BannedWords, s => s.LinkFilter.WhitelistedLinks, s => s.Punishments, s => s.WhitelistedChannels, s => s.WhitelistedRoles
-            );
+            var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id, BuildSettingsQuery());
 
             // Settings will be null if users haven't done anything with the moderation module.
             // If settings are null, or settings isn't enabled, then the module isn't enabled. Do nothing.
@@ -162,6 +160,19 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var settings = await _settingsService.GetSettingsByGuild(guildId);
 
             return settings != null && settings.Enabled;
+        }
+
+        public static Expression<Func<ModerationSettings, object>>[] BuildSettingsQuery()
+        {
+            return new Expression<Func<ModerationSettings, object>>[]
+            {
+                s => s.Punishments,
+                s => s.WhitelistedChannels,
+                s => s.WhitelistedRoles,
+                s => s.UserWarnings,
+                s => s.ProfanityFilter.BannedWords,
+                s => s.LinkFilter.WhitelistedLinks
+            };
         }
     }
 }

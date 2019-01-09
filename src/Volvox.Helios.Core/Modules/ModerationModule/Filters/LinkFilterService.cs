@@ -52,7 +52,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
             // Check each word for illegal link
             foreach (var word in messageWords)
             {
-                // TODO: In future version of this module, check if url entered is of the same base, and not just matches exactly.
                 if (urlCheck.IsMatch(word))
                 {
                     foreach (var link in whitelistedLinks)
