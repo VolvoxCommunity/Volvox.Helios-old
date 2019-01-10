@@ -29,6 +29,21 @@
             </div>
         </div>
     </div>
+    <div class="row mt-4 border border-gray2 rounded">
+        <div class="col-12 pt-3">
+            <h4>Dad's Cooldown</h4>
+            <p class="mb-0 text-volvox">
+                Is dad getting a little annoying? Tell him to cool it by increasing the frequency of how often he'll but in.
+            </p>
+            <hr />
+            <label asp-for="ResponseCooldownMinutes"></label>
+            <input type="hidden" id="responseCooldown" name="ResponseCooldownMinutes" />
+            <div id="selectCooldownMinutes"></div>
+            <span asp-validation-for="ResponseCooldownMinutes" class="text-danger"></span>
+            <br/>
+        </div>
+        
+    </div>
     <div class="row mt-4">
         <span asp-validation-summary="Enabled" class="text-danger"></span>
         <div class="ml-auto">
@@ -47,5 +62,41 @@
 
         var msgText = $('#message').text();
         $('#message').html(msgText);
+
+        var cooldownOptions = [
+            {
+                value: 0,
+                text: "None"
+            },
+            {
+                value: 5,
+                text: "5 Minnutes"
+            },
+            {
+                value: 15,
+                text: "15 Minutes"
+            },
+            {
+                value: 30,
+                text: "30 Minutes"
+            },
+            {
+                value: 60,
+                text: "60 Minutes"
+            }
+        ];
+
+        $('#selectCooldownMinutes').dxSelectBox({
+            dataSource: cooldownOptions,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: @Model.ResponseCooldownMinutes,
+            onInitialized: (e) => {
+                $('input[name="ResponseCooldownMinutes"]').val(@Model.ResponseCooldownMinutes);
+            },
+            onValueChanged: (e) => {
+                $('input[name="ResponseCooldownMinutes"]').val(e.value);
+            }
+        });
     </script>
 }

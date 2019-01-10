@@ -17,6 +17,10 @@
     <Compile Remove="Migrations\20181002022742_ReminderChangeToLongId.cs" />
     <Compile Remove="Migrations\20181002022927_ReminderModule.cs" />
     <Compile Remove="Migrations\20190109043433_DadBotKey.cs" />
+    <Compile Remove="Migrations\20190110040527_DadModuleCooldown.cs" />
+    <Compile Remove="Migrations\20190110040640_DadModuleCooldown.cs" />
+    <Compile Remove="Migrations\20190110040829_DadModuleCooldown.cs" />
+    <Compile Remove="Migrations\20190110041022_DadModuleCooldown.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.2" />
