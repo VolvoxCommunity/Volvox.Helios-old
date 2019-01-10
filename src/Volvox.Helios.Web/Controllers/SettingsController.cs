@@ -308,7 +308,8 @@ namespace Volvox.Helios.Web.Controllers
             var vm = new DadModuleSettingViewModel
             {
                 Enabled = settings.Enabled,
-                GuildId = guildId
+                GuildId = guildId,
+                ResponseCooldownMinutes = settings.DadResponseCooldownMinutes
             };
 
             return View(vm);
@@ -317,11 +318,11 @@ namespace Volvox.Helios.Web.Controllers
         [HttpPost("Dad")]
         public async Task<IActionResult> DadSettings(ulong guildId, DadModuleSettingViewModel vm)
         {
-            await _dadSettingsService.SaveSettings(new DadModuleSettings
-            {
-                Enabled = vm.Enabled,
-                GuildId = guildId
-            });
+            var currentSettings = await _dadSettingsService.GetSettingsByGuild(guildId);
+            currentSettings.Enabled = vm.Enabled;
+            currentSettings.DadResponseCooldownMinutes = vm.ResponseCooldownMinutes;
+
+            await _dadSettingsService.SaveSettings(currentSettings);
 
             return RedirectToAction("Index");
         }

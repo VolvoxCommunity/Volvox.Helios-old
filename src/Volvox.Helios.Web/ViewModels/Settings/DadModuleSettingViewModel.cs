@@ -15,5 +15,8 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         [DisplayName("Enabled")]
         [DefaultValue(false)]
         public bool Enabled { get; set; }
+
+        [DisplayName("Message Response Cooldown")]
+        public int ResponseCooldownMinutes { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.ModuleSettings;
@@ -19,10 +20,12 @@ namespace Volvox.Helios.Core.Modules.DadModule
     /// </summary>
     public class DadModule : Module
     {
-        private const string DadName = "Volvox.Helios";
-        private const string MatchPattern = "^[iI]'*[mM]\\s+";
-        private static readonly Regex _pattern =
-            new Regex(MatchPattern);
+        private const string DadNameKey = "ModuleSettings:Dad:DadName";
+        private const string MatchPatternKey = "ModuleSettings:Dad:MatchPattern";
+
+        private readonly string _dadName;
+        private readonly string _matchPattern;
+        private readonly Regex _pattern;
 
         private readonly IModuleSettingsService<DadModuleSettings> _moduleSettings;
 
@@ -33,12 +36,17 @@ namespace Volvox.Helios.Core.Modules.DadModule
             : base(discordSettings, logger, config)
         {
             _moduleSettings = moduleSettings;
+
+            _dadName = config[DadNameKey];
+            _matchPattern = config[MatchPatternKey];
+            _pattern = new Regex(config[MatchPatternKey]);
         }
 
         public override Task Init(DiscordSocketClient client)
         {
             client.MessageReceived += OnMessageReceived;
             client.MessageUpdated += OnMessageUpdated;
+
             return Task.CompletedTask;
         }
 
@@ -85,15 +93,29 @@ namespace Volvox.Helios.Core.Modules.DadModule
 
             if (message.Channel is SocketTextChannel textChannel)
             {
-                var isEnabled = await IsEnabledForGuild(textChannel.Guild.Id);
+                var settings = await _moduleSettings.GetSettingsByGuild(textChannel.Guild.Id);
 
-                if (!isEnabled)
+                // Only respond if module is enabled
+                if (!settings?.Enabled ?? false)
                     return;
 
+                // Only send if the cooldown has elapsed
+                if (settings.LastDadResponseUtc.HasValue)
+                {
+                    var cooldown = TimeSpan.FromMinutes(settings.DadResponseCooldownMinutes);
+                    if (DateTime.UtcNow - cooldown < settings.LastDadResponseUtc)
+                        return;
+                }
+
+                // Only send if regex matches. Message has to start with
+                // im or i'm (not case sensitive).
                 if (TryParseMessage(message, out var outgoing))
                 {
-                    var formatted = $"Hi {outgoing}, I'm {DadName}.";
+                    var formatted = $"Hi {outgoing}, I'm {_dadName}.";
                     await message.Channel.SendMessageAsync(formatted);
+
+                    settings.LastDadResponseUtc = DateTime.UtcNow;
+                    await _moduleSettings.SaveSettings(settings);
                 }
             }
         }
@@ -113,7 +135,14 @@ namespace Volvox.Helios.Core.Modules.DadModule
                 {
                     var sanitizedText = parts[1]
                         .Replace("@", "")
+                        .Replace("#", "")
                         .Trim();
+
+                    if(string.IsNullOrWhiteSpace(sanitizedText))
+                    {
+                        outgoing = null;
+                        return false;
+                    }
 
                     outgoing = sanitizedText;
                     return true;
