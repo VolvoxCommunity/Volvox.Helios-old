@@ -282,6 +282,16 @@ input:checked + .slider {
 #serverAccordion .card {
   border-bottom: 1px solid rgba(0, 0, 0, .125);
   border-radius: .25rem;
+  transition: filter .5s;
+}
+#serverAccordion .card.dragging {
+  box-shadow: 0 0 18px black;
+}
+#serverAccordion .dashboard-guild-header h5 {
+  cursor: move;
+}
+#serverAccordion .card.blur {
+  filter: blur(2px);
 }
 
 .card-title {
@@ -496,11 +506,6 @@ input:checked + .slider {
 /*******Cookie consent*****/
 #cookieConsent {
   border-top: 3px solid var(--color-skyblue);
-}
-
-/******Dashboard drag & drop**********/
-.dashboard-guild-header{
-  cursor: move;
 }
 
 @media screen and (max-width: 767px) {

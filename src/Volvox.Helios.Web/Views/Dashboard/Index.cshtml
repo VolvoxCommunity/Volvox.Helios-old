@@ -35,30 +35,54 @@
             </div>
         </div>
     }
+    
 </div>
-
+<form action="/" method="post">
+    <select class="d-none" id="guildIds" name="" colOrder>
+        @for (var i = 0; i < Model.UserGuilds.Count; i++)
+        {
+            var uG = Model.UserGuilds[i];
+            <option value="@uG.Guild.Id"></option>
+        }
+    </select>
+</form>
 @section Scripts {
     <script>
-        var draggingCard = null;
 
+        var draggingCard = null;
         $('body').mousemove((e) => {
             if (draggingCard != null && $('.dashboard-guild-header').find(draggingCard).length > 0) {
-                draggingCard.closest('.card').offset({
-                    left: e.pageX - (draggingCard.width() / 2),
-                    top: e.pageY - (draggingCard.height() / 2)
+                var card = draggingCard.closest('.card');
+                card.offset({
+                    left: e.pageX - (card.width() / 2),
+                    top: e.pageY - 10
                 }).css('zIndex', 1).addClass('dragging');
+                $('body').css('user-select', 'none');
+                $('.dashboard-guild-header').closest('.card:not(".dragging")').addClass('blur');
             }
         });
 
         $('body').mousedown((e) => {
-            draggingCard = $(e.target);
-        }).mouseup((e) => {
-            $('.card:not(".dragging")').each((i, el) => {
-                if (draggingCard.offset().top > $(el).offset().top) {
-                    draggingCard.closest('.card').insertAfter($(el).closest('.card'));
-                }
-            });
-            $('.dashboard-guild-header').closest('.card').removeClass('dragging').css({ zIndex: 0 }).animate({ top: 0, left: 0}, 500);
+            var target = $(e.target);
+            if (target.is('h5'))
+                draggingCard = target;
+        }).mouseup(() => {
+            if (draggingCard != null && $('.card').hasClass('dragging')) {
+                var result = {};
+                $('.card:not(".dragging")').each((i, el) => {
+                    if (!result.val || Math.abs($(el).offset().top - draggingCard.offset().top) < Math.abs(result.val - draggingCard.offset().top)) {
+                        result = { val: $(el).offset().top, el: $(el) };
+                    }
+                });
+
+                if (draggingCard.offset().top > result.val)
+                    draggingCard.closest('.card').insertAfter($(result.el).closest('.card'));
+                else
+                    draggingCard.closest('.card').insertBefore($(result.el).closest('.card'));
+
+                $('.dashboard-guild-header').closest('.card').removeClass('dragging blur').css({ zIndex: 0, left: 0, top: 0 });
+                $('body').css('user-select', 'auto');
+            }
             draggingCard = null;
         });
 
