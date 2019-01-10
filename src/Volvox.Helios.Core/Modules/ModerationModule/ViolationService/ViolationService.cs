@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
 using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Domain.Module.ModerationModule;
@@ -24,8 +25,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
 
         private readonly IUserWarningsService _userWarningService;
 
+        private readonly IModerationModuleUtils _moderationModuleUtils;
+
         public ViolationService(IMessageService messageService, IPunishmentService punishmentService,
-            IWarningService warningService, IUserWarningsService userWarningService)
+            IWarningService warningService, IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils)
         {
             _messageService = messageService;
 
@@ -34,10 +37,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
             _warningService = warningService;
 
             _userWarningService = userWarningService;
+
+            _moderationModuleUtils = moderationModuleUtils;
         }
 
-        public async Task HandleViolation(ModerationSettings moderationSettings, SocketMessage message, FilterType warningType)
+        public async Task HandleViolation(SocketMessage message, FilterType warningType)
         {
+            var settings = await _moderationModuleUtils.GetModerationSettings(( message.Author as SocketGuildUser ).Guild.Id);
+
             var user = message.Author as SocketGuildUser;
 
             await message.DeleteAsync();
@@ -47,15 +54,15 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
             // Get user entry from db, this is where a users warnings etc are stored.
             var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.Warnings, u => u.ActivePunishments);
 
-            await AddWarning(moderationSettings, user, userData, warningType);
+            await AddWarning(user, userData, warningType);
             
-            await ApplyPunishments(moderationSettings, message, userData, warningType);
+            await ApplyPunishments(settings, message, userData, warningType);
         }
 
-        private async Task AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, UserWarnings userData, FilterType warningType)
+        private async Task AddWarning(SocketGuildUser user, UserWarnings userData, FilterType warningType)
         {
             // Add warning to database.
-            var newWarning = await _warningService.AddWarning(moderationSettings, user, warningType);
+            var newWarning = await _warningService.AddWarning(user, warningType);
 
             // Update cached version.
             userData.Warnings.Add(newWarning);
@@ -67,11 +74,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
 
             var punishments = GetPunishmentsToApply(moderationSettings, userData, warningType);
 
-            await _punishmentService.ApplyPunishments(moderationSettings, message.Channel.Id, punishments, user);
+            await _punishmentService.ApplyPunishments(punishments, user);
         }
 
         private List<Punishment> GetPunishmentsToApply(ModerationSettings moderationSettings, UserWarnings userData, FilterType warningType)
-
         {
             // Get all warnings that haven't expired.
             var userWarnings = userData.Warnings.Where(x => x.WarningExpires > DateTimeOffset.Now);

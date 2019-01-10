@@ -9,8 +9,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
     {
         FilterType GetFilterType();
 
-        bool CheckViolation(ModerationSettings settings, SocketMessage message);
+        Task<bool> CheckViolation(SocketMessage message);
 
-        Task HandleViolation(ModerationSettings settings, SocketMessage message);
+        Task HandleViolation(SocketMessage message);
     }
 }

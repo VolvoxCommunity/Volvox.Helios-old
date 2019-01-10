@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Jobs;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishments;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Domain.Module.ModerationModule;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
@@ -23,31 +24,22 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
     public class PunishmentService : IPunishmentService
     {
-        private readonly IMessageService _messageService;
-
         private readonly IServiceScopeFactory _scopeFactory;
 
         private readonly IUserWarningsService _userWarningService;
 
-        private readonly DiscordSocketClient _client;
-
-        private readonly ILogger<ModerationModule> _logger;
+        private readonly IModerationModuleUtils _moderationModuleUtils;
 
         private readonly Dictionary<PunishType, IPunishment> _punishments = new Dictionary<PunishType, IPunishment>();
 
-        public PunishmentService(IMessageService messageService, IServiceScopeFactory scopeFactory,
-            DiscordSocketClient client, ILogger<ModerationModule> logger,
-            IUserWarningsService userWarningService, IList<IPunishment> punishments)
+        public PunishmentService(IServiceScopeFactory scopeFactory, IUserWarningsService userWarningService,
+            IList<IPunishment> punishments, IModerationModuleUtils moderationModuleUtils)
         {
-            _messageService = messageService;
-
             _scopeFactory = scopeFactory;
 
             _userWarningService = userWarningService;
 
-            _client = client;
-
-            _logger = logger;
+            _moderationModuleUtils = moderationModuleUtils;
 
             foreach (var punishment in punishments)
             {
@@ -58,8 +50,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
         }
 
         /// <inheritdoc />
-        public async Task ApplyPunishments(ModerationSettings moderationSettings, ulong channelId, List<Punishment> punishments, SocketGuildUser user)
+        public async Task ApplyPunishments(List<Punishment> punishments, SocketGuildUser user)
         {
+            var settings = await _moderationModuleUtils.GetModerationSettings(user.Guild.Id);
+
             var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.ActivePunishments);
 
             // List of punishments to add to database as active punishments.
@@ -83,7 +77,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
                 }
             }
 
-            await AddActivePunishments(moderationSettings, activePunishments, user, userData);
+            await AddActivePunishments(settings, activePunishments, user, userData);
         }
 
         private async Task AddActivePunishments(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)

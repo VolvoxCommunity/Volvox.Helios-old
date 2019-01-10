@@ -55,6 +55,7 @@ using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
 using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
 using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishments;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 
 namespace Volvox.Helios.Web
 {
@@ -147,6 +148,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IBypassCheck, BypassCheck>();
             services.AddSingleton<IWarningService, WarningService>();
             services.AddSingleton<IUserWarningsService, UserWarningsService>();
+            services.AddSingleton<IModerationModuleUtils, ModerationModuleUtils>();
             // Moderation Module punishments
             services.AddSingleton<IPunishment, BanPunishment>();
             services.AddSingleton<IPunishment, KickPunishment>();

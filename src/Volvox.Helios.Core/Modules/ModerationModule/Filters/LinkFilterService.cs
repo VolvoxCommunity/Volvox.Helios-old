@@ -3,10 +3,12 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
 using Volvox.Helios.Domain.ModuleSettings;
+using Volvox.Helios.Service.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
 {
@@ -16,18 +18,25 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
 
         private readonly IBypassCheck _bypassCheck;
 
-        public LinkFilterService(IViolationService violationService, IBypassCheck bypassCheck)
+        private readonly IModerationModuleUtils _moderationModuleUtils;
+
+        public LinkFilterService(IViolationService violationService, IBypassCheck bypassCheck,
+            IModerationModuleUtils moderationModuleUtils)
         {
             _violationService = violationService;
 
             _bypassCheck = bypassCheck;
+
+            _moderationModuleUtils = moderationModuleUtils;
         }
 
-        public bool CheckViolation(ModerationSettings settings, SocketMessage message)
+        public async Task<bool> CheckViolation(SocketMessage message)
         {
+            var settings = await _moderationModuleUtils.GetModerationSettings(( message.Author as SocketGuildUser ).Guild.Id);
+
             var filterViolatedFlag = false;
 
-            if (!HasBypassAuthority(settings, message) && settings.LinkFilter != null)
+            if (!await HasBypassAuthority(message) && settings.LinkFilter != null)
             {
                 if (ContainsIllegalLink(settings.LinkFilter, message))
                     filterViolatedFlag = true;
@@ -79,14 +88,16 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
             return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
         }
 
-        public async Task HandleViolation(ModerationSettings settings, SocketMessage message)
+        public async Task HandleViolation(SocketMessage message)
         {
-            await _violationService.HandleViolation(settings, message, FilterType.Link);
+            var settings = await _moderationModuleUtils.GetModerationSettings((message.Author as SocketGuildUser).Guild.Id);
+
+            await _violationService.HandleViolation(message, FilterType.Link);
         }
 
-        private bool HasBypassAuthority(ModerationSettings settings, SocketMessage message)
+        private async Task<bool> HasBypassAuthority(SocketMessage message)
         {
-            return _bypassCheck.HasBypassAuthority(settings, message, FilterType.Link);
+            return await _bypassCheck.HasBypassAuthority(message, FilterType.Link);
         }
 
         public FilterType GetFilterType()

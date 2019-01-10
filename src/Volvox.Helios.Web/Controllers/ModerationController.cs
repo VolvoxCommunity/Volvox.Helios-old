@@ -21,6 +21,7 @@ using Volvox.Helios.Core.Utilities.Constants;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
 using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
 using Volvox.Helios.Core.Modules.ModerationModule;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 
 namespace Volvox.Helios.Web.Controllers
 {
@@ -71,6 +72,8 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IPunishmentService _punishmentService;
 
         private readonly IWarningService _warningService;
+
+        private readonly IModerationModuleUtils _moderationModuleUtils;
         #endregion
 
         public ModerationController(IModuleSettingsService<ModerationSettings> moderationSettings,
@@ -86,7 +89,8 @@ namespace Volvox.Helios.Web.Controllers
             IEntityService<UserWarnings> entityServiceUsers,
             IDiscordUserService discordUserService,
             IPunishmentService punishmentService,
-            IWarningService warningService
+            IWarningService warningService,
+            IModerationModuleUtils moderationModuleUtils
             )
         {
             _moderationSettings = moderationSettings;
@@ -116,6 +120,8 @@ namespace Volvox.Helios.Web.Controllers
             _punishmentService = punishmentService;
 
             _warningService = warningService;
+
+            _moderationModuleUtils = moderationModuleUtils;
         }
 
         private void ClearCacheById(ulong id)
@@ -134,7 +140,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             ClearCacheById(guildId);
 
-            var settings = await _moderationSettings.GetSettingsByGuild(guildId, ModerationModule.BuildSettingsQuery());
+            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             var guildChannels = await guildService.GetChannels(guildId);
 
@@ -163,7 +169,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             ClearCacheById(guildId);
 
-            var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId, x => ModerationModule.BuildSettingsQuery());
+            var currentSettings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             if (currentSettings == null)
             {
@@ -197,7 +203,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             ClearCacheById(guildId);
 
-            var settings = await _moderationSettings.GetSettingsByGuild(guildId, ModerationModule.BuildSettingsQuery());
+            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             var guildChannels = await guildService.GetChannels(guildId);
 
@@ -233,7 +239,7 @@ namespace Volvox.Helios.Web.Controllers
 
             ClearCacheById(guildId);
 
-            var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId, ModerationModule.BuildSettingsQuery());
+            var currentSettings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             var filter = await _entityServiceLinkFilter.GetFirst(f => f.GuildId == guildId);
 
@@ -288,7 +294,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             ClearCacheById(guildId);
 
-            var settings = await _moderationSettings.GetSettingsByGuild(guildId, ModerationModule.BuildSettingsQuery());
+            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             var guildChannels = await guildService.GetChannels(guildId);
 
@@ -325,7 +331,7 @@ namespace Volvox.Helios.Web.Controllers
             // Ensures the base moderation settings exist to prevent FK exceptions.
             await EnsureSettingsExists(guildId);
 
-            var currentSettings = await _moderationSettings.GetSettingsByGuild(guildId, ModerationModule.BuildSettingsQuery());
+            var currentSettings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             var filter = await _entityServiceProfanityFilter.GetFirst(f => f.GuildId == guildId);
 
@@ -465,7 +471,7 @@ namespace Volvox.Helios.Web.Controllers
         {
             var activePunishments = await _entityServiceActivePunishments.Get(p => p.User.GuildId == guildId);
 
-            var settings = await _moderationSettings.GetSettingsByGuild(guildId, ModerationModule.BuildSettingsQuery());
+            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             var users = _discordUserService.GetUsers(guildId).Where(u => !u.IsBot)
                 .Skip(pageNo * ModuleConstants.ResultsPerPageUsers).Take(ModuleConstants.ResultsPerPageUsers).Select(u => new UserModel
@@ -526,7 +532,7 @@ namespace Volvox.Helios.Web.Controllers
 
         private async Task EnsureSettingsExists(ulong guildId)
         {
-            var settings = await _moderationSettings.GetSettingsByGuild(guildId, ModerationModule.BuildSettingsQuery());
+            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             if (settings == null)
             {

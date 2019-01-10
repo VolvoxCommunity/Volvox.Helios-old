@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Domain.Module.ModerationModule;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.ModuleSettings;
@@ -21,25 +22,31 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
 
         private readonly ILogger<ModerationModule> _logger;
 
+        private readonly IModerationModuleUtils _moderationModuleUtils;
+
         public WarningService(IServiceScopeFactory scopeFactory, ILogger<ModerationModule> logger,
-            IUserWarningsService userWarningService)
+            IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils)
         {
             _scopeFactory = scopeFactory;
 
             _userWarningService = userWarningService;
 
             _logger = logger;
+
+            _moderationModuleUtils = moderationModuleUtils;
         }
 
-        public async Task<Warning> AddWarning(ModerationSettings moderationSettings, SocketGuildUser user, FilterType warningType)
+        public async Task<Warning> AddWarning(SocketGuildUser user, FilterType warningType)
         {
+            var settings = await _moderationModuleUtils.GetModerationSettings(user.Guild.Id);
+
             var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.Warnings);
      
             using (var scope = _scopeFactory.CreateScope())
             {
                 var warningService = scope.ServiceProvider.GetRequiredService<IEntityService<Warning>>();
 
-                var specificWarningDuration = GetWarningDuration(moderationSettings, warningType);
+                var specificWarningDuration = GetWarningDuration(settings, warningType);
 
                 var expireDate = DateTimeOffset.Now.AddMinutes(specificWarningDuration);
 
@@ -84,6 +91,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             }
         }
 
+        // TODO : Remove switch statement and replace with a more SOLID approach.
         private int GetWarningDuration(ModerationSettings moderationSettings, FilterType warningType)
         {
             var duration = 0;

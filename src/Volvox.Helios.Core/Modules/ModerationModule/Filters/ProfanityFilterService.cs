@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
@@ -17,13 +18,18 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
 
         private readonly IBypassCheck _bypassCheck;
 
+        private readonly IModerationModuleUtils _moderationModuleUtils;
+
         private readonly List<string> _defaultBannedWords = new List<string>();
 
-        public ProfanityFilterService(IViolationService violationService, IBypassCheck bypassCheck, IConfiguration config)
+        public ProfanityFilterService(IViolationService violationService, IBypassCheck bypassCheck,
+            IConfiguration config, IModerationModuleUtils moderationModuleUtils)
         {
             _violationService = violationService;
 
             _bypassCheck = bypassCheck;
+
+            _moderationModuleUtils = moderationModuleUtils;
 
             var defaultBannedWords = config.GetSection("BannedWords").GetChildren().Select(x => x.Value);
 
@@ -33,11 +39,13 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
             }
         }
 
-        public bool CheckViolation(ModerationSettings settings, SocketMessage message)
+        public async Task<bool> CheckViolation(SocketMessage message)
         {
+            var settings = await _moderationModuleUtils.GetModerationSettings(( message.Author as SocketGuildUser ).Guild.Id);
+
             var filterViolatedFlag = false;
 
-            if (!HasBypassAuthority(settings, message) && settings.ProfanityFilter != null)
+            if (!await HasBypassAuthority(message) && settings.ProfanityFilter != null)
             {
                 if (ContainsProfanity(settings.ProfanityFilter, message))
                     filterViolatedFlag = true;
@@ -98,14 +106,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
                 .Replace("[y]", "[y Y]");
         }
 
-        public async Task HandleViolation(ModerationSettings settings, SocketMessage message)
+        public async Task HandleViolation(SocketMessage message)
         {
-            await _violationService.HandleViolation(settings, message, FilterType.Profanity);
+            await _violationService.HandleViolation(message, FilterType.Profanity);
         }
 
-        private bool HasBypassAuthority(ModerationSettings settings, SocketMessage message)
+        private async Task<bool> HasBypassAuthority(SocketMessage message)
         {
-            return _bypassCheck.HasBypassAuthority(settings, message, FilterType.Profanity);
+            return await _bypassCheck.HasBypassAuthority(message, FilterType.Profanity);
         }
 
         public FilterType GetFilterType()

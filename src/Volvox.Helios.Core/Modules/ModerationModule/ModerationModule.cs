@@ -29,6 +29,7 @@ using Volvox.Helios.Core.Modules.ModerationModule.Filters;
 using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
@@ -64,7 +65,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Subscribe to onchannelcreated to configure muted role?
 
-        // TODO : Stop passing in moderation settings into services. have each service get the info themselves.
+        // TODO NEXT DO THIS NEXT U BIC: Stop passing in moderation settings into services. have each service get the info themselves.
 
 
         #region Private vars
@@ -79,11 +80,13 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private readonly IBypassCheck _bypassCheck;
 
+        private readonly IModerationModuleUtils _moderationModuleUtils;
+
         #endregion
 
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
             IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService, IServiceScopeFactory scopeFactory,
-            IJobService jobService, IList<IFilterService> filters, IBypassCheck bypassCheck
+            IJobService jobService, IList<IFilterService> filters, IBypassCheck bypassCheck, IModerationModuleUtils moderationModuleUtils
         ) : base(
             discordSettings, logger, config)
         {
@@ -96,6 +99,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             _filters = filters;
 
             _bypassCheck = bypassCheck;
+
+            _moderationModuleUtils = moderationModuleUtils;
         }
 
         public override Task Init(DiscordSocketClient client)
@@ -129,7 +134,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var user = message.Author as SocketGuildUser;
 
             // Get all relevant data from database using navigation properties.
-            var settings = await _settingsService.GetSettingsByGuild(user.Guild.Id, BuildSettingsQuery());
+            var settings = await _moderationModuleUtils.GetModerationSettings(user.Guild.Id);
 
             // Settings will be null if users haven't done anything with the moderation module.
             // If settings are null, or settings isn't enabled, then the module isn't enabled. Do nothing.
@@ -141,14 +146,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private async Task AnalyseWithFilters(ModerationSettings settings, SocketMessage message)
         {
-            if (_bypassCheck.HasBypassAuthority(settings, message, FilterType.Global))
+            if (await _bypassCheck.HasBypassAuthority(message, FilterType.Global))
                 return;
 
             foreach(var filter in _filters)
             {
-                if (filter.CheckViolation(settings, message))
+                if (await filter.CheckViolation(message))
                 {
-                    await filter.HandleViolation(settings, message);
+                    await filter.HandleViolation(message);
 
                     // Don't check for more violations if already found one in previous filter.
                     break;
@@ -160,19 +165,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             var settings = await _settingsService.GetSettingsByGuild(guildId);
 
             return settings != null && settings.Enabled;
-        }
-
-        public static Expression<Func<ModerationSettings, object>>[] BuildSettingsQuery()
-        {
-            return new Expression<Func<ModerationSettings, object>>[]
-            {
-                s => s.Punishments,
-                s => s.WhitelistedChannels,
-                s => s.WhitelistedRoles,
-                s => s.UserWarnings,
-                s => s.ProfanityFilter.BannedWords,
-                s => s.LinkFilter.WhitelistedLinks
-            };
-        }
+        }   
     }
 }
