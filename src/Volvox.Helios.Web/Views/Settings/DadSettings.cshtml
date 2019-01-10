@@ -17,7 +17,7 @@
             </p>
         </div>
         <div class="col-md-3 valign">
-            <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+            <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
                 <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
                     On
                     <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
@@ -28,6 +28,20 @@
                 </label>
             </div>
         </div>
+    </div>
+    <div class="row mt-4 border border-gray2 rounded">
+        <div class="col-12 pt-3">
+            <h4>Dad's Cooldown</h4>
+            <p class="mb-0 text-volvox">
+                Is dad getting a little annoying? Tell him to cool it by increasing the frequency of how often he'll butt in.
+            </p>
+            <hr />
+            <input type="hidden" id="responseCooldown" name="ResponseCooldownMinutes" />
+            <div id="selectCooldownMinutes"></div>
+            <span asp-validation-for="ResponseCooldownMinutes" class="text-danger"></span>
+            <br/>
+        </div>
+        
     </div>
     <div class="row mt-4">
         <span asp-validation-summary="Enabled" class="text-danger"></span>
@@ -47,5 +61,41 @@
 
         var msgText = $('#message').text();
         $('#message').html(msgText);
+
+        var cooldownOptions = [
+            {
+                value: 0,
+                text: "None"
+            },
+            {
+                value: 5,
+                text: "5 Minutes"
+            },
+            {
+                value: 15,
+                text: "15 Minutes"
+            },
+            {
+                value: 30,
+                text: "30 Minutes"
+            },
+            {
+                value: 60,
+                text: "60 Minutes"
+            }
+        ];
+
+        $('#selectCooldownMinutes').dxSelectBox({
+            dataSource: cooldownOptions,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: @Model.ResponseCooldownMinutes,
+            onInitialized: (e) => {
+                $('input[name="ResponseCooldownMinutes"]').val(@Model.ResponseCooldownMinutes);
+            },
+            onValueChanged: (e) => {
+                $('input[name="ResponseCooldownMinutes"]').val(e.value);
+            }
+        });
     </script>
 }

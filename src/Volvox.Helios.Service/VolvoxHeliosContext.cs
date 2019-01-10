@@ -47,6 +47,14 @@ namespace Volvox.Helios.Service
         {
             base.OnModelCreating(modelBuilder);
             SetupForReminderSchema(modelBuilder);
+            SetupForDad(modelBuilder);
+        }
+
+        private void SetupForDad(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DadModuleSettings>()
+                .Property(x => x.DadResponseCooldownMinutes)
+                .HasDefaultValue(15);
         }
 
         private void SetupForReminderSchema(ModelBuilder modelBuilder)
