@@ -35,38 +35,16 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 {
     public class ModerationModule : Module
     {
-        // TODO : MAKE SURE EXPIRE PERIOD DOESNT EXCEDE MAX DATETIME
-
-        // TODO : add extra filters like caps filters, emoji filters
-
-        // TODO : Why is the module not working properly sometimes? usually after I just boot up shit. perhaps because it hasnt finished loading or something? try and figure out what the problem is.
-
-        // TODO : need to resave to enable filter? could be that its not saved, but the default value when loading a filter page is to be enabled so it looks enabled?
-
-        /* Punishment service abstraction to do list:
-         * 1) make sure addrolepunishment functions properly. see if way to make addpunishment not require socket guild user
-         * 2) do similar class/service for each punishment (i.e. kick/ban...)
-        */
-
-        // TODO : subscribe to settings changed events etc in module. look at how remembot does it.
-
-        // TODO : remove activepunishment first, if it fails, dont remove punishment and return a value to get hangfire to reschedule job or something?
-        // ^ make sure to include performcontext (or whatever its called) into the method called by hangfire. RemovePunishment method in punishment service,
-
         // TODO : re-add functionality to Post information about punishment that is applied.
 
         // TODO : If removal of a punishment fails, dont readd the schdeduled job, but do keep active punishment. the admin will have to manually remove the punishments.
-
-        // TODO : In addrolepunishment service, if guild is null, think about changing from not doing anyuthing to removing data about the guild as it was removed from the bot?
-
-        // TODO : Consider extracting all sub services from startup into one main service, which can call all other services.
 
         // TODO : Change views to modern razer pages instead of @html stuff
 
         // TODO : Subscribe to onchannelcreated to configure muted role?
 
-        // TODO NEXT DO THIS NEXT U BIC: Stop passing in moderation settings into services. have each service get the info themselves.
-
+        // TODO : Remove such a specific implementation of SocketMessage. make own class and populate it using socketmessage.
+        // ^ TODO : Requires guild id and user id, from there i can refetch details inside services. This means if we change library, functionality shouldn't change.
 
         #region Private vars
 
@@ -141,10 +119,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             if (settings is null || !settings.Enabled)
                 return;
 
-            await AnalyseWithFilters(settings, message);
+            await AnalyseWithFilters(message);
         }
 
-        private async Task AnalyseWithFilters(ModerationSettings settings, SocketMessage message)
+        private async Task AnalyseWithFilters(SocketMessage message)
         {
             if (await _bypassCheck.HasBypassAuthority(message, FilterType.Global))
                 return;
