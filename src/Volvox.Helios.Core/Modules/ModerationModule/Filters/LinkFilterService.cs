@@ -38,17 +38,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
 
             if (!await HasBypassAuthority(message) && settings.LinkFilter != null)
             {
-                if (ContainsIllegalLink(settings.LinkFilter, message))
+                if (ContainsIllegalLink(settings.LinkFilter, message.Content))
                     filterViolatedFlag = true;
             }
 
             return filterViolatedFlag;
         }
 
-        private bool ContainsIllegalLink(LinkFilter linkFilter, SocketMessage message)
+        private bool ContainsIllegalLink(LinkFilter linkFilter, string message)
         {
             // Normalize message to lowercase and split into array of words.
-            var messageWords = message.Content.ToLower().Split(" ");
+            var messageWords = message.ToLower().Split(" ");
 
             var whitelistedLinks = linkFilter.WhitelistedLinks.Select(l => l.Link);
 
