@@ -42,6 +42,7 @@ using Discord.WebSocket;
 using Volvox.Helios.Core.Modules.Streamer;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Volvox.Helios.Core.Modules.DadModule;
 
 namespace Volvox.Helios.Web
 {
@@ -124,6 +125,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IModule, StreamerModule>();
             services.AddSingleton<IModule, ChatTrackerModule>();
             services.AddSingleton<IModule, RemembotModule>();
+            services.AddSingleton<IModule, DadModule>();
 
             // Commands
             services.AddSingleton<IModule, CommandManager>();
