@@ -100,6 +100,7 @@ namespace Volvox.Helios.Web.Controllers
             viewModel.Enabled = settings.Enabled;
             viewModel.StreamerRoleEnabled = settings.StreamerRoleEnabled;
             viewModel.RoleId = settings.RoleId;
+            viewModel.WhiteListedRoleIds = settings.WhiteListedRoleIds.Select(r => r.Id).ToList();
 
             if (settings.ChannelSettings == null)
                 settings.ChannelSettings = await channelSettingsService.Get(c => c.GuildId == guildId);
@@ -162,7 +163,11 @@ namespace Volvox.Helios.Web.Controllers
                     GuildId = guildId,
                     Enabled = viewModel.Enabled,
                     StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
-                    RoleId = viewModel.RoleId
+                    RoleId = viewModel.RoleId,
+                    WhiteListedRoleIds = new List<WhiteListedRole>(viewModel.WhiteListedRoleIds.Select(r => new WhiteListedRole
+                    {
+                        Id = r
+                    }).ToList())
                 });
             else
                 saveSettingsTasks.Add(_streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
@@ -170,7 +175,11 @@ namespace Volvox.Helios.Web.Controllers
                     GuildId = guildId,
                     Enabled = viewModel.Enabled,
                     StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
-                    RoleId = viewModel.RoleId
+                    RoleId = viewModel.RoleId,
+                    WhiteListedRoleIds = new List<WhiteListedRole>(viewModel.WhiteListedRoleIds.Select(r => new WhiteListedRole
+                    {
+                        Id = r
+                    }).ToList())
                 }));
 
             // Value defaults to 0, if the value is 0, EF will try to auto increment the ID, throwing an error.
