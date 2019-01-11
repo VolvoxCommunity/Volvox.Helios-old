@@ -181,7 +181,7 @@ namespace Volvox.Helios.Web.Controllers
 
             await _moderationSettings.SaveSettings(currentSettings);
 
-            // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
+            // Clearing cache prompts the module to re-fetch moderation settings from the database the next time it needs them, essentially updating them.
             ClearCacheById(guildId);
 
             return RedirectToAction("general");
@@ -452,11 +452,13 @@ namespace Volvox.Helios.Web.Controllers
                 await _entityServicePunishments.Create(punishment);
             }
 
+            ClearCacheById(guildId);
+
             return RedirectToAction("punishments");
         }
 
         [HttpGet("users/{pageNo}"), HttpGet("users")]
-        public async Task<IActionResult> Users(ulong guildId, [FromServices] IDiscordGuildService guildService, int pageNo = 0)
+        public IActionResult Users(ulong guildId, [FromServices] IDiscordGuildService guildService, int pageNo = 0)
         {
             var users = _discordUserService.GetUsers(guildId).Where(u => !u.IsBot)
                 .Skip(pageNo * ModuleConstants.ResultsPerPageUsers).Take(ModuleConstants.ResultsPerPageUsers).Select(u => new UserModel
@@ -511,6 +513,8 @@ namespace Volvox.Helios.Web.Controllers
             await _punishmentService.RemovePunishmentBulk(punishmentsToRemove);
 
             await _warningService.RemoveWarningBulk(warningsToRemove);
+
+            ClearCacheById(guildId);
 
             return RedirectToAction("User");
         }
