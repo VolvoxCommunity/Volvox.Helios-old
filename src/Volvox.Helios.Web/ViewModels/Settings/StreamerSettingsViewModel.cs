@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -30,5 +31,7 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         [Required]
         [DisplayName("Role")]
         public ulong RoleId { get; set; }
+
+        [DisplayName("Whitelisted Roles")] public List<ulong> WhiteListedRoleIds { get; set; }
     }
 }
