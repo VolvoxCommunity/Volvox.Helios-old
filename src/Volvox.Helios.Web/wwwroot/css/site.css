@@ -282,11 +282,9 @@ input:checked + .slider {
 #serverAccordion .card {
   border-bottom: 1px solid rgba(0, 0, 0, .125);
   border-radius: .25rem;
-  transition: filter .5s;
+  transition: filter .5s, box-shadow .5s;
 }
-#serverAccordion .card.dragging {
-  box-shadow: 0 0 18px black;
-}
+
 #serverAccordion .dashboard-guild-header h5 {
   cursor: move;
 }

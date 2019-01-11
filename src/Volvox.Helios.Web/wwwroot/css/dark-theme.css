@@ -20,6 +20,14 @@ hr{
   border-color: var(--color-gray2);
 }
 
+#serverAccordion .card.animate {
+  box-shadow: 0 0 18px white;
+}
+
+#serverAccordion .card.dragging {
+  box-shadow: 0 0 18px black;
+}
+
 .card {
   background-color: var(--color-deep-dark);
 }

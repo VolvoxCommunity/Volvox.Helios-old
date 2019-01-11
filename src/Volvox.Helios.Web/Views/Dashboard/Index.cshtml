@@ -69,6 +69,8 @@
         }).mouseup(() => {
             if (draggingCard != null && $('.card').hasClass('dragging')) {
                 var result = {};
+                var card = draggingCard.closest('.card');
+
                 $('.card:not(".dragging")').each((i, el) => {
                     if (!result.val || Math.abs($(el).offset().top - draggingCard.offset().top) < Math.abs(result.val - draggingCard.offset().top)) {
                         result = { val: $(el).offset().top, el: $(el) };
@@ -76,9 +78,12 @@
                 });
 
                 if (draggingCard.offset().top > result.val)
-                    draggingCard.closest('.card').insertAfter($(result.el).closest('.card'));
+                    card.insertAfter($(result.el).closest('.card'));
                 else
-                    draggingCard.closest('.card').insertBefore($(result.el).closest('.card'));
+                    card.insertBefore($(result.el).closest('.card'));
+
+                card.addClass('animate');
+                setTimeout(() => card.removeClass('animate'), 800);
 
                 $('.dashboard-guild-header').closest('.card').removeClass('dragging blur').css({ zIndex: 0, left: 0, top: 0 });
                 $('body').css('user-select', 'auto');
