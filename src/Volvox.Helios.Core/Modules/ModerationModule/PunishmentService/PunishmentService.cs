@@ -20,8 +20,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 {
     // TODO : Maybe make this service scope or transient?
 
-    // TODO : initially profanity filter failed.the fix was to go to filter and save. why is that? caching maybe? or maybe the function to create if not exists in the controller doesnt update the cache properly, then saving updates it as the cache is cleared?
-
     public class PunishmentService : IPunishmentService
     {
         private readonly IServiceScopeFactory _scopeFactory;
@@ -30,23 +28,13 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
         private readonly IModerationModuleUtils _moderationModuleUtils;
 
-        private readonly Dictionary<PunishType, IPunishment> _punishments = new Dictionary<PunishType, IPunishment>();
-
-        public PunishmentService(IServiceScopeFactory scopeFactory, IUserWarningsService userWarningService,
-            IList<IPunishment> punishments, IModerationModuleUtils moderationModuleUtils)
+        public PunishmentService(IServiceScopeFactory scopeFactory, IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils)
         {
             _scopeFactory = scopeFactory;
 
             _userWarningService = userWarningService;
 
             _moderationModuleUtils = moderationModuleUtils;
-
-            foreach (var punishment in punishments)
-            {
-                var punishmentType = punishment.GetPunishmentTypeDetails().PunishType;
-
-                _punishments[punishmentType] = punishment;
-            }
         }
 
         /// <inheritdoc />
@@ -65,14 +53,16 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
                 if (IsPunishmentAlreadyActive(punishment, userData))
                     continue;
 
-                var punishmentResponse = await _punishments[punishment.PunishType].ApplyPunishment(punishment, user);
+                var punishmentMethodService = _moderationModuleUtils.FetchPunishment(punishment.PunishType);
+
+                var punishmentResponse = await punishmentMethodService.ApplyPunishment(punishment, user);
 
                 if (punishmentResponse.Successful)
                 {
                     activePunishments.Add(punishment);
 
                     // If the punishment was successful, and this type of punishment removes the user from the guild, do nothing.
-                    if (_punishments[punishment.PunishType].GetPunishmentTypeDetails().RemovesUserFromGuild)
+                    if (punishmentMethodService.GetPunishmentMetaData().RemovesUserFromGuild)
                         break;
                 }
             }
@@ -92,6 +82,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
                 foreach (var punishment in punishments)
                 {
+                    // TODO : Dont manually check for kick here, do it better. perhaps have a field on punishment type checking if the punishment has a duration.
                     // No need to add kick punishment to DB as it's not a punishment with a duration.
                     if (punishment.PunishType == PunishType.Kick)
                         continue;
@@ -155,7 +146,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
         public async Task RemovePunishment(ActivePunishment punishment)
         {
-            await _punishments[punishment.PunishType].RemovePunishment(punishment);
+            await _moderationModuleUtils.FetchPunishment(punishment.PunishType).RemovePunishment(punishment);
 
             await RemoveActivePunishmentFromDb(punishment);
         }

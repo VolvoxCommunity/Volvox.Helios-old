@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Volvox.Helios.Core.Modules.ModerationModule.Filters;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Domain.Module.ModerationModule;
@@ -24,8 +25,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
 
         private readonly IModerationModuleUtils _moderationModuleUtils;
 
+        private readonly IList<IFilterService> _filters;
+
         public WarningService(IServiceScopeFactory scopeFactory, ILogger<ModerationModule> logger,
-            IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils)
+            IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils,
+            IList<IFilterService> filters)
         {
             _scopeFactory = scopeFactory;
 
@@ -46,7 +50,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             {
                 var warningService = scope.ServiceProvider.GetRequiredService<IEntityService<Warning>>();
 
-                var specificWarningDuration = GetWarningDuration(settings, warningType);
+                var specificWarningDuration = await GetWarningDuration(settings.GuildId, warningType);
 
                 var expireDate = DateTimeOffset.Now.AddMinutes(specificWarningDuration);
 
@@ -91,22 +95,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             }
         }
 
-        // TODO : Remove switch statement and replace with a more SOLID approach.
-        private int GetWarningDuration(ModerationSettings moderationSettings, FilterType warningType)
+        private async Task<int> GetWarningDuration(ulong guildId, FilterType filterType)
         {
-            var duration = 0;
-
-            switch (warningType)
-            {
-                case ( FilterType.Link ):
-                    duration = moderationSettings.LinkFilter.WarningExpirePeriod;
-                    break;
-                case ( FilterType.Profanity ):
-                    duration = moderationSettings.ProfanityFilter.WarningExpirePeriod;
-                    break;
-            }
-
-            return duration;
+            return await _moderationModuleUtils.FetchFilterService(filterType).GetWarningExpirePeriod(guildId);
         }
     }
 }

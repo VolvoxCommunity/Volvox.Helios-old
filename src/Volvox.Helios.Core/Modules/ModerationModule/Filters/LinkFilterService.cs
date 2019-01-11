@@ -100,9 +100,16 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
             return await _bypassCheck.HasBypassAuthority(message, FilterType.Link);
         }
 
-        public FilterType GetFilterType()
+        public async Task<int> GetWarningExpirePeriod(ulong guildId)
         {
-            return FilterType.Link;
+            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
+
+            return settings.LinkFilter.WarningExpirePeriod;
+        }
+
+        public FilterMetaData GetFilterMetaData()
+        {
+            return new FilterMetaData(FilterType.Link);
         }
     }
 }

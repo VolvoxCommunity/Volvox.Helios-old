@@ -32,9 +32,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
             return punishmentResponse;
         }
 
-        public PunishmentDataModel GetPunishmentTypeDetails()
+        public PunishmentMetaData GetPunishmentMetaData()
         {
-            return new PunishmentDataModel()
+            return new PunishmentMetaData()
             {
                 PunishType = PunishType.Kick,
                 RemovesUserFromGuild = true

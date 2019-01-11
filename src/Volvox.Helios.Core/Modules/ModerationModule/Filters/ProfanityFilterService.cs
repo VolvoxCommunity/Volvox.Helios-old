@@ -111,14 +111,21 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
             await _violationService.HandleViolation(message, FilterType.Profanity);
         }
 
+        public FilterMetaData GetFilterMetaData()
+        {
+            return new FilterMetaData(FilterType.Profanity);
+        }
+
+        public async Task<int> GetWarningExpirePeriod(ulong guildId)
+        {
+            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
+
+            return settings.ProfanityFilter.WarningExpirePeriod;
+        }
+
         private async Task<bool> HasBypassAuthority(SocketMessage message)
         {
             return await _bypassCheck.HasBypassAuthority(message, FilterType.Profanity);
-        }
-
-        public FilterType GetFilterType()
-        {
-            return FilterType.Profanity;
         }
     }
 }

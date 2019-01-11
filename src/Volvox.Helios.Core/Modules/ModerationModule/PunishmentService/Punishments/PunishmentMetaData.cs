@@ -5,7 +5,7 @@ using Volvox.Helios.Domain.Module.ModerationModule.Common;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishments
 {
-    public class PunishmentDataModel
+    public class PunishmentMetaData
     {
         public PunishType PunishType { get; set; }
 
