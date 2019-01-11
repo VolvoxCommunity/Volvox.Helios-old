@@ -12,17 +12,13 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
 {
     public class LinkFilterService : IFilterService
     {
-        private readonly IViolationService _violationService;
-
         private readonly IBypassCheck _bypassCheck;
 
         private readonly IModerationModuleUtils _moderationModuleUtils;
 
-        public LinkFilterService(IViolationService violationService, IBypassCheck bypassCheck,
+        public LinkFilterService(IBypassCheck bypassCheck,
             IModerationModuleUtils moderationModuleUtils)
         {
-            _violationService = violationService;
-
             _bypassCheck = bypassCheck;
 
             _moderationModuleUtils = moderationModuleUtils;
@@ -84,10 +80,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
             return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
         }
 
-        public async Task HandleViolation(SocketMessage message)
-        {
-            await _violationService.HandleViolation(message, FilterType.Link);
-        }
 
         private async Task<bool> HasBypassAuthority(SocketMessage message)
         {

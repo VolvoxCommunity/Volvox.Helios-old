@@ -10,7 +10,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
         /// <summary>
         ///     Apply list of punishments.
         /// </summary>
-        /// <param name="punishments">Punishments tp apply</param>
+        /// <param name="punishments">Punishments to apply</param>
         /// <param name="user">User whom we should apply punishments to.</param>
         /// <returns></returns>
         Task ApplyPunishments(List<Punishment> punishments, SocketGuildUser user);

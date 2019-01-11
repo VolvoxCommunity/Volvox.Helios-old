@@ -7,8 +7,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
     {
         Task<bool> CheckViolation(SocketMessage message);
 
-        Task HandleViolation(SocketMessage message);
-
         FilterMetaData GetFilterMetaData();
 
         Task<int> GetWarningExpirePeriod(ulong guildId);

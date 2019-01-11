@@ -12,6 +12,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
             FilterType = filterType;
         }
 
-        public FilterType FilterType { get; private set; }
+        public FilterType FilterType { get; }
     }
 }

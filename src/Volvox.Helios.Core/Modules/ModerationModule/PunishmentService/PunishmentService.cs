@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Volvox.Helios.Core.Jobs;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils.PunishmentFactory;
 using Volvox.Helios.Domain.Module.ModerationModule;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Service.EntityService;
@@ -21,14 +22,18 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
         private readonly IModerationModuleUtils _moderationModuleUtils;
 
+        private readonly IPunishmentFactory _punishmentFactory;
+
         public PunishmentService(IServiceScopeFactory scopeFactory, IUserWarningsService userWarningService,
-            IModerationModuleUtils moderationModuleUtils)
+            IModerationModuleUtils moderationModuleUtils, IPunishmentFactory punishmentFactory)
         {
             _scopeFactory = scopeFactory;
 
             _userWarningService = userWarningService;
 
             _moderationModuleUtils = moderationModuleUtils;
+
+            _punishmentFactory = punishmentFactory;
         }
 
         /// <inheritdoc />
@@ -45,7 +50,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
                 if (IsPunishmentAlreadyActive(punishment, userData))
                     continue;
 
-                var punishmentMethodService = _moderationModuleUtils.FetchPunishment(punishment.PunishType);
+                var punishmentMethodService = _punishmentFactory.GetPunishment(punishment.PunishType);
 
                 var punishmentResponse = await punishmentMethodService.ApplyPunishment(punishment, user);
 
@@ -131,7 +136,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
         public async Task RemovePunishment(ActivePunishment punishment)
         {
-            await _moderationModuleUtils.FetchPunishment(punishment.PunishType).RemovePunishment(punishment);
+            await _punishmentFactory.GetPunishment(punishment.PunishType).RemovePunishment(punishment);
 
             await RemoveActivePunishmentFromDb(punishment);
         }

@@ -10,6 +10,7 @@ using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
 using Volvox.Helios.Core.Modules.ModerationModule.Filters;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
+using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.ModuleSettings;
@@ -37,22 +38,23 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         private readonly IJobService _jobService;
 
-        private readonly IList<IFilterService> _filters;
+        private readonly IEnumerable<IFilterService> _filters;
 
         private readonly IBypassCheck _bypassCheck;
 
         private readonly IModerationModuleUtils _moderationModuleUtils;
 
+        private readonly IViolationService _violationService;
+
         #endregion
 
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
-            IConfiguration config, IModuleSettingsService<ModerationSettings> settingsService, IServiceScopeFactory scopeFactory,
-            IJobService jobService, IList<IFilterService> filters, IBypassCheck bypassCheck, IModerationModuleUtils moderationModuleUtils
+            IConfiguration config, IServiceScopeFactory scopeFactory,
+            IJobService jobService, IEnumerable<IFilterService> filters, IBypassCheck bypassCheck, IModerationModuleUtils moderationModuleUtils,
+            IViolationService violationService
         ) : base(
             discordSettings, logger, config)
         {
-            _settingsService = settingsService;
-
             _scopeFactory = scopeFactory;
 
             _jobService = jobService;
@@ -62,6 +64,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             _bypassCheck = bypassCheck;
 
             _moderationModuleUtils = moderationModuleUtils;
+
+            _violationService = violationService;
         }
 
         public override Task Init(DiscordSocketClient client)
@@ -114,7 +118,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             {
                 if (await filter.CheckViolation(message))
                 {
-                    await filter.HandleViolation(message);
+                    await _violationService.HandleViolation(message, filter.GetFilterMetaData().FilterType);
 
                     // Don't check for more violations if already found one in previous filter.
                     break;
@@ -123,7 +127,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
         }
         public override async Task<bool> IsEnabledForGuild(ulong guildId)
         {
-            var settings = await _settingsService.GetSettingsByGuild(guildId);
+            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             return settings != null && settings.Enabled;
         }   

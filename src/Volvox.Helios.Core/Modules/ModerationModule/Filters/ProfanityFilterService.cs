@@ -13,19 +13,15 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
 {
     public class ProfanityFilterService : IFilterService
     {
-        private readonly IViolationService _violationService;
-
         private readonly IBypassCheck _bypassCheck;
 
         private readonly IModerationModuleUtils _moderationModuleUtils;
 
         private readonly List<string> _defaultBannedWords = new List<string>();
 
-        public ProfanityFilterService(IViolationService violationService, IBypassCheck bypassCheck,
+        public ProfanityFilterService(IBypassCheck bypassCheck,
             IConfiguration config, IModerationModuleUtils moderationModuleUtils)
         {
-            _violationService = violationService;
-
             _bypassCheck = bypassCheck;
 
             _moderationModuleUtils = moderationModuleUtils;
@@ -99,11 +95,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
                 .Replace("[w]", "[w W vv VV]")
                 .Replace("[x]", "[x X]")
                 .Replace("[y]", "[y Y]");
-        }
-
-        public async Task HandleViolation(SocketMessage message)
-        {
-            await _violationService.HandleViolation(message, FilterType.Profanity);
         }
 
         public FilterMetaData GetFilterMetaData()

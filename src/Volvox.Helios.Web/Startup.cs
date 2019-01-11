@@ -34,6 +34,8 @@ using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishments;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils.FilterFactory;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils.PunishmentFactory;
 using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
 using Volvox.Helios.Core.Modules.ReminderModule;
@@ -140,16 +142,18 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IViolationService, ViolationService>();
             services.AddSingleton<IFilterService, LinkFilterService>();
             services.AddSingleton<IFilterService, ProfanityFilterService>();
-            services.AddSingleton<IEnumerable<IFilterService>>(s => s.GetServices<IFilterService>().ToList());
-            services.AddSingleton<IBypassCheck, BypassCheck>();
+            services.AddSingleton<IList<IFilterService>>(s => s.GetServices<IFilterService>().ToList());
+            services.AddSingleton<IFilterFactory, FilterFactory>();
+            services.AddSingleton<IPunishmentFactory, PunishmentFactory>();
             services.AddSingleton<IWarningService, WarningService>();
             services.AddSingleton<IUserWarningsService, UserWarningsService>();
+            services.AddSingleton<IBypassCheck, BypassCheck>();
             services.AddSingleton<IModerationModuleUtils, ModerationModuleUtils>();
             // Moderation Module punishments
             services.AddSingleton<IPunishment, BanPunishment>();
             services.AddSingleton<IPunishment, KickPunishment>();
             services.AddSingleton<IPunishment, AddRolePunishment>();
-            services.AddSingleton<IEnumerable<IPunishment>>(s => s.GetServices<IPunishment>().ToList());
+            services.AddSingleton<IList<IPunishment>>(s => s.GetServices<IPunishment>().ToList());
             services.AddSingleton<IPunishmentService, PunishmentService>();
 
             // Commands

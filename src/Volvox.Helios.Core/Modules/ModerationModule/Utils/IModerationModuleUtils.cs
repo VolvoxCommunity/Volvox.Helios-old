@@ -9,9 +9,5 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Utils
     public interface IModerationModuleUtils
     {
         Task<ModerationSettings> GetModerationSettings(ulong guildId);
-
-        IPunishment FetchPunishment(PunishType type);
-
-        IFilterService FetchFilterService(FilterType type);
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils.FilterFactory;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Service.EntityService;
 
@@ -21,8 +22,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
 
         private readonly IModerationModuleUtils _moderationModuleUtils;
 
+        private readonly IFilterFactory _filterFactory;
+
         public WarningService(IServiceScopeFactory scopeFactory, ILogger<ModerationModule> logger,
-            IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils)
+            IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils, IFilterFactory filterFactory)
         {
             _scopeFactory = scopeFactory;
 
@@ -31,6 +34,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             _logger = logger;
 
             _moderationModuleUtils = moderationModuleUtils;
+
+            _filterFactory = filterFactory;
         }
 
         public async Task<Warning> AddWarning(SocketGuildUser user, FilterType warningType)
@@ -88,9 +93,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             }
         }
 
-        private async Task<int> GetWarningDuration(ulong guildId, FilterType filterType)
+        private async Task<int> GetWarningDuration(ulong guildId, FilterType type)
         {
-            return await _moderationModuleUtils.FetchFilterService(filterType).GetWarningExpirePeriod(guildId);
+            return await _filterFactory.GetFilter(type).GetWarningExpirePeriod(guildId);
         }
     }
 }
