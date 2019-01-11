@@ -43,8 +43,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         // TODO : Subscribe to onchannelcreated to configure muted role?
 
-        // TODO : Remove such a specific implementation of SocketMessage. make own class and populate it using socketmessage.
-        // ^ TODO : Requires guild id and user id, from there i can refetch details inside services. This means if we change library, functionality shouldn't change.
 
         #region Private vars
 

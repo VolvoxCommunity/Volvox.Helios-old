@@ -25,17 +25,7 @@ using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 
 namespace Volvox.Helios.Web.Controllers
 {
-    // TODO : ensure channel exists before adding to whitelist. same for role.
-
-    // TODO : exctract logic and inject them into controller
-
     // TODO : Rename User method as to unhide inherited member
-
-    // TODO : Convert other methods of deletion/modification to use a notmapped field to mark for deletion, instead of converting to a new class with said field.
-
-    // TODO : May have to clear cache after doign stuff with users.
-
-    // TODO : Why are whitelisted links duplicating? when clicking save repeatedly. shti is fucked
 
     // TODO : Give user option to not post message for warning/banning
 

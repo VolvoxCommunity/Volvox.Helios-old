@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishments
+﻿namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishments
 {
     public class PunishmentResponse
     {
