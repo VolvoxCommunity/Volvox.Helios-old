@@ -28,7 +28,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
         private readonly IModerationModuleUtils _moderationModuleUtils;
 
-        public PunishmentService(IServiceScopeFactory scopeFactory, IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils)
+        public PunishmentService(IServiceScopeFactory scopeFactory, IUserWarningsService userWarningService,
+            IModerationModuleUtils moderationModuleUtils)
         {
             _scopeFactory = scopeFactory;
 
@@ -67,10 +68,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
                 }
             }
 
-            await AddActivePunishments(settings, activePunishments, user, userData);
+            await AddActivePunishments(activePunishments, userData);
         }
 
-        private async Task AddActivePunishments(ModerationSettings moderationSettings, List<Punishment> punishments, SocketGuildUser user, UserWarnings userData)
+        private async Task AddActivePunishments(List<Punishment> punishments, UserWarnings userData)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
@@ -135,13 +136,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
                 await activePunishmentService.Remove(punishment);
             }
-        }
-
-        private bool HasSufficientPrivilages(SocketRole role, SocketGuild guild)
-        {
-            var hierarchy = guild.CurrentUser.Hierarchy;
-
-            return hierarchy > role.Position;
         }
 
         public async Task RemovePunishment(ActivePunishment punishment)

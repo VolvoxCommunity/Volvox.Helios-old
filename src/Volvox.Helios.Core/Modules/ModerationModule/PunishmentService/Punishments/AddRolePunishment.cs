@@ -29,14 +29,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
 
             var role = guild.GetRole(punishment.RoleId.Value);
 
-            if (guild is null)
+            if (guild == null)
             {
                 punishmentResponse.Successful = false;
                 punishmentResponse.StatusMessage = "Guild doesn't exist.";
                 return punishmentResponse;
             }
                 
-            if (role is null)
+            if (role == null)
             {
                 punishmentResponse.Successful = false;
                 punishmentResponse.StatusMessage = "Role no longer exists.";
@@ -89,7 +89,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
             var user = guild?.Users.FirstOrDefault(x => x.Id == punishment.User.UserId);
 
             // If role hierarchy has changed since punishment was applied and now the bot doesn't have sufficient privilages, do nothing.
-            if (role != null && HasSufficientPrivilages(role, guild))
+            if (role != null && HasSufficientPrivileges(role, guild))
             {
                 await user.RemoveRoleAsync(role);
 
@@ -107,14 +107,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
                 }
                 else
                 {
-                    punishmentResponse.StatusMessage = "Moderation Module: Something wen't wrong when trying to remove role in the punishment removal job. User or guild were unexpectedly null.";
+                    punishmentResponse.StatusMessage = "Moderation Module: Something went wrong when trying to remove role in the punishment removal job. User or guild were unexpectedly null.";
                 }
             }
 
             return punishmentResponse;
         }
 
-        private bool HasSufficientPrivilages(SocketRole role, SocketGuild guild)
+        private bool HasSufficientPrivileges(SocketRole role, SocketGuild guild)
         {
             var hierarchy = guild.CurrentUser.Hierarchy;
 
