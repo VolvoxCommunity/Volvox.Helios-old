@@ -25,6 +25,7 @@ using Volvox.Helios.Web.ViewModels.Moderation;
 namespace Volvox.Helios.Web.Controllers
 {
     // TODO : Change views to modern razor pages instead of @html stuff
+    // TODO : Find more efficient way of making all those db calls. No way of batching them currently.
 
     [Authorize]
     [Route("/Moderation/{guildId}")]
