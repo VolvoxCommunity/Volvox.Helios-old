@@ -20,18 +20,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
         private readonly IUserWarningsService _userWarningService;
 
-        private readonly IModerationModuleUtils _moderationModuleUtils;
-
         private readonly IPunishmentFactory _punishmentFactory;
 
         public PunishmentService(IServiceScopeFactory scopeFactory, IUserWarningsService userWarningService,
-            IModerationModuleUtils moderationModuleUtils, IPunishmentFactory punishmentFactory)
+            IPunishmentFactory punishmentFactory)
         {
             _scopeFactory = scopeFactory;
 
             _userWarningService = userWarningService;
-
-            _moderationModuleUtils = moderationModuleUtils;
 
             _punishmentFactory = punishmentFactory;
         }
@@ -58,7 +54,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
                 {
                     activePunishments.Add(punishment);
 
-                    // If the punishment was successful, and this type of punishment removes the user from the guild, do nothing.
                     if (punishmentMethodService.GetPunishmentMetaData().RemovesUserFromGuild)
                         break;
                 }

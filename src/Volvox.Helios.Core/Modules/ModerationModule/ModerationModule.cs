@@ -21,15 +21,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 {
     public class ModerationModule : Module
     {
-        // TODO : re-add functionality to Post information about punishment that is applied.
-
-        // TODO : If removal of a punishment fails, don't re-add the scheduled job, but do keep active punishment. the admin will have to manually remove the punishments.
-
-        // TODO : Change views to modern razor pages instead of @html stuff
-
-        // TODO : Subscribe to on channel created to configure muted role?
-
-
         #region Private vars
 
         private readonly IModuleSettingsService<ModerationSettings> _settingsService;

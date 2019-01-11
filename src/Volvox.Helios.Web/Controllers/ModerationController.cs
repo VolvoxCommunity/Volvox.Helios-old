@@ -24,9 +24,7 @@ using Volvox.Helios.Web.ViewModels.Moderation;
 
 namespace Volvox.Helios.Web.Controllers
 {
-    // TODO : Rename User method as to un hide inherited member
-
-    // TODO : Give user option to not post message for warning/banning
+    // TODO : Change views to modern razor pages instead of @html stuff
 
     [Authorize]
     [Route("/Moderation/{guildId}")]

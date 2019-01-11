@@ -42,9 +42,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
 
         public async Task HandleViolation(SocketMessage message, FilterType warningType)
         {
-            var settings = await _moderationModuleUtils.GetModerationSettings(( (SocketGuildUser)message.Author ).Guild.Id);
-
             var user = (SocketGuildUser)message.Author;
+
+            var settings = await _moderationModuleUtils.GetModerationSettings(user.Guild.Id);
 
             await message.DeleteAsync();
 
