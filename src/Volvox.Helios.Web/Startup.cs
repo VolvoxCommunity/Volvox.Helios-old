@@ -179,22 +179,22 @@ namespace Volvox.Helios.Web
             });
 
             //TODO: Refactor to make cleaner
-            services.AddHealthChecks()
-                .AddCheck("sql", () =>
-                {
-                    using (var connection = new SqlConnection(Configuration.GetConnectionString("VolvoxHeliosDatabase")))
-                    {
-                        try
-                        {
-                            connection.Open();
-                        }
-                        catch (SqlException)
-                        {
-                            return HealthCheckResult.Unhealthy();
-                        }
-                        return HealthCheckResult.Healthy();
-                    }
-                });
+//            services.AddHealthChecks()
+//                .AddCheck("sql", () =>
+//                {
+//                    using (var connection = new SqlConnection(Configuration.GetConnectionString("VolvoxHeliosDatabase")))
+//                    {
+//                        try
+//                        {
+//                            connection.Open();
+//                        }
+//                        catch (SqlException)
+//                        {
+//                            return HealthCheckResult.Unhealthy();
+//                        }
+//                        return HealthCheckResult.Healthy();
+//                    }
+//                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -236,7 +236,7 @@ namespace Volvox.Helios.Web
                 Activator = app.ApplicationServices.GetRequiredService<JobActivator>()
             });
 
-            app.UseHealthChecks("/health");
+            //app.UseHealthChecks("/health");
         }
     }
 }
