@@ -375,6 +375,25 @@ namespace Volvox.Helios.Service.Migrations
                     b.ToTable("mod_ModerationSettings");
                 });
 
+            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.DadModuleSettings", b =>
+                {
+                    b.Property<decimal>("GuildId")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<int>("DadResponseCooldownMinutes")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(15);
+
+                    b.Property<bool>("Enabled");
+
+                    b.Property<DateTime?>("LastDadResponseUtc");
+
+                    b.HasKey("GuildId");
+
+                    b.ToTable("DadModuleSettings");
+                });
+
             modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.PollSettings", b =>
                 {
                     b.Property<decimal>("GuildId")

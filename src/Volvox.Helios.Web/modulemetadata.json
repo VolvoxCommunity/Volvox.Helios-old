@@ -35,6 +35,13 @@
       "ReleaseState": "Canary",
       "Configurable": "true"
     },
+    "DadModule": {
+      "Name": "Dad",
+      "Version": "1.0",
+      "Description": "Good ol' Dad... at it again.",
+      "ReleaseState": "Canary",
+      "Configurable": "true"
+    },
     "ModerationModule": {
       "Name": "Moderation",
       "Version": "1.0",

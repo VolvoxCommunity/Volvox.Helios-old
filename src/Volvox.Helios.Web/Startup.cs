@@ -54,6 +54,9 @@ using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.HostedServices.Bot;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Discord.WebSocket;
+using Microsoft.AspNetCore.HttpOverrides;
+using Volvox.Helios.Core.Modules.Streamer;
 
 namespace Volvox.Helios.Web
 {
@@ -215,6 +218,24 @@ namespace Volvox.Helios.Web
                     PrepareSchemaIfNecessary = true
                 });
             });
+
+            //TODO: Refactor to make cleaner
+            services.AddHealthChecks()
+                .AddCheck("sql", () =>
+                {
+                    using (var connection = new SqlConnection(Configuration.GetConnectionString("VolvoxHeliosDatabase")))
+                    {
+                        try
+                        {
+                            connection.Open();
+                        }
+                        catch (SqlException)
+                        {
+                            return HealthCheckResult.Unhealthy();
+                        }
+                        return HealthCheckResult.Healthy();
+                    }
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -255,6 +276,8 @@ namespace Volvox.Helios.Web
             {
                 Activator = app.ApplicationServices.GetRequiredService<JobActivator>()
             });
+
+            app.UseHealthChecks("/health");
         }
     }
 }
