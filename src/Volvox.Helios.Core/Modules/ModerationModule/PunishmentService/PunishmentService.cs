@@ -34,8 +34,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
         /// <inheritdoc />
         public async Task ApplyPunishments(List<Punishment> punishments, SocketGuildUser user)
         {
-            var settings = await _moderationModuleUtils.GetModerationSettings(user.Guild.Id);
-
             var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.ActivePunishments);
 
             // List of punishments to add to database as active punishments.
@@ -64,7 +62,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
             await AddActivePunishments(activePunishments, userData);
         }
 
-        private async Task AddActivePunishments(List<Punishment> punishments, UserWarnings userData)
+        private async Task AddActivePunishments(IEnumerable<Punishment> punishments, UserWarnings userData)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
@@ -76,7 +74,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 
                 foreach (var punishment in punishments)
                 {
-                    // TODO : Dont manually check for kick here, do it better. perhaps have a field on punishment type checking if the punishment has a duration.
+                    // TODO : Don't manually check for kick here, do it better. perhaps have a field on punishment type checking if the punishment has a duration.
                     // No need to add kick punishment to DB as it's not a punishment with a duration.
                     if (punishment.PunishType == PunishType.Kick)
                         continue;
@@ -86,7 +84,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
                         ? DateTimeOffset.MaxValue
                         : DateTimeOffset.Now.AddMinutes(punishment.PunishDuration);
 
-                    // Refetching prevents self referencing loop AND ensures the entity is tracked, therefore stopping ef core from trying to re-add it.
+                    // Re-fetching prevents self referencing loop AND ensures the entity is tracked, therefore stopping ef core from trying to re-add it.
                     var userDbEntry = await userWarningsService.Find(userData.Id);
 
                     activePunishments.Add(new ActivePunishment
@@ -118,7 +116,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
             var currentlyActivePunishments = userData.ActivePunishments;
 
             // bool indicating whether user already has punishment.
-            return ( currentlyActivePunishments.Any(x => x.PunishmentId == punishment.Id) );
+            return currentlyActivePunishments.Any(x => x.PunishmentId == punishment.Id);
         }
 
         private async Task RemoveActivePunishmentFromDb(ActivePunishment punishment)

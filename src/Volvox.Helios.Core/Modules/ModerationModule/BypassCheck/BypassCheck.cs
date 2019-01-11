@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Domain.Module.ModerationModule;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
-using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.BypassCheck
 {
@@ -22,7 +19,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.BypassCheck
 
         public async Task<bool> HasBypassAuthority(SocketMessage message, FilterType type)
         {
-            var settings = await _moderationModuleUtils.GetModerationSettings(( message.Author as SocketGuildUser ).Guild.Id);
+            var settings = await _moderationModuleUtils.GetModerationSettings((( SocketGuildUser)message.Author  ).Guild.Id);
 
             var whitelistedChannels = settings?.WhitelistedChannels.Where(c => c.WhitelistType == type);
 
@@ -34,7 +31,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.BypassCheck
                 WhitelistedRoles = whitelistedRoles
             };
 
-            var author = message.Author as SocketGuildUser;
+            var author = (SocketGuildUser)message.Author;
 
             var channelPostedId = message.Channel.Id;
 

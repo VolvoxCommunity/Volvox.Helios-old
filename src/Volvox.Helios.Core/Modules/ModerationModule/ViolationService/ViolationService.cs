@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
@@ -43,9 +42,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
 
         public async Task HandleViolation(SocketMessage message, FilterType warningType)
         {
-            var settings = await _moderationModuleUtils.GetModerationSettings(( message.Author as SocketGuildUser ).Guild.Id);
+            var settings = await _moderationModuleUtils.GetModerationSettings(( (SocketGuildUser)message.Author ).Guild.Id);
 
-            var user = message.Author as SocketGuildUser;
+            var user = (SocketGuildUser)message.Author;
 
             await message.DeleteAsync();
 

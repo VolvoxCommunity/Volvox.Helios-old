@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Volvox.Helios.Core.Modules.ModerationModule.Filters;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
-using Volvox.Helios.Domain.Module.ModerationModule;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
-using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.EntityService;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
@@ -25,11 +21,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
 
         private readonly IModerationModuleUtils _moderationModuleUtils;
 
-        private readonly IList<IFilterService> _filters;
-
         public WarningService(IServiceScopeFactory scopeFactory, ILogger<ModerationModule> logger,
-            IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils,
-            IList<IFilterService> filters)
+            IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils)
         {
             _scopeFactory = scopeFactory;
 
@@ -58,7 +51,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
                 if (specificWarningDuration == 0)
                     expireDate = DateTimeOffset.MaxValue;
 
-                var warning = new Warning()
+                var warning = new Warning
                 {
                     UserId = userData.Id,
                     WarningRecieved = DateTimeOffset.Now,

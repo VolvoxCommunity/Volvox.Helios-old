@@ -1,35 +1,20 @@
 ﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Volvox.Helios.Core.Modules.Common;
-using Volvox.Helios.Core.Services.MessageService;
-using Volvox.Helios.Core.Utilities;
-using Volvox.Helios.Domain.Module.ModerationModule;
-using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
-using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
-using Volvox.Helios.Domain.ModuleSettings;
-using Volvox.Helios.Service.ModuleSettings;
-using Volvox.Helios.Domain.Module.ModerationModule.Common;
-using System;
-using Volvox.Helios.Service.EntityService;
-using Microsoft.Extensions.DependencyInjection;
-using Volvox.Helios.Service.BackgroundJobs;
 using Hangfire;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Jobs;
-using Volvox.Helios.Core.Modules.ModerationModule.Filters.Link;
-using Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity;
-using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
-using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
-using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
-using Volvox.Helios.Core.Modules.ModerationModule.Filters;
+using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+using Volvox.Helios.Core.Modules.ModerationModule.Filters;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
+using Volvox.Helios.Core.Utilities;
+using Volvox.Helios.Domain.Module.ModerationModule.Common;
+using Volvox.Helios.Domain.ModuleSettings;
+using Volvox.Helios.Service.BackgroundJobs;
+using Volvox.Helios.Service.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
@@ -37,11 +22,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
     {
         // TODO : re-add functionality to Post information about punishment that is applied.
 
-        // TODO : If removal of a punishment fails, dont readd the schdeduled job, but do keep active punishment. the admin will have to manually remove the punishments.
+        // TODO : If removal of a punishment fails, don't re-add the scheduled job, but do keep active punishment. the admin will have to manually remove the punishments.
 
-        // TODO : Change views to modern razer pages instead of @html stuff
+        // TODO : Change views to modern razor pages instead of @html stuff
 
-        // TODO : Subscribe to onchannelcreated to configure muted role?
+        // TODO : Subscribe to on channel created to configure muted role?
 
 
         #region Private vars

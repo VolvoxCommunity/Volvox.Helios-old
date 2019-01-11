@@ -44,7 +44,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
 
         public PunishmentMetaData GetPunishmentMetaData()
         {
-            return new PunishmentMetaData()
+            return new PunishmentMetaData
             {
                 PunishType = PunishType.Ban,
                 RemovesUserFromGuild = true
@@ -59,7 +59,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
 
             await guild.RemoveBanAsync(userId);
 
-            return new PunishmentResponse() { Successful = true };
+            return new PunishmentResponse { Successful = true };
         }
     }
 }

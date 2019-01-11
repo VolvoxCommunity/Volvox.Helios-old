@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volvox.Helios.Core.Modules.ModerationModule.Filters;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishments;
@@ -20,7 +18,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Utils
 
         private readonly Dictionary<FilterType, IFilterService> _filters = new Dictionary<FilterType, IFilterService>();
 
-        public ModerationModuleUtils(IModuleSettingsService<ModerationSettings> settingsService, IList<IPunishment> punishments, IList<IFilterService> filters)
+        public ModerationModuleUtils(IModuleSettingsService<ModerationSettings> settingsService, IEnumerable<IPunishment> punishments, IEnumerable<IFilterService> filters)
         {
             _settingsService = settingsService;
 

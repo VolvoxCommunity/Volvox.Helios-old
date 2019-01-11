@@ -7,10 +7,8 @@ using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
-using Volvox.Helios.Domain.ModuleSettings;
-using Volvox.Helios.Service.ModuleSettings;
 
-namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
+namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
 {
     public class LinkFilterService : IFilterService
     {
@@ -32,7 +30,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
 
         public async Task<bool> CheckViolation(SocketMessage message)
         {
-            var settings = await _moderationModuleUtils.GetModerationSettings(( message.Author as SocketGuildUser ).Guild.Id);
+            var settings = await _moderationModuleUtils.GetModerationSettings(((SocketGuildUser)message.Author).Guild.Id);
 
             var filterViolatedFlag = false;
 
@@ -50,8 +48,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
             // Normalize message to lowercase and split into array of words.
             var messageWords = message.ToLower().Split(" ");
 
-            var whitelistedLinks = linkFilter.WhitelistedLinks.Select(l => l.Link);
-
             // Regular expression for detecting url patterns
             var urlCheck = new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)");
 
@@ -63,7 +59,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
             {
                 if (urlCheck.IsMatch(word))
                 {
-                    foreach (var link in whitelistedLinks)
+                    foreach (var link in linkFilter.WhitelistedLinks.Select(l => l.Link))
                     {
                         var rgx = WildCardToRegular(link);
 
@@ -90,8 +86,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Link
 
         public async Task HandleViolation(SocketMessage message)
         {
-            var settings = await _moderationModuleUtils.GetModerationSettings((message.Author as SocketGuildUser).Guild.Id);
-
             await _violationService.HandleViolation(message, FilterType.Link);
         }
 

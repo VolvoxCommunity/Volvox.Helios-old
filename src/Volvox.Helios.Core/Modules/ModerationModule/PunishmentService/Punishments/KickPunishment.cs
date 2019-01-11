@@ -31,7 +31,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
 
         public PunishmentMetaData GetPunishmentMetaData()
         {
-            return new PunishmentMetaData()
+            return new PunishmentMetaData
             {
                 PunishType = PunishType.Kick,
                 RemovesUserFromGuild = true
@@ -40,7 +40,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
 
         public Task<PunishmentResponse> RemovePunishment(ActivePunishment punishment)
         {
-            return Task.FromResult(new PunishmentResponse() { Successful = true });
+            return Task.FromResult(new PunishmentResponse { Successful = true });
         }
     }
 }

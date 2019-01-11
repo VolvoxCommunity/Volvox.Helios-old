@@ -1,31 +1,30 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Discord;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
-using Volvox.Helios.Domain.ModuleSettings;
-using Volvox.Helios.Service.EntityService;
-using Volvox.Helios.Service.ModuleSettings;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
+using Volvox.Helios.Core.Modules.ModerationModule.Utils;
+using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
+using Volvox.Helios.Core.Utilities.Constants;
 using Volvox.Helios.Domain.Module.ModerationModule;
-using System.Collections.Generic;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
-using Volvox.Helios.Web.ViewModels.Moderation;
+using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
+using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.Discord.Guild;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Discord;
-using Volvox.Helios.Web.Models.Moderation;
-using Microsoft.AspNetCore.Authorization;
-using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Service.Discord.User;
-using Volvox.Helios.Core.Utilities.Constants;
-using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
-using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
-using Volvox.Helios.Core.Modules.ModerationModule;
-using Volvox.Helios.Core.Modules.ModerationModule.Utils;
+using Volvox.Helios.Service.EntityService;
+using Volvox.Helios.Service.ModuleSettings;
+using Volvox.Helios.Web.Filters;
+using Volvox.Helios.Web.Models.Moderation;
+using Volvox.Helios.Web.ViewModels.Moderation;
 
 namespace Volvox.Helios.Web.Controllers
 {
-    // TODO : Rename User method as to unhide inherited member
+    // TODO : Rename User method as to un hide inherited member
 
     // TODO : Give user option to not post message for warning/banning
 
@@ -459,10 +458,6 @@ namespace Volvox.Helios.Web.Controllers
         [HttpGet("users/{pageNo}"), HttpGet("users")]
         public async Task<IActionResult> Users(ulong guildId, [FromServices] IDiscordGuildService guildService, int pageNo = 0)
         {
-            var activePunishments = await _entityServiceActivePunishments.Get(p => p.User.GuildId == guildId);
-
-            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
-
             var users = _discordUserService.GetUsers(guildId).Where(u => !u.IsBot)
                 .Skip(pageNo * ModuleConstants.ResultsPerPageUsers).Take(ModuleConstants.ResultsPerPageUsers).Select(u => new UserModel
             {

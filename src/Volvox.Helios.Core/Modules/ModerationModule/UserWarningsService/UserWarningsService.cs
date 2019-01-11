@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Volvox.Helios.Domain.Module.ModerationModule;
@@ -31,7 +29,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService
                 // User isn't tracked yet, so create new entry for them.
                 if (userDataDb == null)
                 {
-                    userData = new UserWarnings()
+                    userData = new UserWarnings
                     {
                         GuildId = guildId,
                         UserId = userId

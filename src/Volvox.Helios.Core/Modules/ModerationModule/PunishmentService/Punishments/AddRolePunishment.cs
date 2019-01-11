@@ -71,7 +71,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
 
         public PunishmentMetaData GetPunishmentMetaData()
         {
-            return new PunishmentMetaData()
+            return new PunishmentMetaData
             {
                 PunishType = PunishType.AddRole,
                 RemovesUserFromGuild = false
@@ -88,7 +88,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
 
             var user = guild?.Users.FirstOrDefault(x => x.Id == punishment.User.UserId);
 
-            // If role hierarchy has changed since punishment was applied and now the bot doesn't have sufficient privilages, do nothing.
+            // If role hierarchy has changed since punishment was applied and now the bot doesn't have sufficient privileges, do nothing.
             if (role != null && HasSufficientPrivileges(role, guild))
             {
                 await user.RemoveRoleAsync(role);
@@ -100,14 +100,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
             else
             {
                 punishmentResponse.Successful = false;
-                if (user != null && guild != null)
+                if (user != null)
                 {
-                    punishmentResponse.StatusMessage = $"Moderation Module: Couldn't apply role '{role.Name}' to user {user.Username} as bot doesn't have appropriate permissions. " +
+                    punishmentResponse.StatusMessage = $"Moderation Module: Couldn't apply role '{role?.Name ?? "role"}' to user {user.Username} as bot doesn't have appropriate permissions. " +
                        $"Guild Id:{guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}";
                 }
                 else
                 {
-                    punishmentResponse.StatusMessage = "Moderation Module: Something went wrong when trying to remove role in the punishment removal job. User or guild were unexpectedly null.";
+                    punishmentResponse.StatusMessage = "Moderation Module: Something went wrong when trying to remove role in the punishment removal job. User was unexpectedly null.";
                 }
             }
 

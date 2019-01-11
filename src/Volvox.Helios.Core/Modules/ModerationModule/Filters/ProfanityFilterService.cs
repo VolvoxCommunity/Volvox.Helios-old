@@ -8,9 +8,8 @@ using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
-using Volvox.Helios.Domain.ModuleSettings;
 
-namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
+namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
 {
     public class ProfanityFilterService : IFilterService
     {
@@ -31,17 +30,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
 
             _moderationModuleUtils = moderationModuleUtils;
 
-            var defaultBannedWords = config.GetSection("BannedWords").GetChildren().Select(x => x.Value);
-
-            if (defaultBannedWords != null)
-            {
-                _defaultBannedWords.AddRange(defaultBannedWords);
-            }
+            _defaultBannedWords.AddRange(config.GetSection("BannedWords").GetChildren().Select(x => x.Value));
         }
 
         public async Task<bool> CheckViolation(SocketMessage message)
         {
-            var settings = await _moderationModuleUtils.GetModerationSettings(( message.Author as SocketGuildUser ).Guild.Id);
+            var settings = await _moderationModuleUtils.GetModerationSettings(( (SocketGuildUser)message.Author ).Guild.Id);
 
             var filterViolatedFlag = false;
 
@@ -77,6 +71,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters.Profanity
             return false;
         }
 
+        // TODO : Future feature. Method currently unused for now.
         private string ConvertClbuttic(string word)
         {
             return word.Replace("[a]", "[a A @]")
