@@ -16,64 +16,72 @@
     <h2>Global Module Settings</h2>
     <hr />
 
-    <div class="row">
-        <div class="col-md-12">
-            <form method="post">
-                <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="col-12">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
 
-                <div style="display:flex;" class="form-group">
-                    <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
-                    <label class="switch" />
-                    <input asp-for="Enabled" type="checkbox" />
-                    <div class="slider round"></div>
-                    <span asp-validation-for="Enabled" class="text-danger"></span>
+            <div class="row rounded module-input-wrapper">
+                <div class="col-md-9 pt-3 pb-3">
+                    <h4>Enabled</h4>
+                    <p class="mb-0 text-volvox">
+                        Enables or disables the moderation module.
+                    </p>
                 </div>
-
-                <div class="settings-group">
-                    <div class="form-group">
-                        <label asp-for="WhitelistedChannels"></label>
-                        <select data-placeholder="No channels selected..." asp-for="SelectedChannels" asp-items="Model.WhitelistedChannels" class="chosen-select form-control" multiple></select>
-                        <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
+                <div class="col-md-3 valign">
+                    <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
+                        <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
+                            On
+                            <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
+                        </label>
+                        <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
+                            Off
+                            <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
+                        </label>
                     </div>
                 </div>
+            </div>
+            <span asp-validation-for="Enabled" class="text-danger"></span>
 
-                <div class="settings-group">
-                    <div class="form-group">
-                        <label asp-for="WhitelistedRoles"></label>
-                        <select data-placeholder="No roles selected..." asp-for="SelectedRoles" asp-items="Model.WhitelistedRoles" class="chosen-select form-control" multiple></select>
-                        <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
-                    </div>
+            <div class="row rounded module-input-wrapper mt-3 pt-2">
+                <div class="col-12 form-group">
+                    <label asp-for="WhitelistedChannels"></label>
+                    <div id="whiteListedChannels"></div>
+                    <select class="d-none" asp-for="SelectedChannels" id="selectedChannelsHidden"></select>
+                    <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
                 </div>
 
-                <div class="form-group" style="margin:10px auto; text-align: center;">
-                    <button type="submit" value="Save" class="btn btn-success" style="width:100%;">
-                        Save <i class="fas fa-save" style="margin-left:0.5em;"></i>
-                    </button>
+                <div class="col-12 form-group">
+                    <label asp-for="WhitelistedRoles"></label>
+                    <div id="whiteListedRoles"></div>
+                    <select class="d-none" asp-for="WhitelistedRoles" id="selectedRolesHidden"></select>
+                    <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
                 </div>
-            </form>
-        </div>
-        <div class="card" style="width:100%; text-align:center;">
-            <div class="card-body">
-                <h3 class="card-title" style="margin-bottom:1em;">
-                    Filters
-                </h3>
-                <div class="row" style="margin:0 auto;">
-                    <div class="col-sm-6">
-                        <div class="card" style="width: 18rem; margin:0 auto;">
-                            <div class="card-body">
-                                <h5 class="card-title">Link Filter</h5>
-                                <p class="card-text">Configure your link filter.</p>
-                                <a class="btn btn-success" asp-controller="Moderation" asp-action="linkfilter"> Go to filter <i class="fas fa-arrow-right" style="margin-left:1em;"></i></a>
-                            </div>
+            </div>
+
+            <div class="row form-group mt-4 mb-4">
+                <button type="submit" value="Save" class="btn btn-volvox-outline save-btn ml-auto">Save</button>
+            </div>
+        </form>
+    </div>
+    <div class="card w-100 text-center pt-5 pb-5">
+        <div class="card-body">
+            <h3 class="card-title mb-4">Filters</h3>
+            <div class="row mx-auto">
+                <div class="col-sm-6">
+                    <div class="card mx-auto" style="border: none;">
+                        <div class="card-body">
+                            <h5 class="card-title">Link Filter</h5>
+                            <p class="card-text">Configure your link filter.</p>
+                            <a class="btn bg-volvox text-white" asp-controller="Moderation" asp-action="linkfilter"> Go to filter <i class="fas fa-arrow-right ml-3"></i></a>
                         </div>
                     </div>
-                    <div class="col-sm-6">
-                        <div class="card" style="width: 18rem; margin:0 auto;">
-                            <div class="card-body">
-                                <h5 class="card-title">Profanity Filter</h5>
-                                <p class="card-text">Configure your profanity filter.</p>
-                                <a class="btn btn-success" asp-controller="Moderation" asp-action="profanityfilter"> Go to filter  <i class="fas fa-arrow-right" style="margin-left:1em;"></i></a>
-                            </div>
+                </div>
+                <div class="col-sm-6 mt-md-0 mt-4">
+                    <div class="card mx-auto" style="border: none;">
+                        <div class="card-body">
+                            <h5 class="card-title">Profanity Filter</h5>
+                            <p class="card-text">Configure your profanity filter.</p>
+                            <a class="btn bg-volvox text-white" asp-controller="Moderation" asp-action="profanityfilter"> Go to filter  <i class="fas fa-arrow-right ml-3"></i></a>
                         </div>
                     </div>
                 </div>
@@ -86,10 +94,38 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        $(document).ready(function () {
-            $('.chosen-select').chosen();
-        });
         $('main').removeClass('container').addClass('p-0 mt-0');
+
+        $('.module-enabler input:not(".active")').click((e) => {
+            $(e.currentTarget).closest('.module-enabler').parent().find('.active').toggleClass('active disabled');
+            $(e.currentTarget).closest('.module-enabler').toggleClass('active disabled');
+        });
+
+        let whiteListedChannels = JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedChannels)))');
+        $('#whiteListedChannels').dxTagBox({
+            dataSource: whiteListedChannels,
+            valueExpr: "value",
+            displayExpr: "text",
+            onInitialized: (e) => {
+                $('#selectedChannelsHidden').append($('#whiteListedChannels .dx-dropdowneditor-input-wrapper').find('select option'));
+            },
+            onValueChanged: (e) => {
+                $('#selectedChannelsHidden').empty().append($('whiteListedChannels .dx-dropdowneditor-input-wrapper').find('select option'));
+            }
+        });
+
+        let whiteListedRoles = JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedRoles)))');
+        $('#whiteListedRoles').dxTagBox({
+            dataSource: whiteListedRoles,
+            valueExpr: "value",
+            displayExpr: "text",
+            onInitialized: (e) => {
+                $('#selectedRolesHidden').append($('#whiteListedRoles .dx-dropdowneditor-input-wrapper').find('select option'));
+            },
+            onValueChanged: (e) => {
+                $('#selectedRolesHidden').empty().append($('whiteListedRoles .dx-dropdowneditor-input-wrapper').find('select option'));
+            }
+        });
     </script>
 }
 

@@ -18,23 +18,23 @@
     <hr />
     @Html.HiddenFor(m => m.PunishmentId)
     <div class="col-12 mt-4 pt-3 pb-3 rounded module-input-wrapper">
-        <label>Punishment Type</label>
+        <label asp-for="PunishType">Punishment Type</label>
         <div id="punishType" class="mb-3"></div>
         <input type="hidden" asp-for="PunishType" value="@(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.PunishType>().First().Value)" />
 
-        <label>Duration (mins, 0 = Forever)</label>
+        <label asp-for="PunishDuration">Duration (mins, 0 = Forever)</label>
         <div id="punishDuration" class="mb-3"></div>
         <input type="hidden" asp-for="PunishDuration" value="0" />
 
-        <label>Warning Type</label>
+        <label asp-for="WarningType">Warning Type</label>
         <div id="warningType" class="mb-3"></div>
         <input type="hidden" asp-for="WarningType" value="@(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.FilterType>().First().Value)" />
 
-        <label>Warning Threshold</label>
+        <label asp-for="WarningThreshold">Warning Threshold</label>
         <div id="warningThreshold"></div>
         <input type="hidden" asp-for="WarningThreshold" value="1" />
 
-        <label>Role</label>
+        <label asp-for="RoleId">Role</label>
         <div id="role" class="mb-2"></div>
         <input type="hidden" asp-for="RoleId" value="@(Model.Role.First().Value)" />
     </div>

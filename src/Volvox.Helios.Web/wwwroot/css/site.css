@@ -84,6 +84,11 @@ a:hover {
   border-color: var(--color-skyblue);
 }
 
+.btn:focus, .btn:active{
+  outline: 0;
+  box-shadow: none;
+}
+
 .btn-volvox-outline {
   border: 1px solid var(--color-volvox);
   color: var(--color-volvox);
