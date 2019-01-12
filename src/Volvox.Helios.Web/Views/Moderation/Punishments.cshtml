@@ -14,9 +14,9 @@
 
 @if (Model.Punishments.Count > 0)
 {
-<form class="container mt-4">
+<form method="POST" class="container mt-4">
     <div class="table-responsive mb-3">
-        <table class="table rounded punishment-table mb-0" asp-for="Punishments">
+        <table class="table rounded material-table mb-0" asp-for="Punishments">
             <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -44,7 +44,7 @@
     </div>
     <div class="form-group">
         <a class="btn btn-primary" asp-controller="Moderation" asp-action="newpunishment">Add New</a>
-        <button id="RemoveSelected" class="ml-2 btn btn-danger" data-toggle="tooltip" data-original-title="Add more controls">
+        <button id="RemoveSelected" class="ml-2 btn btn-danger" type="submit" data-toggle="tooltip" data-original-title="Add more controls">
             <i class="glyphicon glyphicon-plus-sign"></i> Remove Selected
         </button>
     </div>
@@ -52,12 +52,14 @@
 }
 else
 {
-    <div>
-        No Punishments available.
-    </div>
+<div class="container mt-3">
+    <p>
+        You haven't created punishments yet. Click add new to create one.
+    </p>
     <div class="form-group">
         <a class="btn btn-primary" asp-controller="Moderation" asp-action="newpunishment">Add New</a>
     </div>
+</div>
 }
 
 @section Scripts {

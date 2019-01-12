@@ -499,14 +499,6 @@ input:checked + .slider {
   background: var(--color-volvox) !important;
 }
 
-
-
-
-
-
-
-
-
 /***********Punishment table************/
 @keyframes checkboxScale{
   0%, 100%{
@@ -515,37 +507,28 @@ input:checked + .slider {
       transform: scale(1.4)
   }
 }
-.punishment-table{
-  background: var(--color-deep-dark);
-}
-.punishment-table thead th{
+
+.material-table thead th{
   border-top: none;
   border-bottom: 2px solid var(--color-skyblue);
 }
-.punishment-table .animate{
+.material-table .animate {
   animation: checkboxScale .4s ease-in
 }
 
 .breadcrumb-wrapper {
   padding-top: 50px;
-  padding-bottom: 50px;
-  background: rgba(0,0,0,.5);
+  padding-bottom: 50px;  
   font-size: 25px;
 }
 .breadcrumb-wrapper ol{
   background: none;
 }
 
-
-
-
-
-
-
-
-
-
-
+.save-btn{
+  border-radius: 20px;
+  padding: 6px 24px;
+}
 
 /*******Cookie consent*****/
 #cookieConsent {

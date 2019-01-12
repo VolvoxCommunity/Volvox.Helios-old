@@ -79,6 +79,21 @@ hr{
   background: var(--color-deep-dark) !important;
 }
 
+.material-table {
+  background: var(--color-deep-dark);
+}
+  .material-table td {
+    border-top: 1px solid #25292d;
+  }
+
+  .material-table .material-checkbox a {
+    color: white;
+  }
+
+.breadcrumb-wrapper {
+  background: rgba(0,0,0,.5);
+}
+
 footer {
   background: var(--color-deep-dark);
 }
