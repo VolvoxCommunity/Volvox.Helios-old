@@ -13,9 +13,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.ActivePu
         ///     Adds collection of punishments to user as active punishments.
         /// </summary>
         /// <param name="punishments">List of punishments.</param>
-        /// <param name="userData">User entry from db</param>
+        /// <param name="userId">Id of user to add punishments to.</param>
         /// <returns></returns>
-        Task AddActivePunishments(IEnumerable<Punishment> punishments, UserWarnings userData);
+        Task AddActivePunishments(IEnumerable<Punishment> punishments, int userId);
 
         /// <summary>
         ///     Removes active punishment from database.

@@ -63,7 +63,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
                 }
             }
 
-            await _activePunishmentService.AddActivePunishments(activePunishments, userData);
+            await _activePunishmentService.AddActivePunishments(activePunishments, userData.Id);
         }
 
         public async Task RemovePunishment(ActivePunishment punishment)

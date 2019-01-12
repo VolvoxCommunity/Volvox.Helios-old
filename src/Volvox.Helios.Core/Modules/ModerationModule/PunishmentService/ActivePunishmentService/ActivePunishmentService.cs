@@ -21,7 +21,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.ActivePu
         }
 
         /// <inheritdoc />
-        public async Task AddActivePunishments(IEnumerable<Punishment> punishments, UserWarnings userData)
+        public async Task AddActivePunishments(IEnumerable<Punishment> punishments, int userId)
         {
             using (var scope = _scopeFactory.CreateScope())
             {
@@ -44,7 +44,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.ActivePu
                         : DateTimeOffset.Now.AddMinutes(punishment.PunishDuration);
 
                     // Re-fetching prevents self referencing loop AND ensures the entity is tracked, therefore stopping ef core from trying to re-add it.
-                    var userDbEntry = await userWarningsService.Find(userData.Id);
+                    var userDbEntry = await userWarningsService.Find(userId);
 
                     activePunishments.Add(new ActivePunishment
                     {
