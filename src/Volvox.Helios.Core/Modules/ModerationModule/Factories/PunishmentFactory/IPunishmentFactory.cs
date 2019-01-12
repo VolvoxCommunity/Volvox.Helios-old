@@ -5,6 +5,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Factories.PunishmentFactor
 {
     public interface IPunishmentFactory
     {
+        /// <summary>
+        ///     Gets punishment method by type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         IPunishment GetPunishment(PunishType type);
     }
 }

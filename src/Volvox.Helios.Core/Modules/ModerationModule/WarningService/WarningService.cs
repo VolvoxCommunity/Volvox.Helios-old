@@ -38,6 +38,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             _filterFactory = filterFactory;
         }
 
+        /// <inheritdoc />
         public async Task<Warning> AddWarning(SocketGuildUser user, FilterType warningType)
         {
             var settings = await _moderationModuleUtils.GetModerationSettings(user.Guild.Id);
@@ -73,6 +74,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             }
         }
 
+        /// <inheritdoc />
         public async Task RemoveWarning(Warning warning)
         {
             using (var scope = _scopeFactory.CreateScope())
@@ -83,6 +85,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             }
         }
 
+        /// <inheritdoc />
         public async Task RemoveWarningBulk(List<Warning> warnings)
         {
             using (var scope = _scopeFactory.CreateScope())

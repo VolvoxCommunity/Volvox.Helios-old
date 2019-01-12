@@ -18,6 +18,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Factories.PunishmentFactor
             }
         }
 
+        /// <inheritdoc />
         public IPunishment GetPunishment(PunishType type)
         {
             return _punishments[type];

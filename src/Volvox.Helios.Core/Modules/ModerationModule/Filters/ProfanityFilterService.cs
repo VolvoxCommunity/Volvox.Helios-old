@@ -29,6 +29,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
             _defaultBannedWords.AddRange(config.GetSection("BannedWords").GetChildren().Select(x => x.Value));
         }
 
+        /// <inheritdoc />
         public async Task<bool> CheckViolation(SocketMessage message)
         {
             var settings = await _moderationModuleUtils.GetModerationSettings(( (SocketGuildUser)message.Author ).Guild.Id);
@@ -97,11 +98,13 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
                 .Replace("[y]", "[y Y]");
         }
 
+        /// <inheritdoc />
         public FilterMetaData GetFilterMetaData()
         {
             return new FilterMetaData(FilterType.Profanity);
         }
 
+        /// <inheritdoc />
         public async Task<int> GetWarningExpirePeriod(ulong guildId)
         {
             var settings = await _moderationModuleUtils.GetModerationSettings(guildId);

@@ -13,6 +13,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
             _client = client;
         }
 
+        /// <inheritdoc />
         public async Task<PunishmentResponse> ApplyPunishment(Punishment punishment, SocketGuildUser user)
         {
             var punishmentResponse = new PunishmentResponse();
@@ -42,6 +43,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
             return punishmentResponse;
         }
 
+        /// <inheritdoc />
         public PunishmentMetaData GetPunishmentMetaData()
         {
             return new PunishmentMetaData
@@ -51,6 +53,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
             };
         }
 
+        /// <inheritdoc />
         public async Task<PunishmentResponse> RemovePunishment(ActivePunishment punishment)
         {
             var guild = _client.GetGuild(punishment.User.GuildId);

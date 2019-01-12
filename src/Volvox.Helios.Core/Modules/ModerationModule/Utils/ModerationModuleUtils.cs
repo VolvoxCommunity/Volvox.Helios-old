@@ -15,6 +15,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Utils
             _settingsService = settingsService;
         }
 
+        /// <inheritdoc />
         public async Task<ModerationSettings> GetModerationSettings(ulong guildId)
         {
             return await _settingsService.GetSettingsByGuild(guildId, BuildSettingsQuery());

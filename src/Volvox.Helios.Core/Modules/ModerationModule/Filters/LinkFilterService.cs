@@ -24,6 +24,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
             _moderationModuleUtils = moderationModuleUtils;
         }
 
+        /// <inheritdoc />
         public async Task<bool> CheckViolation(SocketMessage message)
         {
             var settings = await _moderationModuleUtils.GetModerationSettings(((SocketGuildUser)message.Author).Guild.Id);
@@ -80,12 +81,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
             return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
         }
 
-
         private async Task<bool> HasBypassAuthority(SocketMessage message)
         {
             return await _bypassCheck.HasBypassAuthority(message, FilterType.Link);
         }
 
+        /// <inheritdoc />
         public async Task<int> GetWarningExpirePeriod(ulong guildId)
         {
             var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
@@ -93,6 +94,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
             return settings.LinkFilter.WarningExpirePeriod;
         }
 
+        /// <inheritdoc />
         public FilterMetaData GetFilterMetaData()
         {
             return new FilterMetaData(FilterType.Link);

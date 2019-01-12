@@ -15,8 +15,18 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
         /// <returns></returns>
         Task ApplyPunishments(List<Punishment> punishments, SocketGuildUser user);
 
+        /// <summary>
+        ///     Removes punishment from user.
+        /// </summary>
+        /// <param name="punishment">Punishment to remove.</param>
+        /// <returns></returns>
         Task RemovePunishment(ActivePunishment punishment);
 
+        /// <summary>
+        ///     Removes group of punishments from user.
+        /// </summary>
+        /// <param name="punishments">Punishments to remove.</param>
+        /// <returns></returns>
         Task RemovePunishmentBulk(List<ActivePunishment> punishments);
     }
 }

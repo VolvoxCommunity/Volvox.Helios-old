@@ -35,6 +35,7 @@ using Volvox.Helios.Core.Modules.ModerationModule.Factories.FilterFactory;
 using Volvox.Helios.Core.Modules.ModerationModule.Factories.PunishmentFactory;
 using Volvox.Helios.Core.Modules.ModerationModule.Filters;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
+using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.ActivePunishmentService;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishments;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
@@ -156,6 +157,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IPunishment, KickPunishment>();
             services.AddSingleton<IPunishment, AddRolePunishment>();
             services.AddSingleton<IList<IPunishment>>(s => s.GetServices<IPunishment>().ToList());
+            services.AddSingleton<IActivePunishmentService, ActivePunishmentService>();
             services.AddSingleton<IPunishmentService, PunishmentService>();
 
             // Commands

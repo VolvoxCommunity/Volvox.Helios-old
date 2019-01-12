@@ -40,6 +40,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
             _moderationModuleUtils = moderationModuleUtils;
         }
 
+        /// <inheritdoc />
         public async Task HandleViolation(SocketMessage message, FilterType warningType)
         {
             var user = (SocketGuildUser)message.Author;

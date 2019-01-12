@@ -16,6 +16,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService
             _scopeFactory = scopeFactory;
         }
 
+        /// <inheritdoc />
         public async Task<UserWarnings> GetUser(ulong userId, ulong guildId, params Expression<Func<UserWarnings, object>>[] includes)
         {
             UserWarnings userData;

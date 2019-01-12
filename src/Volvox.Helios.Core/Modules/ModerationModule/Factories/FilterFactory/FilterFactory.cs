@@ -18,6 +18,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Factories.FilterFactory
             }
         }
 
+        /// <inheritdoc />
         public IFilterService GetFilter(FilterType type)
         {
             return _filters[type];

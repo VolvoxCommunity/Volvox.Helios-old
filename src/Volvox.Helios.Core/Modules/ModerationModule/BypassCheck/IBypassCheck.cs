@@ -6,6 +6,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.BypassCheck
 {
     public interface IBypassCheck
     {
+        /// <summary>
+        ///     Determines whether a user can bypass the module/filter.
+        /// </summary>
+        /// <param name="message">Message object</param>
+        /// <param name="type">Type of filter to check.</param>
+        /// <returns></returns>
         Task<bool> HasBypassAuthority(SocketMessage message, FilterType type);
     }
 }
