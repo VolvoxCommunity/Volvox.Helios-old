@@ -16,27 +16,28 @@
 <form method="POST" class="container mt-4">
     <h2>Add a new Punishment</h2>
     <hr />
-    <div class="col-12 mt-4 border border-gray2 rounded">
-        <label>Punishment Type</label>
-        @Html.DropDownListFor(m => m.PunishType, Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.PunishType>())
-    </div>
-    <div class="col-12 mt-4 border border-gray2 rounded">
-        Duration (mins, 0 = Forever)
-        <input type="number" asp-for="PunishDuration" value="0" min="0" step="1" max="2147483647" class="form-control" />
-    </div>
-    <div class="col-12 mt-4 border border-gray2 rounded">
-        Warning Type
-        @Html.DropDownListFor(m => m.WarningType, Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.FilterType>())
-    </div>
-    <div class="col-12 mt-4 border border-gray2 rounded">
-        Warning Threshold
-        <input type="number" asp-for="WarningThreshold" value="1" min="1" step="1" max="2147483647" class="form-control" />
-    </div>
-    <div class="col-12 mt-4 border border-gray2 rounded">
-        Role
-        <select asp-for="RoleId" asp-items="Model.Role"></select>
-    </div>
     @Html.HiddenFor(m => m.PunishmentId)
+    <div class="col-12 mt-4 pt-3 pb-3 rounded module-input-wrapper">
+        <label>Punishment Type</label>
+        <div id="punishType" class="mb-3"></div>
+        <input type="hidden" asp-for="PunishType" value="@(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.PunishType>().First().Value)" />
+
+        <label>Duration (mins, 0 = Forever)</label>
+        <div id="punishDuration" class="mb-3"></div>
+        <input type="hidden" asp-for="PunishDuration" value="0" />
+
+        <label>Warning Type</label>
+        <div id="warningType" class="mb-3"></div>
+        <input type="hidden" asp-for="WarningType" value="@(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.FilterType>().First().Value)" />
+
+        <label>Warning Threshold</label>
+        <div id="warningThreshold"></div>
+        <input type="hidden" asp-for="WarningThreshold" value="1" />
+
+        <label>Role</label>
+        <div id="role" class="mb-2"></div>
+        <input type="hidden" asp-for="RoleId" value="@(Model.Role.First().Value)" />
+    </div>
     <div class="row mt-4">
         <div class="col-12 d-flex flex-wrap">
             <button type="submit" class="ml-auto btn btn-volvox-outline save-btn">Save</button>
@@ -47,5 +48,56 @@
 @section Scripts {
     <script>
         $('main').removeClass('container').addClass('p-0 mt-0');
+
+        let punishTypes = JSON.parse('@(Html.Raw(Json.Serialize(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.PunishType>())))');
+        $('#punishType').dxSelectBox({
+            dataSource: punishTypes,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: punishTypes[0].value,
+            searchEnabled: true,
+            onValueChanged: (e) => {
+                $('input[name="PunishType"]').val(e.value);
+            }
+        });
+
+        $('#punishDuration').dxNumberBox({
+            value: 0,
+            max: 2147483647,
+            onValueChanged: (e) => {
+                $('input[name="PunishDuration"]').val(e.value);
+            }
+        });
+
+        let warningTypes = JSON.parse('@(Html.Raw(Json.Serialize(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.FilterType>())))');
+        $('#warningType').dxSelectBox({
+            dataSource: warningTypes,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: warningTypes[0].value,
+            onValueChanged: (e) => {
+                $('input[name="WarningType"]').val(e.value);
+            }
+        });
+
+        $('#warningThreshold').dxNumberBox({
+            value: 1,
+            min: 1,
+            max: 2147483647,
+            onValueChanged: (e) => {
+                $('input[name="WarningThreshold"]').val(e.value);
+            }
+        });
+
+        let roles = JSON.parse('@(Html.Raw(Json.Serialize(Model.Role)))');
+        $('#role').dxSelectBox({
+            dataSource: roles,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: roles[0].value,
+            onValueChanged: (e) => {
+                $('input[name="RoleId"]').val(e.value);
+            }
+        });
     </script>
 }

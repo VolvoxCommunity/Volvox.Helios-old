@@ -19,6 +19,10 @@
   background: var(--color-gray);
 }
 
+.module-input-wrapper{
+  border: 2px solid var(--color-gray);
+}
+
 footer{
   background: #eee;
 }

@@ -17,7 +17,7 @@ body {
 }
 
 hr{
-  border-color: var(--color-gray2);
+  border-color: #535353;
 }
 
 .card {
@@ -92,6 +92,10 @@ hr{
 
 .breadcrumb-wrapper {
   background: rgba(0,0,0,.5);
+}
+
+.module-input-wrapper{
+  border: 2px solid #535353;
 }
 
 footer {
