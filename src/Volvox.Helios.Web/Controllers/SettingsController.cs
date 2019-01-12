@@ -94,13 +94,13 @@ namespace Volvox.Helios.Web.Controllers
 
             // Get general module settings for guild, from database.
             var settings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId, x => x.ChannelSettings);
-
+            
             if (settings == null) return View(viewModel);
 
             viewModel.Enabled = settings.Enabled;
             viewModel.StreamerRoleEnabled = settings.StreamerRoleEnabled;
             viewModel.RoleId = settings.RoleId;
-            viewModel.WhiteListedRoleIds = settings.WhiteListedRoleIds.Select(r => r.Id).ToList();
+            viewModel.WhiteListedRoleIds = settings.WhiteListedRoleIds?.Select(r => r.Id).ToList();
 
             if (settings.ChannelSettings == null)
                 settings.ChannelSettings = await channelSettingsService.Get(c => c.GuildId == guildId);

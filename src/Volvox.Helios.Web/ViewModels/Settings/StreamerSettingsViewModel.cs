@@ -32,6 +32,7 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         [DisplayName("Role")]
         public ulong RoleId { get; set; }
 
-        [DisplayName("Whitelisted Roles")] public List<ulong> WhiteListedRoleIds { get; set; }
+        [DisplayName("Whitelisted Roles")]
+        public List<ulong> WhiteListedRoleIds { get; set; }
     }
 }

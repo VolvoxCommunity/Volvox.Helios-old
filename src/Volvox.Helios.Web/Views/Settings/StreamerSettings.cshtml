@@ -154,6 +154,7 @@
         </form>
     </div>
 </div>
+@Model.WhiteListedRoleIds
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
@@ -220,8 +221,9 @@
         var selectRoleVal = '@Model.RoleId';
         if (selectRoleVal == '0')
             selectRoleVal = '@Model.Roles.FirstOrDefault().Value';
+        var roles = JSON.parse('@(Html.Raw(Json.Serialize(Model.Roles)))');
         $('#selectRole').dxSelectBox({
-            dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Roles)))'),
+            dataSource: roles,
             searchEnabled: true,
             valueExpr: "value",
             displayExpr: "text",
@@ -240,9 +242,10 @@
         });
 
         $('#blacklistTagBox').dxTagBox({
-            dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Roles)))'),
+            dataSource: roles,
             valueExpr: "value",
             displayExpr: "text",
+            value: JSON.parse('@(Html.Raw(Json.Serialize(Model.WhiteListedRoleIds)))'),
             onInitialized: (e) => {
                 $('.blacklist-items').append($('.dx-dropdowneditor-input-wrapper').find('select option'));
             },
