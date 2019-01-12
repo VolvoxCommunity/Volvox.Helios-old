@@ -1,4 +1,17 @@
 ﻿@model Volvox.Helios.Web.Models.Moderation.PunishmentModel
+@{
+    ViewData["Title"] = "New Punishment";
+}
+
+<div class="breadcrumb-wrapper col-12">
+    <nav aria-label="breadcrumb" class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="Index" class="text-volvox">Moderation</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="punishments" class="text-volvox">Punishments</a></li>
+            <li class="breadcrumb-item active" aria-current="page">New Punishment</li>
+        </ol>
+    </nav>
+</div>
 
 <form method="POST">
     <section class="container">
@@ -6,7 +19,7 @@
             <table asp-for="Punishments">
 
                 <colgroup>
-                    <col span="6" style="border:1px solid black"/>
+                    <col span="6" style="border:1px solid black" />
                 </colgroup>
 
                 <thead>
@@ -21,9 +34,9 @@
 
                 <tbody id="PunishmentTableBody">
                     @{
-                        <partial name="_PunishmentRow" model="Model"/>
+                        <partial name="_PunishmentRow" model="Model" />
                     }
-                </tbody>   
+                </tbody>
             </table>
         </div>
     </section>
@@ -31,3 +44,9 @@
         <input type="submit" value="Add" class="btn btn-success" />
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        $('main').removeClass('container').addClass('p-0 mt-0');
+    </script>
+}

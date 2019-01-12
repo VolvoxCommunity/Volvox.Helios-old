@@ -1,65 +1,79 @@
 ﻿@model Volvox.Helios.Web.ViewModels.Moderation.GlobalSettingsViewModel
+@{
+    ViewData["Title"] = "Global Module Settings";
+}
 
-<h2>Global Module Settings</h2>
-<hr />
+<div class="col-12 breadcrumb-wrapper">
+    <nav aria-label="breadcrumb" class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="Index" class="text-volvox">Moderation</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Global Settings</li>
+        </ol>
+    </nav>
+</div>
 
-<div class="row">
-    <div class="col-md-12">
-        <form method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
+<div class="container mt-4">
+    <h2>Global Module Settings</h2>
+    <hr />
 
-            <div style="display:flex;" class="form-group">
-                <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
-                <label class="switch" />
-                <input asp-for="Enabled" type="checkbox" />
-                <div class="slider round"></div>
-                <span asp-validation-for="Enabled" class="text-danger"></span>
-            </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
 
-            <div class="settings-group">
-                <div class="form-group">
-                    <label asp-for="WhitelistedChannels"></label>
-                    <select data-placeholder="No channels selected..." asp-for="SelectedChannels" asp-items="Model.WhitelistedChannels" class="chosen-select form-control" multiple></select>
-                    <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
+                <div style="display:flex;" class="form-group">
+                    <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
+                    <label class="switch" />
+                    <input asp-for="Enabled" type="checkbox" />
+                    <div class="slider round"></div>
+                    <span asp-validation-for="Enabled" class="text-danger"></span>
                 </div>
-            </div>
 
-            <div class="settings-group">
-                <div class="form-group">
-                    <label asp-for="WhitelistedRoles"></label>
-                    <select data-placeholder="No roles selected..." asp-for="SelectedRoles" asp-items="Model.WhitelistedRoles" class="chosen-select form-control" multiple></select>
-                    <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="form-group" style="margin:10px auto; text-align: center;">
-                <button type="submit" value="Save" class="btn btn-success" style="width:100%;">
-                    Save <i class="fas fa-save" style="margin-left:0.5em;"></i>
-                </button>
-            </div>
-        </form>
-    </div>
-    <div class="card" style="width:100%; text-align:center;">
-        <div class="card-body">
-            <h3 class="card-title" style="margin-bottom:1em;">
-                Filters
-            </h3>
-            <div class="row" style="margin:0 auto;">
-                <div class="col-sm-6">
-                    <div class="card" style="width: 18rem; margin:0 auto;">
-                        <div class="card-body">
-                            <h5 class="card-title">Link Filter</h5>
-                            <p class="card-text">Configure your link filter.</p>
-                            <a class="btn btn-success" asp-controller="Moderation" asp-action="linkfilter"> Go to filter <i class="fas fa-arrow-right" style="margin-left:1em;"></i></a>
-                        </div>
+                <div class="settings-group">
+                    <div class="form-group">
+                        <label asp-for="WhitelistedChannels"></label>
+                        <select data-placeholder="No channels selected..." asp-for="SelectedChannels" asp-items="Model.WhitelistedChannels" class="chosen-select form-control" multiple></select>
+                        <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="card" style="width: 18rem; margin:0 auto;">
-                        <div class="card-body">
-                            <h5 class="card-title">Profanity Filter</h5>
-                            <p class="card-text">Configure your profanity filter.</p>
-                            <a class="btn btn-success" asp-controller="Moderation" asp-action="profanityfilter"> Go to filter  <i class="fas fa-arrow-right" style="margin-left:1em;"></i></a>
+
+                <div class="settings-group">
+                    <div class="form-group">
+                        <label asp-for="WhitelistedRoles"></label>
+                        <select data-placeholder="No roles selected..." asp-for="SelectedRoles" asp-items="Model.WhitelistedRoles" class="chosen-select form-control" multiple></select>
+                        <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin:10px auto; text-align: center;">
+                    <button type="submit" value="Save" class="btn btn-success" style="width:100%;">
+                        Save <i class="fas fa-save" style="margin-left:0.5em;"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="card" style="width:100%; text-align:center;">
+            <div class="card-body">
+                <h3 class="card-title" style="margin-bottom:1em;">
+                    Filters
+                </h3>
+                <div class="row" style="margin:0 auto;">
+                    <div class="col-sm-6">
+                        <div class="card" style="width: 18rem; margin:0 auto;">
+                            <div class="card-body">
+                                <h5 class="card-title">Link Filter</h5>
+                                <p class="card-text">Configure your link filter.</p>
+                                <a class="btn btn-success" asp-controller="Moderation" asp-action="linkfilter"> Go to filter <i class="fas fa-arrow-right" style="margin-left:1em;"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card" style="width: 18rem; margin:0 auto;">
+                            <div class="card-body">
+                                <h5 class="card-title">Profanity Filter</h5>
+                                <p class="card-text">Configure your profanity filter.</p>
+                                <a class="btn btn-success" asp-controller="Moderation" asp-action="profanityfilter"> Go to filter  <i class="fas fa-arrow-right" style="margin-left:1em;"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -75,6 +89,7 @@
         $(document).ready(function () {
             $('.chosen-select').chosen();
         });
+        $('main').removeClass('container').addClass('p-0 mt-0');
     </script>
 }
 

@@ -3,75 +3,72 @@
     ViewData["Title"] = "Punishment Settings";
 }
 
-<div class="bg-mat-dark col-12" style="padding-top: 50px;padding-bottom: 50px;background: rgba(0,0,0,.5);font-size:25px;">
-    <a href="/" class="text-white">Moderation</a> <i class="fas fa-chevron-right" style="font-size: 22px;"></i>
-    <span class="color-gray2">Punishments</span>
+<div class="col-12 breadcrumb-wrapper">
+    <nav aria-label="breadcrumb" class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="Index" class="text-volvox">Moderation</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Punishments</li>
+        </ol>
+    </nav>
 </div>
 
-@if(Model.Punishments.Count > 0)
+@if (Model.Punishments.Count > 0)
 {
-
-} else
+<form class="container mt-4">
+    <div class="table-responsive mb-3">
+        <table class="table rounded punishment-table mb-0" asp-for="Punishments">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col" style="min-width: 154px;">Punishment Type</th>
+                    <th scope="col" style="min-width: 143px;">Duration (mins)</th>
+                    <th scope="col" style="min-width: 129px;">Warning Type</th>
+                    <th scope="col" style="min-width: 168px;">Warning Threshold</th>
+                    <th scope="col">Role</th>
+                    <th scope="col" class="text-right">Remove</th>
+                </tr>
+            </thead>
+            <tbody id="PunishmentTableBody">
+                @{
+                    var i = 0;
+                    foreach (var punishment in Model.Punishments)
+                    {
+                        punishment.Index = i + 1;
+                        Html.ViewData.TemplateInfo.HtmlFieldPrefix = $"Punishments[{i}]";
+                        <partial name="_PunishmentRowReadonly" , model="punishment" />
+                        i++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="form-group">
+        <a class="btn btn-primary" asp-controller="Moderation" asp-action="newpunishment">Add New</a>
+        <button id="RemoveSelected" class="ml-2 btn btn-danger" data-toggle="tooltip" data-original-title="Add more controls">
+            <i class="glyphicon glyphicon-plus-sign"></i> Remove Selected
+        </button>
+    </div>
+</form>
+}
+else
 {
     <div>
         No Punishments available.
     </div>
-}
-<form method="POST">
-    <section class="container">
-        <div class="vertical-margin-large">
-            <table asp-for="Punishments" style="width: 100%">
-
-                <thead>
-                    <tr>
-                        <td>Punishment Type</td>
-                        <td>Duration (mins)</td>
-                        <td>Warning Type</td>
-                        <td>Warning Threshold</td>
-                        <td>Role</td>
-                        <td>Remove</td>
-                    </tr>
-                </thead>
-
-                <tbody id="PunishmentTableBody">
-                    @{
-                        var i = 0;
-                        foreach (var punishment in Model.Punishments)
-                        {
-                            Html.ViewData.TemplateInfo.HtmlFieldPrefix = $"Punishments[{i}]";
-                            <partial name="_PunishmentRowReadonly" , model="punishment" />
-                            i++;
-                        }
-                    }
-                </tbody>
-                <tfoot>
-                    <tr></tr>
-                </tfoot>
-            </table>
-        </div>
-    </section>
-    <div class="form-group">
-        <button id="RemoveSelected" class="btn btn-danger" data-toggle="tooltip" data-original-title="Add more controls"><i class="glyphicon glyphicon-plus-sign"></i>Remove Selected</button>
-    </div>
-
     <div class="form-group">
         <a class="btn btn-primary" asp-controller="Moderation" asp-action="newpunishment">Add New</a>
     </div>
-</form>
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         $('main').removeClass('container').addClass('p-0 mt-0');
+        function toggleInput(e) {
+            let parent = $(e.target).closest('.material-checkbox');
+            let remove = parent.find('input:hidden').attr('value');
+            parent.find('input:hidden').attr('value', remove === 'true' ? false : true);
+            parent.find('i').toggleClass('fas far fa-square fa-check-square animate');
+        }
     </script>
 }
-<style>
-    .table-remove {
-        color: #700;
-        cursor: pointer;
-    }
-
-    table-remove:hover {
-        color: #f00;
-    }
-</style>

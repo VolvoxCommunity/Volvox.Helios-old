@@ -1,104 +1,112 @@
 ﻿@model Volvox.Helios.Web.ViewModels.Moderation.ProfanityFilterViewModel
 @{
+    ViewData["Title"] = "Profanity Filter";
 }
 
-<h2>Profanity Filter Settings</h2>
-<hr />
+<div class="col-12 breadcrumb-wrapper">
+    <nav aria-label="breadcrumb" class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="Index" class="text-volvox">Moderation</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="general" class="text-volvox">Global Settings</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Profanity Filter</li>
+        </ol>
+    </nav>
+</div>
 
-<div class="row">
-    <div class="col-md-12">
-        <form method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
+<div class="container mt-4">
+    <h2>Profanity Filter Settings</h2>
+    <hr />
 
-            <div style="display:flex;" class="form-group">
-                <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
-                <label class="switch" />
-                <input asp-for="Enabled" type="checkbox" />
-                <div class="slider round"></div>
-                <span asp-validation-for="Enabled" class="text-danger"></span>
-            </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
 
-            <div class="settings-group">
-                <div class="form-group">
-                    <label asp-for="WarningExpirePeriod"></label>
-                    <input type="number" asp-for="WarningExpirePeriod" min="0" step="1" max="2147483647" class="form-control" />
-                </div>
-            </div>
-
-            <div class="settings-group">
-                <div class="form-group">
-                    <label asp-for="WhitelistedChannels"></label>
-                    <select data-placeholder="No channels selected..." asp-for="SelectedChannels" asp-items="Model.WhitelistedChannels" class="chosen-select form-control" multiple></select>
-                    <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
-                </div>
-            </div>
-
-
-            <div class="settings-group">
-                <div class="form-group">
-                    <label asp-for="WhitelistedRoles"></label>
-                    <select data-placeholder="No roles selected..." asp-for="SelectedRoles" asp-items="Model.WhitelistedRoles" class="chosen-select form-control" multiple></select>
-                    <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="settings-group">
-                <div class="form-group">
-                    <label asp-for="BannedWords"></label>
-                    <select data-placeholder="No words selected..." asp-for="SelectedWords" asp-items="Model.BannedWords" class="chosen-select form-control" multiple></select>
-                    <span asp-validation-for="SelectedWords" class="text-danger"></span>
+                <div style="display:flex;" class="form-group">
+                    <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
+                    <label class="switch" />
+                    <input asp-for="Enabled" type="checkbox" />
+                    <div class="slider round"></div>
+                    <span asp-validation-for="Enabled" class="text-danger"></span>
                 </div>
 
-                <div class="form-group">
-                    <label asp-for="SelectedWords" class="form-check-label"></label>
-                    <div class="row">
-                        <div class="col-10">
-                            <input id="AddWordBox" class="form-control" />
-                        </div>
-
-                        <div class="col-2" style="text-align: right;">
-                            <button id="AddWordBtn" class="btn btn-success" style="width:100%;"> <i class="fas fa-plus"></i> </button>
-                        </div>
+                <div class="settings-group">
+                    <div class="form-group">
+                        <label asp-for="WarningExpirePeriod"></label>
+                        <input type="number" asp-for="WarningExpirePeriod" min="0" step="1" max="2147483647" class="form-control" />
                     </div>
                 </div>
 
-                <div style="display:flex;" class="form-group">
-                    <label asp-for="UseDefaultBannedWords" class="small-margin-right"></label>
-                    <label class="switch" />
-                    <input asp-for="UseDefaultBannedWords" type="checkbox" />
-                    <div class="slider round"></div>
-                    <span asp-validation-for="UseDefaultBannedWords" class="text-danger"></span>
+                <div class="settings-group">
+                    <div class="form-group">
+                        <label asp-for="WhitelistedChannels"></label>
+                        <select data-placeholder="No channels selected..." asp-for="SelectedChannels" asp-items="Model.WhitelistedChannels" class="chosen-select form-control" multiple></select>
+                        <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
+                    </div>
                 </div>
 
-            </div>
 
-            <div class="form-group" style="margin:10px auto; text-align: center;">
-                <button type="submit" value="Save" class="btn btn-success" style="width:100%;">
-                    Save <i class="fas fa-save" style="margin-left:0.5em;"></i>
-                </button>
-            </div>
-        </form>
+                <div class="settings-group">
+                    <div class="form-group">
+                        <label asp-for="WhitelistedRoles"></label>
+                        <select data-placeholder="No roles selected..." asp-for="SelectedRoles" asp-items="Model.WhitelistedRoles" class="chosen-select form-control" multiple></select>
+                        <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <div class="form-group">
+                        <label asp-for="BannedWords"></label>
+                        <select data-placeholder="No words selected..." asp-for="SelectedWords" asp-items="Model.BannedWords" class="chosen-select form-control" multiple></select>
+                        <span asp-validation-for="SelectedWords" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="SelectedWords" class="form-check-label"></label>
+                        <div class="row">
+                            <div class="col-10">
+                                <input id="AddWordBox" class="form-control" />
+                            </div>
+
+                            <div class="col-2" style="text-align: right;">
+                                <button id="AddWordBtn" class="btn btn-success" style="width:100%;"> <i class="fas fa-plus"></i> </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;" class="form-group">
+                        <label asp-for="UseDefaultBannedWords" class="small-margin-right"></label>
+                        <label class="switch" />
+                        <input asp-for="UseDefaultBannedWords" type="checkbox" />
+                        <div class="slider round"></div>
+                        <span asp-validation-for="UseDefaultBannedWords" class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <div class="form-group" style="margin:10px auto; text-align: center;">
+                    <button type="submit" value="Save" class="btn btn-success" style="width:100%;">
+                        Save <i class="fas fa-save" style="margin-left:0.5em;"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
+        $('main').removeClass('container').addClass('p-0 mt-0');
         $(document).ready(function () {
             $('.chosen-select').chosen();
 
             $("#AddWordBtn").on("click", function (e) {
-
                 e.preventDefault();
-
                 const word = $("#AddWordBox").val();
-
                 if (word.length == 0) return;
-
                 $("#SelectedWords").append('<option selected>' + word + '</option>');
-
                 $('.chosen-select').trigger("chosen:updated");
-
                 $("#AddWordBox").val("");
             });
         });

@@ -262,7 +262,7 @@ input:checked + .slider {
   width: 32px;
   margin-right: 8px;
   border-radius: 3px;
-  border: 2px rgba(0,0,0,.15) solid;
+  border: 2px solid rgba(0,0,0,.15);
 }
 
 .dropdown-item-container {
@@ -340,7 +340,7 @@ input:checked + .slider {
 .add-label {
   padding: 9px 15px;
   background: var(--color-volvox);
-  border-radius: 0px 50px 50px 50px
+  border-radius: 0 50px 50px 50px
 }
 
 
@@ -464,7 +464,7 @@ input:checked + .slider {
   top: 0;
   color: white;
   justify-content: center;
-  padding: 0px 14px 2px;
+  padding: 0 14px 2px;
   border-radius: 0 0 3px 3px;
 }
 
@@ -498,6 +498,54 @@ input:checked + .slider {
 .dx-list-item.dx-state-active {
   background: var(--color-volvox) !important;
 }
+
+
+
+
+
+
+
+
+
+/***********Punishment table************/
+@keyframes checkboxScale{
+  0%, 100%{
+      transform: scale(1)
+  } 50% {
+      transform: scale(1.4)
+  }
+}
+.punishment-table{
+  background: var(--color-deep-dark);
+}
+.punishment-table thead th{
+  border-top: none;
+  border-bottom: 2px solid var(--color-skyblue);
+}
+.punishment-table .animate{
+  animation: checkboxScale .4s ease-in
+}
+
+.breadcrumb-wrapper {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  background: rgba(0,0,0,.5);
+  font-size: 25px;
+}
+.breadcrumb-wrapper ol{
+  background: none;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 /*******Cookie consent*****/
 #cookieConsent {
