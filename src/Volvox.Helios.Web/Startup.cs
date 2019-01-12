@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -29,13 +31,13 @@ using Volvox.Helios.Core.Modules.Command.Framework;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.ModerationModule;
 using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
+using Volvox.Helios.Core.Modules.ModerationModule.Factories.FilterFactory;
+using Volvox.Helios.Core.Modules.ModerationModule.Factories.PunishmentFactory;
 using Volvox.Helios.Core.Modules.ModerationModule.Filters;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishments;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
-using Volvox.Helios.Core.Modules.ModerationModule.Utils.FilterFactory;
-using Volvox.Helios.Core.Modules.ModerationModule.Utils.PunishmentFactory;
 using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
 using Volvox.Helios.Core.Modules.ReminderModule;
@@ -54,9 +56,6 @@ using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.HostedServices.Bot;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
-using Discord.WebSocket;
-using Microsoft.AspNetCore.HttpOverrides;
-using Volvox.Helios.Core.Modules.Streamer;
 
 namespace Volvox.Helios.Web
 {

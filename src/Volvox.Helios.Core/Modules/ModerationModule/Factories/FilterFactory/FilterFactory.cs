@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Volvox.Helios.Core.Modules.ModerationModule.Filters;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 
-namespace Volvox.Helios.Core.Modules.ModerationModule.Utils.FilterFactory
+namespace Volvox.Helios.Core.Modules.ModerationModule.Factories.FilterFactory
 {
     public class FilterFactory : IFilterFactory
     {
@@ -19,6 +17,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Utils.FilterFactory
                 _filters[filterType] = filter;
             }
         }
+
         public IFilterService GetFilter(FilterType type)
         {
             return _filters[type];

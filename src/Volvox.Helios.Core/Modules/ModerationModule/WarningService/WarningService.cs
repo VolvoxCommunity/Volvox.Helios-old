@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Volvox.Helios.Core.Modules.ModerationModule.Factories.FilterFactory;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
-using Volvox.Helios.Core.Modules.ModerationModule.Utils.FilterFactory;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Service.EntityService;
 
