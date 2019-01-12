@@ -57,6 +57,8 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.HttpOverrides;
 using Volvox.Helios.Core.Modules.Streamer;
+using System.Data.SqlClient;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Volvox.Helios.Web
 {

@@ -1,5 +1,22 @@
 ﻿@model Volvox.Helios.Web.ViewModels.Moderation.PunishmentsViewModel
+@{
+    ViewData["Title"] = "Punishment Settings";
+}
 
+<div class="bg-mat-dark col-12" style="padding-top: 50px;padding-bottom: 50px;background: rgba(0,0,0,.5);font-size:25px;">
+    <a href="/" class="text-white">Moderation</a> <i class="fas fa-chevron-right" style="font-size: 22px;"></i>
+    <span class="color-gray2">Punishments</span>
+</div>
+
+@if(Model.Punishments.Count > 0)
+{
+
+} else
+{
+    <div>
+        No Punishments available.
+    </div>
+}
 <form method="POST">
     <section class="container">
         <div class="vertical-margin-large">
@@ -44,8 +61,10 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $('main').removeClass('container').addClass('p-0 mt-0');
+    </script>
 }
-
 <style>
     .table-remove {
         color: #700;

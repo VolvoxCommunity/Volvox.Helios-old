@@ -1,4 +1,10 @@
-﻿<a class="btn btn-success" asp-controller="Moderation" asp-action="punishments"> Manage Punishment Tiers <i class="fas fa-arrow-right" style="margin-left:1em;"></i></a>
+﻿@{
+    ViewData["Title"] = "Moderation Settings";
+}
+<h2>@ViewData["Title"]</h2>
+<hr>
+
+<a class="btn btn-success" asp-controller="Moderation" asp-action="punishments"> Manage Punishment Tiers <i class="fas fa-arrow-right" style="margin-left:1em;"></i></a>
 <br />
 <a class="btn btn-success" asp-controller="Moderation" asp-action="general"> Manage Filters <i class="fas fa-arrow-right" style="margin-left:1em;"></i></a>
 <br />
