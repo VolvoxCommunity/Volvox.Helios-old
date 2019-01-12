@@ -38,17 +38,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
 
             if (!await HasBypassAuthority(message) && settings.ProfanityFilter != null)
             {
-                if (ContainsProfanity(settings.ProfanityFilter, message))
+                if (ContainsProfanity(settings.ProfanityFilter, message.Content))
                     filterViolatedFlag = true;
             }
 
             return filterViolatedFlag;
         }
 
-        private bool ContainsProfanity(ProfanityFilter profanityFilter, SocketMessage message)
+        private bool ContainsProfanity(ProfanityFilter profanityFilter, string message)
         {
             // Normalize message to lowercase and split into array of words.
-            var messageWords = message.Content.ToLower().Split(" ");
+            var messageWords = message.ToLower().Split(" ");
 
             var bannedWords = profanityFilter.BannedWords.Select(w => w.Word).ToList();
 

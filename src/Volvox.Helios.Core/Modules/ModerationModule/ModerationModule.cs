@@ -13,18 +13,13 @@ using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
-using Volvox.Helios.Domain.ModuleSettings;
 using Volvox.Helios.Service.BackgroundJobs;
-using Volvox.Helios.Service.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule
 {
     public class ModerationModule : Module
     {
         #region Private vars
-
-        private readonly IModuleSettingsService<ModerationSettings> _settingsService;
-
         private readonly IServiceScopeFactory _scopeFactory;
 
         private readonly IJobService _jobService;
