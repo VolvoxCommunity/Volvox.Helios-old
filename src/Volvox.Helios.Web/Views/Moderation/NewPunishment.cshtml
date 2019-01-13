@@ -31,7 +31,7 @@
         <input type="hidden" asp-for="WarningType" value="@(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.FilterType>().First().Value)" />
 
         <label asp-for="WarningThreshold">Warning Threshold</label>
-        <div id="warningThreshold"></div>
+        <div id="warningThreshold" class="mb-3"></div>
         <input type="hidden" asp-for="WarningThreshold" value="1" />
 
         <label asp-for="RoleId">Role</label>

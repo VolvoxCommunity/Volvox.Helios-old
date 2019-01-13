@@ -46,14 +46,14 @@
                 <div class="col-12 form-group">
                     <label asp-for="WhitelistedChannels"></label>
                     <div id="whiteListedChannels"></div>
-                    <select class="d-none" asp-for="SelectedChannels" id="selectedChannelsHidden"></select>
+                    <select class="d-none" asp-for="SelectedChannels" id="selectedChannelsHidden" multiple></select>
                     <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
                 </div>
 
                 <div class="col-12 form-group">
                     <label asp-for="WhitelistedRoles"></label>
                     <div id="whiteListedRoles"></div>
-                    <select class="d-none" asp-for="WhitelistedRoles" id="selectedRolesHidden"></select>
+                    <select class="d-none" asp-for="SelectedRoles" id="selectedRolesHidden" multiple></select>
                     <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
                 </div>
             </div>
@@ -106,11 +106,14 @@
             dataSource: whiteListedChannels,
             valueExpr: "value",
             displayExpr: "text",
+            value: JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedChannels)))').filter((e) => { if (e.selected) return e; }).map((e) => { return e.value }),
             onInitialized: (e) => {
-                $('#selectedChannelsHidden').append($('#whiteListedChannels .dx-dropdowneditor-input-wrapper').find('select option'));
+                setTimeout(() => {
+                    $('#selectedChannelsHidden').append($('#whiteListedChannels .dx-dropdowneditor-input-wrapper').find('select option'));
+                }, 1000);
             },
             onValueChanged: (e) => {
-                $('#selectedChannelsHidden').empty().append($('whiteListedChannels .dx-dropdowneditor-input-wrapper').find('select option'));
+                $('#selectedChannelsHidden').empty().append($('#whiteListedChannels .dx-dropdowneditor-input-wrapper').find('select option'));
             }
         });
 
@@ -119,11 +122,14 @@
             dataSource: whiteListedRoles,
             valueExpr: "value",
             displayExpr: "text",
+            value: JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedRoles)))').filter((e) => { return e.selected; }).map((e) => { return e.value }),
             onInitialized: (e) => {
-                $('#selectedRolesHidden').append($('#whiteListedRoles .dx-dropdowneditor-input-wrapper').find('select option'));
+                setTimeout(() => {
+                    $('#selectedRolesHidden').append($('#whiteListedRoles .dx-dropdowneditor-input-wrapper').find('select option'));
+                }, 1000)
             },
             onValueChanged: (e) => {
-                $('#selectedRolesHidden').empty().append($('whiteListedRoles .dx-dropdowneditor-input-wrapper').find('select option'));
+                $('#selectedRolesHidden').empty().append($('#whiteListedRoles .dx-dropdowneditor-input-wrapper').find('select option'));
             }
         });
     </script>
