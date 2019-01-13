@@ -17,72 +17,77 @@
     <h2>Link Filter Settings</h2>
     <hr />
 
-    <div class="row">
-        <div class="col-md-12">
-            <form method="post">
-                <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="col-12">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
 
-                <div style="display:flex;" class="form-group">
-                    <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
-                    <label class="switch" />
-                    <input asp-for="Enabled" type="checkbox" />
-                    <div class="slider round"></div>
-                    <span asp-validation-for="Enabled" class="text-danger"></span>
+            <div class="row rounded module-input-wrapper">
+                <div class="col-md-9 pt-3 pb-3">
+                    <h4>Enabled</h4>
+                    <p class="mb-0 text-volvox">
+                        Enables or disables the moderation module.
+                    </p>
                 </div>
-
-                <div class="settings-group">
-                    <div class="form-group">
-                        <label asp-for="WarningExpirePeriod"></label>
-                        <input type="number" asp-for="WarningExpirePeriod" min="0" step="1" max="2147483647" class="form-control" />
+                <div class="col-md-3 valign">
+                    <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
+                        <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
+                            On
+                            <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
+                        </label>
+                        <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
+                            Off
+                            <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
+                        </label>
                     </div>
                 </div>
+            </div>
+            <span asp-validation-for="Enabled" class="text-danger"></span>
 
-
-                <div class="settings-group">
-                    <div class="form-group">
-                        <label asp-for="WhitelistedChannels"></label>
-                        <select data-placeholder="No channels selected..." asp-for="SelectedChannels" asp-items="Model.WhitelistedChannels" class="chosen-select form-control" multiple></select>
-                        <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
-                    </div>
+            <div class="row rounded module-input-wrapper mt-3 pt-2">
+                <div class="col-12 form-group">
+                    <label asp-for="WarningExpirePeriod"></label>
+                    <div id="warningExpirePeriod"></div>
+                    <input type="hidden" asp-for="WarningExpirePeriod" />
                 </div>
 
-
-                <div class="settings-group">
-                    <div class="form-group">
-                        <label asp-for="WhitelistedRoles"></label>
-                        <select data-placeholder="No roles selected..." asp-for="SelectedRoles" asp-items="Model.WhitelistedRoles" class="chosen-select form-control" multiple></select>
-                        <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
-                    </div>
+                <div class="col-12 form-group">
+                    <label asp-for="WhitelistedChannels"></label>
+                    <div id="whiteListedChannels"></div>
+                    <select class="d-none" id="whiteListedChannelsHidden" asp-for="SelectedChannels" multiple></select>
+                    <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
                 </div>
 
-                <div class="settings-group">
-                    <div class="form-group">
-                        <label asp-for="WhitelistedLinks"></label>
-                        <select data-placeholder="No links selected..." asp-for="SelectedLinks" asp-items="Model.WhitelistedLinks" class="chosen-select form-control" multiple></select>
-                        <span asp-validation-for="WhitelistedLinks" class="text-danger"></span>
-                    </div>
+                <div class="col-12 form-group">
+                    <label asp-for="WhitelistedRoles"></label>
+                    <div id="whiteListedRoles"></div>
+                    <select class="d-none" id="whiteListedRolesHidden" asp-for="SelectedRoles" multiple></select>
+                    <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
+                </div>
 
-                    <div class="form-group">
-                        <label asp-for="SelectedLinks" class="form-check-label"></label>
-                        <div class="row">
-                            <div class="col-10">
-                                <input id="AddLinkBox" class="form-control" />
-                            </div>
+                <div class="col-12 form-group">
+                    <label asp-for="WhitelistedLinks"></label>
+                    <div id="whiteListedLinks"></div>
+                    <select class="d-none" id="whiteListedLinksHidden" asp-for="SelectedLinks" multiple></select>
+                    <span asp-validation-for="WhitelistedLinks" class="text-danger"></span>
+                </div>
 
-                            <div class="col-2" style="text-align: right;">
-                                <button id="AddLinkBtn" class="btn btn-success" style="width:100%;"> <i class="fas fa-plus"></i> </button>
-                            </div>
+                <div class="col-12 form-group">
+                    <label asp-for="SelectedLinks" class="form-check-label"></label>
+                    <div class="d-table mt-2">
+                        <div class="d-table-cell w-100">
+                            <input id="addLinkBox" type="text" class="form-control material-input" autocomplete="off" />
                         </div>
+                        <button id="addLinkBtn" class="d-block bg-volvox rounded-circle add-btn" type="button">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <div class="form-group" style="margin:10px auto; text-align: center;">
-                    <button type="submit" value="Save" class="btn btn-success" style="width:100%;">
-                        Save <i class="fas fa-save" style="margin-left:0.5em;"></i>
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div class="row form-group mt-4 mb-4">
+                <button type="submit" class="btn btn-volvox-outline save-btn ml-auto">Save</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -90,16 +95,82 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         $('main').removeClass('container').addClass('p-0 mt-0');
-        $(document).ready(function () {
-            $('.chosen-select').chosen();
-            $("#AddLinkBtn").on("click", function (e) {
-                e.preventDefault();
-                const link = $("#AddLinkBox").val();
-                if (link.length == 0) return;
-                $("#SelectedLinks").append('<option selected>' + link + '</option>');
-                $('.chosen-select').trigger("chosen:updated");
-                $("#AddLinkBox").val("");
+
+        $('.module-enabler input:not(".active")').click((e) => {
+            $(e.currentTarget).closest('.module-enabler').parent().find('.active').toggleClass('active disabled');
+            $(e.currentTarget).closest('.module-enabler').toggleClass('active disabled');
+        });
+
+        let warningExpirePeriod = JSON.parse('@(Html.Raw(Json.Serialize(Model.WarningExpirePeriod)))');
+        $('#warningExpirePeriod').dxNumberBox({
+            dataSource: warningExpirePeriod,
+            min: 0,
+            max: 2147483647,
+            value: warningExpirePeriod,
+            onInitialized: (e) => {
+                $('input[name="WarningExpirePeriod"]').val(warningExpirePeriod);
+            },
+            onValueChanged: (e) => {
+                $('input[name="WarningExpirePeriod"]').val(e.value);
+            }
+        });
+
+        let whiteListedChannels = JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedChannels)))');
+        $('#whiteListedChannels').dxTagBox({
+            dataSource: whiteListedChannels,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: whiteListedChannels.filter((e) => { return e.selected; }).map((e) => { return e.value }),
+            onInitialized: (e) => {
+                setTimeout((e) => {
+                    $('#whiteListedChannelsHidden').append($('#whiteListedChannels .dx-dropdowneditor-input-wrapper').find('select option'));
+                }, 1000);
+            },
+            onValueChanged: (e) => {
+                $('#whiteListedChannelsHidden').empty().append($('#whiteListedChannels .dx-dropdowneditor-input-wrapper').find('select option'));
+            }
+        });
+
+        let whiteListedRoles = JSON.parse('@Html.Raw(Json.Serialize(Model.WhitelistedRoles))');
+        $('#whiteListedRoles').dxTagBox({
+            dataSource: whiteListedRoles,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: whiteListedRoles.filter((e) => { return e.selected; }).map((e) => { return e.value; }),
+            onInitialized: (e) => {
+                setTimeout((e) => {
+                    $('#whiteListedRolesHidden').append($('#whiteListedRoles .dx-dropdowneditor-input-wrapper').find('select option'));
+                });
+            },
+            onValueChanged: (e) => {
+                $('#whiteListedRolesHidden').empty().append($('#whiteListedRoles .dx-dropdowneditor-input-wrapper').find('select option'));
+            }
+        });
+
+        let whiteListedLinks = JSON.parse('@Html.Raw(Json.Serialize(Model.WhitelistedLinks))');
+        let tagBox = $('#whiteListedLinks').dxTagBox({
+            dataSource: whiteListedLinks,
+            valueExpr: "text",
+            displayExpr: "text",
+            value: whiteListedLinks.filter((e) => { return e.selected; }).map((e) => { return e.text; }),
+            onInitialized: (e) => {
+                setTimeout((e) => {
+                    $('#whiteListedLinksHidden').append($('#whiteListedLinks .dx-dropdowneditor-input-wrapper').find('select option'));
+                });
+            },
+            onValueChanged: (e) => {
+                $('#whiteListedLinksHidden').empty().append($('#whiteListedLinks .dx-dropdowneditor-input-wrapper').find('select option'));
+            }
+        }).dxTagBox('instance');
+
+        $('#addLinkBtn').click((e) => {
+            whiteListedLinks.push({
+                disabled: false,
+                selected: true,
+                text: $('#addLinkBox').val()
             });
+            tagBox.option('value', whiteListedLinks.filter((e) => { return e.selected; }).map((e) => { return e.text; }));
+            $('#addLinkBox').val('');
         });
     </script>
 }

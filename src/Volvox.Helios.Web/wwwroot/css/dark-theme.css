@@ -56,9 +56,9 @@ hr{
   background: var(--color-deep-dark);
 }
 
-.dropdown-menu.show{
+.dropdown-menu.show {
   background: var(--color-deep-dark);
-  border-color: var(--color-gray2);
+  border-color: #535353;
 }
 
 .dropdown-menu.show a{

@@ -528,11 +528,28 @@ input:checked + .slider {
 }
 .breadcrumb-wrapper ol{
   background: none;
+  padding-left: 0;
 }
 
 .save-btn{
   border-radius: 20px;
   padding: 6px 24px;
+}
+.add-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  color: white;
+  padding: 0;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.add-btn i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1px;
 }
 
 /*******Cookie consent*****/
