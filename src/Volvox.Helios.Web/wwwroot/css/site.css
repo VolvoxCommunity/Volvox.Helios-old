@@ -552,6 +552,23 @@ input:checked + .slider {
   margin-left: 1px;
 }
 
+
+.banned-words ul{
+  columns: 3;
+  list-style: none;
+  padding-left: 15px;
+}
+.banned-words li::before {
+  content: '\2218';
+  color: var(--color-volvox);
+  display: inline-block;
+  width: 1em;
+  margin-left: -17px;
+  position: absolute;
+  font-size: 27px;
+  margin-top: -10px;
+}
+
 /*******Cookie consent*****/
 #cookieConsent {
   border-top: 3px solid var(--color-skyblue);
@@ -560,6 +577,10 @@ input:checked + .slider {
 @media screen and (max-width: 767px) {
   #themeToggler {
     display: none;
+  }
+
+  .banned-words ul {
+    columns: 2;
   }
 }
 
@@ -576,5 +597,9 @@ input:checked + .slider {
   #HW_frame_cont {
     width: calc(100% - 20px) !important;
     margin: 0 10px;
+  }
+
+  .banned-words ul{
+    columns: 1;
   }
 }

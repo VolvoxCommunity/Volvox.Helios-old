@@ -101,7 +101,7 @@
             $(e.currentTarget).closest('.module-enabler').toggleClass('active disabled');
         });
 
-        let warningExpirePeriod = JSON.parse('@(Html.Raw(Json.Serialize(Model.WarningExpirePeriod)))');
+        let warningExpirePeriod = @(Html.Raw(Model.WarningExpirePeriod));
         $('#warningExpirePeriod').dxNumberBox({
             dataSource: warningExpirePeriod,
             min: 0,
