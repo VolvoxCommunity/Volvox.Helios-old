@@ -29,18 +29,21 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IModuleSettingsService<RemembotSettings> _reminderSettingsService;
         private readonly IEntityService<StreamerChannelSettings> _streamAnnouncerChannelSettingsService;
         private readonly IModuleSettingsService<StreamerSettings> _streamAnnouncerSettingsService;
+        private readonly IModuleSettingsService<DadModuleSettings> _dadSettingsService;
 
         public SettingsController(IModuleSettingsService<StreamerSettings> streamAnnouncerSettingsService,
             IEntityService<StreamerChannelSettings> streamAnnouncerChannelSettingsService,
             IModuleSettingsService<ChatTrackerSettings> chatTrackerSettingsService,
             IModuleSettingsService<RemembotSettings> reminderSettingsService,
-            IEntityService<RecurringReminderMessage> recurringReminderService)
+            IEntityService<RecurringReminderMessage> recurringReminderService,
+            IModuleSettingsService<DadModuleSettings> dadSettingsService)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
             _chatTrackerSettingsService = chatTrackerSettingsService;
             _reminderSettingsService = reminderSettingsService;
             _recurringReminderService = recurringReminderService;
+            _dadSettingsService = dadSettingsService;
         }
 
         public async Task<IActionResult> Index(ulong guildId, [FromServices] IBot bot,
@@ -64,7 +67,7 @@ namespace Volvox.Helios.Web.Controllers
             var redirectUrl = Uri.EscapeDataString($"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}");
 
             return Redirect(
-                $"https://discordapp.com/api/oauth2/authorize?client_id={discordSettings.ClientId}&permissions=8&redirect_uri={redirectUrl}&scope=bot&guild_id={guildId}");
+                $"https://discordapp.com/api/oauth2/authorize?client_id={discordSettings.ClientId}&permissions=8&redirect_uri={redirectUrl}&scope=bot&guild_id={guildId}&response_type=code");
         }
 
         #region Streamer
@@ -292,6 +295,45 @@ namespace Volvox.Helios.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        #endregion
+
+        #region Dad
+        [HttpGet("Dad")]
+        public async Task<IActionResult> DadSettings(ulong guildId)
+        {
+            var settings = await _dadSettingsService.GetSettingsByGuild(guildId);
+
+            if(settings is null)
+            {
+                settings = new DadModuleSettings
+                {
+                    GuildId = guildId
+                };
+
+                await _dadSettingsService.SaveSettings(settings);
+            }
+
+            var vm = new DadModuleSettingViewModel
+            {
+                Enabled = settings.Enabled,
+                GuildId = guildId,
+                ResponseCooldownMinutes = settings.DadResponseCooldownMinutes
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost("Dad")]
+        public async Task<IActionResult> DadSettings(ulong guildId, DadModuleSettingViewModel vm)
+        {
+            var currentSettings = await _dadSettingsService.GetSettingsByGuild(guildId);
+            currentSettings.Enabled = vm.Enabled;
+            currentSettings.DadResponseCooldownMinutes = vm.ResponseCooldownMinutes;
+
+            await _dadSettingsService.SaveSettings(currentSettings);
+
+            return RedirectToAction("Index");
+        }
         #endregion
     }
 }

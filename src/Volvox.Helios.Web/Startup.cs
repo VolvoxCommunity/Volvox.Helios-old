@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentCache;
@@ -41,8 +39,10 @@ using Volvox.Helios.Service.BackgroundJobs;
 using Volvox.Helios.Service.Jobs;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Discord.WebSocket;
-using Microsoft.AspNetCore.HttpOverrides;
 using Volvox.Helios.Core.Modules.Streamer;
+using System.Data.SqlClient;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Volvox.Helios.Core.Modules.DadModule;
 
 namespace Volvox.Helios.Web
 {
@@ -125,6 +125,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IModule, StreamerModule>();
             services.AddSingleton<IModule, ChatTrackerModule>();
             services.AddSingleton<IModule, RemembotModule>();
+            services.AddSingleton<IModule, DadModule>();
 
             // Commands
             services.AddSingleton<IModule, CommandManager>();
@@ -176,6 +177,24 @@ namespace Volvox.Helios.Web
                     PrepareSchemaIfNecessary = true
                 });
             });
+
+            //TODO: Refactor to make cleaner
+            services.AddHealthChecks()
+                .AddCheck("sql", () =>
+                {
+                    using (var connection = new SqlConnection(Configuration.GetConnectionString("VolvoxHeliosDatabase")))
+                    {
+                        try
+                        {
+                            connection.Open();
+                        }
+                        catch (SqlException)
+                        {
+                            return HealthCheckResult.Unhealthy();
+                        }
+                        return HealthCheckResult.Healthy();
+                    }
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -216,6 +235,8 @@ namespace Volvox.Helios.Web
             {
                 Activator = app.ApplicationServices.GetRequiredService<JobActivator>()
             });
+
+            app.UseHealthChecks("/health");
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Service;
@@ -10,9 +11,10 @@ using Volvox.Helios.Service;
 namespace Volvox.Helios.Service.Migrations
 {
     [DbContext(typeof(VolvoxHeliosContext))]
-    partial class VolvoxHeliosContextModelSnapshot : ModelSnapshot
+    [Migration("20190110041503_DadModuleCooldown")]
+    partial class DadModuleCooldown
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,22 +149,6 @@ namespace Volvox.Helios.Service.Migrations
                     b.ToTable("StreamerChannelSettings");
                 });
 
-            modelBuilder.Entity("Volvox.Helios.Domain.Module.WhiteListedRole", b =>
-                {
-                    b.Property<decimal>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
-                    b.Property<decimal?>("StreamerSettingsGuildId")
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StreamerSettingsGuildId");
-
-                    b.ToTable("WhiteListedRole");
-                });
-
             modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.ChatTrackerSettings", b =>
                 {
                     b.Property<decimal>("GuildId")
@@ -267,13 +253,6 @@ namespace Volvox.Helios.Service.Migrations
                         .WithMany("ChannelSettings")
                         .HasForeignKey("GuildId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Volvox.Helios.Domain.Module.WhiteListedRole", b =>
-                {
-                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.StreamerSettings")
-                        .WithMany("WhiteListedRoleIds")
-                        .HasForeignKey("StreamerSettingsGuildId");
                 });
 #pragma warning restore 612, 618
         }
