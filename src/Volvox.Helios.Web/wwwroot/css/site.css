@@ -53,7 +53,7 @@ body {
 }
 
 .border-volvox {
-  border-color: var(--color-volvox);
+  border-color: var(--color-volvox) !important;
 }
 
 .text-volvox {
@@ -82,6 +82,11 @@ a:hover {
 
 .border-skyblue {
   border-color: var(--color-skyblue);
+}
+
+.btn:focus, .btn:active{
+  outline: 0;
+  box-shadow: none;
 }
 
 .btn-volvox-outline {
@@ -262,7 +267,7 @@ input:checked + .slider {
   width: 32px;
   margin-right: 8px;
   border-radius: 3px;
-  border: 2px rgba(0,0,0,.15) solid;
+  border: 2px solid rgba(0,0,0,.15);
 }
 
 .dropdown-item-container {
@@ -340,7 +345,7 @@ input:checked + .slider {
 .add-label {
   padding: 9px 15px;
   background: var(--color-volvox);
-  border-radius: 0px 50px 50px 50px
+  border-radius: 0 50px 50px 50px
 }
 
 
@@ -464,7 +469,7 @@ input:checked + .slider {
   top: 0;
   color: white;
   justify-content: center;
-  padding: 0px 14px 2px;
+  padding: 0 14px 2px;
   border-radius: 0 0 3px 3px;
 }
 
@@ -499,6 +504,86 @@ input:checked + .slider {
   background: var(--color-volvox) !important;
 }
 
+/***********Punishment table************/
+@keyframes checkboxScale{
+  0%, 100%{
+      transform: scale(1)
+  } 50% {
+      transform: scale(1.4)
+  }
+}
+
+.material-table thead th{
+  border-top: none;
+  border-bottom: 2px solid var(--color-skyblue);
+}
+.material-table .animate {
+  animation: checkboxScale .4s ease-in
+}
+
+.breadcrumb-wrapper {
+  padding-top: 50px;
+  padding-bottom: 50px;  
+  font-size: 25px;
+}
+.breadcrumb-wrapper ol{
+  background: none;
+  padding-left: 0;
+}
+
+.save-btn{
+  border-radius: 20px;
+  padding: 6px 24px;
+}
+.add-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  color: white;
+  padding: 0;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.add-btn i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1px;
+}
+
+
+.banned-words ul{
+  columns: 3;
+  list-style: none;
+  padding-left: 15px;
+}
+.banned-words li::before {
+  content: '\2218';
+  color: var(--color-volvox);
+  display: inline-block;
+  width: 1em;
+  margin-left: -17px;
+  position: absolute;
+  font-size: 27px;
+  margin-top: -10px;
+}
+
+
+
+.user-list .btn-prev, .user-list .btn-next{
+  border: 1px solid var(--color-volvox);
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+.user-list .btn-prev{
+  float: left;
+}
+
+.user-list .btn-next{
+  float: right;
+}
+
 /*******Cookie consent*****/
 #cookieConsent {
   border-top: 3px solid var(--color-skyblue);
@@ -507,6 +592,10 @@ input:checked + .slider {
 @media screen and (max-width: 767px) {
   #themeToggler {
     display: none;
+  }
+
+  .banned-words ul {
+    columns: 2;
   }
 }
 
@@ -523,5 +612,9 @@ input:checked + .slider {
   #HW_frame_cont {
     width: calc(100% - 20px) !important;
     margin: 0 10px;
+  }
+
+  .banned-words ul{
+    columns: 1;
   }
 }

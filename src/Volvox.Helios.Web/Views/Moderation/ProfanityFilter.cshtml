@@ -1,82 +1,130 @@
 ﻿@model Volvox.Helios.Web.ViewModels.Moderation.ProfanityFilterViewModel
 @{
+    ViewData["Title"] = "Profanity Filter";
 }
 
-<h2>Profanity Filter Settings</h2>
-<hr />
+<div class="col-12 breadcrumb-wrapper">
+    <nav aria-label="breadcrumb" class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="Index" class="text-volvox">Moderation</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="general" class="text-volvox">Global Settings</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Profanity Filter</li>
+        </ol>
+    </nav>
+</div>
 
-<div class="row">
-    <div class="col-md-12">
+<div class="container mt-4">
+    <h2>Profanity Filter Settings</h2>
+    <hr />
+
+    <div class="col-12">
         <form method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
 
-            <div style="display:flex;" class="form-group">
-                <label asp-for="Enabled" class="font-size-small small-margin-right"></label>
-                <label class="switch" />
-                <input asp-for="Enabled" type="checkbox" />
-                <div class="slider round"></div>
-                <span asp-validation-for="Enabled" class="text-danger"></span>
-            </div>
-
-            <div class="settings-group">
-                <div class="form-group">
-                    <label asp-for="WarningExpirePeriod"></label>
-                    <input type="number" asp-for="WarningExpirePeriod" min="0" step="1" max="2147483647" class="form-control" />
+            <div class="row rounded module-input-wrapper">
+                <div class="col-md-9 pt-3 pb-3">
+                    <h4>Enabled</h4>
+                    <p class="mb-0 text-volvox">
+                        Enables or disables the moderation module.
+                    </p>
+                </div>
+                <div class="col-md-3 valign">
+                    <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
+                        <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
+                            On
+                            <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
+                        </label>
+                        <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
+                            Off
+                            <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
+                        </label>
+                    </div>
                 </div>
             </div>
+            <span asp-validation-for="Enabled" class="text-danger"></span>
 
-            <div class="settings-group">
-                <div class="form-group">
+            <div class="row rounded module-input-wrapper mt-3 pt-2">
+                <div class="col-12 form-group">
+                    <label asp-for="WarningExpirePeriod"></label>
+                    <div id="warningExpirePeriod"></div>
+                    <input type="hidden" asp-for="WarningExpirePeriod" />
+                </div>
+
+                <div class="col-12 form-group">
                     <label asp-for="WhitelistedChannels"></label>
-                    <select data-placeholder="No channels selected..." asp-for="SelectedChannels" asp-items="Model.WhitelistedChannels" class="chosen-select form-control" multiple></select>
+                    <div id="whiteListedChannels"></div>
+                    <select id="whiteListedChannelsHidden" class="d-none" asp-for="SelectedChannels" multiple></select>
                     <span asp-validation-for="WhitelistedChannels" class="text-danger"></span>
                 </div>
-            </div>
 
-
-            <div class="settings-group">
-                <div class="form-group">
+                <div class="col-12 form-group">
                     <label asp-for="WhitelistedRoles"></label>
-                    <select data-placeholder="No roles selected..." asp-for="SelectedRoles" asp-items="Model.WhitelistedRoles" class="chosen-select form-control" multiple></select>
+                    <div id="whiteListedRoles"></div>
+                    <select id="whiteListedRolesHidden" class="d-none" asp-for="SelectedRoles" multiple></select>
                     <span asp-validation-for="WhitelistedRoles" class="text-danger"></span>
                 </div>
-            </div>
 
-            <div class="settings-group">
-                <div class="form-group">
+                <div class="col-12 form-group">
                     <label asp-for="BannedWords"></label>
-                    <select data-placeholder="No words selected..." asp-for="SelectedWords" asp-items="Model.BannedWords" class="chosen-select form-control" multiple></select>
+                    <div id="bannedWords"></div>
+                    <select id="bannedWordsHidden" asp-for="SelectedWords" class="d-none" multiple></select>
                     <span asp-validation-for="SelectedWords" class="text-danger"></span>
                 </div>
 
-                <div class="form-group">
+                <div class="col-12 form-group">
                     <label asp-for="SelectedWords" class="form-check-label"></label>
-                    <div class="row">
-                        <div class="col-10">
-                            <input id="AddWordBox" class="form-control" />
+                    <div class="d-table mt-2">
+                        <div class="d-table-cell w-100">
+                            <input id="addWordBox" type="text" class="form-control material-input" autocomplete="off" />
                         </div>
-
-                        <div class="col-2" style="text-align: right;">
-                            <button id="AddWordBtn" class="btn btn-success" style="width:100%;"> <i class="fas fa-plus"></i> </button>
-                        </div>
+                        <button id="addWordBtn" class="d-block bg-volvox rounded-circle add-btn" type="button">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <div style="display:flex;" class="form-group">
-                    <label asp-for="UseDefaultBannedWords" class="small-margin-right"></label>
-                    <label class="switch" />
-                    <input asp-for="UseDefaultBannedWords" type="checkbox" />
-                    <div class="slider round"></div>
-                    <span asp-validation-for="UseDefaultBannedWords" class="text-danger"></span>
+            <div class="row rounded module-input-wrapper mt-3 pt-2">
+                <div class="col-md-9 pt-3 pb-3">
+                    <h4>Use Default banned words</h4>
+                    <p class="mb-0 text-volvox">
+                        Select if the default banned words should be used or not.
+                    </p>
                 </div>
-
+                <div class="col-md-3 valign">
+                    <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
+                        <label for="defWordsEnabled" class="btn pr-4 pl-4 module-enabler @(Model.UseDefaultBannedWords ? "active" : "disabled")">
+                            On
+                            <input id="defWordsEnabled" type="radio" name="UseDefaultBannedWords" class="d-none" value="true" @(Model.UseDefaultBannedWords ? "checked" : "")>
+                        </label>
+                        <label for="defWordsDisabled" class="btn pr-4 pl-4 module-enabler @(Model.UseDefaultBannedWords ? "disabled" : "active")">
+                            Off
+                            <input id="defWordsDisabled" type="radio" name="UseDefaultBannedWords" class="d-none" value="false" @(Model.UseDefaultBannedWords ? "" : "checked")>
+                        </label>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group" style="margin:10px auto; text-align: center;">
-                <button type="submit" value="Save" class="btn btn-success" style="width:100%;">
-                    Save <i class="fas fa-save" style="margin-left:0.5em;"></i>
-                </button>
+            <div class="row module-input-wrapper mt-3 rounded sliding-border">
+                <div class="col-md-9 col-10 pt-3 pb-3">
+                    <h4 class="mb-0">Show default banned words</h4>
+                </div>
+                <div class="col-md-3 col-2 valign">
+                    <div class="btn-group material-btn-group ml-auto">
+                        <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-12 collapse banned-words" id="infoCollapse">
+                    <ul></ul>
+                </div>
             </div>
+
+            <div class="row form-group mt-4 mb-4">
+                <button type="submit" class="btn btn-volvox-outline save-btn ml-auto">Save</button>
+            </div>
+
         </form>
     </div>
 </div>
@@ -84,23 +132,93 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        $(document).ready(function () {
-            $('.chosen-select').chosen();
+        $('main').removeClass('container').addClass('p-0 mt-0');
 
-            $("#AddWordBtn").on("click", function (e) {
+        $('.module-enabler input:not(".active")').click((e) => {
+            $(e.currentTarget).closest('.module-enabler').parent().find('.active').toggleClass('active disabled');
+            $(e.currentTarget).closest('.module-enabler').toggleClass('active disabled');
+        });
 
-                e.preventDefault();
+        @{var text = System.IO.File.ReadAllText(System.IO.Directory.GetCurrentDirectory() + "\\defaultbannedwords.json");}
+        let bannedWords = JSON.parse(@(Html.Raw(Json.Serialize(text))))['BannedWords'];
+        for (let i = 0; i < bannedWords.length; i++) {
+            $('#infoCollapse ul').append(`
+                <li>${bannedWords[i]}</li>
+            `)
+        }
 
-                const word = $("#AddWordBox").val();
+        var warningExpirePeriod = @(Html.Raw(Model.WarningExpirePeriod));
+        $('#warningExpirePeriod').dxNumberBox({
+            dataSource: warningExpirePeriod,
+            min: 0,
+            max: 2147483647,
+            value: warningExpirePeriod,
+            onInitialized: (e) => {
+                $('input[name="WarningExpirePeriod"]').val(warningExpirePeriod);
+            },
+            onValueChanged: (e) => {
+                $('input[name="WarningExpirePeriod"]').val(e.value);
+            }
+        });
 
-                if (word.length == 0) return;
+        let whiteListedChannels = JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedChannels)))');
+        $('#whiteListedChannels').dxTagBox({
+            dataSource: whiteListedChannels,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: whiteListedChannels.filter((e) => { return e.selected; }).map((e) => { return e.value }),
+            onInitialized: (e) => {
+                setTimeout((e) => {
+                    $('#whiteListedChannelsHidden').append($('#whiteListedChannels .dx-dropdowneditor-input-wrapper').find('select option'));
+                }, 1000);
+            },
+            onValueChanged: (e) => {
+                $('#whiteListedChannelsHidden').empty().append($('#whiteListedChannels .dx-dropdowneditor-input-wrapper').find('select option'));
+            }
+        });
 
-                $("#SelectedWords").append('<option selected>' + word + '</option>');
+        let whiteListedRoles = JSON.parse('@Html.Raw(Json.Serialize(Model.WhitelistedRoles))');
+        $('#whiteListedRoles').dxTagBox({
+            dataSource: whiteListedRoles,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: whiteListedRoles.filter((e) => { return e.selected; }).map((e) => { return e.value; }),
+            onInitialized: (e) => {
+                setTimeout((e) => {
+                    $('#whiteListedRolesHidden').append($('#whiteListedRoles .dx-dropdowneditor-input-wrapper').find('select option'));
+                });
+            },
+            onValueChanged: (e) => {
+                $('#whiteListedRolesHidden').empty().append($('#whiteListedRoles .dx-dropdowneditor-input-wrapper').find('select option'));
+            }
+        });
 
-                $('.chosen-select').trigger("chosen:updated");
+        let bannedWordsData = JSON.parse('@Html.Raw(Json.Serialize(Model.BannedWords))');
+        let tagBox = $('#bannedWords').dxTagBox({
+            dataSource: bannedWordsData,
+            valueExpr: "text",
+            displayExpr: "text",
+            value: bannedWordsData.filter((e) => { return e.selected; }).map((e) => { return e.text; }),
+            onInitialized: (e) => {
+                setTimeout((e) => {
+                    $('#bannedWordsHidden').append($('#bannedWords .dx-dropdowneditor-input-wrapper').find('select option'));
+                });
+            },
+            onValueChanged: (e) => {
+                $('#bannedWordsHidden').empty().append($('#bannedWords .dx-dropdowneditor-input-wrapper').find('select option'));
+            }
+        }).dxTagBox('instance');
 
-                $("#AddWordBox").val("");
-            });
+        $('#addWordBtn').click((e) => {
+            if ($('#addWordBox').val() != '') {
+                bannedWordsData.push({
+                    disabled: false,
+                    selected: true,
+                    text: $('#addWordBox').val()
+                });
+                tagBox.option('value', bannedWordsData.filter((e) => { return e.selected; }).map((e) => { return e.text; }));
+                $('#addWordBox').val('');
+            }
         });
     </script>
 }

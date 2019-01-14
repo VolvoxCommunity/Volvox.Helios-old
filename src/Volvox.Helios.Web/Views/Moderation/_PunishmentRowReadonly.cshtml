@@ -10,14 +10,20 @@
 ****************************************************
 ****************************************************
 -->
+<input type="hidden" asp-for="PunishmentId" value="@Model.PunishmentId" />
 <tr>
-    @Html.HiddenFor(m => m.PunishmentId)
-    <td>@Html.TextBoxFor(m => m.PunishType, new { @readonly = true })</td>
-    <td>@Html.TextBoxFor(m => m.PunishDuration, new { @readonly = true })</td>
-    <td>@Html.TextBoxFor(m => m.WarningType, new { @readonly = true })</td>
-    <td>@Html.TextBoxFor(m => m.WarningThreshold, new { @readonly = true })</td>
+    <td scope="row">@Model.Index</td>
+    <td>@Model.PunishType</td>
+    <td>@Model.PunishDuration</td>
+    <td>@Model.WarningType</td>
+    <td>@Model.WarningThreshold</td>
+    <td>@Model.Role.First().Text</td>
     <td>
-        <select disabled asp-for="RoleId" asp-items="Model.Role"></select>
+        <div class="material-checkbox text-right">
+            <input type="hidden" asp-for="DeletePunishment" value="@Model.DeletePunishment.ToString().ToLower()" />
+            <a href="#" onclick="toggleInput(event)">
+                <i class="far fa-square"></i>
+            </a>
+        </div>
     </td>
-    <td>@Html.CheckBoxFor(m => m.DeletePunishment)</td>
 </tr>

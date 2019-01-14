@@ -4,6 +4,34 @@
   cursor: pointer;
 }
 
+.material-table {
+  background: var(--color-gray);
+}
+  .material-table td{
+    border-top: 1px solid var(--color-gray2);
+  }
+  
+  .material-table .material-checkbox a {
+    color: var(--color-deep-dark);
+  }
+
+.breadcrumb-wrapper {
+  background: var(--color-gray);
+}
+
+.module-input-wrapper{
+  border: 2px solid var(--color-gray);
+}
+
+.user-list .user-link {
+  color: var(--color-gray2);
+  transition: .3s;
+}
+
+  .user-list .user-link:hover {
+    color: #555;
+  }
+
 footer{
   background: #eee;
 }

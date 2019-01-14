@@ -9,7 +9,7 @@
 <form method="post" class="col-12">
     <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div class="row border border-gray2 rounded">
+    <div class="row rounded module-input-wrapper">
         <div class="col-md-9 pt-3 pb-3">
             <h4>Remembot Module</h4>
             <p class="mb-0 text-volvox">
@@ -32,7 +32,7 @@
     <div class="row mt-4">
         <span asp-validation-summary="Enabled" class="text-danger"></span>
         <div class="ml-auto">
-            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+            <button type="submit" class="btn btn-volvox-outline save-btn">Save</button>
         </div>
     </div>
 </form> 
@@ -50,7 +50,8 @@
 
         @if (Model.RecurringReminders != null && Model.RecurringReminders.Any())
         {
-            <table class="table table-striped table-responsive">
+        <div class="table-responsive">
+            <table class="table material-table rounded">
                 <colgroup>
                     <col />
                     <col width="100%" />
@@ -93,6 +94,7 @@
                     }
                 </tbody>
             </table>
+        </div>
         }
     </div>
 </div>

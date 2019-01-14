@@ -9,7 +9,7 @@
 <form method="post" class="col-12">
     <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div class="row border border-gray2 rounded">
+    <div class="row rounded module-input-wrapper">
         <div class="col-md-9 pt-3 pb-3">
             <h4>Dad Module</h4>
             <p class="mb-0 text-volvox">
@@ -29,7 +29,7 @@
             </div>
         </div>
     </div>
-    <div class="row mt-4 border border-gray2 rounded">
+    <div class="row mt-4 rounded module-input-wrapper">
         <div class="col-12 pt-3">
             <h4>Dad's Cooldown</h4>
             <p class="mb-0 text-volvox">
@@ -41,12 +41,11 @@
             <span asp-validation-for="ResponseCooldownMinutes" class="text-danger"></span>
             <br/>
         </div>
-        
     </div>
     <div class="row mt-4">
         <span asp-validation-summary="Enabled" class="text-danger"></span>
         <div class="ml-auto">
-            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+            <button type="submit" class="btn btn-volvox-outline save-btn">Save</button>
         </div>
     </div>
 </form>

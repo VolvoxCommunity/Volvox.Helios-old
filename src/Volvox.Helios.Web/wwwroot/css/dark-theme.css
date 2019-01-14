@@ -17,7 +17,7 @@ body {
 }
 
 hr{
-  border-color: var(--color-gray2);
+  border-color: #535353;
 }
 
 .card {
@@ -56,9 +56,9 @@ hr{
   background: var(--color-deep-dark);
 }
 
-.dropdown-menu.show{
+.dropdown-menu.show {
   background: var(--color-deep-dark);
-  border-color: var(--color-gray2);
+  border-color: #535353;
 }
 
 .dropdown-menu.show a{
@@ -78,6 +78,34 @@ hr{
 .gentleselect-dialog {
   background: var(--color-deep-dark) !important;
 }
+
+.material-table {
+  background: var(--color-deep-dark);
+}
+  .material-table td {
+    border-top: 1px solid #25292d;
+  }
+
+  .material-table .material-checkbox a {
+    color: white;
+  }
+
+.breadcrumb-wrapper {
+  background: rgba(0,0,0,.5);
+}
+
+.module-input-wrapper{
+  border: 2px solid #535353;
+}
+
+.user-list .user-link {
+  color: white;
+  transition: .3s;
+}
+
+  .user-list .user-link:hover {
+    color: var(--color-gray2)
+  }
 
 footer {
   background: var(--color-deep-dark);

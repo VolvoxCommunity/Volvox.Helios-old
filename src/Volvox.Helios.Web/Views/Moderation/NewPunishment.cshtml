@@ -1,33 +1,103 @@
 ﻿@model Volvox.Helios.Web.Models.Moderation.PunishmentModel
+@{
+    ViewData["Title"] = "New Punishment";
+}
 
-<form method="POST">
-    <section class="container">
-        <div class="vertical-margin-large">
-            <table asp-for="Punishments">
+<div class="breadcrumb-wrapper col-12">
+    <nav aria-label="breadcrumb" class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="Index" class="text-volvox">Moderation</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="punishments" class="text-volvox">Punishments</a></li>
+            <li class="breadcrumb-item active" aria-current="page">New Punishment</li>
+        </ol>
+    </nav>
+</div>
 
-                <colgroup>
-                    <col span="6" style="border:1px solid black"/>
-                </colgroup>
+<form method="POST" class="container mt-4">
+    <h2>Add a new Punishment</h2>
+    <hr />
+    @Html.HiddenFor(m => m.PunishmentId)
+    <div class="col-12 mt-4 pt-3 pb-3 rounded module-input-wrapper">
+        <label asp-for="PunishType">Punishment Type</label>
+        <div id="punishType" class="mb-3"></div>
+        <input type="hidden" asp-for="PunishType" value="@(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.PunishType>().First().Value)" />
 
-                <thead>
-                    <tr>
-                        <td>Punishment Type</td>
-                        <td>Duration (mins, 0 = Forever) </td>
-                        <td>Warning Type</td>
-                        <td>Warning Threshold</td>
-                        <td>Role</td>
-                    </tr>
-                </thead>
+        <label asp-for="PunishDuration">Duration (mins, 0 = Forever)</label>
+        <div id="punishDuration" class="mb-3"></div>
+        <input type="hidden" asp-for="PunishDuration" value="0" />
 
-                <tbody id="PunishmentTableBody">
-                    @{
-                        <partial name="_PunishmentRow" model="Model"/>
-                    }
-                </tbody>   
-            </table>
+        <label asp-for="WarningType">Warning Type</label>
+        <div id="warningType" class="mb-3"></div>
+        <input type="hidden" asp-for="WarningType" value="@(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.FilterType>().First().Value)" />
+
+        <label asp-for="WarningThreshold">Warning Threshold</label>
+        <div id="warningThreshold" class="mb-3"></div>
+        <input type="hidden" asp-for="WarningThreshold" value="1" />
+
+        <label asp-for="RoleId">Role</label>
+        <div id="role" class="mb-2"></div>
+        <input type="hidden" asp-for="RoleId" value="@(Model.Role.First().Value)" />
+    </div>
+    <div class="row mt-4">
+        <div class="col-12 d-flex flex-wrap">
+            <button type="submit" class="ml-auto btn btn-volvox-outline save-btn">Save</button>
         </div>
-    </section>
-    <div class="form-group">
-        <input type="submit" value="Add" class="btn btn-success" />
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        $('main').removeClass('container').addClass('p-0 mt-0');
+
+        let punishTypes = JSON.parse('@(Html.Raw(Json.Serialize(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.PunishType>())))');
+        $('#punishType').dxSelectBox({
+            dataSource: punishTypes,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: punishTypes[0].value,
+            searchEnabled: true,
+            onValueChanged: (e) => {
+                $('input[name="PunishType"]').val(e.value);
+            }
+        });
+
+        $('#punishDuration').dxNumberBox({
+            value: 0,
+            max: 2147483647,
+            onValueChanged: (e) => {
+                $('input[name="PunishDuration"]').val(e.value);
+            }
+        });
+
+        let warningTypes = JSON.parse('@(Html.Raw(Json.Serialize(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.FilterType>())))');
+        $('#warningType').dxSelectBox({
+            dataSource: warningTypes,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: warningTypes[0].value,
+            onValueChanged: (e) => {
+                $('input[name="WarningType"]').val(e.value);
+            }
+        });
+
+        $('#warningThreshold').dxNumberBox({
+            value: 1,
+            min: 1,
+            max: 2147483647,
+            onValueChanged: (e) => {
+                $('input[name="WarningThreshold"]').val(e.value);
+            }
+        });
+
+        let roles = JSON.parse('@(Html.Raw(Json.Serialize(Model.Role)))');
+        $('#role').dxSelectBox({
+            dataSource: roles,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: roles[0].value,
+            onValueChanged: (e) => {
+                $('input[name="RoleId"]').val(e.value);
+            }
+        });
+    </script>
+}

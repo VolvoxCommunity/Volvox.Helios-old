@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,9 @@ namespace Volvox.Helios.Web.Models.Moderation
 {
     public class PunishmentModel
     {
+        [NotMapped]
+        public int? Index { get; set; }
+
         public int? PunishmentId { get; set; }
 
         public short WarningThreshold { get; set; }
