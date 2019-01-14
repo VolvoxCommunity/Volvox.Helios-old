@@ -12,5 +12,7 @@ namespace Volvox.Helios.Web.ViewModels.Moderation
         public List<UserModel> Users { get; set; }
 
         public int PageNo { get; set; }
+
+        public int TotalPageCount { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -459,7 +460,11 @@ namespace Volvox.Helios.Web.Controllers
         [HttpGet("users/{pageNo}"), HttpGet("users")]
         public IActionResult Users(ulong guildId, [FromServices] IDiscordGuildService guildService, int pageNo = 0)
         {
-            var users = _discordUserService.GetUsers(guildId).Where(u => !u.IsBot)
+            var allUsers = _discordUserService.GetUsers(guildId);
+
+            var totalPageCount = ( allUsers.Count + ModuleConstants.ResultsPerPageUsers ) / ModuleConstants.ResultsPerPageUsers;
+
+            var usersToDisplay = _discordUserService.GetUsers(guildId).Where(u => !u.IsBot)
                 .Skip(pageNo * ModuleConstants.ResultsPerPageUsers).Take(ModuleConstants.ResultsPerPageUsers).Select(u => new UserModel
             {
                 Id = u.Id,
@@ -469,8 +474,9 @@ namespace Volvox.Helios.Web.Controllers
 
             var vm = new UsersViewModel
             {
-                Users = users,
-                PageNo = pageNo
+                Users = usersToDisplay,
+                PageNo = pageNo,
+                TotalPageCount = totalPageCount
             };
 
             return View(vm);
