@@ -139,8 +139,7 @@
             $(e.currentTarget).closest('.module-enabler').toggleClass('active disabled');
         });
 
-        //TODO: Add Relative Path
-        @{var text = System.IO.File.ReadAllText("C:\\Users\\Samuel\\Desktop\\Volvox.Helios\\src\\Volvox.Helios.Web\\defaultbannedwords.json");}
+        @{var text = System.IO.File.ReadAllText(System.IO.Directory.GetCurrentDirectory() + "\\defaultbannedwords.json");}
         let bannedWords = JSON.parse(@(Html.Raw(Json.Serialize(text))))['BannedWords'];
         for (let i = 0; i < bannedWords.length; i++) {
             $('#infoCollapse ul').append(`
@@ -211,13 +210,15 @@
         }).dxTagBox('instance');
 
         $('#addWordBtn').click((e) => {
-            bannedWordsData.push({
-                disabled: false,
-                selected: true,
-                text: $('#addWordBox').val()
-            });
-            tagBox.option('value', bannedWordsData.filter((e) => { return e.selected; }).map((e) => { return e.text; }));
-            $('#addWordBox').val('');
+            if ($('#addWordBox').val() != '') {
+                bannedWordsData.push({
+                    disabled: false,
+                    selected: true,
+                    text: $('#addWordBox').val()
+                });
+                tagBox.option('value', bannedWordsData.filter((e) => { return e.selected; }).map((e) => { return e.text; }));
+                $('#addWordBox').val('');
+            }
         });
     </script>
 }

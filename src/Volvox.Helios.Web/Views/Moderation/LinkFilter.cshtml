@@ -164,13 +164,15 @@
         }).dxTagBox('instance');
 
         $('#addLinkBtn').click((e) => {
-            whiteListedLinks.push({
-                disabled: false,
-                selected: true,
-                text: $('#addLinkBox').val()
-            });
-            tagBox.option('value', whiteListedLinks.filter((e) => { return e.selected; }).map((e) => { return e.text; }));
-            $('#addLinkBox').val('');
+            if ($('#addLinkBox').val() != '') {
+                whiteListedLinks.push({
+                    disabled: false,
+                    selected: true,
+                    text: $('#addLinkBox').val()
+                });
+                tagBox.option('value', whiteListedLinks.filter((e) => { return e.selected; }).map((e) => { return e.text; }));
+                $('#addLinkBox').val('');
+            }
         });
     </script>
 }

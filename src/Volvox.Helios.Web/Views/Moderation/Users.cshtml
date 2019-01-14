@@ -1,23 +1,45 @@
 ﻿@model Volvox.Helios.Web.ViewModels.Moderation.UsersViewModel
 
-<h2>Users</h2>
-<hr />
 @{
-
-    foreach (var user in Model.Users)
-    {
-        <div class="settings-group">
-            <img src="@user.AvatarUrl" class="dropdown-image-small" />
-            <a asp-controller="Moderation" asp-action="user" asp-route-userId="@user.Id">@user.Username</a>
-        </div>
-    }
-
-    var pageNext = Model.PageNo + 1;
-
-    var pagePrev = ((Model.PageNo - 1) < 0) ? 0 : Model.PageNo - 1;
-
-    <a asp-controller="Moderation" asp-action="users" asp-route-pageNo="@pagePrev" >Prev</a>
-    <a asp-controller="Moderation" asp-action="users" asp-route-pageNo="@pageNext" >Next</a>
+    ViewData["Title"] = "Users";
 }
 
+<div class="col-12 breadcrumb-wrapper">
+    <nav aria-label="breadcrumb" class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="Index" class="text-volvox">Moderation</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Users</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="container mt-4 user-list">
+    <h2>Users</h2>
+    <hr />
+    @{
+
+        foreach (var user in Model.Users)
+        {
+            <div class="rounded module-input-wrapper mt-2 p-2">
+                <img src="@user.AvatarUrl" class="dropdown-image-small rounded-circle" />
+                <a asp-controller="Moderation" asp-action="user" asp-route-userId="@user.Id" class="user-link">@user.Username</a>
+            </div>
+        }
+
+        var pageNext = Model.PageNo + 1;
+        var pagePrev = ((Model.PageNo - 1) < 0) ? 0 : Model.PageNo - 1;
+
+        <div class="mt-2">
+            <a asp-controller="Moderation" asp-action="users" asp-route-pageNo="@pagePrev" class="btn-prev text-volvox">Prev</a>
+            <a asp-controller="Moderation" asp-action="users" asp-route-pageNo="@pageNext" class="btn-next text-volvox">Next</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $('main').removeClass('container').addClass('p-0 mt-0');
+
+    </script>
+}
 

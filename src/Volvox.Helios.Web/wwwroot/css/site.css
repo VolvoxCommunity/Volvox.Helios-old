@@ -53,7 +53,7 @@ body {
 }
 
 .border-volvox {
-  border-color: var(--color-volvox);
+  border-color: var(--color-volvox) !important;
 }
 
 .text-volvox {
@@ -567,6 +567,21 @@ input:checked + .slider {
   position: absolute;
   font-size: 27px;
   margin-top: -10px;
+}
+
+
+
+.user-list .btn-prev, .user-list .btn-next{
+  border: 1px solid var(--color-volvox);
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+.user-list .btn-prev{
+  float: left;
+}
+
+.user-list .btn-next{
+  float: right;
 }
 
 /*******Cookie consent*****/

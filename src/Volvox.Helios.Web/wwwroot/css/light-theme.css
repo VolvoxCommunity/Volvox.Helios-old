@@ -23,6 +23,15 @@
   border: 2px solid var(--color-gray);
 }
 
+.user-list .user-link {
+  color: var(--color-gray2);
+  transition: .3s;
+}
+
+  .user-list .user-link:hover {
+    color: #555;
+  }
+
 footer{
   background: #eee;
 }
