@@ -154,7 +154,6 @@
         </form>
     </div>
 </div>
-@Model.WhiteListedRoleIds
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
@@ -170,7 +169,7 @@
                 return response;
             });
         };
-        
+
         var selectChannelVal = '@Model.ChannelId';
         if (selectChannelVal == '0')
             selectChannelVal = '@Model.Channels.FirstOrDefault().Value';
@@ -241,13 +240,26 @@
             $(e.currentTarget).parent().toggleClass('active disabled');
         });
 
+        @{
+            if (Model.WhiteListedRoleIds == null)
+            {
+                Model.WhiteListedRoleIds = new List<ulong>();
+            }
+        }
         $('#blacklistTagBox').dxTagBox({
             dataSource: roles,
             valueExpr: "value",
             displayExpr: "text",
-            value: JSON.parse('@(Html.Raw(Json.Serialize(Model.WhiteListedRoleIds)))'),
+            value: JSON.parse('@(Html.Raw(Json.Serialize(Model.WhiteListedRoleIds)))').map((e) => {
+                var role = roles.filter((r) => {
+                    return r.value == e;
+                });
+                return role[0].value;
+            }),
             onInitialized: (e) => {
-                $('.blacklist-items').append($('.dx-dropdowneditor-input-wrapper').find('select option'));
+                setTimeout(() => {
+                    $('.blacklist-items').append($('.dx-dropdowneditor-input-wrapper').find('select option'));
+                }, 500)
             },
             onValueChanged: (e) => {
                 $('.blacklist-items').empty().append($('.dx-dropdowneditor-input-wrapper').find('select option'));
