@@ -1,7 +1,10 @@
-﻿namespace Volvox.Helios.Domain.Module
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Volvox.Helios.Domain.Module
 {
     public class WhiteListedRole
     {
-        public ulong Id { get; set; }
+        [Key]
+        public ulong RoleId { get; set; }
     }
 }

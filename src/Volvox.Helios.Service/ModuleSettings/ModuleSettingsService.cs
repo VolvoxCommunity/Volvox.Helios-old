@@ -14,13 +14,13 @@ namespace Volvox.Helios.Service.ModuleSettings
         private readonly ICache _cache;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public event EventHandler<ModuleSettingsChangedArgs<T>> SettingsChanged;
-
         public ModuleSettingsService(IServiceScopeFactory scopeFactory, ICache cache)
         {
             _scopeFactory = scopeFactory;
             _cache = cache;
         }
+
+        public event EventHandler<ModuleSettingsChangedArgs<T>> SettingsChanged;
 
         /// <inheritdoc />
         public async Task SaveSettings(T settings)
@@ -63,14 +63,14 @@ namespace Volvox.Helios.Service.ModuleSettings
                         var query = context.Set<T>().AsQueryable();
 
                         if (includes != null)
-                        {
                             query = includes.Aggregate(query, (current, include) => current.Include(include));
-                        }
 
                         return await query.FirstOrDefaultAsync(s => s.GuildId == guildId);
                     })
                     .InvalidateIf(cachedValue => cachedValue.Value != null)
                     .ExpireAfter(TimeSpan.FromDays(1))
+                    .Validate(
+                        value => includes.Length > 0 ? CacheValidationResult.Invalid : CacheValidationResult.Valid)
                     .GetValueAsync();
 
                 return cachedSetting;

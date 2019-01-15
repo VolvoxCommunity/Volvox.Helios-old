@@ -96,14 +96,14 @@ namespace Volvox.Helios.Web.Controllers
             };
 
             // Get general module settings for guild, from database.
-            var settings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId, x => x.ChannelSettings);
+            var settings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId, x => x.WhiteListedRoleIds);
             
             if (settings == null) return View(viewModel);
 
             viewModel.Enabled = settings.Enabled;
             viewModel.StreamerRoleEnabled = settings.StreamerRoleEnabled;
             viewModel.RoleId = settings.RoleId;
-            viewModel.WhiteListedRoleIds = settings.WhiteListedRoleIds?.Select(r => r.Id).ToList();
+            viewModel.WhiteListedRoleIds = settings.WhiteListedRoleIds?.Select(r => r.RoleId).ToList();
 
             if (settings.ChannelSettings == null)
                 settings.ChannelSettings = await channelSettingsService.Get(c => c.GuildId == guildId);
@@ -169,7 +169,7 @@ namespace Volvox.Helios.Web.Controllers
                     RoleId = viewModel.RoleId,
                     WhiteListedRoleIds = new List<WhiteListedRole>(viewModel.WhiteListedRoleIds.Select(r => new WhiteListedRole
                     {
-                        Id = r
+                        RoleId = r
                     }).ToList())
                 });
             else
@@ -181,7 +181,7 @@ namespace Volvox.Helios.Web.Controllers
                     RoleId = viewModel.RoleId,
                     WhiteListedRoleIds = new List<WhiteListedRole>(viewModel.WhiteListedRoleIds.Select(r => new WhiteListedRole
                     {
-                        Id = r
+                        RoleId = r
                     }).ToList())
                 }));
 
