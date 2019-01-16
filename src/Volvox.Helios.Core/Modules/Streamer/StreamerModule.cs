@@ -42,7 +42,6 @@ namespace Volvox.Helios.Core.Modules.Streamer
             discordSettings, logger, config)
         {
             _settingsService = settingsService;
-
             _scopeFactory = scopeFactory;
         }
 
@@ -92,17 +91,13 @@ namespace Volvox.Helios.Core.Modules.Streamer
                 if (settings != null && settings.Enabled)
                     try
                     {
-                        var whiteListedRoles = settings.WhiteListedRoleIds.Select(w => w.RoleId);
-
-                        if (!guildUser.Roles.Any(r => whiteListedRoles.Contains(r.Id))) return;
-
                         // Streamer Role
                         if (settings.StreamerRoleEnabled)
                             await HandleStreamerRole(guildUser, settings);
 
                         // Stream Announcer
                         if (settings.ChannelSettings != null)
-                            await CheckUser(guildUser, settings.ChannelSettings);
+                            await CheckUser(guildUser, settings.ChannelSettings, settings);
                     }
                     catch (Exception e)
                     {
@@ -133,7 +128,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
                     if (streamingRole.Position < botRolePosition)
                     {
                         // Add use to role.
-                        if (guildUser.Activity != null && guildUser.Activity.Type == ActivityType.Streaming)
+                        if (guildUser.Activity != null && guildUser.Activity.Type == ActivityType.Streaming &&
+                            IsUserWhiteListed(settings, guildUser))
                             await AddUserToStreamingRole(guildUser, streamingRole);
 
                         // Remove user from role.
@@ -165,7 +161,9 @@ namespace Volvox.Helios.Core.Modules.Streamer
         /// </summary>
         /// <param name="user">User to be evaluated/adjusted for streaming announcement.</param>
         /// <param name="channels">List of channels with module enabled</param>
-        private async Task CheckUser(SocketGuildUser user, List<StreamerChannelSettings> channels)
+        /// <param name="settings">Streamer settings for specified guild.</param>
+        private async Task CheckUser(SocketGuildUser user, List<StreamerChannelSettings> channels,
+            StreamerSettings settings)
         {
             // Add initial hash set for the guild.
             if (!StreamingList.TryGetValue(user.Guild.Id, out var set))
@@ -178,7 +176,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
             if (user.Activity != null && user.Activity.Type == ActivityType.Streaming)
             {
                 // If the user is not in the streaming list, they just started streaming. So, handle announcement.
-                if (!StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
+                if (!StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)) &&
+                    IsUserWhiteListed(settings, user))
                     await AnnounceUserHandler(user, channels);
 
                 // Else, the user is already streaming and already has an announcement message.
@@ -364,6 +363,19 @@ namespace Volvox.Helios.Core.Modules.Streamer
 
             Logger.LogDebug($"Streamer Module: Removing {guildUser.Username} from role {streamingRole.Name}. " +
                             $"Guild ID: {guildUser.GuildId}, User ID: {guildUser.Id}.");
+        }
+
+        /// <summary>
+        ///     Checks if a user is part of the white listed roles.
+        /// </summary>
+        /// <param name="settings">Streamer settings for specified guild.</param>
+        /// <param name="guildUser">User to check.</param>
+        /// <returns>True if the user is a part of the white listed roles; otherwise false.</returns>
+        private static bool IsUserWhiteListed(StreamerSettings settings, SocketGuildUser guildUser)
+        {
+            var whiteListedRoles = settings.WhiteListedRoleIds.Select(w => w.RoleId).ToList();
+
+            return !whiteListedRoles.Any() || guildUser.Roles.Any(r => whiteListedRoles.Contains(r.Id));
         }
     }
 }
