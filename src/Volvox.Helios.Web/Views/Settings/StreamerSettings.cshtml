@@ -24,7 +24,13 @@
                     </div>
                     <div class="col-12 collapse" id="infoCollapse">
                         <p>
-
+                            The streamer module is based for twitch streamers. It allows you to announce a person that is streaming, or assign a person a role. In the stream announcer you have the option to remove messages on conclusion.
+                        </p>
+                        <p>
+                            Also you can assign a new role to a user that is streaming. It will appear on the top of the userlist, so everyone can see who is streaming currently.
+                        </p>
+                        <p>
+                            The whitelist will only be triggered if one of the user has one of the selected roles.
                         </p>
                     </div>
                 </div>
@@ -228,7 +234,7 @@
             displayExpr: "text",
             value: selectRoleVal,
             onInitialized: (e) => {
-                $('input[name="RoleId"]').val(selectChannelVal);
+                $('input[name="RoleId"]').val(selectRoleVal);
             },
             onValueChanged: (e) => {
                 $('input[name="RoleId"]').val(e.value);
