@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
-
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
@@ -20,7 +19,7 @@ using Volvox.Helios.Service.ModuleSettings;
 namespace Volvox.Helios.Core.Modules.Streamer
 {
     /// <summary>
-    ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the
+    ///     Announce the user to a specified channel when the user starts streaming and assign specified streaming role to the
     ///     user.
     /// </summary>
     public class StreamerModule : Module
@@ -29,7 +28,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
         private readonly IModuleSettingsService<StreamerSettings> _settingsService;
 
         /// <summary>
-        ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the
+        ///     Announce the user to a specified channel when the user starts streaming and assign specified streaming role to the
         ///     user.
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
@@ -39,8 +38,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
         /// <param name="scopeFactory">Scope factory.</param>
         public StreamerModule(IDiscordSettings discordSettings, ILogger<StreamerModule> logger,
             IConfiguration config, IModuleSettingsService<StreamerSettings> settingsService,
-            IServiceScopeFactory scopeFactory
-        ) : base(
+            IServiceScopeFactory scopeFactory) : base(
             discordSettings, logger, config)
         {
             _settingsService = settingsService;
@@ -88,11 +86,16 @@ namespace Volvox.Helios.Core.Modules.Streamer
             // Subscribe to the GuildMemberUpdated event.
             client.GuildMemberUpdated += async (user, guildUser) =>
             {
-                var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id, x => x.ChannelSettings);
+                var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id, x => x.ChannelSettings,
+                    x => x.WhiteListedRoleIds);
 
                 if (settings != null && settings.Enabled)
                     try
                     {
+                        var whiteListedRoles = settings.WhiteListedRoleIds.Select(w => w.RoleId);
+
+                        if (!guildUser.Roles.Any(r => whiteListedRoles.Contains(r.Id))) return;
+
                         // Streamer Role
                         if (settings.StreamerRoleEnabled)
                             await HandleStreamerRole(guildUser, settings);
@@ -121,8 +124,6 @@ namespace Volvox.Helios.Core.Modules.Streamer
                 Logger.LogError("Streamer Module: Role could not be found!");
             }
             else
-            {
-                //Ensure bot has necessary permissions to add/remove specified role.
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var botService = scope.ServiceProvider.GetRequiredService<IBot>();
@@ -141,10 +142,12 @@ namespace Volvox.Helios.Core.Modules.Streamer
                     }
                     else
                     {
-                        Logger.LogError($"Streamer Module: Could not add/remove role as bot has insufficient hierarchical position. " +
+                        Logger.LogError(
+                            $"Streamer Module: Could not add/remove role as bot has insufficient hierarchical position. " +
                             $"Guild Id: {guildUser.Guild.Id}");
 
-                        await botService.GetGuild(guildUser.Guild.Id).Owner.SendMessageAsync($"We couldn't add/remove Role '{streamingRole.Name}' to a user as the role's hierarchical position is greater than the bot's.{Environment.NewLine}" +
+                        await botService.GetGuild(guildUser.Guild.Id).Owner.SendMessageAsync(
+                            $"We couldn't add/remove Role '{streamingRole.Name}' to a user as the role's hierarchical position is greater than the bot's.{Environment.NewLine}" +
                             $"To fix this, please adjust your role's position and then re-enable the module via our website.{Environment.NewLine}" +
                             $"Guild: {guildUser.Guild.Name}");
 
@@ -155,7 +158,6 @@ namespace Volvox.Helios.Core.Modules.Streamer
                         await _settingsService.SaveSettings(settingsDb);
                     }
                 }
-            }          
         }
 
         /// <summary>

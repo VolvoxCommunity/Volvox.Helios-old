@@ -30,13 +30,15 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IEntityService<StreamerChannelSettings> _streamAnnouncerChannelSettingsService;
         private readonly IModuleSettingsService<StreamerSettings> _streamAnnouncerSettingsService;
         private readonly IModuleSettingsService<DadModuleSettings> _dadSettingsService;
+        private readonly IEntityService<WhiteListedRole> _whiteListedRoleEntityService;
 
         public SettingsController(IModuleSettingsService<StreamerSettings> streamAnnouncerSettingsService,
             IEntityService<StreamerChannelSettings> streamAnnouncerChannelSettingsService,
             IModuleSettingsService<ChatTrackerSettings> chatTrackerSettingsService,
             IModuleSettingsService<RemembotSettings> reminderSettingsService,
             IEntityService<RecurringReminderMessage> recurringReminderService,
-            IModuleSettingsService<DadModuleSettings> dadSettingsService)
+            IModuleSettingsService<DadModuleSettings> dadSettingsService,
+            IEntityService<WhiteListedRole> whiteListedRoleEntityService)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
@@ -44,6 +46,7 @@ namespace Volvox.Helios.Web.Controllers
             _reminderSettingsService = reminderSettingsService;
             _recurringReminderService = recurringReminderService;
             _dadSettingsService = dadSettingsService;
+            _whiteListedRoleEntityService = whiteListedRoleEntityService;
         }
 
         public async Task<IActionResult> Index(ulong guildId, [FromServices] IBot bot,
@@ -173,17 +176,25 @@ namespace Volvox.Helios.Web.Controllers
                     }).ToList())
                 });
             else
+            {
+                // Clear all white listed roles from the database
+                await _whiteListedRoleEntityService.RemoveBulk(await _whiteListedRoleEntityService.Get(w => w.GuildId == guildId));
+
+                await _whiteListedRoleEntityService.CreateBulk(viewModel.WhiteListedRoleIds.Select(r =>
+                    new WhiteListedRole
+                    {
+                        RoleId = r,
+                        GuildId = guildId
+                    }));
+
                 saveSettingsTasks.Add(_streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
                 {
                     GuildId = guildId,
                     Enabled = viewModel.Enabled,
                     StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
-                    RoleId = viewModel.RoleId,
-                    WhiteListedRoleIds = new List<WhiteListedRole>(viewModel.WhiteListedRoleIds.Select(r => new WhiteListedRole
-                    {
-                        RoleId = r
-                    }).ToList())
+                    RoleId = viewModel.RoleId
                 }));
+            }
 
             // Value defaults to 0, if the value is 0, EF will try to auto increment the ID, throwing an error.
             if (viewModel.ChannelId != 0)

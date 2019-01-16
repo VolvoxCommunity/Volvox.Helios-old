@@ -6,5 +6,7 @@ namespace Volvox.Helios.Domain.Module
     {
         [Key]
         public ulong RoleId { get; set; }
+
+        public ulong GuildId { get; set; }
     }
 }
