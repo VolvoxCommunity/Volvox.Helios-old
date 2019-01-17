@@ -483,9 +483,11 @@ namespace Volvox.Helios.Web.Controllers
         }
       
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> User(ulong guildId, ulong userId)
+        public async Task<IActionResult> User(ulong guildId, ulong userId, [FromServices] IDiscordUserService userService)
         {
             var user = await _entityServiceUsers.GetFirst(u => u.UserId == userId, x => x.Warnings, x => x.ActivePunishments);
+
+            var socketUser = await userService.GetUser(userId);
 
             // Create user entry if one doesn't exist.
             if (user == null)
@@ -496,7 +498,9 @@ namespace Volvox.Helios.Web.Controllers
             var vm = new UserViewModel
             {
                 ActivePunishments = user?.ActivePunishments ?? new List<ActivePunishment>(),
-                Warnings = user?.Warnings ?? new List<Warning>()
+                Warnings = user?.Warnings ?? new List<Warning>(),
+                Username = socketUser.Username,
+                Discriminator = socketUser.Discriminator.ToString()
             };
 
             return View(vm);
