@@ -175,7 +175,7 @@ namespace Volvox.Helios.Service.EntityService
             if (pks.Length == 1)
                 return $"Entity:{typeof(T).Name},PrimaryKey:{pks[0]}";
 
-            var sb = new StringBuilder($"Entity:{typeof(T).FullName}");
+            var sb = new StringBuilder($"Entity:{typeof(T).Name}");
 
             for (var i = 0; i < pks.Length; i++)
                 sb.Append($",PrimaryKey_{i}:{pks[i]}");
