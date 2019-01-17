@@ -1,6 +1,6 @@
 ﻿::selection{
   color: white;
-  background: var(--color-dark);
+  background: black;
 }
 
 body {
@@ -24,11 +24,21 @@ hr{
   background-color: var(--color-deep-dark);
 }
 
+.dx-tag-content{
+  background: var(--color-dark2);
+  color: #ddd;
+}
+
+.dx-tagbox .dx-texteditor-container {
+  background: var(--color-deep-dark);
+}
+
 .dx-texteditor-input {
   background: var(--color-deep-dark);
   color: var(--color-gray2);
 }
 .dx-texteditor.dx-editor-outlined {
+  background: none;
   border-color: #797878;
 }
 .dx-overlay-content.dx-popup-normal {
@@ -40,10 +50,28 @@ hr{
   color: var(--color-gray);
 }
 .dx-overlay-content.dx-popup-normal .dx-item.dx-list-item.dx-list-item-selected {
-  background: var(--color-gray2);
+  background: var(--color-deep-dark);
 }
+.dx-overlay-content.dx-popup-normal .dx-item.dx-list-item.dx-list-item-selected.dx-state-hover{
+  background: var(--color-gray2)
+}
+
 .dx-overlay-content.dx-popup-normal .dx-item.dx-list-item.dx-state-hover {
   background: var(--color-volvox);
+}
+
+.dx-datagrid{
+  background-color: var(--color-deep-dark);
+  color: var(--color-gray);
+}
+.dx-datagrid-headers {
+  border-bottom: inherit;
+}
+.dx-datagrid-headers, .dx-datagrid-rowsview {
+  border-color: var(--color-dark2) !important;
+}
+.dx-datagrid .dx-column-lines > td {
+  border-color: var(--color-dark2);
 }
 
 .module-enabler.disabled {
@@ -77,6 +105,18 @@ hr{
 
 .gentleselect-dialog {
   background: var(--color-deep-dark) !important;
+}
+
+.border-gray2{
+  border-color: var(--color-dark2) !important
+}
+
+.gentleselect-label {
+  color: white !important;
+}
+
+.sliding-border .info-btn {
+  color: var(--color-gray);
 }
 
 footer {

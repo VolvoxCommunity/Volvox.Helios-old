@@ -9,7 +9,25 @@
 <form method="post" class="col-12">
     <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div class="row border border-gray2 rounded">
+    <div class="row border border-gray2 rounded sliding-border">
+        <div class="col-md-9 col-10 pt-3 pb-3">
+            <h4 class="mb-0">Information and Instructions</h4>
+        </div>
+        <div class="col-md-3 col-2 valign">
+            <div class="btn-group material-btn-group ml-auto">
+                <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
+                    <i class="fas fa-info-circle"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 collapse" id="infoCollapse">
+            <p>
+                Toggle the radio boxes to enable the Remembot module. With the "Add Reminder" button you can send a custom message to a defined channel of your server. You can also set the message interval in which the message should be send. In order to work properly ensure that the remembot module is activated and the status of the message is active.
+            </p>
+        </div>
+    </div>
+
+    <div class="row border border-gray2 rounded mt-4">
         <div class="col-md-9 pt-3 pb-3">
             <h4>Remembot Module</h4>
             <p class="mb-0 text-volvox">
@@ -35,7 +53,7 @@
             <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
         </div>
     </div>
-</form> 
+</form>
 
 <div class="row">
     <div class="col-12 mt-4">
@@ -44,55 +62,13 @@
                 <h3>Reminders</h3>
             </div>
             <div class="col-md-3">
-                <a asp-controller="Remembot" asp-action="EditRecurringReminder" class="btn btn-primary d-block">Add Reminder</a>
+                <a asp-controller="Remembot" asp-action="EditRecurringReminder" class="btn btn-outline-primary d-block">Add Reminder</a>
             </div>
         </div>
 
         @if (Model.RecurringReminders != null && Model.RecurringReminders.Any())
         {
-            <table class="table table-striped table-responsive">
-                <colgroup>
-                    <col />
-                    <col width="100%" />
-                    <col />
-                    <col />
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th>Channel</th>
-                        <th>Message</th>
-                        <th>Status</th>
-                        <th>Edit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var reminder in Model.RecurringReminders)
-                    {
-                        <tr>
-                            <td><span class="badge badge-secondary">#@reminder.ChannelName</span></td>
-                            <td id="message">@reminder.Message</td>
-                            @if (reminder.IsFaulted)
-                            {
-                                <td class="text-danger">@reminder.Status</td>
-                            }
-                            else
-                            {
-                                <td>@reminder.Status</td>
-                            }
-
-                            <td>
-                                <a class="text-volvox"
-                                   asp-controller="Remembot"
-                                   asp-action="EditRecurringReminder"
-                                   asp-route-guildId="@Model.GuildId"
-                                   asp-route-rid="@reminder.Id">
-                                    <i class="fas fa-pen"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <div id="dataGrid" class="rounded" style="overflow: hidden;"></div>
         }
     </div>
 </div>
@@ -107,5 +83,46 @@
 
         var msgText = $('#message').text();
         $('#message').html(msgText);
+
+        String.prototype.replaceAll = function (search, replacement) {
+            var target = this;
+            return target.replace(new RegExp(search, 'g'), replacement);
+        };
+        
+        var src = JSON.parse('@(Html.Raw(Json.Serialize(Model.RecurringReminders)))'.replaceAll('\n', '<br>'));
+        $('#dataGrid').dxDataGrid({
+            dataSource: src,
+            columns: [{
+                    dataField: 'channelName',
+                    caption: 'Channel',
+                    cellTemplate: (e, info) => {
+                        e.append("<span class=\"badge badge-secondary\">" + info.text + "</span>");
+                    }
+                }, {
+                    dataField: 'message',
+                    cellTemplate: (e, info) => {
+                        e.append(info.text.replaceAll('\n', '<br>'))
+                    }
+                }, {
+                    dataField: 'status',
+                    caption: 'Status'
+                }],
+            editing: {
+                allowUpdating: true,
+                useIcons: true
+            },
+            onCellPrepared: (e) => {
+                if (e.column.command == 'edit' && e.rowType == 'data') {
+                    $(e.cellElement).find('a').addClass('text-volvox ').removeClass('dx-link dx-link-edit dx-icon-edit').append('<i class="fas fa-pen"></i>');
+                    $(e.cellElement).find('a').attr('href', '/Remembot/@Model.GuildId?rid=' + e.data.id).off();
+                }
+            },
+            paging: {
+                enabled: true,
+                pageSize: 10
+            },
+            columnAutoWidth: true,
+            height: 400
+        });
     </script>
 }

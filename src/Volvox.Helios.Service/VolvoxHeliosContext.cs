@@ -43,6 +43,8 @@ namespace Volvox.Helios.Service
         public DbSet<DadModuleSettings> DadModuleSettings { get; set; }
         #endregion
 
+        public DbSet<WhiteListedRole> WhiteListedRoles { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

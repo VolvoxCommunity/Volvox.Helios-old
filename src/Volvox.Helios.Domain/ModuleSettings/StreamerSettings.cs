@@ -13,5 +13,7 @@ namespace Volvox.Helios.Domain.ModuleSettings
         public bool StreamerRoleEnabled { get; set; }
 
         public ulong RoleId { get; set; }
+
+        public List<WhiteListedRole> WhiteListedRoleIds { get; set; }
     }
 }

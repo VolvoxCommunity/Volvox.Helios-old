@@ -76,12 +76,15 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         
     <div class="row mt-4">
+        <div>
+            <a asp-action="RemembotSettings" asp-controller="Settings" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Back to List</a>
+        </div>
         <div class="ml-auto">
-            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save Reminder</button>
             @if (Model.Id != default(long))
             {
-                <button type="button" id="deleteBtn" class="btn btn-danger pr-4 pl-4 ml-2" style="border-radius:20px;">Delete Reminder</button>
+                <button type="button" id="deleteBtn" class="btn btn-danger pr-4 pl-4 mr-2" style="border-radius:20px;">Delete Reminder</button>
             }
+            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save Reminder</button>
         </div>
     </div>
     <div class="form-group" style="display:none">
@@ -97,7 +100,6 @@
             <input asp-for="Id" class="form-control" />
         </div>
     </form>
-    <a asp-action="RemembotSettings" asp-controller="Settings">Back to List</a>
 </div>
 
 @section Scripts {
@@ -130,24 +132,28 @@
                 $('input[name="ChannelId"]').val(e.value);
             }
         });
+
         String.prototype.replaceAll = function (search, replacement) {
             var target = this;
             return target.replace(new RegExp(search, 'g'), replacement);
         };
+
         $("#textBox").dxTextArea({
             height: 250,
-            value: '@Model.Message'.replaceAll('&lt;br&gt;', '\n'),
+            value: '@Model.Message'.replaceAll('&#xA;', '\n'),
             onInitialized: (e) => {
-                $('textarea[name="Message"]').html('@Model.Message');
+                $('textarea[name="Message"]').html('@Model.Message'.replaceAll('\n', '<br>'));
             },
             onValueChanged: (e) => {
                 $('textarea[name="Message"]').html(e.value.replaceAll('\n', '<br>'));
             }
         });
+
         $('.module-enabler input:not(".active")').click((e) => {
             $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
             $(e.currentTarget).parent().toggleClass('active disabled');
         });
+
         $(document).ready(function () {
             var faultType = @Model.FaultType;
             var cronExpression = $("#CronExpression").val();
