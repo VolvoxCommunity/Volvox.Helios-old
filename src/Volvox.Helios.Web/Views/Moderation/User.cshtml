@@ -1,58 +1,130 @@
 ﻿@model Volvox.Helios.Web.ViewModels.Moderation.UserViewModel
+@{
+    ViewData["Title"] = "User";
+}
 
+<div class="col-12 breadcrumb-wrapper">
+    <nav aria-label="breadcrumb" class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="Index" class="text-volvox">Moderation</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Moderation" asp-action="Users" class="text-volvox">Users</a></li>
+            <li class="breadcrumb-item active" aria-current="page">User</li>
+        </ol>
+    </nav>
+</div>
 
 <form method="POST">
     <section class="container">
         <div class="vertical-margin-large">
-            <h2>Active Punishments</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <td>Type</td>
-                        <td>Date Expires</td>
-                        <td>Remove</td>
-                    </tr>
-                </thead>
-                @{
+            @{
+                if (Model.ActivePunishments.Count > 0)
+                {
+                    <h2>Active Punishments</h2>
+                    <div class="table-responsive rounded material-table mb-0">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th style="min-width: 100px;">Type</th>
+                                    <th style="min-width: 137px;">Date Expires</th>
+                                    <th class="text-right">Remove</th>
+                                </tr>
+                            </thead>
+                            @{
 
-                    for (int i = 0; i < Model.ActivePunishments.Count; i++)
-                    {
-                        <tr>
-                            <input type="hidden" asp-for="@Model.ActivePunishments[i].Id">
-                            <td><input type="text" asp-for="@Model.ActivePunishments[i].PunishType" class="form-control" asp- /></td>
-                            <td><input type="text" asp-for="@Model.ActivePunishments[i].PunishmentExpires" class="form-control" /></td>
-                            <td><input type="checkbox" asp-for="@Model.ActivePunishments[i].Remove" /></td>
-                        </tr>
-                    }
+                                for (int i = 0; i < Model.ActivePunishments.Count; i++)
+                                {
+                                    <input type="hidden" asp-for="@Model.ActivePunishments[i].Id">
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td>@Model.ActivePunishments[i].PunishType</td>
+                                        <td>@Model.ActivePunishments[i].PunishmentExpires</td>
+                                        <td>
+                                            <div class="material-checkbox text-right">
+                                                <input type="hidden" asp-for="@(Model.ActivePunishments[i].Remove)" value="@(Model.ActivePunishments[i].Remove.ToString().ToLower())" />
+                                                <a href="#" onclick="toggleInput(event)">
+                                                    <i class="far fa-square"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                    </div>
+
+                    <hr />
                 }
-            </table>
-
-            <hr />
-            <h2>Warnings</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <td>Type</td>
-                        <td>Date Received</td>
-                        <td>Date Expires</td>
-                        <td>Remove</td>
-                    </tr>
-                </thead>
-                @{
-                    for (int i = 0; i < Model.Warnings.Count; i++)
-                    {
-                        <tr>
-                            <input type="hidden" asp-for="@Model.Warnings[i].Id">
-                            <td><input type="text" asp-for="@Model.Warnings[i].WarningType" class="form-control" /></td>
-                            <td><input type="text" asp-for="@Model.Warnings[i].WarningRecieved" class="form-control" /></td>
-                            <td><input type="text" asp-for="@Model.Warnings[i].WarningExpires" class="form-control" /></td>
-                            <td><input type="checkbox" asp-for="@Model.Warnings[i].Remove" /></td>
-                        </tr>
-                    }
+                else
+                {
+                    <div class="alert alert-warning">
+                        No punishments are active for this user.
+                    </div>
                 }
-            </table>
+            }
+
+            @{
+                if (Model.Warnings.Count > 0)
+                {
+                    <h2>Warnings</h2>
+                    <div class="table-responsive">
+                        <table class="table rounded material-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col" style="min-width: 100px;">Type</th>
+                                    <th scope="col" style="min-width: 137px;">Date Received</th>
+                                    <th scope="col" style="min-width: 137px;">Date Expires</th>
+                                    <th scope="col" class="text-right">Remove</th>
+                                </tr>
+                            </thead>
+                            @{
+                                for (int i = 0; i < Model.Warnings.Count; i++)
+                                {
+                                    <input type="hidden" asp-for="@Model.Warnings[i].Id">
+                                    <tr>
+                                        <td scope="row">@(i + 1)</td>
+                                        <td>@Model.Warnings[i].WarningType</td>
+                                        <td>@Model.Warnings[i].WarningRecieved</td>
+                                        <td>@Model.Warnings[i].WarningExpires</td>
+                                        <td>
+                                            <div class="material-checkbox text-right">
+                                                <input type="hidden" asp-for="@(Model.Warnings[i].Remove)" value="@(Model.Warnings[i].Remove.ToString().ToLower())" />
+                                                <a href="#" onclick="toggleInput(event)">
+                                                    <i class="far fa-square"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        No warnings are active for this user.
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-12">
+            <div class="row">
+                <button type="submit" class="btn save-btn btn-volvox-outline ml-auto">Save</button>
+            </div>
         </div>
     </section>
-    <input type="submit" class="btn btn-primary" />
 </form>
+
+@section Scripts {
+    <script>
+        $('main').removeClass('container').addClass('p-0 mt-0');
+        function toggleInput(e) {
+            let parent = $(e.target).closest('.material-checkbox');
+            let remove = parent.find('input:hidden').attr('value');
+            parent.find('input:hidden').attr('value', remove === 'true' ? false : true);
+            parent.find('i').toggleClass('fas far fa-square fa-check-square animate');
+        }
+    </script>
+}

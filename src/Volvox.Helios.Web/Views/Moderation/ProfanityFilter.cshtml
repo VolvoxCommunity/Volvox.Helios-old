@@ -107,7 +107,7 @@
 
             <div class="row module-input-wrapper mt-3 rounded sliding-border">
                 <div class="col-md-9 col-10 pt-3 pb-3">
-                    <h4 class="mb-0">Show default banned words</h4>
+                    <h4 class="mb-0">Show banned words</h4>
                 </div>
                 <div class="col-md-3 col-2 valign">
                     <div class="btn-group material-btn-group ml-auto">
@@ -134,6 +134,12 @@
     <script>
         $('main').removeClass('container').addClass('p-0 mt-0');
 
+        $('input[type="text"]').keypress((e) => {
+            if (e.keyCode == 13) {
+                return false;
+            }
+        });
+
         $('.module-enabler input:not(".active")').click((e) => {
             $(e.currentTarget).closest('.module-enabler').parent().find('.active').toggleClass('active disabled');
             $(e.currentTarget).closest('.module-enabler').toggleClass('active disabled');
@@ -141,11 +147,12 @@
 
         @{var text = System.IO.File.ReadAllText(System.IO.Directory.GetCurrentDirectory() + "\\defaultbannedwords.json");}
         let bannedWords = JSON.parse(@(Html.Raw(Json.Serialize(text))))['BannedWords'];
-        for (let i = 0; i < bannedWords.length; i++) {
-            $('#infoCollapse ul').append(`
-                <li>${bannedWords[i]}</li>
-            `)
-        }
+        let bannedWordsData = JSON.parse('@Html.Raw(Json.Serialize(Model.BannedWords))');
+
+        for (let i = 0; i < bannedWords.length; i++)
+            $('#infoCollapse ul').append(`<li>${bannedWords[i]}</li>`);
+        for (let i = 0; i < bannedWordsData.length; i++)
+            $('#infoCollapse ul').append(`<li>${bannedWordsData[i].text}</li>`);
 
         var warningExpirePeriod = @(Html.Raw(Model.WarningExpirePeriod));
         $('#warningExpirePeriod').dxNumberBox({
@@ -193,7 +200,7 @@
             }
         });
 
-        let bannedWordsData = JSON.parse('@Html.Raw(Json.Serialize(Model.BannedWords))');
+        
         let tagBox = $('#bannedWords').dxTagBox({
             dataSource: bannedWordsData,
             valueExpr: "text",

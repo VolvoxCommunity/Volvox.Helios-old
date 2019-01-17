@@ -96,6 +96,12 @@
     <script>
         $('main').removeClass('container').addClass('p-0 mt-0');
 
+        $('input[type="text"]').keypress((e) => {
+            if (e.keyCode == 13) {
+                return false;
+            }
+        });
+
         $('.module-enabler input:not(".active")').click((e) => {
             $(e.currentTarget).closest('.module-enabler').parent().find('.active').toggleClass('active disabled');
             $(e.currentTarget).closest('.module-enabler').toggleClass('active disabled');
