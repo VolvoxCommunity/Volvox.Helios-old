@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using FluentCache;
+using FluentCache.Simple;
 using Microsoft.EntityFrameworkCore;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.Module.ChatTracker;
@@ -164,6 +167,105 @@ namespace Tests.Unit.Volvox.Helios.Service.EntityServiceTests
                 // Assert
                 Assert.Single(context.Messages);
                 Assert.Equal(id, context.Messages.Single().AuthorId);
+            }
+        }
+
+        [Fact]
+        public async Task Caching_Entity_Service_PK()
+        {
+            using (var context = GetInMemoryContext())
+            {
+                var cache = new FluentDictionaryCache();
+
+                var entityService = new CachedEntityService<RecurringReminderMessage>(context, new EntityChangedDispatcher<RecurringReminderMessage>(), cache);
+
+                var reminder = new RecurringReminderMessage
+                {
+                    Message = "Test Message",
+                    Id = 1,
+                    Fault = RecurringReminderMessage.FaultType.None,
+                    Enabled = true,
+                    GuildId = 100,
+                    ChannelId = 1,
+                    CronExpression = "* * * * *"
+                };
+
+                await entityService.Create(reminder);
+
+                var pkReminder = await entityService.Find(reminder.Id);
+
+                var key = CachedEntityService<RecurringReminderMessage>.GetCacheKey(new object[] { reminder.Id });
+
+                var cacheEntry = cache.WithKey(key).Get<RecurringReminderMessage>();
+
+                Assert.True(cacheEntry.Value != null);
+                Assert.True(cacheEntry.Value.Id == pkReminder.Id);
+                Assert.True(cacheEntry.Value.Message == "Test Message");
+
+                pkReminder.Message = "Test Message 2";
+                await entityService.Update(pkReminder);
+
+                cacheEntry = cache.WithKey(key).Get<RecurringReminderMessage>();
+
+                Assert.True(cacheEntry.Value == null);
+
+                var lastCheck = await entityService.Find(reminder.Id);
+
+                Assert.True(lastCheck.Message == "Test Message 2");
+            }
+        }
+
+        [Fact]
+        public async Task Caching_Entity_Service_Expression()
+        {
+            using (var context = GetInMemoryContext())
+            {
+                var cache = new FluentDictionaryCache();
+
+                var entityService = new CachedEntityService<RecurringReminderMessage>(context,
+                    new EntityChangedDispatcher<RecurringReminderMessage>(), cache);
+
+                var reminder = new RecurringReminderMessage
+                {
+                    Message = "Test Message",
+                    Id = 1,
+                    Fault = RecurringReminderMessage.FaultType.None,
+                    Enabled = true,
+                    GuildId = 100,
+                    ChannelId = 1,
+                    CronExpression = "* * * * *"
+                };
+
+                await entityService.Create(reminder);
+
+                Expression<Func<RecurringReminderMessage, bool>> predicate = r => r.Id == reminder.Id;
+
+                var pkReminder = ( await entityService
+                        .Get(predicate) )
+                    .FirstOrDefault();
+
+                var key = entityService.GetCacheKey(predicate, null);
+
+                var cacheEntry = cache.WithKey(key)
+                    .Get<List<RecurringReminderMessage>>();
+
+                Assert.True(cacheEntry.Value != null);
+                Assert.True(cacheEntry.Value[0].Id == pkReminder.Id);
+                Assert.True(cacheEntry.Value[0].Message == "Test Message");
+
+                pkReminder.Message = "Test Message 2";
+                await entityService.Update(pkReminder);
+
+                cacheEntry = cache.WithKey(key)
+                    .Get<List<RecurringReminderMessage>>();
+
+                Assert.True(cacheEntry.Value == null);
+
+                var lastCheck = ( await entityService
+                    .Get(predicate) )
+                    .FirstOrDefault();
+
+                Assert.True(lastCheck?.Message == "Test Message 2");
             }
         }
     }
