@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using FluentCache;
@@ -16,6 +17,7 @@ namespace Volvox.Helios.Service.EntityService
         where T : class
     {
         private readonly ICache _cache;
+        private readonly IDictionary<string, IList<string>> _cacheExpressionKeys;
 
         public CachedEntityService(VolvoxHeliosContext context,
             EntityChangedDispatcher<T> dispatch,
@@ -23,10 +25,11 @@ namespace Volvox.Helios.Service.EntityService
             : base(context, dispatch)
         {
             _cache = cache;
+            _cacheExpressionKeys = new Dictionary<string, IList<string>>();
         }
 
         /// <summary>
-        ///     Get the first entity from the cache or database that matches the primary key. 
+        ///     Get the first entity from the cache or database that matches the primary key.
         /// </summary>
         /// <param name="keys">Primary keys used to find the entity.</param>
         /// <returns>First entity matching the primary key.</returns>
@@ -35,7 +38,51 @@ namespace Volvox.Helios.Service.EntityService
             return _cache.WithKey(GetCacheKey(keys))
                 .RetrieveUsingAsync(() => base.Find(keys))
                 .ExpireAfter(TimeSpan.FromDays(1))
+                .InvalidateIf(c => c.Value != null)
                 .GetValueAsync();
+        }
+
+        /// <inheritdoc cref="IEntityService{T}"/>
+        public override Task<List<T>> Get(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes)
+        {
+            var key = GetCacheKey(filter, includes);
+
+            return _cache.WithKey(key)
+                .RetrieveUsingAsync(() =>
+                {
+                    UpdateSubKey(key);
+                    return base.Get(filter, includes);
+                })
+                .ExpireAfter(TimeSpan.FromDays(1))
+                .InvalidateIf(c => c.Value != null)
+                .GetValueAsync();
+        }
+
+        public override Task<List<T>> GetAll(params Expression<Func<T, object>>[] includes)
+        {
+            var key = GetCacheKey(null, includes);
+
+            return _cache.WithKey(key)
+                .RetrieveUsingAsync(() =>
+                {
+                    UpdateSubKey(key);
+                    return base.GetAll(includes);
+                })
+                .ExpireAfter(TimeSpan.FromDays(1))
+                .InvalidateIf(c => c.Value != null)
+                .GetValueAsync();
+        }
+
+        public async override Task Create(T entity)
+        {
+            await base.Create(entity);
+            InvalidateFor(entity);
+        }
+
+        public async override Task CreateBulk(IEnumerable<T> entities)
+        {
+            await base.CreateBulk(entities);
+            InvalidateForBulk(entities);
         }
 
         /// <summary>
@@ -44,7 +91,7 @@ namespace Volvox.Helios.Service.EntityService
         /// <param name="entity">Entity to update.</param>
         public async override Task Update(T entity)
         {
-            await base.Create(entity);
+            await base.Update(entity);
             InvalidateFor(entity);
         }
 
@@ -76,7 +123,17 @@ namespace Volvox.Helios.Service.EntityService
         {
             var primaryKeys = GetPrimaryKeyValues(entity);
             var cacheKey = GetCacheKey(primaryKeys);
-            _cache.WithKey(cacheKey);
+            var typeName = typeof(T).Name;
+
+            if (_cacheExpressionKeys.TryGetValue(typeName, out var subKeys))
+            {
+                foreach (var subKey in subKeys)
+                    _cache.WithKey(subKey).ClearValue();
+
+                _cacheExpressionKeys.Remove(typeName);
+            }
+
+            _cache.WithKey(cacheKey).ClearValue();
         }
 
         /// <summary>
@@ -86,7 +143,7 @@ namespace Volvox.Helios.Service.EntityService
         private void InvalidateForBulk(IEnumerable<T> entities)
         {
             foreach (var entity in entities)
-                InvalidateFor(entity);           
+                InvalidateFor(entity);
         }
 
         /// <summary>
@@ -113,17 +170,47 @@ namespace Volvox.Helios.Service.EntityService
         /// </summary>
         /// <param name="pks"></param>
         /// <returns></returns>
-        private static string GetCacheKey(object[] pks)
+        public static string GetCacheKey(object[] pks)
         {
             if (pks.Length == 1)
-                return $"Entity:{typeof(T)},PrimaryKey:{pks[0]}";
+                return $"Entity:{typeof(T).Name},PrimaryKey:{pks[0]}";
 
-            var sb = new StringBuilder($"Entity:{typeof(T)}");
+            var sb = new StringBuilder($"Entity:{typeof(T).FullName}");
 
             for (var i = 0; i < pks.Length; i++)
                 sb.Append($",PrimaryKey_{i}:{pks[i]}");
 
             return sb.ToString();
+        }
+
+        public string GetCacheKey(Expression<Func<T, bool>> predicate, Expression<Func<T, object>>[] includes)
+        {
+            var typeName = typeof(T).Name;
+
+            var sb = new StringBuilder(typeName);
+
+            if(predicate != null)
+                sb.Append($"Predicate:{predicate};");
+
+            if (includes != null && includes.Any())
+            {
+                sb.Append("Includes:[");
+                foreach (var include in includes)
+                    sb.Append(include);
+                sb.Append("];");
+            }
+
+            return sb.ToString();
+        }
+
+        private void UpdateSubKey(string subKey)
+        {
+            var typeName = typeof(T).Name;
+
+            if (_cacheExpressionKeys.ContainsKey(typeof(T).FullName))
+                _cacheExpressionKeys[typeName].Add(subKey);
+            else
+                _cacheExpressionKeys.Add(typeName, new List<string> { subKey });
         }
     }
 }
