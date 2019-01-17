@@ -16,6 +16,12 @@
                 <a href="#" onclick="toggleAccBtn(event);" class="text-volvox mr-3" data-toggle="collapse" data-target="#s-@i" aria-expanded="true" aria-controls="s-@i">
                     <i class="fas fa-toggle-on d-block"></i>
                 </a>
+                <a href="#" class="text-volvox mr-3" onclick="moveDashboard(event, 'up')">
+                    <i class="fas fa-chevron-up"></i>
+                </a>
+                <a href="#" class="text-volvox mr-3" onclick="moveDashboard(event, 'down')">
+                    <i class="fas fa-chevron-down"></i>
+                </a>
                 @if (uG.Guild.Details.IsBotInGuild)
                 {
                     <a class="text-volvox mr-3" asp-action="Details" asp-route-guildId="@uG.Guild.Id">
@@ -61,7 +67,6 @@
                 $('.dashboard-guild-header').closest('.card:not(".dragging")').addClass('blur');
             }
         });
-
         $('body').mousedown((e) => {
             var target = $(e.target);
             if (target.is('h5'))
@@ -90,6 +95,16 @@
             }
             draggingCard = null;
         });
+        function moveDashboard(e, type) {
+            let card = $(e.target).closest('.card');
+            if (type == 'up') {
+                card.insertBefore(card.prev());
+            } else if (type == 'down') {
+                card.insertAfter(card.next());
+            }
+
+            return false;
+        }
 
         function toggleAccBtn(e) {
             const el = $(e.target);
@@ -97,14 +112,6 @@
                 el.removeClass('fa-toggle-on').addClass('fa-toggle-off');
             else
                 el.removeClass('fa-toggle-off').addClass('fa-toggle-on');
-        }
-
-        function toggleFavouriteBtn(e) {
-            const el = $(e.target).find('i');
-            if (el.hasClass('fas'))
-                el.removeClass('fas').addClass('far');
-            else
-                el.removeClass('far').addClass('fas');
         }
     </script>
 }
