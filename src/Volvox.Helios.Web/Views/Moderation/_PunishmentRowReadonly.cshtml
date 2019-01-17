@@ -17,7 +17,7 @@
     <td>@Model.PunishDuration</td>
     <td>@Model.WarningType</td>
     <td>@Model.WarningThreshold</td>
-    <td>@Model.Role.First().Text</td>
+    <td>@(Model.Role.Where(r => r.Value == $"{Model.RoleId}").FirstOrDefault()?.Text ?? "-")</td>
     <td>
         <div class="material-checkbox text-right">
             <input type="hidden" asp-for="DeletePunishment" value="@Model.DeletePunishment.ToString().ToLower()" />
