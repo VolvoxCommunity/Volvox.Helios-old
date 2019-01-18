@@ -6,7 +6,26 @@
 <h2>@ViewData["Title"]</h2>
 <hr>
 <form method="post" class="col-12">
-    <div class="row rounded module-input-wrapper">
+
+    <div class="row border border-gray2 rounded sliding-border">
+        <div class="col-md-9 col-10 pt-3 pb-3">
+            <h4 class="mb-0">Information and Instructions</h4>
+        </div>
+        <div class="col-md-3 col-2 valign">
+            <div class="btn-group material-btn-group ml-auto">
+                <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
+                    <i class="fas fa-info-circle"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 collapse" id="infoCollapse">
+            <p>
+                Enable this module to track you chat and have a more detailed analytics of the chat.
+            </p>
+        </div>
+    </div>
+
+    <div class="row border border-gray2 rounded mt-4">
         <div class="col-md-9 pt-3 pb-3">
             <h4>Chat tracker Module</h4>
             <p class="mb-0 text-volvox">

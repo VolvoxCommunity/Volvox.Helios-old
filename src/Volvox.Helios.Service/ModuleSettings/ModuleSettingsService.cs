@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -12,15 +13,17 @@ namespace Volvox.Helios.Service.ModuleSettings
     public class ModuleSettingsService<T> : IModuleSettingsService<T> where T : Domain.ModuleSettings.ModuleSettings
     {
         private readonly ICache _cache;
+        private readonly Dictionary<ulong, List<string>> _guildCacheKeys;
         private readonly IServiceScopeFactory _scopeFactory;
-
-        public event EventHandler<ModuleSettingsChangedArgs<T>> SettingsChanged;
 
         public ModuleSettingsService(IServiceScopeFactory scopeFactory, ICache cache)
         {
             _scopeFactory = scopeFactory;
             _cache = cache;
+            _guildCacheKeys = new Dictionary<ulong, List<string>>();
         }
+
+        public event EventHandler<ModuleSettingsChangedArgs<T>> SettingsChanged;
 
         /// <inheritdoc />
         public async Task SaveSettings(T settings)
@@ -41,8 +44,10 @@ namespace Volvox.Helios.Service.ModuleSettings
 
                 await context.SaveChangesAsync();
 
-                // Reset the cache value.
-                _cache.WithKey(GetCacheKey(settings.GuildId)).ClearValue();
+                // Reset all of the cache keys for the specified guild.
+                if (_guildCacheKeys.ContainsKey(settings.GuildId))
+                    foreach (var cacheKey in _guildCacheKeys[settings.GuildId])
+                        _cache.WithKey(cacheKey).ClearValue();
 
                 OnSettingsChanged(settings);
             }
@@ -57,21 +62,29 @@ namespace Volvox.Helios.Service.ModuleSettings
                 var context = scope.ServiceProvider.GetRequiredService<VolvoxHeliosContext>();
 
                 // Cache the settings.
-                var cachedSetting = await _cache.WithKey(GetCacheKey(guildId))
+                var cacheKey = GetCacheKey(guildId, includes);
+
+                var cachedSetting = await _cache.WithKey(cacheKey)
                     .RetrieveUsingAsync(async () =>
                     {
                         var query = context.Set<T>().AsQueryable();
 
                         if (includes != null)
-                        {
                             query = includes.Aggregate(query, (current, include) => current.Include(include));
-                        }
 
                         return await query.FirstOrDefaultAsync(s => s.GuildId == guildId);
                     })
                     .InvalidateIf(cachedValue => cachedValue.Value != null)
                     .ExpireAfter(TimeSpan.FromDays(1))
                     .GetValueAsync();
+
+                // Initialize new guild cache.
+                if (!_guildCacheKeys.ContainsKey(guildId))
+                    _guildCacheKeys.Add(guildId, new List<string>());
+
+                // Add cache key to the list.
+                if (!_guildCacheKeys[guildId].Contains(cacheKey))
+                    _guildCacheKeys[guildId].Add(cacheKey);
 
                 return cachedSetting;
             }
@@ -103,10 +116,17 @@ namespace Volvox.Helios.Service.ModuleSettings
         ///     Create a unique caching key based on the specified guild.
         /// </summary>
         /// <param name="guildId">Id of the guild.</param>
+        /// <param name="includes">Navigation property includes to eager load.</param>
         /// <returns>Cache key based on the specified guild.</returns>
-        private static string GetCacheKey(ulong guildId)
+        private static string GetCacheKey(ulong guildId, params Expression<Func<T, object>>[] includes)
         {
-            return $"Setting:{typeof(T).Name}Guild:{guildId}";
+            var includesKey = "";
+
+            // Append all of the includes to the cache key.
+            if (includes.Length > 0)
+                includesKey = includes.Aggregate(includesKey, (current, include) => current + include.Body);
+
+            return $"Setting:{typeof(T).Name}Guild:{guildId}Includes:{includesKey}";
         }
 
         private void OnSettingsChanged(T settings)

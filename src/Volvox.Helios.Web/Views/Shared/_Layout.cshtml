@@ -100,17 +100,20 @@
         <footer class="col-12 pt-4 pb-4 mt-5">
             <div class="container">
                 <div class="col-md-6 text-center mx-auto">
-                    <a href="https://github.com/VolvoxCommunity/Volvox.Helios/" class="bg-volvox d-inline-flex footer-icon valign rounded-circle mr-2" target="_blank">
+                   <a href="https://github.com/VolvoxCommunity/Volvox.Helios/" class="d-inline-flex footer-icon valign" target="_blank">
                         <i class="fab fa-github"></i>
                     </a>
-                    <a href="https://discord.gg/jReSmc3" class="bg-volvox d-inline-flex valign rounded-circle footer-icon" target="_blank">
+                    <a href="https://discord.gg/jReSmc3" class="d-inline-flex footer-icon valign" target="_blank">
                         <i class="fab fa-discord"></i>
+                    </a>
+                    <a href="#" class="d-inline-flex footer-icon valign" target="_blank">
+                        <i class="fas fa-hand-holding-usd"></i>
                     </a>
                 </div>
                 <hr class="border-volvox col-md-6 mt-4">
                 <p class="mb-0 text-center">
                     @{ var version = Assembly.GetEntryAssembly().GetName().Version; }
-                    &copy; 2018 - Volvox.Helios v@(version.Major).@(version.Minor).@(version.Build)
+                    &copy; @DateTime.Now.Year - Volvox.Helios v@(version.Major).@(version.Minor).@(version.Build)
                 </p>
             </div>
         </footer>

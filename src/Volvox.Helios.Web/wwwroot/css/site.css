@@ -3,6 +3,7 @@
   --color-volvox: #5DCC32;
   --color-skyblue: #26B2FF;
   --color-dark: #2D2F32;
+  --color-dark2: #515352;
   --color-deep-dark: #121111;
   --color-gray: #EAEAEA;
   --color-gray2: #B2B2B2;
@@ -135,6 +136,19 @@ a:hover {
 /* QR code generator */
 #qrCode {
   margin: 15px;
+}
+
+.gentleselect-dialog {
+  border-radius: 4px !important;
+  margin-top: 10px !important;
+  border-width: 1px !important;
+  box-shadow: none !important;
+}
+.gentleselect-label {
+  background: none !important;
+  border-width: 1px !important;
+  margin-left: 10px !important;
+  padding: 0px 18px !important;
 }
 
 /* Hide/rearrange for smaller screens */
@@ -276,12 +290,6 @@ input:checked + .slider {
 }
 
 /*****************************************/
-
-
-.settings-group {
-  border-bottom: 1px #1d1c1c solid;
-  margin-bottom:10px;
-}
 
 /*************** Dashboard ***************/
 
@@ -475,12 +483,11 @@ input:checked + .slider {
 
 /******* Footer ********/
 .footer-icon {
-  width: 40px;
-  height: 40px;
+  padding: 10px;
   justify-content: center;
-  border: 2px solid var(--color-volvox);
   color: white;
-  transition: .5s;
+  transition: .3s;
+  font-size: 20px;
 }
 
   .footer-icon:hover {
@@ -490,7 +497,7 @@ input:checked + .slider {
 
 
 /**** Devextreme ****/
-.dx-editor-outlined {
+.dx-editor-outlined:not(.dx-tagbox) {
   border-color: #ced4da;
   height: 38px;
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
@@ -503,6 +510,42 @@ input:checked + .slider {
 .dx-list-item.dx-state-active {
   background: var(--color-volvox) !important;
 }
+
+/*Sliding border*/
+.sliding-border{
+  position: relative;
+}
+  .info-btn i{
+    font-size: 20px;
+  }
+
+  .sliding-border::after, .sliding-border::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    background: var(--color-volvox);
+    transition: all .3s;
+  }
+
+  .sliding-border::before {
+    height: 0;
+    width: 2px;
+    border-radius: .25rem 0 0 .25rem;
+  }
+
+  .sliding-border::after {
+    height: 2px;
+    width: 100%;
+    border-radius: .25rem .25rem 0 0;
+  }
+  .sliding-border.animate::after{
+    width: 0;
+  }
+
+  .sliding-border.animate::before {
+    height: 100%;
+  }
+
 
 /***********Punishment table************/
 @keyframes checkboxScale{

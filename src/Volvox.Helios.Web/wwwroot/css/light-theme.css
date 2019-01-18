@@ -1,4 +1,9 @@
-﻿.module-enabler{
+﻿::selection {
+  color: white;
+  background: var(--color-dark2);
+}
+
+.module-enabler{
   border-color: var(--color-gray2);
   color: var(--color-gray2);
   cursor: pointer;
@@ -31,6 +36,10 @@
   .user-list .user-link:hover {
     color: #555;
   }
+
+.sliding-border .info-btn{
+  color: var(--color-deep-dark);
+}
 
 footer{
   background: #eee;
