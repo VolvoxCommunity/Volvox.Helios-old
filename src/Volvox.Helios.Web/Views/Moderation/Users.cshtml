@@ -29,10 +29,21 @@
         var pageNext = Model.PageNo + 1;
         var pagePrev = ((Model.PageNo - 1) < 0) ? 0 : Model.PageNo - 1;
 
-        <div class="mt-2">
-            <a asp-controller="Moderation" asp-action="users" asp-route-pageNo="@pagePrev" class="btn-prev text-volvox">Prev</a>
-            <a asp-controller="Moderation" asp-action="users" asp-route-pageNo="@pageNext" class="btn-next text-volvox">Next</a>
-        </div>
+        if (Model.TotalPageCount > 1)
+        {
+            <div class="mt-3">
+                <a asp-controller="Moderation" asp-action="users" asp-route-pageNo="@pagePrev" class="btn-prev text-volvox">Prev</a>
+                <a asp-controller="Moderation" asp-action="users" asp-route-pageNo="@pageNext" class="btn-next text-volvox">Next</a>
+
+                <div class="ml-3 d-inline">
+                    @for (int i = 0; i < Model.TotalPageCount; i++)
+                    {
+                        <a asp-controller="Moderation" asp-action="users" asp-route-pageNo="@(i + 1)" class="btn-volvox-outline text-volvox btn-page">@(i + 1)</a>
+                    }
+                </div>
+            </div>
+        }
+
     }
 </div>
 

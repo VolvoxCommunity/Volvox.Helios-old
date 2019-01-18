@@ -34,9 +34,11 @@
         <div id="warningThreshold" class="mb-3"></div>
         <input type="hidden" asp-for="WarningThreshold" value="1" />
 
-        <label asp-for="RoleId">Role</label>
-        <div id="role" class="mb-2"></div>
-        <input type="hidden" asp-for="RoleId" value="@(Model.Role.First().Value)" />
+        <div id="roleWrapper" style="display: none;">
+            <label asp-for="RoleId">Role</label>
+            <div id="role" class="mb-2"></div>
+            <input type="hidden" asp-for="RoleId" value="@(Model.Role.First().Value)" />
+        </div>
     </div>
     <div class="row mt-4">
         <div class="col-12 d-flex flex-wrap">
@@ -58,6 +60,11 @@
             searchEnabled: true,
             onValueChanged: (e) => {
                 $('input[name="PunishType"]').val(e.value);
+                if (e.value == 2) {
+                    $('#roleWrapper').fadeIn();
+                } else {
+                    $('#roleWrapper').fadeOut();
+                }
             }
         });
 
