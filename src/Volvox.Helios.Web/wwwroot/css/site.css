@@ -87,7 +87,11 @@ a:hover {
 
 .btn:focus, .btn:active{
   outline: 0;
-  box-shadow: none;
+  box-shadow: none !important;
+}
+
+.btn-outline-primary:active {
+  background: rgba(0, 123, 255, .3) !important;
 }
 
 .btn-volvox-outline {
@@ -97,10 +101,14 @@ a:hover {
   box-shadow: none !important;
 }
 
-.btn-volvox-outline:hover {
-  background: var(--color-volvox);
-  color: white;
-}
+  .btn-volvox-outline:hover {
+    background: var(--color-volvox);
+    color: white;
+  }
+  .btn-volvox-outline:active {
+    background: rgba(93, 204, 50, .3);
+    color: white;
+  }
 
 .material-btn-group .btn {
   border-radius: 1.25rem;
@@ -502,6 +510,9 @@ input:checked + .slider {
   height: 38px;
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
+.dx-editor-outlined{
+  overflow: hidden;
+}
 
 .dx-texteditor.dx-state-hover, .dx-texteditor.dx-state-focused {
   border-color: var(--color-volvox) !important;
@@ -512,7 +523,7 @@ input:checked + .slider {
 }
 
 /*Sliding border*/
-.sliding-border{
+.sliding-border {
   position: relative;
 }
   .info-btn i{

@@ -9,7 +9,7 @@
 <form method="post" class="col-12">
     <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div class="row border border-gray2 rounded sliding-border">
+    <div class="row module-input-wrapper rounded sliding-border">
         <div class="col-md-9 col-10 pt-3 pb-3">
             <h4 class="mb-0">Information and Instructions</h4>
         </div>
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    <div class="row border border-gray2 rounded mt-4">
+    <div class="row rounded module-input-wrapper mt-4">
         <div class="col-md-9 pt-3 pb-3">
             <h4>Remembot Module</h4>
             <p class="mb-0 text-volvox">
@@ -68,53 +68,51 @@
 
         @if (Model.RecurringReminders != null && Model.RecurringReminders.Any())
         {
-            <div id="dataGrid" class="rounded" style="overflow: hidden;"></div>
-        }
-        <div class="table-responsive">
-            <table class="table material-table rounded">
-                <colgroup>
-                    <col />
-                    <col width="100%" />
-                    <col />
-                    <col />
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th>Channel</th>
-                        <th>Message</th>
-                        <th>Status</th>
-                        <th>Edit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var reminder in Model.RecurringReminders)
-                    {
+            <div class="table-responsive">
+                <table class="table material-table rounded">
+                    <colgroup>
+                        <col />
+                        <col width="100%" />
+                        <col />
+                        <col />
+                    </colgroup>
+                    <thead>
                         <tr>
-                            <td><span class="badge badge-secondary">#@reminder.ChannelName</span></td>
-                            <td id="message">@reminder.Message</td>
-                            @if (reminder.IsFaulted)
-                            {
-                                <td class="text-danger">@reminder.Status</td>
-                            }
-                            else
-                            {
-                                <td>@reminder.Status</td>
-                            }
-
-                            <td>
-                                <a class="text-volvox"
-                                   asp-controller="Remembot"
-                                   asp-action="EditRecurringReminder"
-                                   asp-route-guildId="@Model.GuildId"
-                                   asp-route-rid="@reminder.Id">
-                                    <i class="fas fa-pen"></i>
-                                </a>
-                            </td>
+                            <th>Channel</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                            <th>Edit</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var reminder in Model.RecurringReminders)
+                        {
+                            <tr>
+                                <td><span class="badge badge-secondary">#@reminder.ChannelName</span></td>
+                                <td id="message">@(Html.Raw(reminder.Message.Replace("\n", "<br>")))</td>
+                                @if (reminder.IsFaulted)
+                                {
+                                    <td class="text-danger">@reminder.Status</td>
+                                }
+                                else
+                                {
+                                    <td>@reminder.Status</td>
+                                }
+
+                                <td>
+                                    <a class="text-volvox"
+                                       asp-controller="Remembot"
+                                       asp-action="EditRecurringReminder"
+                                       asp-route-guildId="@Model.GuildId"
+                                       asp-route-rid="@reminder.Id">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
     </div>
 </div>
@@ -129,46 +127,6 @@
 
         var msgText = $('#message').text();
         $('#message').html(msgText);
-
-        String.prototype.replaceAll = function (search, replacement) {
-            var target = this;
-            return target.replace(new RegExp(search, 'g'), replacement);
-        };
         
-        var src = JSON.parse('@(Html.Raw(Json.Serialize(Model.RecurringReminders)))'.replaceAll('\n', '<br>'));
-        $('#dataGrid').dxDataGrid({
-            dataSource: src,
-            columns: [{
-                    dataField: 'channelName',
-                    caption: 'Channel',
-                    cellTemplate: (e, info) => {
-                        e.append("<span class=\"badge badge-secondary\">" + info.text + "</span>");
-                    }
-                }, {
-                    dataField: 'message',
-                    cellTemplate: (e, info) => {
-                        e.append(info.text.replaceAll('\n', '<br>'))
-                    }
-                }, {
-                    dataField: 'status',
-                    caption: 'Status'
-                }],
-            editing: {
-                allowUpdating: true,
-                useIcons: true
-            },
-            onCellPrepared: (e) => {
-                if (e.column.command == 'edit' && e.rowType == 'data') {
-                    $(e.cellElement).find('a').addClass('text-volvox ').removeClass('dx-link dx-link-edit dx-icon-edit').append('<i class="fas fa-pen"></i>');
-                    $(e.cellElement).find('a').attr('href', '/Remembot/@Model.GuildId?rid=' + e.data.id).off();
-                }
-            },
-            paging: {
-                enabled: true,
-                pageSize: 10
-            },
-            columnAutoWidth: true,
-            height: 400
-        });
     </script>
 }
