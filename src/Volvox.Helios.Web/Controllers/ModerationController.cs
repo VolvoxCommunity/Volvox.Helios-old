@@ -27,7 +27,7 @@ namespace Volvox.Helios.Web.Controllers
 {
     // TODO : Change views to modern razor pages instead of @html stuff
     // TODO : Find more efficient way of making all those db calls. No way of batching them currently.
-
+                                                                                    // TODO NEXT REFACTOR USING LATEST CACHING DONE BY BAPES/COIN
     [Authorize]
     [Route("/Moderation/{guildId}")]
     [IsUserGuildAdminFilter]
@@ -499,6 +499,7 @@ namespace Volvox.Helios.Web.Controllers
             {
                 ActivePunishments = user?.ActivePunishments ?? new List<ActivePunishment>(),
                 Warnings = user?.Warnings ?? new List<Warning>(),
+                UserId = socketUser.Id,
                 Username = socketUser.Username,
                 Discriminator = socketUser.Discriminator.ToString()
             };
