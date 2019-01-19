@@ -112,7 +112,8 @@
                 </div>
                 <hr class="border-volvox col-md-6 mt-4">
                 <p class="mb-0 text-center">
-                    &copy; 2018 - @DateTime.Now.Year | Volvox.Helios v@(Assembly.GetEntryAssembly().GetName().Version.Major).@(Assembly.GetEntryAssembly().GetName().Version.Minor).@(Assembly.GetEntryAssembly().GetName().Version.Build)
+                    @{ var version = Assembly.GetEntryAssembly().GetName().Version; }
+                    &copy; @DateTime.Now.Year - Volvox.Helios v@(version.Major).@(version.Minor).@(version.Build)
                 </p>
             </div>
         </footer>

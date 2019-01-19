@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Volvox.Helios.Core.Bot;
 using Volvox.Helios.Core.Modules.Common;
 using Volvox.Helios.Core.Modules.StreamAnnouncer;
-
 using Volvox.Helios.Core.Utilities;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Domain.ModuleSettings;
@@ -20,7 +19,7 @@ using Volvox.Helios.Service.ModuleSettings;
 namespace Volvox.Helios.Core.Modules.Streamer
 {
     /// <summary>
-    ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the
+    ///     Announce the user to a specified channel when the user starts streaming and assign specified streaming role to the
     ///     user.
     /// </summary>
     public class StreamerModule : Module
@@ -29,7 +28,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
         private readonly IModuleSettingsService<StreamerSettings> _settingsService;
 
         /// <summary>
-        ///     Announce the user to a specified channel when the user starts streaming and assign specificed streaming role to the
+        ///     Announce the user to a specified channel when the user starts streaming and assign specified streaming role to the
         ///     user.
         /// </summary>
         /// <param name="discordSettings">Settings used to connect to Discord.</param>
@@ -39,12 +38,10 @@ namespace Volvox.Helios.Core.Modules.Streamer
         /// <param name="scopeFactory">Scope factory.</param>
         public StreamerModule(IDiscordSettings discordSettings, ILogger<StreamerModule> logger,
             IConfiguration config, IModuleSettingsService<StreamerSettings> settingsService,
-            IServiceScopeFactory scopeFactory
-        ) : base(
+            IServiceScopeFactory scopeFactory) : base(
             discordSettings, logger, config)
         {
             _settingsService = settingsService;
-
             _scopeFactory = scopeFactory;
         }
 
@@ -88,7 +85,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
             // Subscribe to the GuildMemberUpdated event.
             client.GuildMemberUpdated += async (user, guildUser) =>
             {
-                var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id, x => x.ChannelSettings);
+                var settings = await _settingsService.GetSettingsByGuild(guildUser.Guild.Id, x => x.ChannelSettings,
+                    x => x.WhiteListedRoleIds);
 
                 if (settings != null && settings.Enabled)
                     try
@@ -99,7 +97,7 @@ namespace Volvox.Helios.Core.Modules.Streamer
 
                         // Stream Announcer
                         if (settings.ChannelSettings != null)
-                            await CheckUser(guildUser, settings.ChannelSettings);
+                            await CheckUser(guildUser, settings.ChannelSettings, settings);
                     }
                     catch (Exception e)
                     {
@@ -121,8 +119,6 @@ namespace Volvox.Helios.Core.Modules.Streamer
                 Logger.LogError("Streamer Module: Role could not be found!");
             }
             else
-            {
-                //Ensure bot has necessary permissions to add/remove specified role.
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var botService = scope.ServiceProvider.GetRequiredService<IBot>();
@@ -132,7 +128,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
                     if (streamingRole.Position < botRolePosition)
                     {
                         // Add use to role.
-                        if (guildUser.Activity != null && guildUser.Activity.Type == ActivityType.Streaming)
+                        if (guildUser.Activity != null && guildUser.Activity.Type == ActivityType.Streaming &&
+                            IsUserWhiteListed(settings, guildUser))
                             await AddUserToStreamingRole(guildUser, streamingRole);
 
                         // Remove user from role.
@@ -141,10 +138,12 @@ namespace Volvox.Helios.Core.Modules.Streamer
                     }
                     else
                     {
-                        Logger.LogError($"Streamer Module: Could not add/remove role as bot has insufficient hierarchical position. " +
+                        Logger.LogError(
+                            $"Streamer Module: Could not add/remove role as bot has insufficient hierarchical position. " +
                             $"Guild Id: {guildUser.Guild.Id}");
 
-                        await botService.GetGuild(guildUser.Guild.Id).Owner.SendMessageAsync($"We couldn't add/remove Role '{streamingRole.Name}' to a user as the role's hierarchical position is greater than the bot's.{Environment.NewLine}" +
+                        await botService.GetGuild(guildUser.Guild.Id).Owner.SendMessageAsync(
+                            $"We couldn't add/remove Role '{streamingRole.Name}' to a user as the role's hierarchical position is greater than the bot's.{Environment.NewLine}" +
                             $"To fix this, please adjust your role's position and then re-enable the module via our website.{Environment.NewLine}" +
                             $"Guild: {guildUser.Guild.Name}");
 
@@ -155,7 +154,6 @@ namespace Volvox.Helios.Core.Modules.Streamer
                         await _settingsService.SaveSettings(settingsDb);
                     }
                 }
-            }          
         }
 
         /// <summary>
@@ -163,7 +161,9 @@ namespace Volvox.Helios.Core.Modules.Streamer
         /// </summary>
         /// <param name="user">User to be evaluated/adjusted for streaming announcement.</param>
         /// <param name="channels">List of channels with module enabled</param>
-        private async Task CheckUser(SocketGuildUser user, List<StreamerChannelSettings> channels)
+        /// <param name="settings">Streamer settings for specified guild.</param>
+        private async Task CheckUser(SocketGuildUser user, List<StreamerChannelSettings> channels,
+            StreamerSettings settings)
         {
             // Add initial hash set for the guild.
             if (!StreamingList.TryGetValue(user.Guild.Id, out var set))
@@ -176,7 +176,8 @@ namespace Volvox.Helios.Core.Modules.Streamer
             if (user.Activity != null && user.Activity.Type == ActivityType.Streaming)
             {
                 // If the user is not in the streaming list, they just started streaming. So, handle announcement.
-                if (!StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)))
+                if (!StreamingList.Any(u => u.Key == user.Guild.Id && u.Value.Any(x => x.UserId == user.Id)) &&
+                    IsUserWhiteListed(settings, user))
                     await AnnounceUserHandler(user, channels);
 
                 // Else, the user is already streaming and already has an announcement message.
@@ -362,6 +363,19 @@ namespace Volvox.Helios.Core.Modules.Streamer
 
             Logger.LogDebug($"Streamer Module: Removing {guildUser.Username} from role {streamingRole.Name}. " +
                             $"Guild ID: {guildUser.GuildId}, User ID: {guildUser.Id}.");
+        }
+
+        /// <summary>
+        ///     Checks if a user is part of the white listed roles.
+        /// </summary>
+        /// <param name="settings">Streamer settings for specified guild.</param>
+        /// <param name="guildUser">User to check.</param>
+        /// <returns>True if the user is a part of the white listed roles; otherwise false.</returns>
+        private static bool IsUserWhiteListed(StreamerSettings settings, SocketGuildUser guildUser)
+        {
+            var whiteListedRoles = settings.WhiteListedRoleIds.Select(w => w.RoleId).ToList();
+
+            return !whiteListedRoles.Any() || guildUser.Roles.Any(r => whiteListedRoles.Contains(r.Id));
         }
     }
 }

@@ -492,7 +492,7 @@ input:checked + .slider {
 
 
 /**** Devextreme ****/
-.dx-editor-outlined {
+.dx-editor-outlined:not(.dx-tagbox) {
   border-color: #ced4da;
   height: 38px;
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
@@ -510,6 +510,10 @@ input:checked + .slider {
 .sliding-border{
   position: relative;
 }
+  .info-btn i{
+    font-size: 20px;
+  }
+
   .sliding-border::after, .sliding-border::before {
     content: "";
     position: absolute;

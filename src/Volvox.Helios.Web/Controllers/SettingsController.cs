@@ -25,22 +25,28 @@ namespace Volvox.Helios.Web.Controllers
     public class SettingsController : Controller
     {
         private readonly IModuleSettingsService<ChatTrackerSettings> _chatTrackerSettingsService;
+        private readonly IModuleSettingsService<DadModuleSettings> _dadSettingsService;
         private readonly IEntityService<RecurringReminderMessage> _recurringReminderService;
         private readonly IModuleSettingsService<RemembotSettings> _reminderSettingsService;
         private readonly IEntityService<StreamerChannelSettings> _streamAnnouncerChannelSettingsService;
         private readonly IModuleSettingsService<StreamerSettings> _streamAnnouncerSettingsService;
+        private readonly IEntityService<WhiteListedRole> _whiteListedRoleEntityService;
 
         public SettingsController(IModuleSettingsService<StreamerSettings> streamAnnouncerSettingsService,
             IEntityService<StreamerChannelSettings> streamAnnouncerChannelSettingsService,
             IModuleSettingsService<ChatTrackerSettings> chatTrackerSettingsService,
             IModuleSettingsService<RemembotSettings> reminderSettingsService,
-            IEntityService<RecurringReminderMessage> recurringReminderService)
+            IEntityService<RecurringReminderMessage> recurringReminderService,
+            IModuleSettingsService<DadModuleSettings> dadSettingsService,
+            IEntityService<WhiteListedRole> whiteListedRoleEntityService)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
             _chatTrackerSettingsService = chatTrackerSettingsService;
             _reminderSettingsService = reminderSettingsService;
             _recurringReminderService = recurringReminderService;
+            _dadSettingsService = dadSettingsService;
+            _whiteListedRoleEntityService = whiteListedRoleEntityService;
         }
 
         public async Task<IActionResult> Index(ulong guildId, [FromServices] IBot bot,
@@ -64,7 +70,7 @@ namespace Volvox.Helios.Web.Controllers
             var redirectUrl = Uri.EscapeDataString($"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}");
 
             return Redirect(
-                $"https://discordapp.com/api/oauth2/authorize?client_id={discordSettings.ClientId}&permissions=8&redirect_uri={redirectUrl}&scope=bot&guild_id={guildId}");
+                $"https://discordapp.com/api/oauth2/authorize?client_id={discordSettings.ClientId}&permissions=8&redirect_uri={redirectUrl}&scope=bot&guild_id={guildId}&response_type=code");
         }
 
         #region Streamer
@@ -93,13 +99,14 @@ namespace Volvox.Helios.Web.Controllers
             };
 
             // Get general module settings for guild, from database.
-            var settings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId, x => x.ChannelSettings);
+            var settings = await _streamAnnouncerSettingsService.GetSettingsByGuild(guildId, x => x.WhiteListedRoleIds);
 
             if (settings == null) return View(viewModel);
 
             viewModel.Enabled = settings.Enabled;
             viewModel.StreamerRoleEnabled = settings.StreamerRoleEnabled;
             viewModel.RoleId = settings.RoleId;
+            viewModel.WhiteListedRoleIds = settings.WhiteListedRoleIds?.Select(r => r.RoleId).ToList();
 
             if (settings.ChannelSettings == null)
                 settings.ChannelSettings = await channelSettingsService.Get(c => c.GuildId == guildId);
@@ -157,14 +164,42 @@ namespace Volvox.Helios.Web.Controllers
             // If the guild doesn't already have a settings DB entry, we want to add one before we do anything else.
             // Running that operation along side adding individual channel settings risks throwing an FK exception.
             if (moduleSettings == null)
-                await _streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
+            {
+                var streamerSettings = new StreamerSettings
                 {
                     GuildId = guildId,
                     Enabled = viewModel.Enabled,
                     StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
-                    RoleId = viewModel.RoleId
-                });
+                    RoleId = viewModel.RoleId,
+                    WhiteListedRoleIds = new List<WhiteListedRole>()
+                };
+
+                if (viewModel.WhiteListedRoleIds != null)
+                    streamerSettings.WhiteListedRoleIds = new List<WhiteListedRole>(viewModel.WhiteListedRoleIds
+                        .Select(r =>
+                            new WhiteListedRole
+                            {
+                                RoleId = r
+                            }));
+
+                await _streamAnnouncerSettingsService.SaveSettings(streamerSettings);
+            }
             else
+            {
+                // Clear all white listed roles from the database
+                var whiteListedRoles = await _whiteListedRoleEntityService.Get(w => w.GuildId == guildId);
+
+                if (whiteListedRoles != null)
+                    await _whiteListedRoleEntityService.RemoveBulk(whiteListedRoles);
+
+                if (viewModel.WhiteListedRoleIds != null)
+                    await _whiteListedRoleEntityService.CreateBulk(viewModel.WhiteListedRoleIds.Select(r =>
+                        new WhiteListedRole
+                        {
+                            RoleId = r,
+                            GuildId = guildId
+                        }));
+
                 saveSettingsTasks.Add(_streamAnnouncerSettingsService.SaveSettings(new StreamerSettings
                 {
                     GuildId = guildId,
@@ -172,6 +207,7 @@ namespace Volvox.Helios.Web.Controllers
                     StreamerRoleEnabled = viewModel.StreamerRoleEnabled,
                     RoleId = viewModel.RoleId
                 }));
+            }
 
             // Value defaults to 0, if the value is 0, EF will try to auto increment the ID, throwing an error.
             if (viewModel.ChannelId != 0)
@@ -279,6 +315,47 @@ namespace Volvox.Helios.Web.Controllers
                 Enabled = reminderSettings.Enabled,
                 GuildId = guildId
             });
+
+            return RedirectToAction("Index");
+        }
+
+        #endregion
+
+        #region Dad
+
+        [HttpGet("Dad")]
+        public async Task<IActionResult> DadSettings(ulong guildId)
+        {
+            var settings = await _dadSettingsService.GetSettingsByGuild(guildId);
+
+            if (settings is null)
+            {
+                settings = new DadModuleSettings
+                {
+                    GuildId = guildId
+                };
+
+                await _dadSettingsService.SaveSettings(settings);
+            }
+
+            var vm = new DadModuleSettingViewModel
+            {
+                Enabled = settings.Enabled,
+                GuildId = guildId,
+                ResponseCooldownMinutes = settings.DadResponseCooldownMinutes
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost("Dad")]
+        public async Task<IActionResult> DadSettings(ulong guildId, DadModuleSettingViewModel vm)
+        {
+            var currentSettings = await _dadSettingsService.GetSettingsByGuild(guildId);
+            currentSettings.Enabled = vm.Enabled;
+            currentSettings.DadResponseCooldownMinutes = vm.ResponseCooldownMinutes;
+
+            await _dadSettingsService.SaveSettings(currentSettings);
 
             return RedirectToAction("Index");
         }

@@ -39,10 +39,24 @@ namespace Volvox.Helios.Service
         public DbSet<RecurringReminderMessage> RecurringReminderMessages { get; set; }
         #endregion
 
+        #region Dad Module
+        public DbSet<DadModuleSettings> DadModuleSettings { get; set; }
+        #endregion
+
+        public DbSet<WhiteListedRole> WhiteListedRoles { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             SetupForReminderSchema(modelBuilder);
+            SetupForDad(modelBuilder);
+        }
+
+        private void SetupForDad(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DadModuleSettings>()
+                .Property(x => x.DadResponseCooldownMinutes)
+                .HasDefaultValue(15);
         }
 
         private void SetupForReminderSchema(ModelBuilder modelBuilder)

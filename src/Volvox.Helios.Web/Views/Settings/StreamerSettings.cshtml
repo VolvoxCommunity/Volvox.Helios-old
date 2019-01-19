@@ -12,19 +12,25 @@
             <div class="col-12">
 
                 <div class="row border border-gray2 rounded sliding-border">
-                    <div class="col-md-9 pt-3 pb-3">
+                    <div class="col-md-9 col-10 pt-3 pb-3">
                         <h4 class="mb-0">Information and Instructions</h4>
                     </div>
-                    <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
-                            <a href="#infoCollapse" class="text-light" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
-                                <i class="fas fa-info-circle" style="font-size: 20px;cursor:pointer;"></i>
+                    <div class="col-md-3 col-2 valign">
+                        <div class="btn-group material-btn-group ml-auto">
+                            <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
+                                <i class="fas fa-info-circle"></i>
                             </a>
                         </div>
                     </div>
                     <div class="col-12 collapse" id="infoCollapse">
                         <p>
-                            
+                            The streamer module is based for twitch streamers. It allows you to announce a person that is streaming, or assign a person a role. In the stream announcer you have the option to remove messages on conclusion.
+                        </p>
+                        <p>
+                            Also you can assign a new role to a user that is streaming. It will appear on the top of the userlist, so everyone can see who is streaming currently.
+                        </p>
+                        <p>
+                            The whitelist will only be triggered if one of the user has one of the selected roles.
                         </p>
                     </div>
                 </div>
@@ -37,7 +43,7 @@
                         </p>
                     </div>
                     <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                        <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
                             <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
                                 On
                                 <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
@@ -48,7 +54,6 @@
                             </label>
                         </div>
                     </div>
-
                 </div>
 
                 <div class="row mt-4 border border-gray2 rounded">
@@ -68,7 +73,7 @@
                         <span asp-validation-for="ChannelSettings.Enabled" class="text-danger"></span>
                     </div>
                     <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                        <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
                             <label for="enabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "active" : "disabled")">
                                 On
                                 <input id="enabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="true" @(Model.ChannelSettings.Enabled ? "checked" : "")>
@@ -88,7 +93,7 @@
                         <span asp-validation-for="ChannelSettings.RemoveMessages" class="text-danger"></span>
                     </div>
                     <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                        <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
                             <label for="rmEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "active" : "disabled")">
                                 On
                                 <input id="rmEnabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="true" @(Model.ChannelSettings.RemoveMessages ? "checked" : "")>
@@ -118,7 +123,7 @@
                         <span asp-validation-for="StreamerRoleEnabled" class="text-danger"></span>
                     </div>
                     <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mt-md-0 mt-3">
+                        <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
                             <label for="roleEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "active" : "disabled")">
                                 On
                                 <input id="roleEnabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="true" @(Model.StreamerRoleEnabled ? "checked" : "")>
@@ -128,6 +133,17 @@
                                 <input id="roleDisabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="false" @(Model.StreamerRoleEnabled ? "" : "checked")>
                             </label>
                         </div>
+                    </div>
+                </div>
+
+                <div class="row border border-gray2 rounded mt-4">
+                    <div class="col-12 pt-3 pb-3">
+                        <h4>Whitelist</h4>
+                        <p class="mb-0 text-volvox">
+                            Add roles to the whitelist
+                        </p>
+                        <select asp-for="WhiteListedRoleIds" class="d-none blacklist-items" multiple></select>
+                        <div id="blacklistTagBox" class="mt-3" style="overflow: hidden;"></div>
                     </div>
                 </div>
 
@@ -159,7 +175,7 @@
                 return response;
             });
         };
-        
+
         var selectChannelVal = '@Model.ChannelId';
         if (selectChannelVal == '0')
             selectChannelVal = '@Model.Channels.FirstOrDefault().Value';
@@ -210,14 +226,15 @@
         var selectRoleVal = '@Model.RoleId';
         if (selectRoleVal == '0')
             selectRoleVal = '@Model.Roles.FirstOrDefault().Value';
+        var roles = JSON.parse('@(Html.Raw(Json.Serialize(Model.Roles)))');
         $('#selectRole').dxSelectBox({
-            dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Roles)))'),
+            dataSource: roles,
             searchEnabled: true,
             valueExpr: "value",
             displayExpr: "text",
             value: selectRoleVal,
             onInitialized: (e) => {
-                $('input[name="RoleId"]').val(selectChannelVal);
+                $('input[name="RoleId"]').val(selectRoleVal);
             },
             onValueChanged: (e) => {
                 $('input[name="RoleId"]').val(e.value);
@@ -227,6 +244,32 @@
         $('.module-enabler input:not(".active")').click((e) => {
             $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
             $(e.currentTarget).parent().toggleClass('active disabled');
+        });
+
+        @{
+            if (Model.WhiteListedRoleIds == null)
+            {
+                Model.WhiteListedRoleIds = new List<ulong>();
+            }
+        }
+        $('#blacklistTagBox').dxTagBox({
+            dataSource: roles,
+            valueExpr: "value",
+            displayExpr: "text",
+            value: JSON.parse('@(Html.Raw(Json.Serialize(Model.WhiteListedRoleIds)))').map((e) => {
+                var role = roles.filter((r) => {
+                    return r.value == e;
+                });
+                return role[0].value;
+            }),
+            onInitialized: (e) => {
+                setTimeout(() => {
+                    $('.blacklist-items').append($('.dx-dropdowneditor-input-wrapper').find('select option'));
+                }, 500)
+            },
+            onValueChanged: (e) => {
+                $('.blacklist-items').empty().append($('.dx-dropdowneditor-input-wrapper').find('select option'));
+            }
         });
     </script>
 }

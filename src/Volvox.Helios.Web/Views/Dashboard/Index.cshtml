@@ -14,7 +14,6 @@
                 <img class="card-img-top ml-3 dashboard-guild-image" src="@uG.Guild.ImageUrl" alt="@uG.Guild.Name">
                 <h5 class="col mb-0 card-title text-volvox">@uG.Guild.Name</h5>
                 <a href="#" onclick="toggleAccBtn(event);" class="text-volvox mr-3" data-toggle="collapse" data-target="#s-@i" aria-expanded="true" aria-controls="s-@i">
-                    @*TODO: toggle icon if is favourite*@
                     <i class="fas fa-toggle-on d-block"></i>
                 </a>
                 @if (uG.Guild.Details.IsBotInGuild)
@@ -26,28 +25,6 @@
                         <i class="fas fa-cog"></i>
                     </a>
                 }
-                <a href="#" class="text-volvox mr-2" dropdown-toggle data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-ellipsis-h ml-auto mr-3"></i>
-                </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">
-                        <i class="fas fa-share mr-2"></i>
-                        Share
-                    </a>
-                    <a class="dropdown-item" href="#">
-                        <i class="fas fa-pen mr-2"></i>
-                        Edit
-                    </a>
-                    <a class="dropdown-item" href="#" onclick="toggleFavouriteBtn(event);">
-                        <i class="far fa-star mr-2"></i>
-                        Favorite
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item text-danger" href="#">
-                        <i class="fas fa-trash-alt mr-2"></i>
-                        Delete
-                    </a>
-                </div>
             </div>
             <div class="collapse show" id="s-@i" aria-labelledby="s-@i-@uG.Guild.Name">
                 <div class="card-body">
