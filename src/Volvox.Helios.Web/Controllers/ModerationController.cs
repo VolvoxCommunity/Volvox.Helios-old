@@ -27,10 +27,10 @@ namespace Volvox.Helios.Web.Controllers
 {
     // TODO : Change views to modern razor pages instead of @html stuff
     // TODO : Find more efficient way of making all those db calls. No way of batching them currently.
-                                                                                    // TODO NEXT REFACTOR USING LATEST CACHING DONE BY BAPES/COIN
     [Authorize]
     [Route("/Moderation/{guildId}")]
     [IsUserGuildAdminFilter]
+    [EnsureModerationSettingsEntryExistsFilter]
     public class ModerationController : Controller
     {
         #region private vars
@@ -159,11 +159,6 @@ namespace Volvox.Helios.Web.Controllers
             ClearCacheById(guildId);
 
             var currentSettings = await _moderationModuleUtils.GetModerationSettings(guildId);
-
-            if (currentSettings == null)
-            {
-                currentSettings = new ModerationSettings { GuildId = guildId };
-            }
 
             currentSettings.Enabled = vm.Enabled;
 
@@ -493,6 +488,8 @@ namespace Volvox.Helios.Web.Controllers
             if (user == null)
             {
                 await _entityServiceUsers.Create(new UserWarnings { UserId = userId, GuildId = guildId });
+
+                ClearCacheById(guildId);
             }
                
             var vm = new UserViewModel
