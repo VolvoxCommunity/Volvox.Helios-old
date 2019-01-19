@@ -3,162 +3,155 @@
     ViewData["Title"] = "Streamer Module Settings";
 }
 
-<h2>@ViewData["Title"]</h2>
-<hr />
+<div class="container">
+    <h2>@ViewData["Title"]</h2>
+    <hr />
 
-<div class="row">
-    <div class="col-md-12">
-        <form method="post">
-            <div class="col-12">
-
-                <div class="row border border-gray2 rounded sliding-border">
-                    <div class="col-md-9 col-10 pt-3 pb-3">
-                        <h4 class="mb-0">Information and Instructions</h4>
-                    </div>
-                    <div class="col-md-3 col-2 valign">
-                        <div class="btn-group material-btn-group ml-auto">
-                            <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
-                                <i class="fas fa-info-circle"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-12 collapse" id="infoCollapse">
-                        <p>
-                            The streamer module is based for twitch streamers. It allows you to announce a person that is streaming, or assign a person a role. In the stream announcer you have the option to remove messages on conclusion.
-                        </p>
-                        <p>
-                            Also you can assign a new role to a user that is streaming. It will appear on the top of the userlist, so everyone can see who is streaming currently.
-                        </p>
-                        <p>
-                            The whitelist will only be triggered if one of the user has one of the selected roles.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="row border border-gray2 rounded mt-4">
-                    <div class="col-md-9 pt-3 pb-3">
-                        <h4>Streamer Module</h4>
-                        <p class="mb-0 text-volvox">
-                            Manage stream messages to specific channels and more.
-                        </p>
-                    </div>
-                    <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
-                            <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
-                                On
-                                <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
-                            </label>
-                            <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
-                                Off
-                                <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4 border border-gray2 rounded">
-                    <div class="col-12 pt-3">
-                        <h4>Stream Announcer</h4>
-                        <hr />
-                        <label asp-for="ChannelId"></label>
-                        <input type="hidden" name="ChannelId" />
-                        <div id="selectChannel"></div>
-                        <span asp-validation-for="ChannelId" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-9 pt-3 pb-3">
-                        <h4>Enable Channel</h4>
-                        <p class="mb-0 text-volvox">
-                            Enables the Stream Announcer Channel
-                        </p>
-                        <span asp-validation-for="ChannelSettings.Enabled" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
-                            <label for="enabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "active" : "disabled")">
-                                On
-                                <input id="enabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="true" @(Model.ChannelSettings.Enabled ? "checked" : "")>
-                            </label>
-                            <label for="disabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "disabled" : "active")">
-                                Off
-                                <input id="disabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="false" @(Model.ChannelSettings.Enabled ? "" : "checked")>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-9 pt-3 pb-3">
-                        <h4>Remove Messages</h4>
-                        <p class="mb-0 text-volvox">
-                            Removes the messages on conclusion
-                        </p>
-                        <span asp-validation-for="ChannelSettings.RemoveMessages" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
-                            <label for="rmEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "active" : "disabled")">
-                                On
-                                <input id="rmEnabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="true" @(Model.ChannelSettings.RemoveMessages ? "checked" : "")>
-                            </label>
-                            <label for="rmDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "disabled" : "active")">
-                                Off
-                                <input id="rmDisabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="false" @(Model.ChannelSettings.RemoveMessages ? "" : "checked")>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4 border border-gray2 rounded">
-                    <div class="col-12 pt-3">
-                        <h4>Streamer Role</h4>
-                        <hr />
-                        <label asp-for="RoleId"></label>
-                        <input type="hidden" name="RoleId" />
-                        <div id="selectRole"></div>
-                        <span asp-validation-for="RoleId" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-9 pt-3 pb-3">
-                        <h4>Role enabled</h4>
-                        <p class="mb-0 text-volvox">
-                            Enables the streamer role
-                        </p>
-                        <span asp-validation-for="StreamerRoleEnabled" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-3 valign">
-                        <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
-                            <label for="roleEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "active" : "disabled")">
-                                On
-                                <input id="roleEnabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="true" @(Model.StreamerRoleEnabled ? "checked" : "")>
-                            </label>
-                            <label for="roleDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "disabled" : "active")">
-                                Off
-                                <input id="roleDisabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="false" @(Model.StreamerRoleEnabled ? "" : "checked")>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row border border-gray2 rounded mt-4">
-                    <div class="col-12 pt-3 pb-3">
-                        <h4>Whitelist</h4>
-                        <p class="mb-0 text-volvox">
-                            Add roles to the whitelist
-                        </p>
-                        <select asp-for="WhiteListedRoleIds" class="d-none blacklist-items" multiple></select>
-                        <div id="blacklistTagBox" class="mt-3" style="overflow: hidden;"></div>
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <div class="row mt-4">
-                        <span asp-validation-summary="Enabled" class="text-danger"></span>
-                        <div asp-validation-summary="All" class="text-danger"></div>
-                        <div class="ml-auto">
-                            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
-                        </div>
-                    </div>
+    <form method="post" class="col-12">
+        <div class="row border border-gray2 rounded sliding-border">
+            <div class="col-md-9 col-10 pt-3 pb-3">
+                <h4 class="mb-0">Information and Instructions</h4>
+            </div>
+            <div class="col-md-3 col-2 valign">
+                <div class="btn-group material-btn-group ml-auto">
+                    <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
                 </div>
             </div>
-        </form>
-    </div>
+            <div class="col-12 collapse" id="infoCollapse">
+                <p>
+                    The streamer module is based for twitch streamers. It allows you to announce a person that is streaming, or assign a person a role. In the stream announcer you have the option to remove messages on conclusion.
+                </p>
+                <p>
+                    Also you can assign a new role to a user that is streaming. It will appear on the top of the userlist, so everyone can see who is streaming currently.
+                </p>
+                <p>
+                    The whitelist will only be triggered if one of the user has one of the selected roles.
+                </p>
+            </div>
+        </div>
+
+        <div class="row border border-gray2 rounded mt-4">
+            <div class="col-md-9 pt-3 pb-3">
+                <h4>Streamer Module</h4>
+                <p class="mb-0 text-volvox">
+                    Manage stream messages to specific channels and more.
+                </p>
+            </div>
+            <div class="col-md-3 valign">
+                <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
+                    <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
+                        On
+                        <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
+                    </label>
+                    <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
+                        Off
+                        <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4 border border-gray2 rounded">
+            <div class="col-12 pt-3">
+                <h4>Stream Announcer</h4>
+                <hr />
+                <label asp-for="ChannelId"></label>
+                <input type="hidden" name="ChannelId" />
+                <div id="selectChannel"></div>
+                <span asp-validation-for="ChannelId" class="text-danger"></span>
+            </div>
+            <div class="col-md-9 pt-3 pb-3">
+                <h4>Enable Channel</h4>
+                <p class="mb-0 text-volvox">
+                    Enables the Stream Announcer Channel
+                </p>
+                <span asp-validation-for="ChannelSettings.Enabled" class="text-danger"></span>
+            </div>
+            <div class="col-md-3 valign">
+                <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
+                    <label for="enabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "active" : "disabled")">
+                        On
+                        <input id="enabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="true" @(Model.ChannelSettings.Enabled ? "checked" : "")>
+                    </label>
+                    <label for="disabledChannelBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.Enabled ? "disabled" : "active")">
+                        Off
+                        <input id="disabledChannelBtn" type="radio" name="ChannelSettings.Enabled" class="d-none" value="false" @(Model.ChannelSettings.Enabled ? "" : "checked")>
+                    </label>
+                </div>
+            </div>
+
+            <div class="col-md-9 pt-3 pb-3">
+                <h4>Remove Messages</h4>
+                <p class="mb-0 text-volvox">
+                    Removes the messages on conclusion
+                </p>
+                <span asp-validation-for="ChannelSettings.RemoveMessages" class="text-danger"></span>
+            </div>
+            <div class="col-md-3 valign">
+                <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
+                    <label for="rmEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "active" : "disabled")">
+                        On
+                        <input id="rmEnabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="true" @(Model.ChannelSettings.RemoveMessages ? "checked" : "")>
+                    </label>
+                    <label for="rmDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.ChannelSettings.RemoveMessages ? "disabled" : "active")">
+                        Off
+                        <input id="rmDisabledBtn" type="radio" name="ChannelSettings.RemoveMessages" class="d-none" value="false" @(Model.ChannelSettings.RemoveMessages ? "" : "checked")>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4 border border-gray2 rounded">
+            <div class="col-12 pt-3">
+                <h4>Streamer Role</h4>
+                <hr />
+                <label asp-for="RoleId"></label>
+                <input type="hidden" name="RoleId" />
+                <div id="selectRole"></div>
+                <span asp-validation-for="RoleId" class="text-danger"></span>
+            </div>
+            <div class="col-md-9 pt-3 pb-3">
+                <h4>Role enabled</h4>
+                <p class="mb-0 text-volvox">
+                    Enables the streamer role
+                </p>
+                <span asp-validation-for="StreamerRoleEnabled" class="text-danger"></span>
+            </div>
+            <div class="col-md-3 valign">
+                <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
+                    <label for="roleEnabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "active" : "disabled")">
+                        On
+                        <input id="roleEnabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="true" @(Model.StreamerRoleEnabled ? "checked" : "")>
+                    </label>
+                    <label for="roleDisabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.StreamerRoleEnabled ? "disabled" : "active")">
+                        Off
+                        <input id="roleDisabledBtn" type="radio" name="StreamerRoleEnabled" class="d-none" value="false" @(Model.StreamerRoleEnabled ? "" : "checked")>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row border border-gray2 rounded mt-4">
+            <div class="col-12 pt-3 pb-3">
+                <h4>Whitelist</h4>
+                <p class="mb-0 text-volvox">
+                    Add roles to the whitelist
+                </p>
+                <select asp-for="WhiteListedRoleIds" class="d-none blacklist-items" multiple></select>
+                <div id="blacklistTagBox" class="mt-3" style="overflow: hidden;"></div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <span asp-validation-summary="Enabled" class="text-danger"></span>
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="ml-auto">
+                <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+            </div>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
@@ -239,11 +232,6 @@
             onValueChanged: (e) => {
                 $('input[name="RoleId"]').val(e.value);
             }
-        });
-
-        $('.module-enabler input:not(".active")').click((e) => {
-            $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
-            $(e.currentTarget).parent().toggleClass('active disabled');
         });
 
         @{

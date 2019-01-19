@@ -3,62 +3,58 @@
     ViewData["Title"] = "ChatTracker Module Settings";
 }
 
-<h2>@ViewData["Title"]</h2>
-<hr>
-<form method="post" class="col-12">
+<div class="container">
+    <h2>@ViewData["Title"]</h2>
+    <hr>
 
-    <div class="row border border-gray2 rounded sliding-border">
-        <div class="col-md-9 col-10 pt-3 pb-3">
-            <h4 class="mb-0">Information and Instructions</h4>
-        </div>
-        <div class="col-md-3 col-2 valign">
-            <div class="btn-group material-btn-group ml-auto">
-                <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
-                    <i class="fas fa-info-circle"></i>
-                </a>
+    <form method="post" class="col-12">
+        <div class="row border border-gray2 rounded sliding-border">
+            <div class="col-md-9 col-10 pt-3 pb-3">
+                <h4 class="mb-0">Information and Instructions</h4>
+            </div>
+            <div class="col-md-3 col-2 valign">
+                <div class="btn-group material-btn-group ml-auto">
+                    <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-12 collapse" id="infoCollapse">
+                <p>
+                    Enable this module to track you chat and have a more detailed analytics of the chat.
+                </p>
             </div>
         </div>
-        <div class="col-12 collapse" id="infoCollapse">
-            <p>
-                Enable this module to track you chat and have a more detailed analytics of the chat.
-            </p>
-        </div>
-    </div>
 
-    <div class="row border border-gray2 rounded mt-4">
-        <div class="col-md-9 pt-3 pb-3">
-            <h4>Chat tracker Module</h4>
-            <p class="mb-0 text-volvox">
-                Decide whether the chat will be tracked or not
-            </p>
-        </div>
-        <div class="col-md-3 valign">
-            <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
-                <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
-                    On
-                    <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
-                </label>
-                <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
-                    Off
-                    <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
-                </label>
+        <div class="row border border-gray2 rounded mt-4">
+            <div class="col-md-9 pt-3 pb-3">
+                <h4>Chat tracker Module</h4>
+                <p class="mb-0 text-volvox">
+                    Decide whether the chat will be tracked or not
+                </p>
+            </div>
+            <div class="col-md-3 valign">
+                <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
+                    <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
+                        On
+                        <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
+                    </label>
+                    <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
+                        Off
+                        <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
+                    </label>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row mt-4">
-        <div asp-validation-summary="All" class="text-danger"></div>
-        <div class="ml-auto">
-            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+        <div class="row mt-4">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="ml-auto">
+                <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+            </div>
         </div>
-    </div>
-</form>
+    </form>
+</div>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-    <script>
-        $('.module-enabler input:not(".active")').click((e) => {
-            $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
-            $(e.currentTarget).parent().toggleClass('active disabled');
-        });
-    </script>
 }

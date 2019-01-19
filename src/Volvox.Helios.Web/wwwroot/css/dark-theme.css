@@ -118,7 +118,9 @@ hr{
 .sliding-border .info-btn {
   color: var(--color-gray);
 }
-
+.footer-icon {
+  color: white;
+}
 footer {
   background: var(--color-deep-dark);
 }

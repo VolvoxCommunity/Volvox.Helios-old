@@ -3,51 +3,53 @@
     ViewData["Title"] = "New Poll";
 }
 
-<h2>New Poll</h2>
-<hr />
+<div class="container">
+    <h2>New Poll</h2>
+    <hr />
 
-<div class="row">
-    <div class="col-md-12">
-        <form method="post">
-            <div class="row">
-                <div class="col-md-6">
-                    <label asp-for="ChannelId"></label>
-                    <span asp-validation-for="ChannelId" class="text-danger"></span>
-                    <input type="hidden" name="ChannelId"  />
-                    <div id="channelSelect"></div>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="Title"></label> <br />
-                    <input asp-for="Title" type="text" class="form-control material-input" autocomplete="off"/>
-                    <span asp-validation-for="Title" style="color:red"></span>
-                </div>
-            </div>
-
-            <div class="options mt-3">
+    <div class="row">
+        <div class="col-md-12">
+            <form method="post">
                 <div class="row">
-                    <label class="col-12 ">Option 1</label>
-                    <div class="col-md-11 col-9">
-                        <input name="options[0]" maxlength="100" type="text" class="form-control material-input" autocomplete="off" />
+                    <div class="col-md-6">
+                        <label asp-for="ChannelId"></label>
+                        <span asp-validation-for="ChannelId" class="text-danger"></span>
+                        <input type="hidden" name="ChannelId" />
+                        <div id="channelSelect"></div>
                     </div>
-                    <div class="col-md-1 col-3">
-                        <button type="button" class="btn btn-volvox-outline rounded-circle d-block mx-auto" style="height: 40px;" onclick="addPollOption(event)">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <input type="hidden" asp-for="TotalOptions" value="@Model.TotalOptions" />
-
-            <div class="col-12">
-                <div class="row mt-4">
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                    <div class="ml-auto">
-                        <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+                    <div class="col-md-6">
+                        <label asp-for="Title"></label> <br />
+                        <input asp-for="Title" type="text" class="form-control material-input" autocomplete="off" />
+                        <span asp-validation-for="Title" style="color:red"></span>
                     </div>
                 </div>
-            </div>
-        </form>
+
+                <div class="options mt-3">
+                    <div class="row">
+                        <label class="col-12 ">Option 1</label>
+                        <div class="col-md-11 col-9">
+                            <input name="options[0]" maxlength="100" type="text" class="form-control material-input" autocomplete="off" />
+                        </div>
+                        <div class="col-md-1 col-3">
+                            <button type="button" class="btn btn-volvox-outline rounded-circle d-block mx-auto" style="height: 40px;" onclick="addPollOption(event)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" asp-for="TotalOptions" value="@Model.TotalOptions" />
+
+                <div class="col-12">
+                    <div class="row mt-4">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="ml-auto">
+                            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

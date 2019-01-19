@@ -1,24 +1,29 @@
 @model IEnumerable<Volvox.Helios.Domain.Discord.Guild>
 
-<div class="row">
-    <div class="col-12">
-        <h1 class="d-inline-block">Dashboard</h1>
-        @*<button class="btn btn-info dropdown-toggle float-right" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Select Server
-        </button>*@
-        <div class="dropdown-menu" id="dashboardSelectGuildDropdown">
-            @foreach (var guild in Model)
-            {
-                <a class="dropdown-item dropdown-item-container" asp-action="Details" asp-route-guildId="@guild.Id">
-                    <span>
-                        <img class="dropdown-image-small" src="@guild.ImageUrl" alt="@guild.Name">
-                    </span>
-                    <span>
-                        @guild.Name
-                    </span>
-                </a>
-            }
-        </div>
+<div class="row pt-5 pb-5" style="background: rgba(0,0,0,.4);">
+    <div class="container">
+        <h1 class="text-center">Dashboard</h1>
+        <div class="lines">//</div>
     </div>
 </div>
-<hr />
+
+<style>
+    .lines{
+        position: relative;
+        text-align: center;
+    }
+        .lines::before, .lines::after {
+            content: '';
+            position: absolute;
+            background: var(--color-volvox);
+            width: 25%;
+            height: 1px;
+            top: 50%;
+        }
+        .lines::before {
+            left: calc(25% - 12.5px);
+        }
+        .lines::after {
+            right: calc(25% - 12.5px);
+        }
+</style>

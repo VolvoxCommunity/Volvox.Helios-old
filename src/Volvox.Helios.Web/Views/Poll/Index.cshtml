@@ -3,85 +3,89 @@
     ViewData["Title"] = "View Polls";
 }
 
-<div class="row">
-    <div class="col-9">
-        <h2>My Polls</h2>
+
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+            <h2>My Polls</h2>
+        </div>
+
+        <div class="col-4">
+            <a class="btn btn-volvox-outline ml-auto d-table" id="NewPoll" asp-controller="Poll" asp-action="NewPoll">New</a>
+        </div>
     </div>
 
-    <div class="col-3">
-        <button class="btn btn-volvox-outline" id="NewPoll">New</button>
-    </div>
-</div>
+    <hr />
 
-<hr />
+    <div class="row">
 
-<div class="row">
-
-    <div class="col-12">
-        <div class="row border border-gray2 rounded sliding-border ml-0 mr-0">
-            <div class="col-md-9 col-10 pt-3 pb-3">
-                <h4 class="mb-0">Information and Instructions</h4>
-            </div>
-            <div class="col-md-3 col-2 valign">
-                <div class="btn-group material-btn-group ml-auto">
-                    <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
-                        <i class="fas fa-info-circle"></i>
-                    </a>
+        <div class="col-12">
+            <div class="row border border-gray2 rounded sliding-border ml-0 mr-0">
+                <div class="col-md-9 col-10 pt-3 pb-3">
+                    <h4 class="mb-0">Information and Instructions</h4>
+                </div>
+                <div class="col-md-3 col-2 valign">
+                    <div class="btn-group material-btn-group ml-auto">
+                        <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-12 collapse" id="infoCollapse">
+                    <p>
+                        This module gives you information about the current polls and it's votes. The graph show's a more simplified view of the votes.
+                    </p>
                 </div>
             </div>
-            <div class="col-12 collapse" id="infoCollapse">
-                <p>
-                    This module gives you information about the current polls and it's votes. The graph show's a more simplified view of the votes.
-                </p>
-            </div>
         </div>
-    </div>
 
-    <div class="col-12 mt-4">
-        <div class="form-group">
-            <div id="poll"></div>
-        </div>
-    </div>
-    <div class="col-md-12 col-lg-6">
-        <div class="col-12 border border-gray2 rounded pt-2 h-100">
-            <h5 id="Title" class="mb-4">Hey, how cool is this example?</h5>
+        <div class="col-12 mt-4">
             <div class="form-group">
-                <label asp-for="Options" class="font-size-small"></label>
-                <ul class="list-group" id="Options">
-                    <li class="list-group-item poll-item">
-                        Not cool
-                        <div class="vote-count valign">
-                            5 Votes
-                        </div>
-                    </li>
-                    <li class="list-group-item poll-item">
-                        Its alright...:
-                        <div class="vote-count valign">
-                            44 Votes
-                        </div>
-                    </li>
-                    <li class="list-group-item poll-item">
-                        Pretty cool:
-                        <div class="vote-count valign">
-                            223 Votes
-                        </div>
-                    </li>
-                    <li class="list-group-item poll-item">
-                        Top notch:
-                        <div class="vote-count valign">
-                            304 Votes
-                        </div>
-                    </li>
-                </ul>
+                <div id="poll"></div>
             </div>
         </div>
-    </div>
-    <div class="col-md-12 col-lg-6 mt-lg-0 mt-4">
-        <div class="col-12 border border-gray2 rounded pt-2 h-100">
-            <div id="pieChart"></div>
+        <div class="col-md-12 col-lg-6">
+            <div class="col-12 border border-gray2 rounded pt-2 h-100">
+                <h5 id="Title" class="mb-4">Hey, how cool is this example?</h5>
+                <div class="form-group">
+                    <label asp-for="Options" class="font-size-small"></label>
+                    <ul class="list-group" id="Options">
+                        <li class="list-group-item poll-item">
+                            Not cool
+                            <div class="vote-count valign">
+                                5 Votes
+                            </div>
+                        </li>
+                        <li class="list-group-item poll-item">
+                            Its alright...:
+                            <div class="vote-count valign">
+                                44 Votes
+                            </div>
+                        </li>
+                        <li class="list-group-item poll-item">
+                            Pretty cool:
+                            <div class="vote-count valign">
+                                223 Votes
+                            </div>
+                        </li>
+                        <li class="list-group-item poll-item">
+                            Top notch:
+                            <div class="vote-count valign">
+                                304 Votes
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-lg-6 mt-lg-0 mt-4">
+            <div class="col-12 border border-gray2 rounded pt-2 h-100">
+                <div id="pieChart"></div>
+            </div>
         </div>
     </div>
 </div>
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
@@ -119,11 +123,6 @@
             if (!text) return "";
             return text.trim().substr(text.indexOf(" ") + 1)
         }
-
-        // Direct user to new poll form
-        $("#NewPoll").on('click', function () {
-            window.location = `${window.location.href}/newpoll`
-        });
     </script>
     <script>
         $(function () {

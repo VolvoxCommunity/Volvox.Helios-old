@@ -12,7 +12,9 @@
 .sliding-border .info-btn{
   color: var(--color-deep-dark);
 }
-
+.footer-icon {
+  color: var(--color-dark);
+}
 footer{
   background: #eee;
 }

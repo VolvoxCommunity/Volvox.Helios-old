@@ -118,8 +118,7 @@ a:hover {
 .body-content {
   padding-left: 15px;
   padding-right: 15px;
-  padding-top: 10px;
-  margin-top: 25px;
+  margin-top: 1.5rem;
 }
 
 /* Carousel */
@@ -296,6 +295,7 @@ input:checked + .slider {
 #serverAccordion .card {
   border-bottom: 1px solid rgba(0, 0, 0, .125);
   border-radius: .25rem;
+  overflow: hidden;
 }
 
 .card-title {
@@ -480,7 +480,6 @@ input:checked + .slider {
 .footer-icon {
   padding: 10px;
   justify-content: center;
-  color: white;
   transition: .3s;
   font-size: 20px;
 }
