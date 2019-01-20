@@ -541,6 +541,42 @@ input:checked + .slider {
   }
 
 
+@keyframes opacity {
+  to {
+    opacity: .5;
+  }
+}
+
+.lazy-loader {
+  padding: 9px 0;
+  margin: 0 11px;
+  background: gray;
+  border-radius: 4px;
+  animation: opacity .5s infinite ease-in-out alternate-reverse;
+}
+
+.lines {
+  position: relative;
+  text-align: center;
+}
+
+  .lines::before, .lines::after {
+    content: '';
+    position: absolute;
+    background: var(--color-volvox);
+    width: 25%;
+    height: 1px;
+    top: 50%;
+  }
+
+  .lines::before {
+    left: calc(25% - 12.5px);
+  }
+
+  .lines::after {
+    right: calc(25% - 12.5px);
+  }
+
 /*******Cookie consent*****/
 #cookieConsent {
   border-top: 3px solid var(--color-skyblue);

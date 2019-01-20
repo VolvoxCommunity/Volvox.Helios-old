@@ -6,24 +6,3 @@
         <div class="lines">//</div>
     </div>
 </div>
-
-<style>
-    .lines{
-        position: relative;
-        text-align: center;
-    }
-        .lines::before, .lines::after {
-            content: '';
-            position: absolute;
-            background: var(--color-volvox);
-            width: 25%;
-            height: 1px;
-            top: 50%;
-        }
-        .lines::before {
-            left: calc(25% - 12.5px);
-        }
-        .lines::after {
-            right: calc(25% - 12.5px);
-        }
-</style>

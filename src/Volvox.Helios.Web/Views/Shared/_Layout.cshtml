@@ -36,21 +36,8 @@
     <link rel="icon" type="image/x-icon" href="~/images/small/volvox-logo.png">
 
     <script>
-        window.onload = function () {
-            var loader = document.getElementById('preloader');
-            //setTimeout(() => {
-                
-                loader.querySelector('img').classList.add('toggle');
-                loader.querySelector('svg').classList.add('toggle');
-            //}, 3000);
-            setTimeout(() => {
-                loader.classList.add('toggled');
-            }, 1000)
-            setTimeout(() => {
-                document.body.style.overflowY = "auto";
-                loader.style.display = 'none';
-            }, 2000)
-        }
+        // Load script
+        window.addEventListener("load", () => { window.removeEventListener("load", this); var loader = document.getElementById('preloader'); loader.querySelector('img').classList.add('toggle'); loader.querySelector('svg').classList.add('toggle'); setTimeout(() => { loader.classList.add('toggled') }, 1000); setTimeout(() => { document.body.style.overflowY = "auto"; loader.style.display = 'none' }, 2000) })
     </script>
 
     @Html.Raw(JavaScriptSnippet.FullScript)
@@ -58,7 +45,6 @@
 <body>
     <div id="preloader">
         <div class="loader-anim">
-            <div class="bg"></div>
             <div class="content">
                 <svg width="198.71" height="223.37" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g>

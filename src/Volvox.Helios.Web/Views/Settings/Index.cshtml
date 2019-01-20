@@ -4,9 +4,14 @@
     ViewData["Title"] = "Settings";
 }
 
+<div class="row pt-5 pb-5 mb-4" style="background: rgba(0,0,0,.4);">
+    <div class="container">
+        <h1 class="text-center">@Model.GuildName</h1>
+        <div class="lines">//</div>
+    </div>
+</div>
+
 <div class="container">
-    <h2>@Model.GuildName</h2>
-    <hr>
     <div class="row">
         @foreach (var module in Model.Modules)
         {
@@ -57,3 +62,9 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $('main').css({ marginTop: 0 });
+    </script>
+}
