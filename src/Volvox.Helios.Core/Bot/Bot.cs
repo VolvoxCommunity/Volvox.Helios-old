@@ -48,7 +48,7 @@ namespace Volvox.Helios.Core.Bot
             {
                 Task.Run(async () =>
                 {
-                    for (;;)
+                    for (; ; )
                     {
                         var memberCount = Client.Guilds.Sum(guild => guild.MemberCount);
                         var version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
@@ -69,7 +69,18 @@ namespace Volvox.Helios.Core.Bot
 
                 if (channel != null)
                 {
-                    await channel.SendMessageAsync($"Joined Guild: {guild.Name} [{guild.MemberCount} Members]");
+                    var builder = new EmbedBuilder();
+
+                    builder.Title = "New Guild";
+                    builder.Color = new Color(0x00BFFF);
+                    builder.AddField("Name", guild.Name, false);
+                    builder.AddField("Owner", $"{guild.Owner.Username} ({guild.OwnerId})", true);
+                    builder.AddField("User Count", guild.Users.Count(u => !u.IsBot), false);
+                    builder.AddField("Bot Count", guild.Users.Count(u => u.IsBot), true);
+
+                    builder.ThumbnailUrl = guild.IconUrl;
+
+                    await channel.SendMessageAsync("", false, builder.Build());
                 }
             };
 
@@ -80,7 +91,18 @@ namespace Volvox.Helios.Core.Bot
 
                 if (channel != null)
                 {
-                    await channel.SendMessageAsync($"Left Guild: {guild.Name} [{guild.MemberCount} Members]");
+                    var builder = new EmbedBuilder();
+
+                    builder.Title = "Left Guild";
+                    builder.Color = new Color(0xFF0000);
+                    builder.AddField("Name", guild.Name, false);
+                    builder.AddField("Owner", $"{guild.Owner.Username} ({guild.OwnerId})", true);
+                    builder.AddField("User Count", guild.Users.Count(u => !u.IsBot), false);
+                    builder.AddField("Bot Count", guild.Users.Count(u => u.IsBot), true);
+
+                    builder.ThumbnailUrl = guild.IconUrl;
+
+                    await channel.SendMessageAsync("", false, builder.Build());
                 }
             };
 
