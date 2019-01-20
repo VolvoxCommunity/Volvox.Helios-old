@@ -48,7 +48,7 @@ namespace Volvox.Helios.Core.Bot
             {
                 Task.Run(async () =>
                 {
-                    for (; ; )
+                    for (;;)
                     {
                         var memberCount = Client.Guilds.Sum(guild => guild.MemberCount);
                         var version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
@@ -73,14 +73,8 @@ namespace Volvox.Helios.Core.Bot
 
                     builder.Title = "New Guild";
                     builder.Color = new Color(0x00BFFF);
-                    builder.AddField("Name", guild.Name, false);
-                    builder.AddField("Owner", $"{guild.Owner.Username} ({guild.OwnerId})", true);
-                    builder.AddField("User Count", guild.Users.Count(u => !u.IsBot), false);
-                    builder.AddField("Bot Count", guild.Users.Count(u => u.IsBot), true);
 
-                    builder.ThumbnailUrl = guild.IconUrl;
-
-                    await channel.SendMessageAsync("", false, builder.Build());
+                    await channel.SendMessageAsync("", false, CreateEmbed(builder, guild));
                 }
             };
 
@@ -95,14 +89,8 @@ namespace Volvox.Helios.Core.Bot
 
                     builder.Title = "Left Guild";
                     builder.Color = new Color(0xFF0000);
-                    builder.AddField("Name", guild.Name, false);
-                    builder.AddField("Owner", $"{guild.Owner.Username} ({guild.OwnerId})", true);
-                    builder.AddField("User Count", guild.Users.Count(u => !u.IsBot), false);
-                    builder.AddField("Bot Count", guild.Users.Count(u => u.IsBot), true);
-
-                    builder.ThumbnailUrl = guild.IconUrl;
-
-                    await channel.SendMessageAsync("", false, builder.Build());
+                   
+                    await channel.SendMessageAsync("", false, CreateEmbed(builder, guild));
                 }
             };
 
@@ -110,6 +98,25 @@ namespace Volvox.Helios.Core.Bot
             _ = new ReliabilityService(Client, logger);
 
             Connector = new BotConnector(settings, Client);
+        }
+
+        /// <summary>
+        /// Create and build an embed for guild joins/leaves
+        /// </summary>
+        /// <param name="builder">The EmbedBuilder to be built</param>
+        /// <param name="guild">The guild that the bot has joined/lefte</param>
+        /// <returns>The built Embed object</returns>
+        private Embed CreateEmbed(EmbedBuilder builder, SocketGuild guild)
+        {
+
+            builder.AddField("Name", guild.Name, false);
+            builder.AddField("Owner", $"{guild.Owner.Username} ({guild.OwnerId})", true);
+            builder.AddField("User Count", guild.Users.Count(u => !u.IsBot), false);
+            builder.AddField("Bot Count", guild.Users.Count(u => u.IsBot), true);
+            builder.ThumbnailUrl = guild.IconUrl;
+
+            return builder.Build();
+
         }
 
         /// <inheritdoc />
