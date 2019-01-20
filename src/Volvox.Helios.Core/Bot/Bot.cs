@@ -108,7 +108,6 @@ namespace Volvox.Helios.Core.Bot
         /// <returns>The built Embed object</returns>
         private Embed CreateEmbed(EmbedBuilder builder, SocketGuild guild)
         {
-
             builder.AddField("Name", guild.Name, false);
             builder.AddField("Owner", $"{guild.Owner.Username} ({guild.OwnerId})", true);
             builder.AddField("User Count", guild.Users.Count(u => !u.IsBot), false);
@@ -116,7 +115,6 @@ namespace Volvox.Helios.Core.Bot
             builder.ThumbnailUrl = guild.IconUrl;
 
             return builder.Build();
-
         }
 
         /// <inheritdoc />
