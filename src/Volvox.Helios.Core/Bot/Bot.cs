@@ -69,7 +69,12 @@ namespace Volvox.Helios.Core.Bot
 
                 if (channel != null)
                 {
-                    await channel.SendMessageAsync($"Joined Guild: {guild.Name} [{guild.MemberCount} Members]");
+                    var builder = new EmbedBuilder();
+
+                    builder.Title = "New Guild";
+                    builder.Color = new Color(0x00BFFF);
+
+                    await channel.SendMessageAsync("", false, CreateEmbed(builder, guild));
                 }
             };
 
@@ -80,7 +85,12 @@ namespace Volvox.Helios.Core.Bot
 
                 if (channel != null)
                 {
-                    await channel.SendMessageAsync($"Left Guild: {guild.Name} [{guild.MemberCount} Members]");
+                    var builder = new EmbedBuilder();
+
+                    builder.Title = "Left Guild";
+                    builder.Color = new Color(0xFF0000);
+                   
+                    await channel.SendMessageAsync("", false, CreateEmbed(builder, guild));
                 }
             };
 
@@ -88,6 +98,23 @@ namespace Volvox.Helios.Core.Bot
             _ = new ReliabilityService(Client, logger);
 
             Connector = new BotConnector(settings, Client);
+        }
+
+        /// <summary>
+        /// Create and build an embed for guild joins/leaves
+        /// </summary>
+        /// <param name="builder">The EmbedBuilder to be built</param>
+        /// <param name="guild">The guild that the bot has joined/lefte</param>
+        /// <returns>The built Embed object</returns>
+        private Embed CreateEmbed(EmbedBuilder builder, SocketGuild guild)
+        {
+            builder.AddField("Name", guild.Name, false);
+            builder.AddField("Owner", $"{guild.Owner.Username} ({guild.OwnerId})", true);
+            builder.AddField("User Count", guild.Users.Count(u => !u.IsBot), false);
+            builder.AddField("Bot Count", guild.Users.Count(u => u.IsBot), true);
+            builder.ThumbnailUrl = guild.IconUrl;
+
+            return builder.Build();
         }
 
         /// <inheritdoc />
