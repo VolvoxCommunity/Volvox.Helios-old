@@ -27,10 +27,13 @@ namespace Volvox.Helios.Web.Controllers
 {
     // TODO : Change views to modern razor pages instead of @html stuff
     // TODO : Find more efficient way of making all those db calls. No way of batching them currently.
+    // TODO : Do the cache clearing better. perhaps another attribute.
+    // TODO : may have to use a struct instead of class, as if I get settings then cache is cleared, the settings will point to nothing. need value type here.
     [Authorize]
     [Route("/Moderation/{guildId}")]
     [IsUserGuildAdminFilter]
     [EnsureModerationSettingsEntryExistsFilter]
+    [ClearCacheAfterPostFilter]
     public class ModerationController : Controller
     {
         #region private vars
