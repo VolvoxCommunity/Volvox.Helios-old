@@ -21,6 +21,13 @@ namespace Volvox.Helios.Service.Discord.Guild
         Task<List<Role>> GetRoles(ulong guildId);
 
         /// <summary>
+        ///     Get all of the emojis in the specified guild.
+        /// </summary>
+        /// <param name="guildId"></param>
+        /// <returns></returns>
+        Task<List<Emoji>> GetEmojis(ulong guildId);
+
+        /// <summary>
         ///     Get the details of the specified guild.
         /// </summary>
         /// <param name="guildId">Id of the guild.</param>

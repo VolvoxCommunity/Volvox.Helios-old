@@ -41,6 +41,14 @@ namespace Volvox.Helios.Service.Discord.Guild
             return JsonConvert.DeserializeObject<List<Role>>(roles);
         }
 
+        /// <inheritdoc />
+        public async Task<List<Emoji>> GetEmojis(ulong guildId)
+        {
+            var emojis = await _client.GetEmojis(guildId);
+
+            return JsonConvert.DeserializeObject<List<Emoji>> ( emojis );
+        }
+
         /// <summary>
         ///     Get the details of the specified guild.
         /// </summary>

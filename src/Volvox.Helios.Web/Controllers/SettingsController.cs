@@ -15,6 +15,7 @@ using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.Extensions;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
+using Volvox.Helios.Web.ViewModels.ReactionRoles;
 using Volvox.Helios.Web.ViewModels.Settings;
 
 namespace Volvox.Helios.Web.Controllers
@@ -29,23 +30,27 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IModuleSettingsService<RemembotSettings> _reminderSettingsService;
         private readonly IEntityService<StreamerChannelSettings> _streamAnnouncerChannelSettingsService;
         private readonly IModuleSettingsService<StreamerSettings> _streamAnnouncerSettingsService;
+        private readonly IModuleSettingsService<ReactionRoleSettings> _reactionRolesSettings;
 
         public SettingsController(IModuleSettingsService<StreamerSettings> streamAnnouncerSettingsService,
             IEntityService<StreamerChannelSettings> streamAnnouncerChannelSettingsService,
             IModuleSettingsService<ChatTrackerSettings> chatTrackerSettingsService,
             IModuleSettingsService<RemembotSettings> reminderSettingsService,
-            IEntityService<RecurringReminderMessage> recurringReminderService)
+            IEntityService<RecurringReminderMessage> recurringReminderService,
+            IModuleSettingsService<ReactionRoleSettings> reactionRolesSettings)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
             _chatTrackerSettingsService = chatTrackerSettingsService;
             _reminderSettingsService = reminderSettingsService;
             _recurringReminderService = recurringReminderService;
+            _reactionRolesSettings = reactionRolesSettings;
         }
 
         public async Task<IActionResult> Index(ulong guildId, [FromServices] IBot bot,
             [FromServices] IDiscordSettings discordSettings, [FromServices] IList<IModule> modules,
-            [FromServices] IEntityService<Poll> pollService)
+            [FromServices] IEntityService<Poll> pollService,
+            [FromServices] IEntityService<ReactionRolesMessage> reactionRolesMessageService)
         {
             if (bot.IsBotInGuild(guildId))
             {
@@ -54,7 +59,8 @@ namespace Volvox.Helios.Web.Controllers
                     GuildId = guildId,
                     GuildName = bot.GetGuilds().FirstOrDefault(g => g.Id == guildId)?.Name,
                     Modules = modules.Where(mod => mod.Configurable).ToList(),
-                    PollCount = ( await pollService.Get(p => p.GuildId == guildId) ).Count
+                    PollCount = ( await pollService.Get(p => p.GuildId == guildId) ).Count,
+                    ReactionRolePostCount = (await reactionRolesMessageService.Get(r => r.GuildId == guildId)).Count
                 };
 
                 return View(viewModel);
@@ -284,6 +290,66 @@ namespace Volvox.Helios.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        #endregion
+
+        #region ReactionRoles
+
+        [HttpGet("ReactionRoles")]
+        public async Task<IActionResult> ReactionRolesSettings(ulong guildId,
+            [FromServices] IEntityService<ReactionRolesMessage> reactionRolesMessageService,
+            [FromServices] IDiscordGuildService guildService)
+        {
+            var settings = await _reactionRolesSettings.GetSettingsByGuild(guildId);
+
+            if (settings is null)
+            {
+                settings = new ReactionRoleSettings
+                {
+                    GuildId = guildId,
+                    Enabled = true
+                };
+            }
+
+            var messages = await reactionRolesMessageService.Get(msg => msg.GuildId == guildId,
+                msg => msg.RollMappings);
+
+            var channels = await guildService.GetChannels(guildId);
+
+            var vm = new ReactionRoleSettingsViewModel
+            {
+                Enabled = true,
+                GuildId = guildId
+            };
+
+            if (messages is null)
+            {
+                vm.ReactionRolesMessages = new List<ReactionRolesMessageViewModel>();
+            }
+            else
+            {
+                vm.ReactionRolesMessages = messages.Select(msg => new ReactionRolesMessageViewModel
+                {
+                    Id = msg.Id,
+                    Message = msg.Message,
+                    GuildId = msg.GuildId,
+                    ChannelId = msg.ChannelId,
+                    ChannelName = channels.FirstOrDefault(c => c.Id == msg.ChannelId)?.Name ?? "???",
+                    MessageId = msg.MessageId,
+                    RollMappings = msg.RollMappings.Select(rm => new ReactionRolesEmoteMappingViewModel
+                    {
+                        Id = rm.Id,
+                        GuildId = rm.GuildId,
+                        RoleId = rm.RoleId,
+                        EmoteId = rm.EmoteId,
+                        ReactionRoleMessageId = msg.Id
+                    })
+                    .ToList()
+                })
+                .ToList();
+            }
+
+            return View(vm);
+        }
         #endregion
     }
 }

@@ -37,5 +37,12 @@ namespace Volvox.Helios.Service.Clients
         /// <param name="guildId">Id of the guild.</param>
         /// <returns>JSON object of the guild.</returns>
         Task<string> GetGuild(ulong guildId);
+
+        /// <summary>
+        ///     Get the emojis in the specified guild.
+        /// </summary>
+        /// <param name="guildId"></param>
+        /// <returns></returns>
+        Task<string> GetEmojis(ulong guildId);
     }
 }

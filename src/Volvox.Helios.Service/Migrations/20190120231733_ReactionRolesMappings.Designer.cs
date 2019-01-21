@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Service;
@@ -10,9 +11,10 @@ using Volvox.Helios.Service;
 namespace Volvox.Helios.Service.Migrations
 {
     [DbContext(typeof(VolvoxHeliosContext))]
-    partial class VolvoxHeliosContextModelSnapshot : ModelSnapshot
+    [Migration("20190120231733_ReactionRolesMappings")]
+    partial class ReactionRolesMappings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,10 +141,8 @@ namespace Volvox.Helios.Service.Migrations
 
                     b.Property<string>("Message");
 
-                    b.Property<decimal?>("MessageId")
+                    b.Property<decimal>("MessageId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
-                    b.Property<string>("Title");
 
                     b.HasKey("Id")
                         .HasAnnotation("SqlServer:Clustered", true);

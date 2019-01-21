@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentCache;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Volvox.Helios.Service.ModuleSettings;
 
 namespace Volvox.Helios.Service.Clients
 {
@@ -96,6 +97,13 @@ namespace Volvox.Helios.Service.Clients
             SetBotToken();
 
             return await _client.GetStringAsync($"users/{userId}");
+        }
+
+        public async Task<string> GetEmojis(ulong guildId)
+        {
+            SetBotToken();
+
+            return await _client.GetStringAsync($"guilds/{guildId}/emojis");
         }
 
         /// <summary>

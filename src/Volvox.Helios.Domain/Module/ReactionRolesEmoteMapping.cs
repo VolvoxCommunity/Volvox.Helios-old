@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Volvox.Helios.Domain.Module
 {
-    public class ReactionRollEmoteMapping
+    public class ReactionRolesEmoteMapping
     {
         public long Id { get; set; }
         public long ReactionRoleMessageId { get; set; }

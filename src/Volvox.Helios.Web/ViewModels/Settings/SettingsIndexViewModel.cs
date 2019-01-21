@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Volvox.Helios.Core.Modules.Common;
 
 namespace Volvox.Helios.Web.ViewModels.Settings
@@ -12,5 +13,7 @@ namespace Volvox.Helios.Web.ViewModels.Settings
         public IList<IModule> Modules { get; set; }
 
         public int PollCount { get; set; }
+
+        public int ReactionRolePostCount { get; set; }
     }
 }

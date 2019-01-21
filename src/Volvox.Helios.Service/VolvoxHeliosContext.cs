@@ -41,8 +41,8 @@ namespace Volvox.Helios.Service
 
         #region Reaction Roles
         public DbSet<ReactionRoleSettings> ReactionRoleSettings { get; set; }
-        public DbSet<ReactionRoleMessage> ReactionRoleMessages { get; set; }
-        public DbSet<ReactionRollEmoteMapping> ReactionRoleEmoteMappings { get; set; }
+        public DbSet<ReactionRolesMessage> ReactionRoleMessages { get; set; }
+        public DbSet<ReactionRolesEmoteMapping> ReactionRoleEmoteMappings { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -55,8 +55,8 @@ namespace Volvox.Helios.Service
         private void SetupForReactionRoleSchema(ModelBuilder modelBuilder)
         {
             var settingsModel = modelBuilder.Entity<ReactionRoleSettings>();
-            var reactionRoleMessageModel = modelBuilder.Entity<ReactionRoleMessage>();
-            var emoteRoleMappingModel = modelBuilder.Entity<ReactionRollEmoteMapping>();
+            var reactionRoleMessageModel = modelBuilder.Entity<ReactionRolesMessage>();
+            var emoteRoleMappingModel = modelBuilder.Entity<ReactionRolesEmoteMapping>();
 
             reactionRoleMessageModel.HasKey(x => x.Id)
                 .ForSqlServerIsClustered();
