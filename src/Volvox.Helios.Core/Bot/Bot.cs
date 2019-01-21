@@ -72,7 +72,7 @@ namespace Volvox.Helios.Core.Bot
                     var builder = new EmbedBuilder();
 
                     builder.Title = "New Guild";
-                    builder.Color = new Color(0x00BFFF);
+                    builder.Color = EmbedColors.GuildJoinColor;
 
                     await channel.SendMessageAsync("", false, CreateEmbed(builder, guild));
                 }
@@ -88,7 +88,7 @@ namespace Volvox.Helios.Core.Bot
                     var builder = new EmbedBuilder();
 
                     builder.Title = "Left Guild";
-                    builder.Color = new Color(0xFF0000);
+                    builder.Color = EmbedColors.ErrorColor;
                    
                     await channel.SendMessageAsync("", false, CreateEmbed(builder, guild));
                 }
@@ -104,7 +104,7 @@ namespace Volvox.Helios.Core.Bot
         /// Create and build an embed for guild joins/leaves
         /// </summary>
         /// <param name="builder">The EmbedBuilder to be built</param>
-        /// <param name="guild">The guild that the bot has joined/lefte</param>
+        /// <param name="guild">The guild that the bot has joined/left</param>
         /// <returns>The built Embed object</returns>
         private Embed CreateEmbed(EmbedBuilder builder, SocketGuild guild)
         {
