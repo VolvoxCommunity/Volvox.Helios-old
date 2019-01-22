@@ -9,5 +9,7 @@ namespace Volvox.Helios.Core.Utilities
         public static Color TwitchColor = new Color(100, 65, 165);
 
         public static Color ErrorColor = new Color(255, 0, 0);
+
+        public static Color GuildJoinColor = new Color(0, 191, 255);
     }
 }
