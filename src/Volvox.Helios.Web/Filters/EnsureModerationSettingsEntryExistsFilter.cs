@@ -20,7 +20,6 @@ namespace Volvox.Helios.Web.Filters
                     await settings.SaveSettings(new ModerationSettings {GuildId = (ulong)guildId});
                 }
             }
-
             else
             {
                 context.Result = new BadRequestObjectResult(context.ModelState);
