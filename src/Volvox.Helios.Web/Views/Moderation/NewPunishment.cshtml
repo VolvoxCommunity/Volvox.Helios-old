@@ -51,7 +51,7 @@
     <script>
         $('main').removeClass('container').addClass('p-0 mt-0');
 
-        let punishTypes = JSON.parse('@(Html.Raw(Json.Serialize(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.PunishType>())))');
+        let punishTypes = @(Html.Raw(Json.Serialize(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.PunishType>())));
         $('#punishType').dxSelectBox({
             dataSource: punishTypes,
             valueExpr: "value",
@@ -76,7 +76,7 @@
             }
         });
 
-        let warningTypes = JSON.parse('@(Html.Raw(Json.Serialize(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.FilterType>())))');
+        let warningTypes = @(Html.Raw(Json.Serialize(Html.GetEnumSelectList<Volvox.Helios.Domain.Module.ModerationModule.Common.FilterType>())));
         $('#warningType').dxSelectBox({
             dataSource: warningTypes,
             valueExpr: "value",
@@ -96,7 +96,7 @@
             }
         });
 
-        let roles = JSON.parse('@(Html.Raw(Json.Serialize(Model.Role)))');
+        let roles = @(Html.Raw(Json.Serialize(Model.Role)));
         $('#role').dxSelectBox({
             dataSource: roles,
             valueExpr: "value",

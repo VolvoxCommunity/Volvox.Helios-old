@@ -146,8 +146,8 @@
         });
 
         @{var text = System.IO.File.ReadAllText(System.IO.Directory.GetCurrentDirectory() + "\\defaultbannedwords.json");}
-        let bannedWords = JSON.parse(@(Html.Raw(Json.Serialize(text))))['BannedWords'];
-        let bannedWordsData = JSON.parse('@Html.Raw(Json.Serialize(Model.BannedWords))');
+        let bannedWords = JSON.parse(@(Html.Raw(Json.Serialize(text))))["BannedWords"];
+        let bannedWordsData = @(Html.Raw(Json.Serialize(Model.BannedWords)));
 
         for (let i = 0; i < bannedWords.length; i++)
             $('#infoCollapse ul').append(`<li>${bannedWords[i]}</li>`);
@@ -168,7 +168,7 @@
             }
         });
 
-        let whiteListedChannels = JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedChannels)))');
+        let whiteListedChannels = @(Html.Raw(Json.Serialize(Model.WhitelistedChannels)));
         $('#whiteListedChannels').dxTagBox({
             dataSource: whiteListedChannels,
             valueExpr: "value",
@@ -184,7 +184,7 @@
             }
         });
 
-        let whiteListedRoles = JSON.parse('@Html.Raw(Json.Serialize(Model.WhitelistedRoles))');
+        let whiteListedRoles = @Html.Raw(Json.Serialize(Model.WhitelistedRoles));
         $('#whiteListedRoles').dxTagBox({
             dataSource: whiteListedRoles,
             valueExpr: "value",
@@ -200,7 +200,7 @@
             }
         });
 
-        
+
         let tagBox = $('#bannedWords').dxTagBox({
             dataSource: bannedWordsData,
             valueExpr: "text",

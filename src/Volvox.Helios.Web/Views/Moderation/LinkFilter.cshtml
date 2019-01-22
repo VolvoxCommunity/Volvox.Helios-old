@@ -116,7 +116,7 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
+<script>
         $('main').removeClass('container').addClass('p-0 mt-0');
 
         $('input[type="text"]').keypress((e) => {
@@ -144,7 +144,7 @@
             }
         });
 
-        let whiteListedChannels = JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedChannels)))');
+        let whiteListedChannels = @(Html.Raw(Json.Serialize(Model.WhitelistedChannels)));
         $('#whiteListedChannels').dxTagBox({
             dataSource: whiteListedChannels,
             valueExpr: "value",
@@ -160,7 +160,7 @@
             }
         });
 
-        let whiteListedRoles = JSON.parse('@Html.Raw(Json.Serialize(Model.WhitelistedRoles))');
+        let whiteListedRoles = @(Html.Raw(Json.Serialize(Model.WhitelistedRoles)));
         $('#whiteListedRoles').dxTagBox({
             dataSource: whiteListedRoles,
             valueExpr: "value",
@@ -176,7 +176,7 @@
             }
         });
 
-        let whiteListedLinks = JSON.parse('@Html.Raw(Json.Serialize(Model.WhitelistedLinks))');
+        let whiteListedLinks = @(Html.Raw(Json.Serialize(Model.WhitelistedLinks)))
         let tagBox = $('#whiteListedLinks').dxTagBox({
             dataSource: whiteListedLinks,
             valueExpr: "text",
@@ -203,7 +203,7 @@
                 $('#addLinkBox').val('');
             }
         });
-    </script>
+</script>
 }
 
 

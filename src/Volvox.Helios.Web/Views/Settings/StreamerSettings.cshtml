@@ -180,7 +180,7 @@
         if (selectChannelVal == '0')
             selectChannelVal = '@Model.Channels.FirstOrDefault().Value';
         $('#selectChannel').dxSelectBox({
-            dataSource: JSON.parse('@(Html.Raw(Json.Serialize(Model.Channels)))'),
+            dataSource: @(Html.Raw(Json.Serialize(Model.Channels))),
             searchEnabled: true,
             valueExpr: "value",
             displayExpr: "text",
@@ -226,7 +226,7 @@
         var selectRoleVal = '@Model.RoleId';
         if (selectRoleVal == '0')
             selectRoleVal = '@Model.Roles.FirstOrDefault().Value';
-        var roles = JSON.parse('@(Html.Raw(Json.Serialize(Model.Roles)))');
+        var roles = @(Html.Raw(Json.Serialize(Model.Roles)));
         $('#selectRole').dxSelectBox({
             dataSource: roles,
             searchEnabled: true,
@@ -256,7 +256,7 @@
             dataSource: roles,
             valueExpr: "value",
             displayExpr: "text",
-            value: JSON.parse('@(Html.Raw(Json.Serialize(Model.WhiteListedRoleIds)))').map((e) => {
+            value: @(Html.Raw(Json.Serialize(Model.WhiteListedRoleIds))).map((e) => {
                 var role = roles.filter((r) => {
                     return r.value == e;
                 });
