@@ -84,6 +84,29 @@
                 </div>
             </div>
 
+            <div class="vertical-margin-medium">
+                <div class="row module-input-wrapper rounded sliding-border ">
+                    <div class="col-md-9 col-10 pt-3 pb-3">
+                        <h4 class="mb-0">Link Wild Cards</h4>
+                    </div>
+                    <div class="col-md-3 col-2 valign">
+                        <div class="btn-group material-btn-group ml-auto">
+                            <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-12 collapse" id="infoCollapse">
+                        <label>? - any character (one and only one)</label>
+                        <p>Example: "www.volvox.tech/? means ""www.volvox.tech/A" would be legal, but ""www.volvox.tech/AB" would not be.</p>
+                        <hr/>
+                        <label>* - any characters (zero or more)</label>
+                        <p>Example: "www.volvox.tech/*" means "www.volvox.tech/user" would be legal.</p>
+                    </div>
+                </div>
+            </div>
+            
+
             <div class="row form-group mt-4 mb-4">
                 <button type="submit" class="btn btn-volvox-outline save-btn ml-auto">Save</button>
             </div>
