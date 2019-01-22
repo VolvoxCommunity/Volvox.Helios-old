@@ -8,6 +8,7 @@ using Volvox.Helios.Core.Jobs;
 using Volvox.Helios.Core.Modules.ModerationModule.Factories.PunishmentFactory;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.ActivePunishmentService;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
+using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Domain.Module.ModerationModule;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Service.EntityService;

@@ -45,8 +45,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
         {
             var user = (SocketGuildUser)message.Author;
 
-            var settings = await _moderationModuleUtils.GetModerationSettings(user.Guild.Id);
-
             await message.DeleteAsync();
 
             await _messageService.Post(message.Channel.Id, $"Message by <@{user.Id}> deleted\nReason: {warningType}");
@@ -56,7 +54,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
 
             await AddWarning(user, userData, warningType);
             
-            await ApplyPunishments(settings, message, userData, warningType);
+            await ApplyPunishments(user, userData, warningType);
         }
 
         private async Task AddWarning(SocketGuildUser user, UserWarnings userData, FilterType warningType)
@@ -68,17 +66,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
             userData.Warnings.Add(newWarning);
         }
 
-        private async Task ApplyPunishments(ModerationSettings moderationSettings, SocketMessage message, UserWarnings userData, FilterType warningType)
+        private async Task ApplyPunishments(SocketGuildUser user, UserWarnings userData, FilterType warningType)
         {
-            var user = message.Author as SocketGuildUser;
-
-            var punishments = GetPunishmentsToApply(moderationSettings, userData, warningType);
+            var punishments = await GetPunishmentsToApply(userData, warningType);
 
             await _punishmentService.ApplyPunishments(punishments, user);
         }
 
-        private List<Punishment> GetPunishmentsToApply(ModerationSettings moderationSettings, UserWarnings userData, FilterType warningType)
+        private async Task<List<Punishment>> GetPunishmentsToApply(UserWarnings userData, FilterType warningType)
         {
+            var moderationSettings = await _moderationModuleUtils.GetModerationSettings(userData.GuildId);
+
             // Get all warnings that haven't expired.
             var userWarnings = userData.Warnings.Where(x => x.WarningExpires > DateTimeOffset.Now);
 

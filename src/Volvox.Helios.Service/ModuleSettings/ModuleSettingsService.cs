@@ -45,9 +45,7 @@ namespace Volvox.Helios.Service.ModuleSettings
                 await context.SaveChangesAsync();
 
                 // Reset all of the cache keys for the specified guild.
-                if (_guildCacheKeys.ContainsKey(settings.GuildId))
-                    foreach (var cacheKey in _guildCacheKeys[settings.GuildId])
-                        _cache.WithKey(cacheKey).ClearValue();
+                ClearCacheByGuild(settings.GuildId);
 
                 OnSettingsChanged(settings);
             }
@@ -93,7 +91,9 @@ namespace Volvox.Helios.Service.ModuleSettings
         /// <inheritdoc />
         public void ClearCacheByGuild(ulong guildId)
         {
-            _cache.WithKey(GetCacheKey(guildId)).ClearValue();
+            if (_guildCacheKeys.ContainsKey(guildId))
+                foreach (var cacheKey in _guildCacheKeys[guildId])
+                    _cache.WithKey(cacheKey).ClearValue();
         }
 
         /// <inheritdoc />

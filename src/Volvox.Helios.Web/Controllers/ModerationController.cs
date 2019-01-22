@@ -6,6 +6,7 @@ using Discord;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Caching.Memory;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
@@ -25,15 +26,13 @@ using Volvox.Helios.Web.ViewModels.Moderation;
 
 namespace Volvox.Helios.Web.Controllers
 {
-    // TODO : Change views to modern razor pages instead of @html stuff
     // TODO : Find more efficient way of making all those db calls. No way of batching them currently.
-    // TODO : Do the cache clearing better. perhaps another attribute.
-    // TODO : may have to use a struct instead of class, as if I get settings then cache is cleared, the settings will point to nothing. need value type here.
+    // TODO : Instead of clearing cache through filter, find way to make either module settings save navigation properties, or make entity service clear module settings.
     [Authorize]
     [Route("/Moderation/{guildId}")]
     [IsUserGuildAdminFilter]
     [EnsureModerationSettingsEntryExistsFilter]
-    [ClearCacheAfterPostFilter]
+    [ClearCacheModerationSettings]
     public class ModerationController : Controller
     {
         #region private vars
@@ -83,7 +82,7 @@ namespace Volvox.Helios.Web.Controllers
             IPunishmentService punishmentService,
             IWarningService warningService,
             IModerationModuleUtils moderationModuleUtils
-            )
+        )
         {
             _moderationSettings = moderationSettings;
 
@@ -116,13 +115,13 @@ namespace Volvox.Helios.Web.Controllers
             _moderationModuleUtils = moderationModuleUtils;
         }
 
-        private void ClearCacheById(ulong id)
+        private void ClearCacheById(ulong guildId)
         {
-            _moderationSettings.ClearCacheByGuild(id);
+            _moderationSettings.GetSettingsByGuild(guildId);
         }
 
         [HttpGet]
-        public IActionResult Index(ulong guildId)
+        public async Task<IActionResult> Index(ulong guildId)
         {
             return View();
         }
@@ -130,8 +129,6 @@ namespace Volvox.Helios.Web.Controllers
         [HttpGet("general")]
         public async Task<IActionResult> General(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
-            ClearCacheById(guildId);
-
             var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             var guildChannels = await guildService.GetChannels(guildId);
@@ -151,16 +148,12 @@ namespace Volvox.Helios.Web.Controllers
                 WhitelistedRoles = new MultiSelectList(roles, "Id", "Name", alreadyWhitelistedRoles)
             };
 
-            ClearCacheById(guildId);
-
             return View("GlobalSettings", vm);
         }
 
         [HttpPost("general")]
         public async Task<IActionResult> General(ulong guildId, GlobalSettingsViewModel vm)
         {
-            ClearCacheById(guildId);
-
             var currentSettings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             currentSettings.Enabled = vm.Enabled;
@@ -179,17 +172,12 @@ namespace Volvox.Helios.Web.Controllers
 
             await _moderationSettings.SaveSettings(currentSettings);
 
-            // Clearing cache prompts the module to re-fetch moderation settings from the database the next time it needs them, essentially updating them.
-            ClearCacheById(guildId);
-
             return RedirectToAction("general");
         }
 
         [HttpGet("linkfilter")]
         public async Task<IActionResult> LinkFilter(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
-            ClearCacheById(guildId);
-
             var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             var guildChannels = await guildService.GetChannels(guildId);
@@ -213,19 +201,12 @@ namespace Volvox.Helios.Web.Controllers
                 WarningExpirePeriod = settings?.LinkFilter?.WarningExpirePeriod ?? 0
             };
 
-            ClearCacheById(guildId);
-
             return View(vm);
         }
 
         [HttpPost("linkfilter")]
         public async Task<IActionResult> UpdateLinkFilter(ulong guildId, LinkFilterViewModel vm)
         {
-            // Ensures the base moderation settings exist to prevent FK exceptions.
-            await EnsureSettingsExists(guildId);
-
-            ClearCacheById(guildId);
-
             var currentSettings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             var filter = await _entityServiceLinkFilter.GetFirst(f => f.GuildId == guildId);
@@ -269,9 +250,6 @@ namespace Volvox.Helios.Web.Controllers
             await _entityServiceWhitelistedLinks.CreateBulk(newLinkState.LinksToAdd);
 
             await _entityServiceWhitelistedLinks.RemoveBulk(newLinkState.LinksToRemove);
-          
-            // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
-            ClearCacheById(guildId);
 
             return RedirectToAction("linkfilter");
         }
@@ -279,8 +257,6 @@ namespace Volvox.Helios.Web.Controllers
         [HttpGet("profanityfilter")]
         public async Task<IActionResult> ProfanityFilter(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
-            ClearCacheById(guildId);
-
             var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             var guildChannels = await guildService.GetChannels(guildId);
@@ -304,20 +280,13 @@ namespace Volvox.Helios.Web.Controllers
                 UseDefaultBannedWords = settings?.ProfanityFilter?.UseDefaultList ?? true,
                 WarningExpirePeriod = settings?.ProfanityFilter?.WarningExpirePeriod ?? 0
             };
-
-            ClearCacheById(guildId);
-
+            
             return View(vm);
         }
 
         [HttpPost("profanityfilter")]
         public async Task<IActionResult> UpdateProfanityFilter(ulong guildId, ProfanityFilterViewModel vm)
         {
-            ClearCacheById(guildId);
-
-            // Ensures the base moderation settings exist to prevent FK exceptions.
-            await EnsureSettingsExists(guildId);
-
             var currentSettings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             var filter = await _entityServiceProfanityFilter.GetFirst(f => f.GuildId == guildId);
@@ -364,9 +333,6 @@ namespace Volvox.Helios.Web.Controllers
 
             await _entityServiceBannedWords.RemoveBulk(newBannedWordsState.WordsToRemove);
 
-            // Clearing cache prompts the module to refetch moderation settings from the database the next time it needs them, essentially updating them.
-            ClearCacheById(guildId);
-
             return RedirectToAction("profanityfilter");
         }
 
@@ -374,8 +340,6 @@ namespace Volvox.Helios.Web.Controllers
         public async Task<IActionResult> Punishments (ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
             var punishments = await _entityServicePunishments.Get(x => x.GuildId == guildId);
-
-            await EnsureSettingsExists(guildId);
 
             var punishmentModels = new List<PunishmentModel>();
 
@@ -408,9 +372,6 @@ namespace Volvox.Helios.Web.Controllers
         [HttpPost("punishments")]
         public async Task<IActionResult> Punishments(ulong guildId, PunishmentsViewModel vm)
         {
-            // Ensures the base moderation settings exist to prevent FK exceptions.
-            await EnsureSettingsExists(guildId);
-
             var punishments = vm.Punishments ?? new List<PunishmentModel>();
 
             var punishmentsToRemove = new List<Punishment>();
@@ -424,8 +385,6 @@ namespace Volvox.Helios.Web.Controllers
             }
 
             await _entityServicePunishments.RemoveBulk(punishmentsToRemove);
-
-            ClearCacheById(guildId);
 
             return RedirectToAction("punishments");
         }
@@ -449,8 +408,6 @@ namespace Volvox.Helios.Web.Controllers
 
                 await _entityServicePunishments.Create(punishment);
             }
-
-            ClearCacheById(guildId);
 
             return RedirectToAction("punishments");
         }
@@ -524,19 +481,7 @@ namespace Volvox.Helios.Web.Controllers
 
             await _warningService.RemoveWarningBulk(warningsToRemove);
 
-            ClearCacheById(guildId);
-
             return RedirectToAction("User");
-        }
-
-        private async Task EnsureSettingsExists(ulong guildId)
-        {
-            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
-
-            if (settings == null)
-            {
-                await _moderationSettings.SaveSettings(new ModerationSettings { GuildId = guildId });
-            }
         }
 
         private Punishment ConvertModelPunishment(ulong guildId, PunishmentModel model)
