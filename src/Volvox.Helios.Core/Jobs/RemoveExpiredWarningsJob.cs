@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,10 +12,10 @@ namespace Volvox.Helios.Core.Jobs
 {
     public class RemoveExpiredWarningsJob
     {
-        IJobService _jobService;
-        IServiceScopeFactory _scopeFactory;
-        IBot _bot;
-        ILogger<IModule> _logger;
+        private IBot _bot;
+        private IJobService _jobService;
+        private readonly ILogger<IModule> _logger;
+        private readonly IServiceScopeFactory _scopeFactory;
 
         public RemoveExpiredWarningsJob(IJobService jobService,
             IServiceScopeFactory scopeFactory,
