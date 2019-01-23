@@ -40,4 +40,7 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Pages\Shared\" />
+  </ItemGroup>
 </Project>

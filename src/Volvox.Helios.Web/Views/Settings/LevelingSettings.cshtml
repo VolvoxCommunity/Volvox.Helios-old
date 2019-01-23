@@ -9,7 +9,25 @@
 <form method="post" class="col-12">
     <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div class="row border border-gray2 rounded">
+    <div class="row border border-gray2 rounded sliding-border">
+        <div class="col-md-9 col-10 pt-3 pb-3">
+            <h4 class="mb-0">Information and Instructions</h4>
+        </div>
+        <div class="col-md-3 col-2 valign">
+            <div class="btn-group material-btn-group ml-auto">
+                <a href="#infoCollapse" class="info-btn" data-toggle="collapse" data-animation="sliding-border" role="button" aria-expanded="false" aria-controls="infoCollapse">
+                    <i class="fas fa-info-circle"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 collapse" id="infoCollapse">
+            <p>
+                Some nice Information.
+            </p>
+        </div>
+    </div>
+
+    <div class="row border border-gray2 rounded mt-4">
         <div class="col-md-9 pt-3 pb-3">
             <h4>Leveling Module</h4>
             <p class="mb-0 text-volvox">
@@ -29,6 +47,22 @@
             </div>
         </div>
     </div>
+
+    <div class="row border border-gray2 rounded mt-4 pt-3 pb-3">
+        <div class="col-md-3">
+            <a class="btn btn-block btn-volvox-outline" asp-controller="Leveling" asp-action="Leaderboards">Leaderboards</a>
+        </div>
+        <div class="col-md-3 mt-md-0 mt-3">
+            <a class="btn btn-block btn-volvox-outline">Some other thing</a>
+        </div>
+        <div class="col-md-3 mt-md-0 mt-3">
+            <a class="btn btn-block btn-volvox-outline">Lorem ipsum</a>
+        </div>
+        <div class="col-md-3 mt-md-0 mt-3">
+            <a class="btn btn-block btn-volvox-outline">Lorem ipsum</a>
+        </div>
+    </div>
+
     <div class="row mt-4">
         <span asp-validation-summary="Enabled" class="text-danger"></span>
         <div class="ml-auto">
@@ -44,6 +78,5 @@
             $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
             $(e.currentTarget).parent().toggleClass('active disabled');
         });
-
     </script>
 }
