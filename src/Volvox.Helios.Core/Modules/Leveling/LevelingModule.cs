@@ -51,13 +51,9 @@ namespace Volvox.Helios.Core.Modules.Leveling
                 return false;
 
             if (message.Channel is SocketGuildChannel guildChannel)
-            {
-                var isEnabled = await IsEnabledForGuild(guildChannel.Guild.Id);
-                if (!isEnabled)
-                    return false;
-            }
+                return await IsEnabledForGuild(guildChannel.Guild.Id);
 
-            return true;
+            return false;
         }
     }
 }
