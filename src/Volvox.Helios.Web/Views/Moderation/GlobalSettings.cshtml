@@ -101,12 +101,12 @@
             $(e.currentTarget).closest('.module-enabler').toggleClass('active disabled');
         });
 
-        let whiteListedChannels = JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedChannels)))');
+        let whiteListedChannels = @(Html.Raw(Json.Serialize(Model.WhitelistedChannels)));
         $('#whiteListedChannels').dxTagBox({
             dataSource: whiteListedChannels,
             valueExpr: "value",
             displayExpr: "text",
-            value: JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedChannels)))').filter((e) => { if (e.selected) return e; }).map((e) => { return e.value }),
+            value: @(Html.Raw(Json.Serialize(Model.WhitelistedChannels))).filter((e) => { if (e.selected) return e; }).map((e) => { return e.value }),
             onInitialized: (e) => {
                 setTimeout(() => {
                     $('#selectedChannelsHidden').append($('#whiteListedChannels .dx-dropdowneditor-input-wrapper').find('select option'));
@@ -117,12 +117,12 @@
             }
         });
 
-        let whiteListedRoles = JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedRoles)))');
+        let whiteListedRoles = @(Html.Raw(Json.Serialize(Model.WhitelistedRoles)));
         $('#whiteListedRoles').dxTagBox({
             dataSource: whiteListedRoles,
             valueExpr: "value",
             displayExpr: "text",
-            value: JSON.parse('@(Html.Raw(Json.Serialize(Model.WhitelistedRoles)))').filter((e) => { return e.selected; }).map((e) => { return e.value }),
+            value: @(Html.Raw(Json.Serialize(Model.WhitelistedRoles))).filter((e) => { return e.selected; }).map((e) => { return e.value }),
             onInitialized: (e) => {
                 setTimeout(() => {
                     $('#selectedRolesHidden').append($('#whiteListedRoles .dx-dropdowneditor-input-wrapper').find('select option'));
