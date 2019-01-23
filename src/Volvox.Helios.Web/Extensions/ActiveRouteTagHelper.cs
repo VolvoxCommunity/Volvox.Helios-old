@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using System;
-using System.Linq;
 
 namespace Volvox.Helios.Web.Extensions
 {
@@ -10,23 +10,22 @@ namespace Volvox.Helios.Web.Extensions
     public class ActiveRouteTagHelper : TagHelper
     {
         /// <summary>
-        /// Name of the action method.
+        ///     Name of the action method.
         /// </summary>
         [HtmlAttributeName("asp-action")]
         public string Action { get; set; }
 
         /// <summary>
-        /// Name of the controller.
+        ///     Name of the controller.
         /// </summary>
         [HtmlAttributeName("asp-controller")]
         public string Controller { get; set; }
 
         /// <summary>
-        /// Gets the ViewContext for the current request.
+        ///     Gets the ViewContext for the current request.
         /// </summary>
         [HtmlAttributeNotBound]
-        [ViewContext]
-        public ViewContext ViewContext { get; set; }
+        [ViewContext] public ViewContext ViewContext { get; set; }
 
         [HtmlAttributeName("match-controller")]
         public bool MatchController { get; set; }
@@ -35,10 +34,7 @@ namespace Volvox.Helios.Web.Extensions
         {
             base.Process(context, output);
 
-            if (ShouldBeActive())
-            {
-                MakeActive(output);
-            }
+            if (ShouldBeActive()) MakeActive(output);
 
             // Remove identifying attribute
             output.Attributes.RemoveAll("asp-is-active");
@@ -46,21 +42,31 @@ namespace Volvox.Helios.Web.Extensions
 
         private bool ShouldBeActive()
         {
-            var currentController = ViewContext.RouteData.Values["Controller"].ToString();
-            var currentAction = ViewContext.RouteData.Values["Action"].ToString();
+            // TODO: Clean this up
+            var routeData = ViewContext.RouteData.Values;
+
+            var pageController = string.Empty;
+            var pageAction = string.Empty;
+
+            if (routeData.ContainsKey("page"))
+            {
+                var page = $"{routeData["page"]}".ToLowerInvariant();
+                pageController = page.Substring(0, page.LastIndexOf('/')).Replace("/", string.Empty);
+                pageAction = page.Substring(page.LastIndexOf('/')).Replace("/", string.Empty);
+            }
+
+            var currentController = ViewContext.RouteData.Values["Controller"]?.ToString() ?? pageController;
+            var currentAction = ViewContext.RouteData.Values["Action"]?.ToString() ?? pageAction;
 
             if (MatchController && !string.IsNullOrWhiteSpace(Controller) && string.Equals(Controller,
                     currentController, StringComparison.CurrentCultureIgnoreCase))
-            {
                 return true;
-            }
 
-            if (!string.IsNullOrWhiteSpace(Controller) && !string.Equals(Controller, currentController, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return false;
-            }
+            if (!string.IsNullOrWhiteSpace(Controller) && !string.Equals(Controller, currentController,
+                    StringComparison.CurrentCultureIgnoreCase)) return false;
 
-            return string.IsNullOrWhiteSpace(Action) || string.Equals(Action, currentAction, StringComparison.CurrentCultureIgnoreCase);
+            return string.IsNullOrWhiteSpace(Action) ||
+                   string.Equals(Action, currentAction, StringComparison.CurrentCultureIgnoreCase);
         }
 
         private void MakeActive(TagHelperOutput output)
@@ -75,10 +81,8 @@ namespace Volvox.Helios.Web.Extensions
                 output.Attributes.Add(classAttr);
             }
             else if (classAttr.Value == null || classAttr.Value.ToString().IndexOf("active") < 0)
-            {
-                // Adds active attribute
-                output.Attributes.SetAttribute("class", classAttr.Value == null ? "active" : classAttr.Value + " active");
-            }
+                output.Attributes.SetAttribute("class",
+                    classAttr.Value == null ? "active" : classAttr.Value + " active");
         }
     }
 }
