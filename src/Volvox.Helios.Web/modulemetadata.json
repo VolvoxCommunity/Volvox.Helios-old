@@ -41,6 +41,13 @@
       "Description": "Good ol' Dad... at it again.",
       "ReleaseState": "Canary",
       "Configurable": "true"
+    },
+    "LevelingModule": {
+      "Name": "Leveling",
+      "Version": "1.0",
+      "Description": "A leveling module that does leveling things (*** please change me to a meaningful description!!!)",
+      "ReleaseState": "Canary",
+      "Configurable": "true"
     }
   }
 }

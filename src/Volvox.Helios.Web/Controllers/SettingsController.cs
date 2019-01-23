@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,7 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IEntityService<StreamerChannelSettings> _streamAnnouncerChannelSettingsService;
         private readonly IModuleSettingsService<StreamerSettings> _streamAnnouncerSettingsService;
         private readonly IEntityService<WhiteListedRole> _whiteListedRoleEntityService;
+        private readonly IModuleSettingsService<LevelingSettings> _levelingSettings;
 
         public SettingsController(IModuleSettingsService<StreamerSettings> streamAnnouncerSettingsService,
             IEntityService<StreamerChannelSettings> streamAnnouncerChannelSettingsService,
@@ -38,7 +40,8 @@ namespace Volvox.Helios.Web.Controllers
             IModuleSettingsService<RemembotSettings> reminderSettingsService,
             IEntityService<RecurringReminderMessage> recurringReminderService,
             IModuleSettingsService<DadModuleSettings> dadSettingsService,
-            IEntityService<WhiteListedRole> whiteListedRoleEntityService)
+            IEntityService<WhiteListedRole> whiteListedRoleEntityService,
+            IModuleSettingsService<LevelingSettings> levelingSettings)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
@@ -47,6 +50,7 @@ namespace Volvox.Helios.Web.Controllers
             _recurringReminderService = recurringReminderService;
             _dadSettingsService = dadSettingsService;
             _whiteListedRoleEntityService = whiteListedRoleEntityService;
+            _levelingSettings = levelingSettings;
         }
 
         public async Task<IActionResult> Index(ulong guildId, [FromServices] IBot bot,
@@ -356,6 +360,45 @@ namespace Volvox.Helios.Web.Controllers
             currentSettings.DadResponseCooldownMinutes = vm.ResponseCooldownMinutes;
 
             await _dadSettingsService.SaveSettings(currentSettings);
+
+            return RedirectToAction("Index");
+        }
+
+        #endregion
+
+        #region Leveling
+        [HttpGet("Leveling")]
+        public async Task<IActionResult> LevelingSettings(ulong guildId)
+        {
+            var guildSettings = await _levelingSettings.GetSettingsByGuild(guildId);
+
+            if (guildSettings is null)
+            {
+                guildSettings = new LevelingSettings
+                {
+                    GuildId = guildId
+                };
+
+                await _levelingSettings.SaveSettings(guildSettings);
+            }
+
+            var vm = new LevelingSettingsViewModel
+            {
+                Enabled = guildSettings.Enabled,
+                GuildId = guildId
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost("Leveling")]
+        public async Task<IActionResult> LevelingSettings(ulong guildId, LevelingSettingsViewModel vm)
+        {
+            await _levelingSettings.SaveSettings(new LevelingSettings
+            {
+                Enabled = vm.Enabled,
+                GuildId = guildId
+            });
 
             return RedirectToAction("Index");
         }

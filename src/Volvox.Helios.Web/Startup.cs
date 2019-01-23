@@ -43,6 +43,7 @@ using Volvox.Helios.Core.Modules.Streamer;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Volvox.Helios.Core.Modules.DadModule;
+using Volvox.Helios.Core.Modules.Leveling;
 
 namespace Volvox.Helios.Web
 {
@@ -126,6 +127,7 @@ namespace Volvox.Helios.Web
             services.AddSingleton<IModule, ChatTrackerModule>();
             services.AddSingleton<IModule, RemembotModule>();
             services.AddSingleton<IModule, DadModule>();
+            services.AddSingleton<IModule, LevelingModule>();
 
             // Commands
             services.AddSingleton<IModule, CommandManager>();
