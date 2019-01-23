@@ -5,7 +5,6 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
-using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.Module.ModerationModule.ProfanityFilter;
 
@@ -15,9 +14,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
     {
         private readonly IBypassCheck _bypassCheck;
 
-        private readonly IModerationModuleUtils _moderationModuleUtils;
-
         private readonly List<string> _defaultBannedWords = new List<string>();
+
+        private readonly IModerationModuleUtils _moderationModuleUtils;
 
         public ProfanityFilterService(IBypassCheck bypassCheck,
             IConfiguration config, IModerationModuleUtils moderationModuleUtils)
@@ -32,17 +31,30 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
         /// <inheritdoc />
         public async Task<bool> CheckViolation(SocketMessage message)
         {
-            var settings = await _moderationModuleUtils.GetModerationSettings(( (SocketGuildUser)message.Author ).Guild.Id);
+            var settings =
+                await _moderationModuleUtils.GetModerationSettings(( (SocketGuildUser)message.Author ).Guild.Id);
 
             var filterViolatedFlag = false;
 
             if (!await HasBypassAuthority(message) && settings.ProfanityFilter != null)
-            {
                 if (ContainsProfanity(settings.ProfanityFilter, message.Content))
                     filterViolatedFlag = true;
-            }
 
             return filterViolatedFlag;
+        }
+
+        /// <inheritdoc />
+        public FilterMetaData GetFilterMetaData()
+        {
+            return new FilterMetaData(FilterType.Profanity);
+        }
+
+        /// <inheritdoc />
+        public async Task<int> GetWarningExpirePeriod(ulong guildId)
+        {
+            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
+
+            return settings.ProfanityFilter.WarningExpirePeriod;
         }
 
         private bool ContainsProfanity(ProfanityFilter profanityFilter, string message)
@@ -57,13 +69,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
                 bannedWords.AddRange(_defaultBannedWords);
 
             foreach (var word in messageWords)
-            {
-                foreach (var bannedWord in bannedWords)
-                {
-                    if (word == bannedWord)
-                        return true;
-                }
-            }
+            foreach (var bannedWord in bannedWords)
+                if (word == bannedWord)
+                    return true;
 
             return false;
         }
@@ -96,20 +104,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
                 .Replace("[w]", "[w W vv VV]")
                 .Replace("[x]", "[x X]")
                 .Replace("[y]", "[y Y]");
-        }
-
-        /// <inheritdoc />
-        public FilterMetaData GetFilterMetaData()
-        {
-            return new FilterMetaData(FilterType.Profanity);
-        }
-
-        /// <inheritdoc />
-        public async Task<int> GetWarningExpirePeriod(ulong guildId)
-        {
-            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
-
-            return settings.ProfanityFilter.WarningExpirePeriod;
         }
 
         private async Task<bool> HasBypassAuthority(SocketMessage message)

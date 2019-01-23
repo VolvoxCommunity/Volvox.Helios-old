@@ -29,15 +29,15 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
                 punishmentResponse.Successful = true;
 
                 punishmentResponse.StatusMessage = $"Banning user <@{user.Id}>" +
-                    $"\nReason: {punishment.WarningType}" +
-                    $"Expires: {expireTime}";
-
+                                                   $"\nReason: {punishment.WarningType}" +
+                                                   $"Expires: {expireTime}";
             }
             else
             {
                 punishmentResponse.Successful = false;
 
-                punishmentResponse.StatusMessage = $"Failed to ban user <@{user.Id}> as bot has insufficient permissions.";
+                punishmentResponse.StatusMessage =
+                    $"Failed to ban user <@{user.Id}> as bot has insufficient permissions.";
             }
 
             return punishmentResponse;
@@ -62,7 +62,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
 
             await guild.RemoveBanAsync(userId);
 
-            return new PunishmentResponse { Successful = true };
+            return new PunishmentResponse {Successful = true};
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Volvox.Helios.Domain.Module.ModerationModule.Common;
+﻿using Volvox.Helios.Domain.Module.ModerationModule.Common;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
 {

@@ -14,6 +14,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService
         /// <param name="guildId">Discord guild ID</param>
         /// <param name="includes">Includes for EF</param>
         /// <returns></returns>
-        Task<UserWarnings> GetUser(ulong userId, ulong guildId, params Expression<Func<UserWarnings, object>>[] includes);
+        Task<UserWarnings> GetUser(ulong userId, ulong guildId,
+            params Expression<Func<UserWarnings, object>>[] includes);
     }
 }

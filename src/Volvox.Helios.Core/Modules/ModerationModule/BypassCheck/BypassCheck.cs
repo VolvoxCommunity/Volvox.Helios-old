@@ -20,7 +20,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.BypassCheck
         /// <inheritdoc />
         public async Task<bool> HasBypassAuthority(SocketMessage message, FilterType type)
         {
-            var settings = await _moderationModuleUtils.GetModerationSettings((( SocketGuildUser)message.Author  ).Guild.Id);
+            var settings =
+                await _moderationModuleUtils.GetModerationSettings(( (SocketGuildUser)message.Author ).Guild.Id);
 
             var whitelistedChannels = settings?.WhitelistedChannels.Where(c => c.WhitelistType == type);
 

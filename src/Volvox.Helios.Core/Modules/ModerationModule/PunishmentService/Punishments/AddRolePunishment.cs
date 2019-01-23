@@ -25,7 +25,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
                 punishmentResponse.StatusMessage = "No role provided.";
                 return punishmentResponse;
             }
-                
+
             var guild = user.Guild;
 
             var role = guild.GetRole(punishment.RoleId.Value);
@@ -36,7 +36,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
                 punishmentResponse.StatusMessage = "Guild doesn't exist.";
                 return punishmentResponse;
             }
-                
+
             if (role == null)
             {
                 punishmentResponse.Successful = false;
@@ -55,16 +55,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
 
                 punishmentResponse.Successful = true;
 
-                punishmentResponse.StatusMessage =  $"Adding role '{role.Name}' to user <@{user.Id}>" +
-                    $"\nReason: {punishment.WarningType}\n" +
-                    $"Expires (minutes): {expireTime}";
+                punishmentResponse.StatusMessage = $"Adding role '{role.Name}' to user <@{user.Id}>" +
+                                                   $"\nReason: {punishment.WarningType}\n" +
+                                                   $"Expires (minutes): {expireTime}";
             }
             else
             {
                 punishmentResponse.Successful = false;
 
-                punishmentResponse.StatusMessage = $"Couldn't add role '{role.Name}' to user <@{user.Id}> as bot has insufficient permissions. " +
-                    $"Check your role hierarchy and make sure the bot is higher than the role you wish to apply.";
+                punishmentResponse.StatusMessage =
+                    $"Couldn't add role '{role.Name}' to user <@{user.Id}> as bot has insufficient permissions. " +
+                    "Check your role hierarchy and make sure the bot is higher than the role you wish to apply.";
             }
 
             return punishmentResponse;
@@ -104,14 +105,12 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
             {
                 punishmentResponse.Successful = false;
                 if (user != null)
-                {
-                    punishmentResponse.StatusMessage = $"Moderation Module: Couldn't apply role '{role?.Name ?? "role"}' to user {user.Username} as bot doesn't have appropriate permissions. " +
-                       $"Guild Id:{guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}";
-                }
+                    punishmentResponse.StatusMessage =
+                        $"Moderation Module: Couldn't apply role '{role?.Name ?? "role"}' to user {user.Username} as bot doesn't have appropriate permissions. " +
+                        $"Guild Id:{guild.Id}, Role Id: {punishment.RoleId.Value}, User Id: {user.Id}";
                 else
-                {
-                    punishmentResponse.StatusMessage = "Moderation Module: Something went wrong when trying to remove role in the punishment removal job. User was unexpectedly null.";
-                }
+                    punishmentResponse.StatusMessage =
+                        "Moderation Module: Something went wrong when trying to remove role in the punishment removal job. User was unexpectedly null.";
             }
 
             return punishmentResponse;

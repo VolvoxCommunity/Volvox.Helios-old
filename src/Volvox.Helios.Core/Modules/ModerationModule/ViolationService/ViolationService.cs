@@ -10,7 +10,6 @@ using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
 using Volvox.Helios.Core.Services.MessageService;
 using Volvox.Helios.Domain.Module.ModerationModule;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
-using Volvox.Helios.Domain.ModuleSettings;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
 {
@@ -18,16 +17,17 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
     {
         private readonly IMessageService _messageService;
 
-        private readonly IPunishmentService _punishmentService;
+        private readonly IModerationModuleUtils _moderationModuleUtils;
 
-        private readonly IWarningService _warningService;
+        private readonly IPunishmentService _punishmentService;
 
         private readonly IUserWarningsService _userWarningService;
 
-        private readonly IModerationModuleUtils _moderationModuleUtils;
+        private readonly IWarningService _warningService;
 
         public ViolationService(IMessageService messageService, IPunishmentService punishmentService,
-            IWarningService warningService, IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils)
+            IWarningService warningService, IUserWarningsService userWarningService,
+            IModerationModuleUtils moderationModuleUtils)
         {
             _messageService = messageService;
 
@@ -50,10 +50,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
             await _messageService.Post(message.Channel.Id, $"Message by <@{user.Id}> deleted\nReason: {warningType}");
 
             // Get user entry from db, this is where a users warnings etc are stored.
-            var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.Warnings, u => u.ActivePunishments);
+            var userData =
+                await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.Warnings, u => u.ActivePunishments);
 
             await AddWarning(user, userData, warningType);
-            
+
             await ApplyPunishments(user, userData, warningType);
         }
 
@@ -89,13 +90,14 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.ViolationService
             var punishments = new List<Punishment>();
 
             // Global punishments
-            punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == FilterType.Global && x.WarningThreshold == allWarningsCount));
+            punishments.AddRange(moderationSettings.Punishments.Where(x =>
+                x.WarningType == FilterType.Global && x.WarningThreshold == allWarningsCount));
 
             // Punishments for specific type. I.E. profanity violation.
-            punishments.AddRange(moderationSettings.Punishments.Where(x => x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
+            punishments.AddRange(moderationSettings.Punishments.Where(x =>
+                x.WarningType == warningType && x.WarningThreshold == specificWarningCount));
 
             return punishments;
         }
-
     }
 }

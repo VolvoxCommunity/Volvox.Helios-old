@@ -17,7 +17,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService
         }
 
         /// <inheritdoc />
-        public async Task<UserWarnings> GetUser(ulong userId, ulong guildId, params Expression<Func<UserWarnings, object>>[] includes)
+        public async Task<UserWarnings> GetUser(ulong userId, ulong guildId,
+            params Expression<Func<UserWarnings, object>>[] includes)
         {
             UserWarnings userData;
 
@@ -39,9 +40,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService
                     await userWarningService.Create(userData);
                 }
                 else
-                {
                     userData = userDataDb;
-                }
             }
 
             return userData;

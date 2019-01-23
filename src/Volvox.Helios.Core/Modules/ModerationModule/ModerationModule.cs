@@ -19,24 +19,10 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 {
     public class ModerationModule : Module
     {
-        #region Private vars
-        private readonly IServiceScopeFactory _scopeFactory;
-
-        private readonly IJobService _jobService;
-
-        private readonly IEnumerable<IFilterService> _filters;
-
-        private readonly IBypassCheck _bypassCheck;
-
-        private readonly IModerationModuleUtils _moderationModuleUtils;
-
-        private readonly IViolationService _violationService;
-
-        #endregion
-
         public ModerationModule(IDiscordSettings discordSettings, ILogger<ModerationModule> logger,
             IConfiguration config, IServiceScopeFactory scopeFactory,
-            IJobService jobService, IEnumerable<IFilterService> filters, IBypassCheck bypassCheck, IModerationModuleUtils moderationModuleUtils,
+            IJobService jobService, IEnumerable<IFilterService> filters, IBypassCheck bypassCheck,
+            IModerationModuleUtils moderationModuleUtils,
             IViolationService violationService
         ) : base(
             discordSettings, logger, config)
@@ -56,15 +42,9 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
 
         public override Task Init(DiscordSocketClient client)
         {
-            client.MessageReceived += async message =>
-            {
-                await CheckMessage(message);
-            };
+            client.MessageReceived += async message => { await CheckMessage(message); };
 
-            client.MessageUpdated += async (cache, message, channel) =>
-            {
-                await CheckMessage(message);
-            };
+            client.MessageUpdated += async (cache, message, channel) => { await CheckMessage(message); };
 
             using (var scope = _scopeFactory.CreateScope())
             {
@@ -100,8 +80,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
             if (await _bypassCheck.HasBypassAuthority(message, FilterType.Global))
                 return;
 
-            foreach(var filter in _filters)
-            {
+            foreach (var filter in _filters)
                 if (await filter.CheckViolation(message))
                 {
                     await _violationService.HandleViolation(message, filter.GetFilterMetaData().FilterType);
@@ -109,13 +88,29 @@ namespace Volvox.Helios.Core.Modules.ModerationModule
                     // Don't check for more violations if already found one in previous filter.
                     break;
                 }
-            }
         }
+
         public override async Task<bool> IsEnabledForGuild(ulong guildId)
         {
             var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
             return settings != null && settings.Enabled;
-        }   
+        }
+
+        #region Private vars
+
+        private readonly IServiceScopeFactory _scopeFactory;
+
+        private readonly IJobService _jobService;
+
+        private readonly IEnumerable<IFilterService> _filters;
+
+        private readonly IBypassCheck _bypassCheck;
+
+        private readonly IModerationModuleUtils _moderationModuleUtils;
+
+        private readonly IViolationService _violationService;
+
+        #endregion
     }
 }

@@ -14,18 +14,18 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
 {
     public class WarningService : IWarningService
     {
-        private readonly IServiceScopeFactory _scopeFactory;
-
-        private readonly IUserWarningsService _userWarningService;
+        private readonly IFilterFactory _filterFactory;
 
         private readonly ILogger<ModerationModule> _logger;
 
         private readonly IModerationModuleUtils _moderationModuleUtils;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        private readonly IFilterFactory _filterFactory;
+        private readonly IUserWarningsService _userWarningService;
 
         public WarningService(IServiceScopeFactory scopeFactory, ILogger<ModerationModule> logger,
-            IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils, IFilterFactory filterFactory)
+            IUserWarningsService userWarningService, IModerationModuleUtils moderationModuleUtils,
+            IFilterFactory filterFactory)
         {
             _scopeFactory = scopeFactory;
 
@@ -44,7 +44,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
             var settings = await _moderationModuleUtils.GetModerationSettings(user.Guild.Id);
 
             var userData = await _userWarningService.GetUser(user.Id, user.Guild.Id, u => u.Warnings);
-     
+
             using (var scope = _scopeFactory.CreateScope())
             {
                 var warningService = scope.ServiceProvider.GetRequiredService<IEntityService<Warning>>();
@@ -68,7 +68,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.WarningService
                 await warningService.Create(warning);
 
                 _logger.LogInformation($"Moderation Module: User {user.Username} warned. Added warning to database. " +
-                    $"Guild Id: {user.Guild.Id}, User Id: {user.Id}");
+                                       $"Guild Id: {user.Guild.Id}, User Id: {user.Id}");
 
                 return warning;
             }

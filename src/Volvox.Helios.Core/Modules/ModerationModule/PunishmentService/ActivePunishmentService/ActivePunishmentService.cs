@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Volvox.Helios.Core.Jobs;
@@ -25,7 +24,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.ActivePu
         {
             using (var scope = _scopeFactory.CreateScope())
             {
-                var activePunishmentsService = scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
+                var activePunishmentsService =
+                    scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
 
                 var userWarningsService = scope.ServiceProvider.GetRequiredService<IEntityService<UserWarnings>>();
 
@@ -58,16 +58,13 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.ActivePu
 
                 var removePunishmentService = scope.ServiceProvider.GetRequiredService<RemovePunishmentJob>();
 
-                await activePunishmentsService.CreateBulk(activePunishments.Where(p => p.PunishmentExpires > DateTimeOffset.Now));
+                await activePunishmentsService.CreateBulk(activePunishments.Where(p =>
+                    p.PunishmentExpires > DateTimeOffset.Now));
 
                 // Schedule removal of active punishments
                 foreach (var p in activePunishments)
-                {
                     if (p.PunishmentExpires > DateTimeOffset.Now && p.PunishmentExpires != DateTimeOffset.MaxValue)
-                    {
                         removePunishmentService.ScheduleActivePunishmentRemoval(p);
-                    }
-                }
             }
         }
 
@@ -76,7 +73,8 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.ActivePu
         {
             using (var scope = _scopeFactory.CreateScope())
             {
-                var activePunishmentService = scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
+                var activePunishmentService =
+                    scope.ServiceProvider.GetRequiredService<IEntityService<ActivePunishment>>();
 
                 await activePunishmentService.Remove(punishment);
             }

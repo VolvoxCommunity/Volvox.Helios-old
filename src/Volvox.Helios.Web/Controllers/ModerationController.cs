@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Caching.Memory;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
 using Volvox.Helios.Core.Modules.ModerationModule.WarningService;
@@ -36,6 +34,7 @@ namespace Volvox.Helios.Web.Controllers
     public class ModerationController : Controller
     {
         #region private vars
+
         private readonly IModuleSettingsService<ModerationSettings> _moderationSettings;
 
         private readonly IEntityService<ProfanityFilter> _entityServiceProfanityFilter;
@@ -65,6 +64,7 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IWarningService _warningService;
 
         private readonly IModerationModuleUtils _moderationModuleUtils;
+
         #endregion
 
         public ModerationController(IModuleSettingsService<ModerationSettings> moderationSettings,
@@ -137,9 +137,11 @@ namespace Volvox.Helios.Web.Controllers
 
             var roles = await guildService.GetRoles(guildId);
 
-            var alreadyWhitelistedRoles = settings?.WhitelistedRoles.Where(r => r.WhitelistType == FilterType.Global).Select(r => r.RoleId);
+            var alreadyWhitelistedRoles = settings?.WhitelistedRoles.Where(r => r.WhitelistType == FilterType.Global)
+                .Select(r => r.RoleId);
 
-            var alreadyWhitelistedChannels = settings?.WhitelistedChannels.Where(r => r.WhitelistType == FilterType.Global).Select(c => c.ChannelId);
+            var alreadyWhitelistedChannels = settings?.WhitelistedChannels
+                .Where(r => r.WhitelistType == FilterType.Global).Select(c => c.ChannelId);
 
             var vm = new GlobalSettingsViewModel
             {
@@ -186,9 +188,11 @@ namespace Volvox.Helios.Web.Controllers
 
             var roles = await guildService.GetRoles(guildId);
 
-            var alreadyWhitelistedRoles = settings?.WhitelistedRoles.Where(r => r.WhitelistType == FilterType.Link).Select(r => r.RoleId);
+            var alreadyWhitelistedRoles = settings?.WhitelistedRoles.Where(r => r.WhitelistType == FilterType.Link)
+                .Select(r => r.RoleId);
 
-            var alreadyWhitelistedChannels = settings?.WhitelistedChannels.Where(r => r.WhitelistType == FilterType.Link).Select(c => c.ChannelId);
+            var alreadyWhitelistedChannels = settings?.WhitelistedChannels
+                .Where(r => r.WhitelistType == FilterType.Link).Select(c => c.ChannelId);
 
             var links = settings.LinkFilter?.WhitelistedLinks.Select(l => l.Link) ?? new List<string>();
 
@@ -215,7 +219,7 @@ namespace Volvox.Helios.Web.Controllers
 
             if (filter is null)
             {
-                filter = new LinkFilter { GuildId = guildId };
+                filter = new LinkFilter {GuildId = guildId};
 
                 createNewFilter = true;
             }
@@ -225,19 +229,15 @@ namespace Volvox.Helios.Web.Controllers
             filter.WarningExpirePeriod = vm.WarningExpirePeriod;
 
             if (createNewFilter)
-            {
                 await _entityServiceLinkFilter.Create(filter);
-            }
             else
-            {
                 await _entityServiceLinkFilter.Update(filter);
-            }
 
             var newChannelState = GetNewChannelState(currentSettings, FilterType.Link, vm.SelectedChannels);
 
             var newRolesState = GetNewRolesState(currentSettings, FilterType.Link, vm.SelectedRoles);
 
-            var newLinkState = GetNewLinksState(currentSettings, vm.SelectedLinks );
+            var newLinkState = GetNewLinksState(currentSettings, vm.SelectedLinks);
 
             await _entityServiceWhitelistedChannels.CreateBulk(newChannelState.ChannelsToAdd);
 
@@ -255,7 +255,8 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpGet("profanityfilter")]
-        public async Task<IActionResult> ProfanityFilter(ulong guildId, [FromServices] IDiscordGuildService guildService)
+        public async Task<IActionResult> ProfanityFilter(ulong guildId,
+            [FromServices] IDiscordGuildService guildService)
         {
             var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
 
@@ -265,9 +266,11 @@ namespace Volvox.Helios.Web.Controllers
 
             var roles = await guildService.GetRoles(guildId);
 
-            var alreadyWhitelistedRoles = settings?.WhitelistedRoles.Where(r => r.WhitelistType == FilterType.Profanity).Select(r => r.RoleId);
+            var alreadyWhitelistedRoles = settings?.WhitelistedRoles.Where(r => r.WhitelistType == FilterType.Profanity)
+                .Select(r => r.RoleId);
 
-            var alreadyWhitelistedChannels = settings?.WhitelistedChannels.Where(r => r.WhitelistType == FilterType.Profanity).Select(c => c.ChannelId);
+            var alreadyWhitelistedChannels = settings?.WhitelistedChannels
+                .Where(r => r.WhitelistType == FilterType.Profanity).Select(c => c.ChannelId);
 
             var words = settings?.ProfanityFilter?.BannedWords.Select(w => w.Word) ?? new List<string>();
 
@@ -280,7 +283,7 @@ namespace Volvox.Helios.Web.Controllers
                 UseDefaultBannedWords = settings?.ProfanityFilter?.UseDefaultList ?? true,
                 WarningExpirePeriod = settings?.ProfanityFilter?.WarningExpirePeriod ?? 0
             };
-            
+
             return View(vm);
         }
 
@@ -295,7 +298,7 @@ namespace Volvox.Helios.Web.Controllers
 
             if (filter is null)
             {
-                filter = new ProfanityFilter { GuildId = guildId };
+                filter = new ProfanityFilter {GuildId = guildId};
 
                 createNewFilter = true;
             }
@@ -307,13 +310,9 @@ namespace Volvox.Helios.Web.Controllers
             filter.UseDefaultList = vm.UseDefaultBannedWords;
 
             if (createNewFilter)
-            {
                 await _entityServiceProfanityFilter.Create(filter);
-            }
             else
-            {
                 await _entityServiceProfanityFilter.Update(filter);
-            }
 
             var newChannelState = GetNewChannelState(currentSettings, FilterType.Profanity, vm.SelectedChannels);
 
@@ -337,7 +336,7 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpGet("punishments")]
-        public async Task<IActionResult> Punishments (ulong guildId, [FromServices] IDiscordGuildService guildService)
+        public async Task<IActionResult> Punishments(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
             var punishments = await _entityServicePunishments.Get(x => x.GuildId == guildId);
 
@@ -377,12 +376,8 @@ namespace Volvox.Helios.Web.Controllers
             var punishmentsToRemove = new List<Punishment>();
 
             foreach (var model in punishments.Where(x => x.DeletePunishment))
-            {
                 if (model.PunishmentId.HasValue)
-                {
                     punishmentsToRemove.Add(ConvertModelPunishment(guildId, model));
-                }
-            }
 
             await _entityServicePunishments.RemoveBulk(punishmentsToRemove);
 
@@ -394,7 +389,8 @@ namespace Volvox.Helios.Web.Controllers
         {
             var roles = await guildService.GetRoles(guildId);
 
-            return View(new PunishmentModel {
+            return View(new PunishmentModel
+            {
                 Role = new SelectList(roles, "Id", "Name")
             });
         }
@@ -412,20 +408,23 @@ namespace Volvox.Helios.Web.Controllers
             return RedirectToAction("punishments");
         }
 
-        [HttpGet("users/{pageNo}"), HttpGet("users")]
+        [HttpGet("users/{pageNo}")]
+        [HttpGet("users")]
         public IActionResult Users(ulong guildId, [FromServices] IDiscordGuildService guildService, int pageNo = 0)
         {
             var allUsers = _discordUserService.GetUsers(guildId);
 
-            var totalPageCount = ( allUsers.Count + ModuleConstants.ResultsPerPageUsers ) / ModuleConstants.ResultsPerPageUsers;
+            var totalPageCount = ( allUsers.Count + ModuleConstants.ResultsPerPageUsers ) /
+                                 ModuleConstants.ResultsPerPageUsers;
 
             var usersToDisplay = _discordUserService.GetUsers(guildId).Where(u => !u.IsBot)
-                .Skip(pageNo * ModuleConstants.ResultsPerPageUsers).Take(ModuleConstants.ResultsPerPageUsers).Select(u => new UserModel
-            {
-                Id = u.Id,
-                Username = $"{u.Username}#{u.Discriminator}",
-                AvatarUrl = u.GetAvatarUrl(size: ModuleConstants.AvatarSizeUsers) ?? u.GetDefaultAvatarUrl()
-            }).ToList();
+                .Skip(pageNo * ModuleConstants.ResultsPerPageUsers).Take(ModuleConstants.ResultsPerPageUsers).Select(
+                    u => new UserModel
+                    {
+                        Id = u.Id,
+                        Username = $"{u.Username}#{u.Discriminator}",
+                        AvatarUrl = u.GetAvatarUrl(size: ModuleConstants.AvatarSizeUsers) ?? u.GetDefaultAvatarUrl()
+                    }).ToList();
 
             var vm = new UsersViewModel
             {
@@ -436,22 +435,24 @@ namespace Volvox.Helios.Web.Controllers
 
             return View(vm);
         }
-      
+
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> User(ulong guildId, ulong userId, [FromServices] IDiscordUserService userService)
+        public async Task<IActionResult> User(ulong guildId, ulong userId,
+            [FromServices] IDiscordUserService userService)
         {
-            var user = await _entityServiceUsers.GetFirst(u => u.UserId == userId, x => x.Warnings, x => x.ActivePunishments);
+            var user = await _entityServiceUsers.GetFirst(u => u.UserId == userId, x => x.Warnings,
+                x => x.ActivePunishments);
 
             var socketUser = await userService.GetUser(userId);
 
             // Create user entry if one doesn't exist.
             if (user == null)
             {
-                await _entityServiceUsers.Create(new UserWarnings { UserId = userId, GuildId = guildId });
+                await _entityServiceUsers.Create(new UserWarnings {UserId = userId, GuildId = guildId});
 
                 ClearCacheById(guildId);
             }
-               
+
             var vm = new UserViewModel
             {
                 ActivePunishments = user?.ActivePunishments ?? new List<ActivePunishment>(),
@@ -465,17 +466,19 @@ namespace Volvox.Helios.Web.Controllers
         }
 
         [HttpPost("user/{userId}")]
-        public async Task<IActionResult> User(ulong guildId, ulong userId, UserViewModel vm) 
+        public async Task<IActionResult> User(ulong guildId, ulong userId, UserViewModel vm)
         {
             var punishmentsToRemoveIds = vm.ActivePunishments.Where(p => p.Remove).Select(p => p.Id);
 
-            var punishmentsToRemove = await _entityServiceActivePunishments.Get(p => punishmentsToRemoveIds.Contains(p.Id)
-            && p.User.UserId == userId && p.User.GuildId == guildId, p => p.User);
+            var punishmentsToRemove = await _entityServiceActivePunishments.Get(p =>
+                punishmentsToRemoveIds.Contains(p.Id)
+                && p.User.UserId == userId && p.User.GuildId == guildId, p => p.User);
 
             var warningsToRemoveIds = vm.Warnings.Where(w => w.Remove).Select(w => w.Id);
 
             var warningsToRemove = await _entityServiceWarnings.Get(w => warningsToRemoveIds.Contains(w.Id)
-            && w.User.UserId == userId && w.User.GuildId == guildId, w => w.User);
+                                                                         && w.User.UserId == userId &&
+                                                                         w.User.GuildId == guildId, w => w.User);
 
             await _punishmentService.RemovePunishmentBulk(punishmentsToRemove);
 
@@ -496,15 +499,13 @@ namespace Volvox.Helios.Web.Controllers
                 RoleId = model.PunishType == PunishType.AddRole ? model.RoleId : null
             };
 
-            if (model.PunishmentId.HasValue)
-            {
-                punishment.Id = model.PunishmentId.Value;
-            }
+            if (model.PunishmentId.HasValue) punishment.Id = model.PunishmentId.Value;
 
             return punishment;
         }
 
-        private NewChannelsState GetNewChannelState(ModerationSettings currentSettings, FilterType type, List<ulong> channelIds)
+        private NewChannelsState GetNewChannelState(ModerationSettings currentSettings, FilterType type,
+            List<ulong> channelIds)
         {
             var currentWhitelistedChannels = currentSettings?.WhitelistedChannels.Where(c => c.WhitelistType == type);
 
@@ -519,25 +520,17 @@ namespace Volvox.Helios.Web.Controllers
                 currentWhitelistedChannels = new List<WhitelistedChannel>();
 
             foreach (var channelId in channelIds)
-            {
                 if (!currentWhitelistedChannels.Any(c => c.ChannelId == channelId))
-                {
                     channelsToAdd.Add(new WhitelistedChannel
                     {
                         ChannelId = channelId,
                         GuildId = currentSettings.GuildId,
                         WhitelistType = type
                     });
-                }
-            }
 
             foreach (var channel in currentWhitelistedChannels)
-            {
                 if (!channelIds.Any(c => c == channel.ChannelId))
-                {
                     channelsToRemove.Add(channel);
-                }
-            }
 
             return new NewChannelsState
             {
@@ -561,25 +554,17 @@ namespace Volvox.Helios.Web.Controllers
                 currentWhitelistedRoles = new List<WhitelistedRole>();
 
             foreach (var roleId in roleIds)
-            {
                 if (!currentWhitelistedRoles.Any(c => c.RoleId == roleId))
-                {
                     rolesToAdd.Add(new WhitelistedRole
                     {
                         GuildId = currentSettings.GuildId,
                         RoleId = roleId,
                         WhitelistType = type
                     });
-                }
-            }
 
             foreach (var role in currentWhitelistedRoles)
-            {
                 if (!roleIds.Any(r => r == role.RoleId))
-                {
                     rolesToRemove.Add(role);
-                }
-            }
 
             return new NewRolesState
             {
@@ -599,24 +584,16 @@ namespace Volvox.Helios.Web.Controllers
             if (links is null) links = new HashSet<string>();
 
             foreach (var link in links)
-            {
                 if (!whitelistedLinks.Any(l => l.Link == link))
-                {
                     linksToAdd.Add(new WhitelistedLink
                     {
                         GuildId = currentSettings.GuildId,
                         Link = link.ToLower()
-                    });               
-                }
-            }
+                    });
 
             foreach (var link in whitelistedLinks)
-            {
                 if (!links.Contains(link.Link))
-                {
                     linksToRemove.Add(link);
-                }
-            }
 
             return new NewWhitelistedLinksState
             {
@@ -637,31 +614,23 @@ namespace Volvox.Helios.Web.Controllers
                 words = new HashSet<string>();
 
             foreach (var word in words)
-            {
                 if (!bannedWords.Any(l => l.Word == word))
-                {
                     wordsToAdd.Add(new BannedWord
                     {
                         Word = word.ToLower(),
                         GuildId = currentSettings.GuildId
                     });
-                }
-            }
 
             foreach (var word in bannedWords)
-            {
                 if (!words.Contains(word.Word))
-                {
                     wordsToRemove.Add(word);
-                }
-            }
 
             return new NewBannedWordsState
             {
                 WordsToAdd = wordsToAdd,
                 WordsToRemove = wordsToRemove
             };
-        }
+        }    
     }
 
     internal class NewBannedWordsState

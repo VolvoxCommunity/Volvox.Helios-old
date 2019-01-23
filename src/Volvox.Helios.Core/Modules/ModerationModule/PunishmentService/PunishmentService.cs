@@ -1,29 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
-using Volvox.Helios.Core.Jobs;
 using Volvox.Helios.Core.Modules.ModerationModule.Factories.PunishmentFactory;
 using Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.ActivePunishmentService;
 using Volvox.Helios.Core.Modules.ModerationModule.UserWarningsService;
-using Volvox.Helios.Core.Services.MessageService;
-using Volvox.Helios.Domain.Module.ModerationModule;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
-using Volvox.Helios.Service.EntityService;
 
 namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
 {
     public class PunishmentService : IPunishmentService
     {
+        private readonly IActivePunishmentService _activePunishmentService;
+
+        private readonly IPunishmentFactory _punishmentFactory;
         private readonly IServiceScopeFactory _scopeFactory;
 
         private readonly IUserWarningsService _userWarningService;
-
-        private readonly IPunishmentFactory _punishmentFactory;
-
-        private readonly IActivePunishmentService _activePunishmentService;
 
         public PunishmentService(IServiceScopeFactory scopeFactory, IUserWarningsService userWarningService,
             IPunishmentFactory punishmentFactory, IActivePunishmentService activePunishmentService)
@@ -78,10 +71,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService
         {
             var tasks = new List<Task>();
 
-            foreach (var p in punishments)
-            {
-                tasks.Add(Task.Run(() => RemovePunishment(p)));
-            }
+            foreach (var p in punishments) tasks.Add(Task.Run(() => RemovePunishment(p)));
 
             await Task.WhenAll(tasks);
         }

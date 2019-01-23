@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Modules.ModerationModule.BypassCheck;
 using Volvox.Helios.Core.Modules.ModerationModule.Utils;
-using Volvox.Helios.Core.Modules.ModerationModule.ViolationService;
 using Volvox.Helios.Domain.Module.ModerationModule.Common;
 using Volvox.Helios.Domain.Module.ModerationModule.LinkFilter;
 
@@ -27,17 +26,30 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
         /// <inheritdoc />
         public async Task<bool> CheckViolation(SocketMessage message)
         {
-            var settings = await _moderationModuleUtils.GetModerationSettings(((SocketGuildUser)message.Author).Guild.Id);
+            var settings =
+                await _moderationModuleUtils.GetModerationSettings(( (SocketGuildUser)message.Author ).Guild.Id);
 
             var filterViolatedFlag = false;
 
             if (!await HasBypassAuthority(message) && settings.LinkFilter != null)
-            {
                 if (ContainsIllegalLink(settings.LinkFilter, message.Content))
                     filterViolatedFlag = true;
-            }
 
             return filterViolatedFlag;
+        }
+
+        /// <inheritdoc />
+        public async Task<int> GetWarningExpirePeriod(ulong guildId)
+        {
+            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
+
+            return settings.LinkFilter.WarningExpirePeriod;
+        }
+
+        /// <inheritdoc />
+        public FilterMetaData GetFilterMetaData()
+        {
+            return new FilterMetaData(FilterType.Link);
         }
 
         private bool ContainsIllegalLink(LinkFilter linkFilter, string message)
@@ -53,7 +65,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
 
             // Check each word for illegal link
             foreach (var word in messageWords)
-            {
                 if (urlCheck.IsMatch(word))
                 {
                     foreach (var link in linkFilter.WhitelistedLinks.Select(l => l.Link))
@@ -72,7 +83,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
 
                     isLinkLegal = false;
                 }
-            }
+
             return false;
         }
 
@@ -84,20 +95,6 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.Filters
         private async Task<bool> HasBypassAuthority(SocketMessage message)
         {
             return await _bypassCheck.HasBypassAuthority(message, FilterType.Link);
-        }
-
-        /// <inheritdoc />
-        public async Task<int> GetWarningExpirePeriod(ulong guildId)
-        {
-            var settings = await _moderationModuleUtils.GetModerationSettings(guildId);
-
-            return settings.LinkFilter.WarningExpirePeriod;
-        }
-
-        /// <inheritdoc />
-        public FilterMetaData GetFilterMetaData()
-        {
-            return new FilterMetaData(FilterType.Link);
         }
     }
 }

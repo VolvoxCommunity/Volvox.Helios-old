@@ -20,12 +20,11 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
                 punishmentResponse.Successful = true;
 
                 punishmentResponse.StatusMessage = $"Kicking user <@{user.Id}>" +
-                    $"\nReason: {punishment.WarningType}";
+                                                   $"\nReason: {punishment.WarningType}";
             }
             else
-            {
-                punishmentResponse.StatusMessage = $"Failed to kick user <@{user.Id}> as bot has insufficient permissions.";
-            }
+                punishmentResponse.StatusMessage =
+                    $"Failed to kick user <@{user.Id}> as bot has insufficient permissions.";
 
             return punishmentResponse;
         }
@@ -43,7 +42,7 @@ namespace Volvox.Helios.Core.Modules.ModerationModule.PunishmentService.Punishme
         /// <inheritdoc />
         public Task<PunishmentResponse> RemovePunishment(ActivePunishment punishment)
         {
-            return Task.FromResult(new PunishmentResponse { Successful = true });
+            return Task.FromResult(new PunishmentResponse {Successful = true});
         }
     }
 }
