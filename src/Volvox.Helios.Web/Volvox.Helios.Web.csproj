@@ -7,6 +7,12 @@
     <ApplicationInsightsAnnotationResourceId>/subscriptions/bd7d1cf3-1ec9-43b1-b7c9-35f9700cfaa8/resourcegroups/Volvox.Helios/providers/microsoft.insights/components/Volvox.Helios</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Pages\Shared\**" />
+    <Content Remove="Pages\Shared\**" />
+    <EmbeddedResource Remove="Pages\Shared\**" />
+    <None Remove="Pages\Shared\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Discord" Version="2.0.0" />
     <PackageReference Include="AWS.Logger.AspNetCore" Version="1.4.1" />
     <PackageReference Include="AWS.Logger.Core" Version="1.3.1" />
@@ -39,8 +45,5 @@
     <Content Update="Views\Dashboard\Partials\_DashboardCard.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Pages\Shared\" />
   </ItemGroup>
 </Project>

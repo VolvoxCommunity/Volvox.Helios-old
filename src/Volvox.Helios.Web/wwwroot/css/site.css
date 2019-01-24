@@ -505,6 +505,10 @@ input:checked + .slider {
 .dx-list-item.dx-state-active {
   background: var(--color-volvox) !important;
 }
+.dx-datagrid {
+  padding: 10px;
+  font: 1rem var(--font-family-sans-serif);
+}
 
 /*Sliding border*/
 .sliding-border{
@@ -569,7 +573,7 @@ input:checked + .slider {
 }
 
 
-.leaderboards .card:first-child .leader::before {
+.leaderboards .card .leader::before {
   content: "";
   position: absolute;
   width: 100%;

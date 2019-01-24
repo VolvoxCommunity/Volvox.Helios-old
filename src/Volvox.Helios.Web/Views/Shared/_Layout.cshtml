@@ -180,14 +180,18 @@
         }
         function toggleTheme(darkThemeEnabled) {
             if (darkThemeEnabled == "true") {
-                $('#lightThemeLink').remove();
-                $('head').append('<link rel="stylesheet" href="/css/dark-theme.css" id="darkThemeLink">');
+                $('.lightThemeLink').remove();
+                $('head').append(`
+                    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/18.2.3/css/dx.dark.css" class="darkThemeLink">/>
+                    <link rel="stylesheet" href="/css/dark-theme.css" class="darkThemeLink">`);
                 $('.navbar').removeClass('navbar-light bg-light').addClass('navbar-dark');
                 $('#themeToggler').find('.fa-sun').removeClass('d-none').parent().find('.fa-moon').addClass('d-none');
                 $('#navLogo').attr('src', '/images/small/volvox-logo-light.png');
             } else if (darkThemeEnabled == "false") {
-                $('#darkThemeLink').remove();
-                $('head').append('<link rel="stylesheet" href="/css/light-theme.css" id="lightThemeLink">');
+                $('.darkThemeLink').remove();
+                $('head').append(`
+                    <link rel="stylesheet" href="/css/light-theme.css" class="lightThemeLink">
+                    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/18.2.3/css/dx.light.css" class="lightThemeLink">`);
                 $('.navbar').removeClass('navbar-dark').addClass('navbar-light bg-light');
                 $('#themeToggler').find('.fa-moon').removeClass('d-none').parent().find('.fa-sun').addClass('d-none');
                 $('#navLogo').attr('src', '/images/small/volvox-logo.png');

@@ -10,10 +10,23 @@
 
 <div class="col-12 p-0 leaderboards">
 
+    <h4>Your rank</h4>
+    <div class="card">
+        <div class="d-inline-flex position-relative">
+            <div class="bg-volvox pl-2 pr-2 rank">#12</div>
+            <div class="p-2">
+                <img src="~/images/small/volvox-logo.png" alt="User" class="rounded-circle mr-2 user-icon" />
+                <h5 class="mb-0 d-inline">@Model.User.Identity.Name</h5>
+            </div>
+            <div class="position-absolute points">582 Points</div>
+        </div>
+        <div id="lineChart" class="m-3" style="height: 350px;"></div>
+    </div>
+
+    <h4 class="mt-5">Top three this month</h4>
     <div class="card">
         <i class="fas fa-trophy position-absolute text-warning font-size-small trophy"></i>
-
-        <div class="d-inline-flex leader">
+        <div class="d-inline-flex position-relative leader">
             <div class="bg-volvox pl-2 pr-2 rank">#1</div>
             <div class="p-2">
                 <img src="~/images/small/volvox-logo.png" alt="User" class="rounded-circle mr-2 user-icon" />
@@ -25,8 +38,7 @@
 
     <div class="card mt-3">
         <i class="fas fa-trophy position-absolute text-gray2 font-size-small trophy"></i>
-
-        <div class="d-inline-flex leader">
+        <div class="d-inline-flex position-relative">
             <div class="bg-volvox pl-2 pr-2 rank">#2</div>
             <div class="p-2">
                 <img src="~/images/small/volvox-logo.png" alt="User" class="rounded-circle mr-2 user-icon" />
@@ -38,8 +50,7 @@
 
     <div class="card mt-3">
         <i class="fas fa-trophy position-absolute font-size-small trophy" style="color:#cd7f32;"></i>
-
-        <div class="d-inline-flex leader">
+        <div class="d-inline-flex position-relative">
             <div class="bg-volvox pl-2 pr-2 rank">#3</div>
             <div class="p-2">
                 <img src="~/images/small/volvox-logo.png" alt="User" class="rounded-circle mr-2 d-inline user-icon" />
@@ -49,4 +60,112 @@
         </div>
     </div>
 
+    <h4 class="mt-5">All members</h4>
+    <div id="dataGrid" class="rounded" style="height: 400px;overflow:hidden;"></div>
+
 </div>
+<style>
+    #dataGrid {
+        border: 1px solid rgba(0,0,0,.125);
+    }
+</style>
+
+@section Scripts {
+    <script>
+        let dataSource = [{
+            ranking: 120,
+            level: "Lvl 1",
+            points: 0
+        }, {
+            ranking: 100,
+            level: "Lvl 2",
+            points: 120
+        }, {
+            ranking: 85,
+            level: "Lvl 3",
+            points: 330
+        }, {
+            ranking: 50,
+            level: "Lvl 4",
+            points: 400
+        }, {
+            ranking: 32,
+            level: "Lvl 5",
+            points: 530
+        }, {
+            ranking: 12,
+            level: "Lvl 6",
+            points: 600
+        }];
+        $('#lineChart').dxChart({
+            dataSource: dataSource,
+            commonSeriesSettings: {
+                argumentField: "level",
+                type: "spline"
+            },
+            series: [
+                { valueField: "ranking", name: "Ranking" },
+                { valueField: "points", name: "Points" }
+            ],
+            legend: {
+                verticalAlignment: "bottom",
+                horizontalAlignment: "center",
+                itemTextPosition: "bottom"
+            },
+            title: {
+                text: "Statistics from last month",
+                font: {
+                    color: '#868484'
+                }
+            }
+        });
+
+        let gridSrc = [
+            {
+                ranking: 12,
+                name: "Samuel",
+                points: 105,
+                level: "Lvl 59"
+            }, {
+                ranking: 3,
+                name: "Bapes",
+                points: 1205,
+                level: "Lvl 78"
+            }, {
+                ranking: 1,
+                name: "Mango Kango",
+                points: 1508,
+                level: "Lvl 530"
+            }];
+        $('#dataGrid').dxDataGrid({
+            dataSource: gridSrc,
+            paging: {
+                pageSize: 10
+            },
+            pager: {
+                showPageSizeSelector: true,
+                allowedPageSizes: [10, 25, 50, 100]
+            },
+            searchPanel: {
+                visible: true,
+                highlightCaseSensitive: true,
+                width: 250
+            },
+            columns: [
+                {
+                    dataField: "ranking",
+                    width: 100
+                },
+                {
+                    dataField: "name",
+                },
+                {
+                    dataField: "points",
+                },
+                {
+                    dataField: "level",
+                }
+            ]
+        });
+    </script>
+}
