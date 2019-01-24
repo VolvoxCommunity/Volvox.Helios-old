@@ -15,7 +15,7 @@ namespace Volvox.Helios.Service.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
+                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -377,19 +377,6 @@ namespace Volvox.Helios.Service.Migrations
                     b.ToTable("ChatTrackerSettings");
                 });
 
-            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.ModerationSettings", b =>
-                {
-                    b.Property<decimal>("GuildId")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
-                    b.Property<bool>("Enabled");
-
-                    b.HasKey("GuildId");
-
-                    b.ToTable("mod_ModerationSettings");
-                });
-
             modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.DadModuleSettings", b =>
                 {
                     b.Property<decimal>("GuildId")
@@ -407,6 +394,19 @@ namespace Volvox.Helios.Service.Migrations
                     b.HasKey("GuildId");
 
                     b.ToTable("DadModuleSettings");
+                });
+
+            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.ModerationSettings", b =>
+                {
+                    b.Property<decimal>("GuildId")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<bool>("Enabled");
+
+                    b.HasKey("GuildId");
+
+                    b.ToTable("mod_ModerationSettings");
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.PollSettings", b =>

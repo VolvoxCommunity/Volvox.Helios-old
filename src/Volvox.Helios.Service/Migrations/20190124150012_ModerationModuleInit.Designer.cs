@@ -5,20 +5,19 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Volvox.Helios.Domain.Module;
 using Volvox.Helios.Service;
 
 namespace Volvox.Helios.Service.Migrations
 {
     [DbContext(typeof(VolvoxHeliosContext))]
-    [Migration("20190107152008_RemovedUnusedFieldInActivePunishmentModel")]
-    partial class RemovedUnusedFieldInActivePunishmentModel
+    [Migration("20190124150012_ModerationModuleInit")]
+    partial class ModerationModuleInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -351,6 +350,22 @@ namespace Volvox.Helios.Service.Migrations
                     b.ToTable("StreamerChannelSettings");
                 });
 
+            modelBuilder.Entity("Volvox.Helios.Domain.Module.WhiteListedRole", b =>
+                {
+                    b.Property<decimal>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<decimal>("GuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.HasKey("RoleId");
+
+                    b.HasIndex("GuildId");
+
+                    b.ToTable("WhiteListedRoles");
+                });
+
             modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.ChatTrackerSettings", b =>
                 {
                     b.Property<decimal>("GuildId")
@@ -362,6 +377,25 @@ namespace Volvox.Helios.Service.Migrations
                     b.HasKey("GuildId");
 
                     b.ToTable("ChatTrackerSettings");
+                });
+
+            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.DadModuleSettings", b =>
+                {
+                    b.Property<decimal>("GuildId")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<int>("DadResponseCooldownMinutes")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(15);
+
+                    b.Property<bool>("Enabled");
+
+                    b.Property<DateTime?>("LastDadResponseUtc");
+
+                    b.HasKey("GuildId");
+
+                    b.ToTable("DadModuleSettings");
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.ModerationSettings", b =>
@@ -527,6 +561,14 @@ namespace Volvox.Helios.Service.Migrations
                 {
                     b.HasOne("Volvox.Helios.Domain.ModuleSettings.StreamerSettings", "StreamerSettings")
                         .WithMany("ChannelSettings")
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Volvox.Helios.Domain.Module.WhiteListedRole", b =>
+                {
+                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.StreamerSettings")
+                        .WithMany("WhiteListedRoleIds")
                         .HasForeignKey("GuildId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
