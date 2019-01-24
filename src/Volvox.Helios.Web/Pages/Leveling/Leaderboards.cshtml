@@ -1,4 +1,4 @@
-﻿@page "/leaderboards"
+﻿@page
 @model Volvox.Helios.Web.Pages.Leveling.LeaderboardsModel
 
 @{
@@ -7,3 +7,46 @@
 
 <h2>@ViewData["Title"]</h2>
 <hr />
+
+<div class="col-12 p-0 leaderboards">
+
+    <div class="card">
+        <i class="fas fa-trophy position-absolute text-warning font-size-small trophy"></i>
+
+        <div class="d-inline-flex leader">
+            <div class="bg-volvox pl-2 pr-2 rank">#1</div>
+            <div class="p-2">
+                <img src="~/images/small/volvox-logo.png" alt="User" class="rounded-circle mr-2 user-icon" />
+                <h5 class="mb-0 d-inline">@Model.User.Identity.Name</h5>
+            </div>
+            <div class="position-absolute points">1253 Points</div>
+        </div>
+    </div>
+
+    <div class="card mt-3">
+        <i class="fas fa-trophy position-absolute text-gray2 font-size-small trophy"></i>
+
+        <div class="d-inline-flex leader">
+            <div class="bg-volvox pl-2 pr-2 rank">#2</div>
+            <div class="p-2">
+                <img src="~/images/small/volvox-logo.png" alt="User" class="rounded-circle mr-2 user-icon" />
+                <h5 class="mb-0 d-inline">@Model.User.Identity.Name</h5>
+            </div>
+            <div class="position-absolute points">1230 Points</div>
+        </div>
+    </div>
+
+    <div class="card mt-3">
+        <i class="fas fa-trophy position-absolute font-size-small trophy" style="color:#cd7f32;"></i>
+
+        <div class="d-inline-flex leader">
+            <div class="bg-volvox pl-2 pr-2 rank">#3</div>
+            <div class="p-2">
+                <img src="~/images/small/volvox-logo.png" alt="User" class="rounded-circle mr-2 d-inline user-icon" />
+                <h5 class="mb-0 d-inline">@Model.User.Identity.Name</h5>
+            </div>
+            <div class="position-absolute points">985 Points</div>
+        </div>
+    </div>
+
+</div>

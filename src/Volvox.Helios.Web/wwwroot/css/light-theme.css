@@ -16,3 +16,11 @@
 footer{
   background: #eee;
 }
+
+/*Leaderboards*/
+.leaderboards .card:first-child .leader::before {
+  background-image: linear-gradient(to top left, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, .2) 48%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .2) 52%, rgba(0, 0, 0, 0) 57%, rgba(0, 0, 0, 0) 100%);
+}
+.leaderboards .rank {
+  color: white;
+}
