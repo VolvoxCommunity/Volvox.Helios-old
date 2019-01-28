@@ -1,0 +1,135 @@
+﻿@page
+@model Volvox.Helios.Web.Pages.Leveling.DetailsModel
+@{
+    ViewData["Title"] = "User details";
+}
+
+<h2>@ViewData["Title"]</h2>
+<hr />
+
+<div class="col-12 p-0 leaderboards">
+    <div class="card">
+        <div class="d-inline-flex position-relative">
+            <div class="bg-volvox pl-2 pr-2 rank">#12</div>
+            <div class="p-2">
+                <img src="~/images/small/volvox-logo.png" alt="User" class="rounded-circle mr-2 user-icon" />
+                <h5 class="mb-0 d-inline">@Model.User.Identity.Name</h5>
+            </div>
+            <div class="position-absolute points">582 Points</div>
+        </div>
+        <div id="realtimeChart" class="m-3" style="height: 350px;"></div>
+    </div>
+</div>
+
+<div class="col-12 p-0 leaderboards mt-4">
+    <div class="card">
+        <div id="lineChart" class="m-3" style="height: 350px;"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let dataSource = [{
+            index: 0,
+            ranking: 120,
+            level: "Lvl 1",
+            points: 0
+        }, {
+            index: 1,
+            ranking: 100,
+            level: "Lvl 2",
+            points: 120
+        }, {
+            index: 2,
+            ranking: 85,
+            level: "Lvl 3",
+            points: 330
+        }, {
+            index: 3,
+            ranking: 50,
+            level: "Lvl 4",
+            points: 400
+        }, {
+            index: 4,
+            ranking: 32,
+            level: "Lvl 5",
+            points: 530
+        }, {
+            index: 5,
+            ranking: 12,
+            level: "Lvl 6",
+            points: 600
+        }, {
+            index: 6,
+            ranking: 11,
+            level: "Lvl 6.5",
+            points: 611
+        }];
+        $('#lineChart').dxChart({
+            dataSource: dataSource,
+            commonSeriesSettings: {
+                argumentField: "level",
+                type: "spline"
+            },
+            series: [
+                { valueField: "ranking", name: "Ranking" },
+                { valueField: "points", name: "Points" }
+            ],
+            legend: {
+                verticalAlignment: "bottom",
+                horizontalAlignment: "center",
+                itemTextPosition: "bottom"
+            },
+            title: {
+                text: "Statistics from last month",
+                font: {
+                    color: '#868484'
+                }
+            },
+            tooltip: {
+                enabled: true,
+                customizeTooltip: function (e) {
+                    if (e.seriesName === "Points")
+                        e.valueText += " Points";
+                    else if (e.seriesName === "Ranking")
+                        e.valueText = "#" + e.valueText;
+                    
+                    return { text: e.valueText };
+                }
+            }
+        });
+        $('#realtimeChart').dxChart({
+            dataSource: dataSource.filter((e) => { return e.index >= dataSource.length - 2; }),
+            commonSeriesSettings: {
+                argumentField: "level",
+                type: "spline"
+            },
+            series: [
+                { valueField: "ranking", name: "Ranking" },
+                { valueField: "points", name: "Points" }
+            ],
+            legend: {
+                verticalAlignment: "bottom",
+                horizontalAlignment: "center",
+                itemTextPosition: "bottom"
+            },
+            title: {
+                text: "Realtime statistics",
+                font: {
+                    color: '#868484'
+                }
+            },
+            tooltip: {
+                enabled: true,
+                customizeTooltip: function (e) {
+                    if (e.seriesName === "Points")
+                        e.valueText += " Points";
+                    else if (e.seriesName === "Ranking")
+                        e.valueText = "#" + e.valueText;
+
+                    return { text: e.valueText };
+                }
+            }
+        });
+    </script>
+}
