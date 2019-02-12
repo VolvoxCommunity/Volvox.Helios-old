@@ -127,7 +127,7 @@
     </script>
     <script>
         $(function () {
-            var src = JSON.parse('@(Html.Raw(Json.Serialize(Model.Polls)))');
+            var src = @(Html.Raw(Json.Serialize(Model.Polls)));
             
             $("#poll").dxSelectBox({
                 dataSource: src,
