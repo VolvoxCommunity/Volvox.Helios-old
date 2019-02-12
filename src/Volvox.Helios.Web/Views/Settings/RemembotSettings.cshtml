@@ -89,7 +89,7 @@
             return target.replace(new RegExp(search, 'g'), replacement);
         };
         
-        var src = JSON.parse('@(Html.Raw(Json.Serialize(Model.RecurringReminders)))'.replaceAll('\n', '<br>'));
+        var src = @(Html.Raw(Json.Serialize(Model.RecurringReminders))).map((e) => { e.message.replaceAll('\n', '<br>'); return e; });
         $('#dataGrid').dxDataGrid({
             dataSource: src,
             columns: [{
