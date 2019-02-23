@@ -1,0 +1,54 @@
+﻿@model Volvox.Helios.Web.ViewModels.Settings.CleanChatSettingsViewModel
+@{
+    ViewData["Title"] = "Clean chat settings";
+}
+
+<h2>@ViewData["Title"]</h2>
+<hr>
+
+<form method="post" class="col-12">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="row border border-gray2 rounded">
+        <div class="col-md-9 pt-3 pb-3">
+            <h4>Clean chat module</h4>
+            <p class="mb-0 text-volvox">
+                Clean the chat in a channel after a specific minute delay.
+            </p>
+        </div>
+        <div class="col-md-3 valign">
+            <div class="btn-group material-btn-group ml-md-auto mb-3 mb-md-0">
+                <label for="enabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "active" : "disabled")">
+                    On
+                    <input id="enabledBtn" type="radio" name="Enabled" class="d-none" value="true" @(Model.Enabled ? "checked" : "")>
+                </label>
+                <label for="disabledBtn" class="btn pr-4 pl-4 module-enabler @(Model.Enabled ? "disabled" : "active")">
+                    Off
+                    <input id="disabledBtn" type="radio" name="Enabled" class="d-none" value="false" @(Model.Enabled ? "" : "checked")>
+                </label>
+            </div>
+        </div>
+
+        <div class="row mt-4 border border-gray2 rounded">
+            <div class="col-12 pt-3">
+                <h4>Clean chat message duration</h4>
+                <p class="mb-0 text-volvox">
+                    
+                </p>
+                <hr />
+                <input type="hidden" id="responseCooldown" name="ResponseCooldownMinutes" />
+                <div id="selectMessageDuration"></div>
+                <span asp-validation-for="MessageDuration" class="text-danger"></span>
+                <br />
+            </div>
+
+        </div>
+        <div class="row mt-4">
+            <span asp-validation-summary="Enabled" class="text-danger"></span>
+            <div class="ml-auto">
+                <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
+            </div>
+        </div>
+    </div>
+
+</form>
