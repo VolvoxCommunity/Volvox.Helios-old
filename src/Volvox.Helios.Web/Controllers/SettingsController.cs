@@ -31,6 +31,7 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IEntityService<StreamerChannelSettings> _streamAnnouncerChannelSettingsService;
         private readonly IModuleSettingsService<StreamerSettings> _streamAnnouncerSettingsService;
         private readonly IEntityService<WhiteListedRole> _whiteListedRoleEntityService;
+        private readonly IModuleSettingsService<CleanChatSettings> _cleanchatSettingsService;
 
         public SettingsController(IModuleSettingsService<StreamerSettings> streamAnnouncerSettingsService,
             IEntityService<StreamerChannelSettings> streamAnnouncerChannelSettingsService,
@@ -38,7 +39,8 @@ namespace Volvox.Helios.Web.Controllers
             IModuleSettingsService<RemembotSettings> reminderSettingsService,
             IEntityService<RecurringReminderMessage> recurringReminderService,
             IModuleSettingsService<DadModuleSettings> dadSettingsService,
-            IEntityService<WhiteListedRole> whiteListedRoleEntityService)
+            IEntityService<WhiteListedRole> whiteListedRoleEntityService,
+            IModuleSettingsService<CleanChatSettings> cleanchatSettingsService)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
@@ -47,6 +49,7 @@ namespace Volvox.Helios.Web.Controllers
             _recurringReminderService = recurringReminderService;
             _dadSettingsService = dadSettingsService;
             _whiteListedRoleEntityService = whiteListedRoleEntityService;
+            _cleanchatSettingsService = cleanchatSettingsService;
         }
 
         public async Task<IActionResult> Index(ulong guildId, [FromServices] IBot bot,
@@ -356,6 +359,41 @@ namespace Volvox.Helios.Web.Controllers
             currentSettings.DadResponseCooldownMinutes = vm.ResponseCooldownMinutes;
 
             await _dadSettingsService.SaveSettings(currentSettings);
+
+            return RedirectToAction("Index");
+        }
+
+        #endregion
+
+        #region CleanChat
+
+        [HttpGet("CleanChat")]
+        public async Task<IActionResult> CleanChatSettings(ulong guildId)
+        {
+            var viewModel = new CleanChatSettingsViewModel();
+
+            var settings = await _cleanchatSettingsService.GetSettingsByGuild(guildId, x => x.Channels);
+
+            if (settings == null)
+                return View(viewModel);
+
+            viewModel.Enabled = settings.Enabled;
+            viewModel.Channels = new SelectList(settings.Channels, "Id", "Name");
+            viewModel.MessageDuration = settings.MessageDuration;
+
+            return View(viewModel);
+        }
+
+        [HttpPost("CleanChat")]
+        public async Task<IActionResult> CleanChatSettings(ulong guildId, CleanChatSettingsViewModel viewModel)
+        {
+            // Save settings to the database.
+            await _cleanchatSettingsService.SaveSettings(new CleanChatSettings
+            {
+                GuildId = guildId,
+                Enabled = viewModel.Enabled,
+                MessageDuration = viewModel.MessageDuration
+            });
 
             return RedirectToAction("Index");
         }

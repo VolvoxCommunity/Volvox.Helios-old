@@ -33,7 +33,7 @@
             <div class="col-12 pt-3">
                 <h4>Clean chat message duration</h4>
                 <p class="mb-0 text-volvox">
-                    
+                    Message Duration
                 </p>
                 <hr />
                 <input type="hidden" id="responseCooldown" name="ResponseCooldownMinutes" />
@@ -52,3 +52,7 @@
     </div>
 
 </form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

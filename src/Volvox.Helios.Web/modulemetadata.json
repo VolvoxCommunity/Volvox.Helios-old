@@ -42,8 +42,8 @@
       "ReleaseState": "Canary",
       "Configurable": "true"
     },
-    "ChatCleanerModule": {
-      "Name": "Chat Cleaner",
+    "CleanChatModule": {
+      "Name": "Clean Chat",
       "Version": "1.0",
       "Description": "Keep your chat clean by deleting messages after the specified duration.",
       "ReleaseState": "Stable",
