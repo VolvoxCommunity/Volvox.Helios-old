@@ -41,6 +41,13 @@
       "Description": "Good ol' Dad... at it again.",
       "ReleaseState": "Canary",
       "Configurable": "true"
+    },
+    "ChatCleanerModule": {
+      "Name": "Chat Cleaner",
+      "Version": "1.0",
+      "Description": "Keep your chat clean by deleting messages after the specified duration.",
+      "ReleaseState": "Stable",
+      "Configurable": "true"
     }
   }
 }
