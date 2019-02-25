@@ -373,19 +373,21 @@ namespace Volvox.Helios.Web.Controllers
         [HttpGet("CleanChat")]
         public async Task<IActionResult> CleanChatSettings(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
-            var viewModel = new CleanChatSettingsViewModel();
+            var viewModel = new CleanChatSettingsViewModel
+            {
+                Enabled = false,
+                GuildId = guildId,
+                CleanChatChannels = new List<ulong>()
+            };
 
             var settings = await _cleanchatSettingsService.GetSettingsByGuild(guildId, x => x.Channels);
 
             if (settings == null)
                 return View(viewModel);
 
-            var channels = await guildService.GetChannels(guildId);
-            var textChannels = channels.Where(x => x.Type == 0).ToList();
-
             viewModel.GuildId = settings.GuildId;
             viewModel.Enabled = settings.Enabled;
-            viewModel.Channels = new SelectList(textChannels, "Id", "Name");
+            viewModel.CleanChatChannels = settings.Channels?.Select(c => c.Id).ToList();
             viewModel.MessageDuration = settings.MessageDuration;
 
             return View(viewModel);
@@ -394,20 +396,28 @@ namespace Volvox.Helios.Web.Controllers
         [HttpPost("CleanChat")]
         public async Task<IActionResult> CleanChatSettings(ulong guildId, CleanChatSettingsViewModel viewModel)
         {
-            //await _cleanChatChannelEntityService.CreateBulk(viewModel.Channels.Select(i =>
-            //            new CleanChatChannel
-            //            {
-            //                Id = i.Value
-            //            }));
-
             var settings = new CleanChatSettings
             {
                 GuildId = guildId,
                 Enabled = viewModel.Enabled,
-                MessageDuration = viewModel.MessageDuration
+                MessageDuration = viewModel.MessageDuration,
+                Channels = new List<CleanChatChannel>()
             };
-            
+
             await _cleanchatSettingsService.SaveSettings(settings);
+
+            var cleanChatChannels = await _cleanChatChannelEntityService.Get(c => c.GuildId == guildId);
+
+            // Remove all channels
+            if (cleanChatChannels != null || cleanChatChannels.Count > 0)
+                await _cleanChatChannelEntityService.RemoveBulk(cleanChatChannels);
+
+            await _cleanChatChannelEntityService.CreateBulk(viewModel.CleanChatChannels.Select(c =>
+                new CleanChatChannel
+                {
+                    Id = c,
+                    GuildId = guildId
+                }));
 
             return RedirectToAction("Index");
         }

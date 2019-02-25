@@ -2,7 +2,7 @@
 
 namespace Volvox.Helios.Service.Migrations
 {
-    public partial class AddChatCleaner : Migration
+    public partial class AddCleanChat : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -24,23 +24,23 @@ namespace Volvox.Helios.Service.Migrations
                 columns: table => new
                 {
                     Id = table.Column<decimal>(nullable: false),
-                    CleanChatSettingsGuildId = table.Column<decimal>(nullable: true)
+                    GuildId = table.Column<decimal>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CleanChatChannel", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CleanChatChannel_CleanChatSettings_CleanChatSettingsGuildId",
-                        column: x => x.CleanChatSettingsGuildId,
+                        name: "FK_CleanChatChannel_CleanChatSettings_GuildId",
+                        column: x => x.GuildId,
                         principalTable: "CleanChatSettings",
                         principalColumn: "GuildId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CleanChatChannel_CleanChatSettingsGuildId",
+                name: "IX_CleanChatChannel_GuildId",
                 table: "CleanChatChannel",
-                column: "CleanChatSettingsGuildId");
+                column: "GuildId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

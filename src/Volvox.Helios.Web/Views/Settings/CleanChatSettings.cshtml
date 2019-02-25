@@ -37,7 +37,7 @@
                 Select the channel where this module should be enabled.
             </p>
             <hr />
-            <select asp-for="Channels" class="d-none channel-items" multiple></select>
+            <select asp-for="CleanChatChannels" class="d-none channel-items" multiple></select>
             <div id="channelTagBox" class="mt-3" style="overflow: hidden;"></div>
         </div>
     </div>
@@ -80,18 +80,21 @@
                 guildId: '@Model.GuildId'
             },
             success: function (data) {
-                console.log(@(Html.Raw(Json.Serialize(Model.Channels))));
                 $('#channelTagBox').dxTagBox({
                     dataSource: data,
                     valueExpr: "id",
                     displayExpr: "name",
-                    value: @(Html.Raw(Json.Serialize(Model.Channels))).map((e) => {
-                
+                    value: @(Html.Raw(Json.Serialize(Model.CleanChatChannels))).map((e) => {
+                        var channel = data.filter((c) => {
+                            return c.value == e;
+                        });
+                        return channel[0].value;
                     }),
                     onInitialized: (e) => {
                         setTimeout(() => {
-                            $('.channel-items').append($('.dx-dropdowneditor-input-wrapper').find('select option'));
-                        }, 500)
+                                $('.channel-items').append($('.dx-dropdowneditor-input-wrapper').find('select option'));
+                            },
+                            500);
                     },
                     onValueChanged: (e) => {
                         $('.channel-items').empty().append($('.dx-dropdowneditor-input-wrapper').find('select option'));
