@@ -371,7 +371,7 @@ namespace Volvox.Helios.Web.Controllers
         #region CleanChat
 
         [HttpGet("CleanChat")]
-        public async Task<IActionResult> CleanChatSettings(ulong guildId)
+        public async Task<IActionResult> CleanChatSettings(ulong guildId, [FromServices] IDiscordGuildService guildService)
         {
             var viewModel = new CleanChatSettingsViewModel();
 
@@ -380,9 +380,12 @@ namespace Volvox.Helios.Web.Controllers
             if (settings == null)
                 return View(viewModel);
 
+            var channels = await guildService.GetChannels(guildId);
+            var textChannels = channels.Where(x => x.Type == 0).ToList();
+
             viewModel.GuildId = settings.GuildId;
             viewModel.Enabled = settings.Enabled;
-            viewModel.Channels = new List<ulong>(settings.Channels.Select(r => r.Id));
+            viewModel.Channels = new SelectList(textChannels, "Id", "Name");
             viewModel.MessageDuration = settings.MessageDuration;
 
             return View(viewModel);
@@ -391,26 +394,16 @@ namespace Volvox.Helios.Web.Controllers
         [HttpPost("CleanChat")]
         public async Task<IActionResult> CleanChatSettings(ulong guildId, CleanChatSettingsViewModel viewModel)
         {
-            // Save settings to the database.
-            //var list = new List<CleanChatChannel>(viewModel.Channels?.Select(i =>
-            //                new CleanChatChannel
-            //                {
-            //                    Id = i,
-            //                    Name = "test"
-            //                }));
-
-            await _cleanChatChannelEntityService.CreateBulk(viewModel.Channels.Select(i =>
-                        new CleanChatChannel
-                        {
-                            Id = i,
-                            Name = "test"
-                        }));
+            //await _cleanChatChannelEntityService.CreateBulk(viewModel.Channels.Select(i =>
+            //            new CleanChatChannel
+            //            {
+            //                Id = i.Value
+            //            }));
 
             var settings = new CleanChatSettings
             {
                 GuildId = guildId,
                 Enabled = viewModel.Enabled,
-                //Channels = list,
                 MessageDuration = viewModel.MessageDuration
             };
             

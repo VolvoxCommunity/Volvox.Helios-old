@@ -1,7 +1,7 @@
 ﻿
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Volvox.Helios.Web.ViewModels.Settings
 {
@@ -14,7 +14,7 @@ namespace Volvox.Helios.Web.ViewModels.Settings
 
         public ulong GuildId { get; set; }
         
-        public List<ulong> Channels { get; set; }
+        public SelectList Channels { get; set; }
 
         public int MessageDuration { get; set; }
     }

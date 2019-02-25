@@ -15,7 +15,7 @@ namespace Volvox.Helios.Service.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
+                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -76,14 +76,12 @@ namespace Volvox.Helios.Service.Migrations
                         .ValueGeneratedOnAdd()
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
-                    b.Property<decimal?>("CleanChatSettingsGuildId")
+                    b.Property<decimal>("GuildId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
-
-                    b.Property<string>("Name");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CleanChatSettingsGuildId");
+                    b.HasIndex("GuildId");
 
                     b.ToTable("CleanChatChannel");
                 });
@@ -281,7 +279,8 @@ namespace Volvox.Helios.Service.Migrations
                 {
                     b.HasOne("Volvox.Helios.Domain.ModuleSettings.CleanChatSettings")
                         .WithMany("Channels")
-                        .HasForeignKey("CleanChatSettingsGuildId");
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.Module.Poll", b =>
