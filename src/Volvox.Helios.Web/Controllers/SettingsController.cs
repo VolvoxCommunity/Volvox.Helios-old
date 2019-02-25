@@ -32,6 +32,7 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IModuleSettingsService<StreamerSettings> _streamAnnouncerSettingsService;
         private readonly IEntityService<WhiteListedRole> _whiteListedRoleEntityService;
         private readonly IModuleSettingsService<CleanChatSettings> _cleanchatSettingsService;
+        private readonly IEntityService<CleanChatChannel> _cleanChatChannelEntityService;
 
         public SettingsController(IModuleSettingsService<StreamerSettings> streamAnnouncerSettingsService,
             IEntityService<StreamerChannelSettings> streamAnnouncerChannelSettingsService,
@@ -40,7 +41,8 @@ namespace Volvox.Helios.Web.Controllers
             IEntityService<RecurringReminderMessage> recurringReminderService,
             IModuleSettingsService<DadModuleSettings> dadSettingsService,
             IEntityService<WhiteListedRole> whiteListedRoleEntityService,
-            IModuleSettingsService<CleanChatSettings> cleanchatSettingsService)
+            IModuleSettingsService<CleanChatSettings> cleanchatSettingsService,
+            IEntityService<CleanChatChannel> cleanChatEntityService)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
@@ -50,6 +52,7 @@ namespace Volvox.Helios.Web.Controllers
             _dadSettingsService = dadSettingsService;
             _whiteListedRoleEntityService = whiteListedRoleEntityService;
             _cleanchatSettingsService = cleanchatSettingsService;
+            _cleanChatChannelEntityService = cleanChatEntityService;
         }
 
         public async Task<IActionResult> Index(ulong guildId, [FromServices] IBot bot,
@@ -377,8 +380,9 @@ namespace Volvox.Helios.Web.Controllers
             if (settings == null)
                 return View(viewModel);
 
+            viewModel.GuildId = settings.GuildId;
             viewModel.Enabled = settings.Enabled;
-            viewModel.Channels = new SelectList(settings.Channels, "Id", "Name");
+            viewModel.Channels = new List<ulong>(settings.Channels.Select(r => r.Id));
             viewModel.MessageDuration = settings.MessageDuration;
 
             return View(viewModel);
@@ -388,12 +392,29 @@ namespace Volvox.Helios.Web.Controllers
         public async Task<IActionResult> CleanChatSettings(ulong guildId, CleanChatSettingsViewModel viewModel)
         {
             // Save settings to the database.
-            await _cleanchatSettingsService.SaveSettings(new CleanChatSettings
+            //var list = new List<CleanChatChannel>(viewModel.Channels?.Select(i =>
+            //                new CleanChatChannel
+            //                {
+            //                    Id = i,
+            //                    Name = "test"
+            //                }));
+
+            await _cleanChatChannelEntityService.CreateBulk(viewModel.Channels.Select(i =>
+                        new CleanChatChannel
+                        {
+                            Id = i,
+                            Name = "test"
+                        }));
+
+            var settings = new CleanChatSettings
             {
                 GuildId = guildId,
                 Enabled = viewModel.Enabled,
+                //Channels = list,
                 MessageDuration = viewModel.MessageDuration
-            });
+            };
+            
+            await _cleanchatSettingsService.SaveSettings(settings);
 
             return RedirectToAction("Index");
         }

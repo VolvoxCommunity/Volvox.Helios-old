@@ -11,9 +11,9 @@
 
     <div class="row border border-gray2 rounded">
         <div class="col-md-9 pt-3 pb-3">
-            <h4>Clean chat module</h4>
+            <h4>Enabled</h4>
             <p class="mb-0 text-volvox">
-                Clean the chat in a channel after a specific minute delay.
+                Enables the clean chat module.
             </p>
         </div>
         <div class="col-md-3 valign">
@@ -28,31 +28,79 @@
                 </label>
             </div>
         </div>
+    </div>
 
-        <div class="row mt-4 border border-gray2 rounded">
-            <div class="col-12 pt-3">
-                <h4>Clean chat message duration</h4>
-                <p class="mb-0 text-volvox">
-                    Message Duration
-                </p>
-                <hr />
-                <input type="hidden" id="responseCooldown" name="ResponseCooldownMinutes" />
-                <div id="selectMessageDuration"></div>
-                <span asp-validation-for="MessageDuration" class="text-danger"></span>
-                <br />
-            </div>
-
+    <div class="row mt-4 border border-gray2 rounded">
+        <div class="col-12 pt-3 pb-3">
+            <h4>Channels</h4>
+            <p class="mb-0 text-volvox">
+                Select the channel where this module should be enabled.
+            </p>
+            <hr />
+            <select asp-for="Channels" class="d-none channel-items" multiple></select>
+            <div id="channelTagBox" class="mt-3" style="overflow: hidden;"></div>
         </div>
-        <div class="row mt-4">
-            <span asp-validation-summary="Enabled" class="text-danger"></span>
-            <div class="ml-auto">
-                <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
-            </div>
+    </div>
+
+    <div class="row mt-4 border border-gray2 rounded">
+        <div class="col-12 pt-3 pb-3">
+            <h4>Message Duration</h4>
+            <p class="mb-0 text-volvox">
+                Change the message duration for the chat messages until they get removed.
+            </p>
+            <hr />
+            <label asp-for="MessageDuration">Message Duration (minutes)</label>
+            <input type="number" asp-for="MessageDuration" value="@(Model.MessageDuration)" min="0" class="form-control material-input" />
+            <span asp-validation-for="MessageDuration" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <span asp-validation-summary="Enabled" class="text-danger"></span>
+        <div class="ml-auto">
+            <button type="submit" class="btn btn-volvox-outline pr-4 pl-4" style="border-radius:20px;">Save</button>
         </div>
     </div>
 
 </form>
+@Model.GuildId
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        $('.module-enabler input:not(".active")').click((e) => {
+            $(e.currentTarget).parent().parent().find('.active').toggleClass('active disabled');
+            $(e.currentTarget).parent().toggleClass('active disabled');
+        });
+
+        $.ajax({
+            url: '/api/GetGuildChannels',
+            method: "GET",
+            data: {
+                guildId: '@Model.GuildId'
+            },
+            success: function (data) {
+                console.log(@(Html.Raw(Json.Serialize(Model.Channels))));
+                $('#channelTagBox').dxTagBox({
+                    dataSource: data,
+                    valueExpr: "id",
+                    displayExpr: "name",
+                    value: @(Html.Raw(Json.Serialize(Model.Channels))).map((e) => {
+                
+                    }),
+                    onInitialized: (e) => {
+                        setTimeout(() => {
+                            $('.channel-items').append($('.dx-dropdowneditor-input-wrapper').find('select option'));
+                        }, 500)
+                    },
+                    onValueChanged: (e) => {
+                        $('.channel-items').empty().append($('.dx-dropdowneditor-input-wrapper').find('select option'));
+                    }
+                });
+
+            }
+        });
+        
+    </script>
 }
