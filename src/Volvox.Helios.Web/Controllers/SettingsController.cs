@@ -31,6 +31,8 @@ namespace Volvox.Helios.Web.Controllers
         private readonly IEntityService<StreamerChannelSettings> _streamAnnouncerChannelSettingsService;
         private readonly IModuleSettingsService<StreamerSettings> _streamAnnouncerSettingsService;
         private readonly IEntityService<WhiteListedRole> _whiteListedRoleEntityService;
+        private readonly IModuleSettingsService<CleanChatSettings> _cleanchatSettingsService;
+        private readonly IEntityService<CleanChatChannel> _cleanChatChannelEntityService;
 
         public SettingsController(IModuleSettingsService<StreamerSettings> streamAnnouncerSettingsService,
             IEntityService<StreamerChannelSettings> streamAnnouncerChannelSettingsService,
@@ -38,7 +40,9 @@ namespace Volvox.Helios.Web.Controllers
             IModuleSettingsService<RemembotSettings> reminderSettingsService,
             IEntityService<RecurringReminderMessage> recurringReminderService,
             IModuleSettingsService<DadModuleSettings> dadSettingsService,
-            IEntityService<WhiteListedRole> whiteListedRoleEntityService)
+            IEntityService<WhiteListedRole> whiteListedRoleEntityService,
+            IModuleSettingsService<CleanChatSettings> cleanchatSettingsService,
+            IEntityService<CleanChatChannel> cleanChatEntityService)
         {
             _streamAnnouncerSettingsService = streamAnnouncerSettingsService;
             _streamAnnouncerChannelSettingsService = streamAnnouncerChannelSettingsService;
@@ -47,6 +51,8 @@ namespace Volvox.Helios.Web.Controllers
             _recurringReminderService = recurringReminderService;
             _dadSettingsService = dadSettingsService;
             _whiteListedRoleEntityService = whiteListedRoleEntityService;
+            _cleanchatSettingsService = cleanchatSettingsService;
+            _cleanChatChannelEntityService = cleanChatEntityService;
         }
 
         public async Task<IActionResult> Index(ulong guildId, [FromServices] IBot bot,
@@ -356,6 +362,62 @@ namespace Volvox.Helios.Web.Controllers
             currentSettings.DadResponseCooldownMinutes = vm.ResponseCooldownMinutes;
 
             await _dadSettingsService.SaveSettings(currentSettings);
+
+            return RedirectToAction("Index");
+        }
+
+        #endregion
+
+        #region CleanChat
+
+        [HttpGet("CleanChat")]
+        public async Task<IActionResult> CleanChatSettings(ulong guildId, [FromServices] IDiscordGuildService guildService)
+        {
+            var viewModel = new CleanChatSettingsViewModel
+            {
+                Enabled = false,
+                GuildId = guildId,
+                CleanChatChannels = new List<ulong>()
+            };
+
+            var settings = await _cleanchatSettingsService.GetSettingsByGuild(guildId, x => x.Channels);
+
+            if (settings == null)
+                return View(viewModel);
+
+            viewModel.GuildId = settings.GuildId;
+            viewModel.Enabled = settings.Enabled;
+            viewModel.CleanChatChannels = settings.Channels?.Select(c => c.Id).ToList();
+            viewModel.MessageDuration = settings.MessageDuration;
+
+            return View(viewModel);
+        }
+
+        [HttpPost("CleanChat")]
+        public async Task<IActionResult> CleanChatSettings(ulong guildId, CleanChatSettingsViewModel viewModel)
+        {
+            var settings = new CleanChatSettings
+            {
+                GuildId = guildId,
+                Enabled = viewModel.Enabled,
+                MessageDuration = viewModel.MessageDuration,
+                Channels = new List<CleanChatChannel>()
+            };
+
+            await _cleanchatSettingsService.SaveSettings(settings);
+
+            var cleanChatChannels = await _cleanChatChannelEntityService.Get(c => c.GuildId == guildId);
+
+            // Remove all channels
+            if (cleanChatChannels != null || cleanChatChannels.Count > 0)
+                await _cleanChatChannelEntityService.RemoveBulk(cleanChatChannels);
+
+            await _cleanChatChannelEntityService.CreateBulk(viewModel.CleanChatChannels.Select(c =>
+                new CleanChatChannel
+                {
+                    Id = c,
+                    GuildId = guildId
+                }));
 
             return RedirectToAction("Index");
         }

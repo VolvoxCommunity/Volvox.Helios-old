@@ -95,6 +95,9 @@ namespace Volvox.Helios.Core.Modules.DadModule
             {
                 var settings = await _moduleSettings.GetSettingsByGuild(textChannel.Guild.Id);
 
+                if (settings == null)
+                    return;
+
                 // Only respond if module is enabled
                 if (!settings?.Enabled ?? false)
                     return;

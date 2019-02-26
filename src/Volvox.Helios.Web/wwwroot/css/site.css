@@ -20,6 +20,13 @@ html, body {
   height: 100%;
 }
 
+.btn {
+  color: inherit;
+}
+.btn:hover {
+  color: inherit;
+}
+
 body {
   padding-top: 50px;
   display: flex;
@@ -143,7 +150,7 @@ a:hover {
   background: none !important;
   border-width: 1px !important;
   margin-left: 10px !important;
-  padding: 0px 18px !important;
+  padding: 0 18px !important;
 }
 
 /* Hide/rearrange for smaller screens */
@@ -276,6 +283,7 @@ input:checked + .slider {
   width: 32px;
   margin-right: 8px;
   border-radius: 3px;
+  border: 2px solid black;
   border: 2px rgba(0,0,0,.15) solid;
 }
 
@@ -335,6 +343,7 @@ input:checked + .slider {
   }
 
   .light-list li:hover {
+    background: white;
     background: rgba(255, 255, 255, .3);
   }
 
@@ -348,7 +357,7 @@ input:checked + .slider {
 .add-label {
   padding: 9px 15px;
   background: var(--color-volvox);
-  border-radius: 0px 50px 50px 50px
+  border-radius: 0 50px 50px 50px
 }
 
 
@@ -472,7 +481,7 @@ input:checked + .slider {
   top: 0;
   color: white;
   justify-content: center;
-  padding: 0px 14px 2px;
+  padding: 0 14px 2px;
   border-radius: 0 0 3px 3px;
 }
 

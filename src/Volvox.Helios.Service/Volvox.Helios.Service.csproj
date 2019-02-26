@@ -21,6 +21,8 @@
     <Compile Remove="Migrations\20190110040640_DadModuleCooldown.cs" />
     <Compile Remove="Migrations\20190110040829_DadModuleCooldown.cs" />
     <Compile Remove="Migrations\20190110041022_DadModuleCooldown.cs" />
+    <Compile Remove="Migrations\20190225185906_CleanChatSettingsGuildIdProperty.cs" />
+    <Compile Remove="Migrations\20190225190320_CleanChatSettingsModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.2" />
