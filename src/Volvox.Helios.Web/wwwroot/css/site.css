@@ -489,7 +489,6 @@ input:checked + .slider {
 .footer-icon {
   padding: 10px;
   justify-content: center;
-  color: white;
   transition: .3s;
   font-size: 20px;
 }
