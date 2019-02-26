@@ -45,7 +45,7 @@
     "CleanChatModule": {
       "Name": "Clean Chat",
       "Version": "1.0",
-      "Description": "Keep your chat clean by deleting messages after the specified duration.",
+      "Description": "Set message duration on specific channels. After this duration the message will be deleted.",
       "ReleaseState": "Stable",
       "Configurable": "true"
     }
