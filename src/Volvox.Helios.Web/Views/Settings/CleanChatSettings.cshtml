@@ -85,16 +85,13 @@
                     valueExpr: "id",
                     displayExpr: "name",
                     value: @(Html.Raw(Json.Serialize(Model.CleanChatChannels))).map((e) => {
-                        var channel = data.filter((c) => {
-                            return c.value == e;
-                        });
-                        return channel[0].value;
+                        var channel = data.filter((c) => c.id == e);
+                        if (channel[0]) return channel[0].id;
                     }),
                     onInitialized: (e) => {
                         setTimeout(() => {
-                                $('.channel-items').append($('.dx-dropdowneditor-input-wrapper').find('select option'));
-                            },
-                            500);
+                            $('.channel-items').append($('.dx-dropdowneditor-input-wrapper').find('select option'));
+                        }, 500);
                     },
                     onValueChanged: (e) => {
                         $('.channel-items').empty().append($('.dx-dropdowneditor-input-wrapper').find('select option'));
