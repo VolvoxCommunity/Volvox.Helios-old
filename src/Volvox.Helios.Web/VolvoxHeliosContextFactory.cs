@@ -1,16 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+using Volvox.Helios.Service;
 
-namespace Volvox.Helios.Service
+namespace Volvox.Helios.Web
 {
     public class VolvoxHeliosContextFactory : IDesignTimeDbContextFactory<VolvoxHeliosContext>
     {
         public VolvoxHeliosContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<VolvoxHeliosContext>();
-            optionsBuilder.UseSqlServer(
-                "Server=(localdb)\\mssqllocaldb;Database=VolvoxHelios;Trusted_Connection=True;");
+            var configuration = ConfigurationHelper.GetDefaultConfiguration();
 
+            var optionsBuilder = new DbContextOptionsBuilder<VolvoxHeliosContext>();
+
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("VolvoxHeliosDatabase"), options=>
+            options.MigrationsAssembly("Volvox.Helios.Service"));
             return new VolvoxHeliosContext(optionsBuilder.Options);
         }
     }
