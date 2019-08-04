@@ -14,7 +14,7 @@ namespace Volvox.Helios.Web
             var optionsBuilder = new DbContextOptionsBuilder<VolvoxHeliosContext>();
 
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("VolvoxHeliosDatabase"), options=>
-            options.MigrationsAssembly("Volvox.Helios.Web"));
+            options.MigrationsAssembly("Volvox.Helios.Service"));
             return new VolvoxHeliosContext(optionsBuilder.Options);
         }
     }
