@@ -44,6 +44,7 @@ using System.Data.SqlClient;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Volvox.Helios.Core.Modules.CleanChat;
 using Volvox.Helios.Core.Modules.DadModule;
+using Hangfire.PostgreSql;
 
 namespace Volvox.Helios.Web
 {
@@ -170,11 +171,11 @@ namespace Volvox.Helios.Web
 
             // Entity Framework
             services.AddDbContext<VolvoxHeliosContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("VolvoxHeliosDatabase")));
+                options.UseNpgsql(Configuration.GetConnectionString("VolvoxHeliosDatabase")));
 
             services.AddHangfire(gc =>
             {
-                gc.UseSqlServerStorage(Configuration.GetConnectionString("VolvoxHeliosDatabase"), new SqlServerStorageOptions
+                gc.UsePostgreSqlStorage(Configuration.GetConnectionString("VolvoxHeliosDatabase"), new PostgreSqlStorageOptions
                 {
                     SchemaName = "hangfire",
                     PrepareSchemaIfNecessary = true
