@@ -32,7 +32,6 @@ using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.HostedServices.Bot;
-using Volvox.Helios.Web.HealthChecks;
 using Hangfire;
 using Hangfire.SqlServer;
 using Volvox.Helios.Core.Modules.ReminderModule;
