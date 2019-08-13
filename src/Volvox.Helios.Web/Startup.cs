@@ -32,6 +32,7 @@ using Volvox.Helios.Service.EntityService;
 using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.HostedServices.Bot;
+using Volvox.Helios.Web.HealthChecks;
 using Hangfire;
 using Hangfire.SqlServer;
 using Volvox.Helios.Core.Modules.ReminderModule;
@@ -181,23 +182,9 @@ namespace Volvox.Helios.Web
                 });
             });
 
-            //TODO: Refactor to make cleaner
+            // Health Checks
             services.AddHealthChecks()
-                .AddCheck("sql", () =>
-                {
-                    using (var connection = new SqlConnection(Configuration.GetConnectionString("VolvoxHeliosDatabase")))
-                    {
-                        try
-                        {
-                            connection.Open();
-                        }
-                        catch (SqlException)
-                        {
-                            return HealthCheckResult.Unhealthy();
-                        }
-                        return HealthCheckResult.Healthy();
-                    }
-                });
+                    .AddSqlServer(Configuration["ConnectionStrings:VolvoxHeliosDatabase"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
