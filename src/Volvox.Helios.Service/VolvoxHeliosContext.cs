@@ -70,12 +70,17 @@ namespace Volvox.Helios.Service
             var reminderModel = modelBuilder.Entity<RemembotSettings>();
             var recurringReminderModel = modelBuilder.Entity<RecurringReminderMessage>();
 
+            modelBuilder.HasSequence<long>("OrderNumbers")
+                .StartsAt(1)
+                .IncrementsBy(1);
+
             reminderModel.HasMany(x => x.RecurringReminders);
 
             recurringReminderModel.HasKey(x => x.Id)
                 .ForSqlServerIsClustered();
 
             recurringReminderModel.Property(x => x.Id)
+                .HasDefaultValueSql("nextval('\"OrderNumbers\"')")
                 .UseSqlServerIdentityColumn();
 
             recurringReminderModel
