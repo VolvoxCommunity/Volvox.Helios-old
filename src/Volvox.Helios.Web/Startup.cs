@@ -33,7 +33,6 @@ using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.HostedServices.Bot;
 using Hangfire;
-using Hangfire.SqlServer;
 using Volvox.Helios.Core.Modules.ReminderModule;
 using Volvox.Helios.Service.BackgroundJobs;
 using Volvox.Helios.Service.Jobs;

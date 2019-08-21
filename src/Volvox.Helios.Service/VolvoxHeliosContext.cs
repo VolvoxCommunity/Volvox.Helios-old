@@ -76,12 +76,10 @@ namespace Volvox.Helios.Service
 
             reminderModel.HasMany(x => x.RecurringReminders);
 
-            recurringReminderModel.HasKey(x => x.Id)
-                .ForSqlServerIsClustered();
+            recurringReminderModel.HasKey(x => x.Id);
 
             recurringReminderModel.Property(x => x.Id)
-                .HasDefaultValueSql("nextval('\"OrderNumbers\"')")
-                .UseSqlServerIdentityColumn();
+                .HasDefaultValueSql("nextval('\"OrderNumbers\"')");
 
             recurringReminderModel
                 .HasIndex(x => x.GuildId);
