@@ -117,7 +117,7 @@ namespace Volvox.Helios.Service.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
 
                     b.Property<decimal>("ChannelId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
@@ -138,8 +138,7 @@ namespace Volvox.Helios.Service.Migrations
                     b.Property<string>("Message")
                         .IsRequired();
 
-                    b.HasKey("Id")
-                        .HasAnnotation("SqlServer:Clustered", true);
+                    b.HasKey("Id");
 
                     b.HasIndex("GuildId");
 
