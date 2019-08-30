@@ -295,3 +295,4 @@ src/Volvox.Helios.Web/wwwroot/vendor.min.css
 src/Volvox.Helios.Web/wwwroot/vendor.min.js
 src/Volvox.Helios.Web/wwwroot/css/site.min.css
 src/Volvox.Helios.Web/wwwroot/js/site.min.js
+src/Volvox.Helios.Web/healthchecksdb
