@@ -9,7 +9,7 @@ namespace Volvox.Helios.Service
 {
     public class VolvoxHeliosContext : DbContext
     {
-        public VolvoxHeliosContext(DbContextOptions options)
+        public VolvoxHeliosContext(DbContextOptions<VolvoxHeliosContext> options)
             : base(options)
         {
         }
