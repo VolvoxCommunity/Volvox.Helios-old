@@ -33,17 +33,17 @@ using Volvox.Helios.Service.ModuleSettings;
 using Volvox.Helios.Web.Filters;
 using Volvox.Helios.Web.HostedServices.Bot;
 using Hangfire;
-using Hangfire.SqlServer;
 using Volvox.Helios.Core.Modules.ReminderModule;
 using Volvox.Helios.Service.BackgroundJobs;
 using Volvox.Helios.Service.Jobs;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Discord.WebSocket;
 using Volvox.Helios.Core.Modules.Streamer;
-using System.Data.SqlClient;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Volvox.Helios.Core.Modules.CleanChat;
 using Volvox.Helios.Core.Modules.DadModule;
+using HealthChecks.UI.Client;
+using Hangfire.PostgreSql;
 
 namespace Volvox.Helios.Web
 {
@@ -170,11 +170,11 @@ namespace Volvox.Helios.Web
 
             // Entity Framework
             services.AddDbContext<VolvoxHeliosContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("VolvoxHeliosDatabase")));
+                options.UseNpgsql(Configuration.GetConnectionString("VolvoxHeliosDatabase")));
 
             services.AddHangfire(gc =>
             {
-                gc.UseSqlServerStorage(Configuration.GetConnectionString("VolvoxHeliosDatabase"), new SqlServerStorageOptions
+                gc.UsePostgreSqlStorage(Configuration.GetConnectionString("VolvoxHeliosDatabase"), new PostgreSqlStorageOptions
                 {
                     SchemaName = "hangfire",
                     PrepareSchemaIfNecessary = true
@@ -183,7 +183,9 @@ namespace Volvox.Helios.Web
 
             // Health Checks
             services.AddHealthChecks()
-                    .AddSqlServer(Configuration["ConnectionStrings:VolvoxHeliosDatabase"]);
+                    .AddSqlServer(Configuration["ConnectionStrings:VolvoxHeliosDatabase"], null, "HeliosDB");
+
+            services.AddHealthChecksUI();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -225,7 +227,13 @@ namespace Volvox.Helios.Web
                 Activator = app.ApplicationServices.GetRequiredService<JobActivator>()
             });
 
-            app.UseHealthChecks("/health");
+            app.UseHealthChecks("/health", new HealthCheckOptions()
+            {
+                Predicate = s => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
+            app.UseHealthChecksUI();
         }
     }
 }

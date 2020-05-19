@@ -11,22 +11,22 @@ using Volvox.Helios.Service;
 namespace Volvox.Helios.Service.Migrations
 {
     [DbContext(typeof(VolvoxHeliosContext))]
-    [Migration("20190115012724_FixWhiteListedRole")]
-    partial class FixWhiteListedRole
+    [Migration("20190817212922_addedautoincrementforpostgres")]
+    partial class addedautoincrementforpostgres
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("Relational:Sequence:.OrderNumbers", "'OrderNumbers', '', '1', '1', '', '', 'Int64', 'False'");
 
             modelBuilder.Entity("Volvox.Helios.Core.Modules.StreamAnnouncer.StreamAnnouncerMessage", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<decimal>("ChannelId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
@@ -73,11 +73,26 @@ namespace Volvox.Helios.Service.Migrations
                     b.ToTable("Messages");
                 });
 
+            modelBuilder.Entity("Volvox.Helios.Domain.Module.CleanChatChannel", b =>
+                {
+                    b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<decimal>("GuildId")
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildId");
+
+                    b.ToTable("CleanChatChannel");
+                });
+
             modelBuilder.Entity("Volvox.Helios.Domain.Module.Poll", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<decimal>("ChannelId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
@@ -154,14 +169,14 @@ namespace Volvox.Helios.Service.Migrations
                         .ValueGeneratedOnAdd()
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
-                    b.Property<decimal?>("StreamerSettingsGuildId")
+                    b.Property<decimal>("GuildId")
                         .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
 
                     b.HasKey("RoleId");
 
-                    b.HasIndex("StreamerSettingsGuildId");
+                    b.HasIndex("GuildId");
 
-                    b.ToTable("WhiteListedRole");
+                    b.ToTable("WhiteListedRoles");
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.ChatTrackerSettings", b =>
@@ -175,6 +190,21 @@ namespace Volvox.Helios.Service.Migrations
                     b.HasKey("GuildId");
 
                     b.ToTable("ChatTrackerSettings");
+                });
+
+            modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.CleanChatSettings", b =>
+                {
+                    b.Property<decimal>("GuildId")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<decimal, decimal>(v => default(decimal), v => default(decimal), new ConverterMappingHints(precision: 20, scale: 0)));
+
+                    b.Property<bool>("Enabled");
+
+                    b.Property<int>("MessageDuration");
+
+                    b.HasKey("GuildId");
+
+                    b.ToTable("CleanChatSettings");
                 });
 
             modelBuilder.Entity("Volvox.Helios.Domain.ModuleSettings.DadModuleSettings", b =>
@@ -246,6 +276,14 @@ namespace Volvox.Helios.Service.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("Volvox.Helios.Domain.Module.CleanChatChannel", b =>
+                {
+                    b.HasOne("Volvox.Helios.Domain.ModuleSettings.CleanChatSettings")
+                        .WithMany("Channels")
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Volvox.Helios.Domain.Module.Poll", b =>
                 {
                     b.HasOne("Volvox.Helios.Domain.ModuleSettings.PollSettings", "PollSettings")
@@ -274,7 +312,8 @@ namespace Volvox.Helios.Service.Migrations
                 {
                     b.HasOne("Volvox.Helios.Domain.ModuleSettings.StreamerSettings")
                         .WithMany("WhiteListedRoleIds")
-                        .HasForeignKey("StreamerSettingsGuildId");
+                        .HasForeignKey("GuildId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
