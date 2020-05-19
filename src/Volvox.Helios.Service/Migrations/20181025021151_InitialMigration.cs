@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Volvox.Helios.Service.Migrations
 {
@@ -76,7 +77,7 @@ namespace Volvox.Helios.Service.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     MessageId = table.Column<decimal>(nullable: false),
                     ChannelId = table.Column<decimal>(nullable: false),
                     GuildId = table.Column<decimal>(nullable: false),
@@ -98,7 +99,7 @@ namespace Volvox.Helios.Service.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     GuildId = table.Column<decimal>(nullable: false),
                     Enabled = table.Column<bool>(nullable: false),
                     Message = table.Column<string>(nullable: false),
@@ -108,8 +109,7 @@ namespace Volvox.Helios.Service.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RecurringReminderMessages", x => x.Id)
-                        .Annotation("SqlServer:Clustered", true);
+                    table.PrimaryKey("PK_RecurringReminderMessages", x => x.Id);
                     table.ForeignKey(
                         name: "FK_RecurringReminderMessages_ReminderSettings_GuildId",
                         column: x => x.GuildId,
@@ -123,7 +123,7 @@ namespace Volvox.Helios.Service.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     UserId = table.Column<decimal>(nullable: false),
                     MessageId = table.Column<decimal>(nullable: false),
                     ChannelId = table.Column<decimal>(nullable: false),
