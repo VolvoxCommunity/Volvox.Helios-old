@@ -131,3 +131,11 @@ footer {
   font-weight: 400;
   padding-bottom: 5px;
 }
+
+.volvox-link {
+  color: #4cae4c;
+}
+
+.volvox-link:hover {
+  color: #89f489;
+}
