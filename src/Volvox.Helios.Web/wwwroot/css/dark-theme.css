@@ -126,3 +126,11 @@ footer {
 .footer-icon {
   color: white;
 }
+
+.volvox-link {
+  color: #7b8187;
+}
+
+.volvox-link:hover {
+  color: #888888;
+}
