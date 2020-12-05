@@ -126,3 +126,8 @@ footer {
 .footer-icon {
   color: white;
 }
+
+.caption {
+  font-weight: 400;
+  padding-bottom: 5px;
+}
