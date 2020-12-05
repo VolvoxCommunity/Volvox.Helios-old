@@ -127,6 +127,11 @@ footer {
   color: white;
 }
 
+.caption {
+  font-weight: 400;
+  padding-bottom: 5px;
+}
+
 .volvox-link {
   color: #4cae4c;
 }
