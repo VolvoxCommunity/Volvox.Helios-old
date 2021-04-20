@@ -20,3 +20,11 @@ footer{
 .footer-icon {
   color: #777;
 }
+
+.volvox-link {
+  color: #4cae4c;
+}
+
+.volvox-link:hover {
+  color: #267326;
+}
